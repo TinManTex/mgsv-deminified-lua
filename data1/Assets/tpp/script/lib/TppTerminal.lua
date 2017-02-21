@@ -773,15 +773,19 @@ function this.GetFobStatus()
   end
   TppServerManager.GetFobStatus()
 end
-function this.OnNoticeFobSneaked(t,n)
+function this.OnNoticeFobSneaked(fobMode,n)
   if this.IsDisableNoticeFobSneaked()then
     return
   end
-  local n={[FobMode.MODE_ACTUAL]="fobNoticeIntruder",[FobMode.MODE_SHAM]="fobReqPractice",[FobMode.MODE_VISIT]="fobVisitFob"}
-  local t=n[t]
-  if t then
+  local announceLogTypesForFobMode={
+    [FobMode.MODE_ACTUAL]="fobNoticeIntruder",
+    [FobMode.MODE_SHAM]="fobReqPractice",
+    [FobMode.MODE_VISIT]="fobVisitFob"
+  }
+  local announceLogType=announceLogTypesForFobMode[fobMode]
+  if announceLogType then
     TppMotherBaseManagement.SetMyFobEmergency{emergency=true}
-    this.ShowNoticeFobSneaked(t)
+    this.ShowNoticeFobSneaked(announceLogType)
   end
 end
 function this.OnNoticeSupporterFobSneaked()
@@ -790,7 +794,7 @@ function this.OnNoticeSupporterFobSneaked()
   end
   TppMotherBaseManagement.SetFollowerFobEmergency{emergency=true}
   this.ShowNoticeFobSneaked"fobReqHelp"
-  end
+end
 function this.IsDisableNoticeFobSneaked()
   local isDisable=false
   local missionTable={[10010]=true,[10030]=true,[10115]=true,[10150]=true,[10151]=true,[10240]=true,[10260]=true,[10280]=true,[11151]=true}
@@ -806,9 +810,9 @@ function this.IsDisableNoticeFobSneaked()
   end
   return isDisable
 end
-function this.ShowNoticeFobSneaked(e)
+function this.ShowNoticeFobSneaked(announceLogType)
   TppUI.ShowEmergencyAnnounceLog(true)
-  TppUiCommand.ShowMissionIcon("urgent_time",6,TppUI.ANNOUNCE_LOG_TYPE[e])
+  TppUiCommand.ShowMissionIcon("urgent_time",6,TppUI.ANNOUNCE_LOG_TYPE[announceLogType])
 end
 function this.OnAllocate(e)
   mvars.trm_fultonInfo={}

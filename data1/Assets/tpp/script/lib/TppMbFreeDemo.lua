@@ -208,8 +208,22 @@ this.demoOptions={
       TppUiCommand.RequestMbDvcOpenCondition{isDisableTutorial=true}
       Player.RequestToOpenMBTerminal()
     end,
-    heliEnableAfterDemo=true,demoSoldierLocator={"ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0000","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0002","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0005","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0000","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0001","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0002","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0003"},
-    forceMaleLocator={"ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0001","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0003","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0004","ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt2_0000"},
+    heliEnableAfterDemo=true,
+    demoSoldierLocator={
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0000",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0002",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0005",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0000",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0001",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0002",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt1_0003"
+    },
+    forceMaleLocator={
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0001",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0003",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0004",
+      "ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt2_0000"
+    },
     forceBalaclavaLocator={}},
   AttackedFromOtherPlayer_UnknowWhereFrom={time="14:00:00",weather=TppDefine.WEATHER.CLOUDY,
     OnEnd=function()
@@ -965,8 +979,8 @@ function this.GetDemoTime(demoName)
     return nil
   elseif Ivars.mbDemoOverrideTime:Is"CUSTOM" then
     return string.format("%02d:%02d:00",Ivars.mbDemoHour:Get(),Ivars.mbDemoMinute:Get())
-  end--<  
-  
+  end--<
+
   local demoOptions=this.demoOptions[demoName]
   if demoOptions and demoOptions.time then
     time=demoOptions.time

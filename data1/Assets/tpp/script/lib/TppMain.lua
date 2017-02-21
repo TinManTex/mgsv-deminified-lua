@@ -28,7 +28,7 @@ local function RENAMEwhatisquarksystem()--NMC: cant actually see this referenced
     while QuarkSystem.GetCompilerState()==QuarkSystem.COMPILER_STATE_WAITING_TO_LOAD do
       coroutine.yield()
     end
-  end
+end
 end
 function this.DisableGameStatus()
   TppMission.DisableInGameFlag()
@@ -74,7 +74,7 @@ function this.DisableBlackLoading()
 end
 function this.OnAllocate(missionTable)--NMC: via mission_main.lua, is called in order laid out, OnAllocate is before OnInitialize
   --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Onallocate begin")
-  --SplashScreen.Show(SplashScreen.Create("dbeinak","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5020_l_alp.ftex",1280,640),0,0.1,0)--tex dog--tex ghetto as 'does it run?' indicator DEBUG 
+  --SplashScreen.Show(SplashScreen.Create("dbeinak","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5020_l_alp.ftex",1280,640),0,0.1,0)--tex dog--tex ghetto as 'does it run?' indicator DEBUG
   InfMain.OnAllocateTop(missionTable)--tex
   TppWeather.OnEndMissionPrepareFunction()
   this.DisableGameStatus()
@@ -250,43 +250,43 @@ function this.OnAllocate(missionTable)--NMC: via mission_main.lua, is called in 
     end
     TppSequence.SaveMissionStartSequence()
     TppScriptVars.SetSVarsNotificationEnabled(true)
+end
+InfSoldierParams.SoldierParametersMod()--tex
+if missionTable.enemy then
+  if IsTypeTable(missionTable.enemy.soldierPowerSettings)then
+    TppEnemy.SetUpPowerSettings(missionTable.enemy.soldierPowerSettings)
   end
-  InfSoldierParams.SoldierParametersMod()--tex
-  if missionTable.enemy then
-    if IsTypeTable(missionTable.enemy.soldierPowerSettings)then
-      TppEnemy.SetUpPowerSettings(missionTable.enemy.soldierPowerSettings)
-    end
+end
+TppRevenge.DecideRevenge(missionTable)
+if TppEquip.CreateEquipMissionBlockGroup then
+  if(vars.missionCode>6e4)then--NMC the e3/tradeshow demos I think
+    TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*24}--=9338880 -- nearly 5x the max retail block size
+  else
+    --TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*32}--DEBUG TEST
+    TppPlayer.SetEquipMissionBlockGroupSize()--TppDefine.DEFAULT_EQUIP_MISSION_BLOCK_GROUP_SIZE = 1677721, sequence.EQUIP_MISSION_BLOCK_GROUP_SIZE= max 1887437 (s10054)
   end
-  TppRevenge.DecideRevenge(missionTable)
-  if TppEquip.CreateEquipMissionBlockGroup then
-    if(vars.missionCode>6e4)then--NMC the e3/tradeshow demos I think
-      TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*24}--=9338880 -- nearly 5x the max retail block size
-    else
-      --TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*32}--DEBUG TEST
-      TppPlayer.SetEquipMissionBlockGroupSize()--TppDefine.DEFAULT_EQUIP_MISSION_BLOCK_GROUP_SIZE = 1677721, sequence.EQUIP_MISSION_BLOCK_GROUP_SIZE= max 1887437 (s10054)
-    end
+end
+if TppEquip.CreateEquipGhostBlockGroups then
+  if TppSystemUtility.GetCurrentGameMode()=="MGO"then
+    TppEquip.CreateEquipGhostBlockGroups{ghostCount=16}
+  elseif TppMission.IsFOBMission(vars.missionCode) then
+    TppEquip.CreateEquipGhostBlockGroups{ghostCount=1}
   end
-  if TppEquip.CreateEquipGhostBlockGroups then
-    if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-      TppEquip.CreateEquipGhostBlockGroups{ghostCount=16}
-    elseif TppMission.IsFOBMission(vars.missionCode) then
-      TppEquip.CreateEquipGhostBlockGroups{ghostCount=1}
-    end
-  end
-  TppEquip.StartLoadingToEquipMissionBlock()
-  TppPlayer.SetMaxPickableLocatorCount()
-  TppPlayer.SetMaxPlacedLocatorCount()
-  TppEquip.AllocInstances{instance=60,realize=60}
-  TppEquip.ActivateEquipSystem()
-  if TppEnemy.IsRequiredToLoadDefaultSoldier2CommonPackage()then
-    TppEnemy.LoadSoldier2CommonBlock()
-  end
-  if missionTable.sequence then
-    mvars.mis_baseList=missionTable.sequence.baseList
-    TppCheckPoint.RegisterCheckPointList(missionTable.sequence.checkPointList)
-  end
-  --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Onallocate end")--DEBUG
-  --SplashScreen.Show(SplashScreen.Create("dbeinak","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5020_l_alp.ftex",1280,640),0,0.1,0)--tex dog--tex ghetto as 'does it run?' indicator
+end
+TppEquip.StartLoadingToEquipMissionBlock()
+TppPlayer.SetMaxPickableLocatorCount()
+TppPlayer.SetMaxPlacedLocatorCount()
+TppEquip.AllocInstances{instance=60,realize=60}
+TppEquip.ActivateEquipSystem()
+if TppEnemy.IsRequiredToLoadDefaultSoldier2CommonPackage()then
+  TppEnemy.LoadSoldier2CommonBlock()
+end
+if missionTable.sequence then
+  mvars.mis_baseList=missionTable.sequence.baseList
+  TppCheckPoint.RegisterCheckPointList(missionTable.sequence.checkPointList)
+end
+--InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Onallocate end")--DEBUG
+--SplashScreen.Show(SplashScreen.Create("dbeinak","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5020_l_alp.ftex",1280,640),0,0.1,0)--tex dog--tex ghetto as 'does it run?' indicator
 end
 function this.OnInitialize(missionTable)--NMC: see onallocate for notes
   --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Oninitialize begin")--DEBUG
@@ -546,7 +546,7 @@ function this.OnMissionGameStart(n)
   TppClock.Start()
   if not gvars.ini_isTitleMode then
     PlayRecord.RegistPlayRecord"MISSION_START"
-    end
+  end
   TppQuest.InitializeQuestActiveStatus()
   if mvars.seq_demoSequneceList[mvars.seq_missionStartSequence]then
     this.EnableGameStatusForDemo()
@@ -563,10 +563,11 @@ function this.OnMissionGameStart(n)
   TppSoundDaemon.ResetMute"Telop"
 end
 function this.ClearStageBlockMessage()
-StageBlock.ClearLargeBlockNameForMessage()
-StageBlock.ClearSmallBlockIndexForMessage()
+  StageBlock.ClearLargeBlockNameForMessage()
+  StageBlock.ClearSmallBlockIndexForMessage()
 end
 function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)
+  Ivars.mis_isGroundStart:Set(0)--tex WORKAROUND
   this.DisableGameStatus()
   if missionLoadType==TppDefine.MISSION_LOAD_TYPE.MISSION_FINALIZE then
     if nextIsHeliSpace then
@@ -577,7 +578,7 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
       TppMission.ResetIsStartFromHelispace()
       TppMission.ResetIsStartFromFreePlay()
     elseif isHeliSpace then
-      local isGroundStart=false--tex
+      local isGroundStart=false--tex WORKAROUND
       if gvars.heli_missionStartRoute~=0 then
         local groundStart=InfLZ.groundStartPositions[gvars.heli_missionStartRoute]--tex startOnFoot>
         local rotY=0
@@ -585,9 +586,9 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
         if Ivars.startOnFoot:Is(1) and (groundStart~=nil or isMbFree) then
           TppPlayer.SetStartStatus(TppDefine.INITIAL_PLAYER_STATE.ON_FOOT)
           --TppHelicopter.ResetMissionStartHelicopterRoute()
-          if groundStart~=nil then
-            isGroundStart=true
-            rotY=groundStart.rotY or 0--tex TODO: RETRY: fill out, or tocenter or to closest 
+          if groundStart then
+            isGroundStart=not isMbFree
+            rotY=groundStart.rotY or 0--tex TODO: RETRY: fill out, or tocenter or to closest
             mvars.mis_helicopterMissionStartPosition=groundStart.pos
           end
         else--not ground start --tex <startOnFoot
@@ -596,8 +597,8 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
         if mvars.mis_helicopterMissionStartPosition then
           TppPlayer.SetInitialPosition(mvars.mis_helicopterMissionStartPosition,rotY)--tex added rotY was 0
           TppPlayer.SetMissionStartPosition(mvars.mis_helicopterMissionStartPosition,rotY)
-        end      
-      else--heli_missionStartRoute~=0
+        end
+      else--no heli start
         TppPlayer.SetStartStatus(TppDefine.INITIAL_PLAYER_STATE.ON_FOOT)
         local noHeliMissionStartPos=TppDefine.NO_HELICOPTER_MISSION_START_POSITION[vars.missionCode]
         if noHeliMissionStartPos then
@@ -611,7 +612,8 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
       TppPlayer.ResetNoOrderBoxMissionStartPosition()
       TppMission.SetIsStartFromHelispace()
       TppMission.ResetIsStartFromFreePlay()
-      if isGroundStart then--tex 10054,11054 mission timer fix, but doing all to be safe
+      if isGroundStart then--tex WORKAROUND 10054,11054 mission timer fix, but doing all to be safe
+        Ivars.mis_isGroundStart:Set(1)
         TppMission.ResetIsStartFromHelispace()
         TppMission.SetIsStartFromFreePlay()
       end--<
@@ -628,6 +630,19 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
       TppMission.ResetIsStartFromHelispace()
       TppMission.ResetIsStartFromFreePlay()
       TppLocation.MbFreeSpecialMissionStartSetting(TppMission.GetMissionClearType())
+      if gvars.heli_missionStartRoute~=0 then--tex startOnFoot>
+        local groundStart=InfLZ.groundStartPositions[gvars.heli_missionStartRoute]
+        if Ivars.startOnFoot:Is(1) and groundStart then
+          TppPlayer.SetStartStatus(TppDefine.INITIAL_PLAYER_STATE.ON_FOOT)
+          if groundStart then
+            local pos=groundStart.pos
+            local rotY=groundStart.rotY or 0--tex TODO: RETRY: fill out, or tocenter or to closest
+            mvars.mis_helicopterMissionStartPosition=pos
+            TppPlayer.SetInitialPosition(pos,rotY)
+            TppPlayer.SetMissionStartPosition(pos,rotY)
+          end
+        end
+      end--<
     elseif(isFreeMission and TppLocation.IsMotherBase())then
       if gvars.heli_missionStartRoute~=0 then
         TppPlayer.SetStartStatusRideOnHelicopter()
@@ -647,13 +662,13 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
           TppPlayer.ResetInitialPosition()
           TppPlayer.ResetMissionStartPosition()
           local noBoxMissionStartPos={
-          [10020]={1449.3460693359,339.18698120117,1467.4300537109,-104},
-          [10050]={-1820.7060546875,349.78659057617,-146.44400024414,139},
-          [10070]={-792.00512695313,537.3740234375,-1381.4598388672,136},
-          [10080]={-439.28802490234,-20.472593307495,1336.2784423828,-151},
-          [10140]={499.91635131836,13.07358455658,1135.1315917969,79},
-          [10150]={-1732.0286865234,543.94067382813,-2225.7587890625,162},
-          [10260]={-1260.0454101563,298.75305175781,1325.6383056641,51}
+            [10020]={1449.3460693359,339.18698120117,1467.4300537109,-104},
+            [10050]={-1820.7060546875,349.78659057617,-146.44400024414,139},
+            [10070]={-792.00512695313,537.3740234375,-1381.4598388672,136},
+            [10080]={-439.28802490234,-20.472593307495,1336.2784423828,-151},
+            [10140]={499.91635131836,13.07358455658,1135.1315917969,79},
+            [10150]={-1732.0286865234,543.94067382813,-2225.7587890625,162},
+            [10260]={-1260.0454101563,298.75305175781,1325.6383056641,51}
           }
           noBoxMissionStartPos[11050]=noBoxMissionStartPos[10050]
           noBoxMissionStartPos[11080]=noBoxMissionStartPos[10080]
@@ -788,7 +803,7 @@ function this.OnChangeSVars(subScripts,varName,key)--NMC: called via mission_mai
     if _G[lib].OnChangeSVars then
       _G[lib].OnChangeSVars(varName,key)
     end
-  end
+end
 end
 function this.SetMessageFunction(missionTable)--RENAME:
   onMessageTable={}
@@ -821,8 +836,8 @@ function this.OnMessage(n,sender,messageId,arg0,arg1,arg2,arg3)
   if not T then
     T=TppDefine.DEFAULT_MESSAGE_GENERATION
   end
-  local m=GetCurrentMessageResendCount()
-  if m<T then
+  local messageResendCount=GetCurrentMessageResendCount()
+  if messageResendCount<T then
     return Mission.ON_MESSAGE_RESULT_RESEND
   end
   for s=1,onMessageTableSize do

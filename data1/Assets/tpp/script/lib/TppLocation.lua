@@ -143,7 +143,8 @@ function this.RegistMissionAssetInitializeTable(n,e)
     for e,n in pairs(e)do
       local e=n.activeArea
       if e then
-        local e=Tpp.AreaToIndices(e)StageBlock.AddSmallBlockIndexForMessage(e)
+        local e=Tpp.AreaToIndices(e)
+        StageBlock.AddSmallBlockIndexForMessage(e)
       end
       if not n.OnActive then
       end

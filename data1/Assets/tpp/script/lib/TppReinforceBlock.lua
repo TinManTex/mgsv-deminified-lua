@@ -103,11 +103,11 @@ function this.SetUpReinforceBlock()
   local reinforceBlockId=this.GetReinforceBlockId()
   hasReinforceBlock=(reinforceBlockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID)
   mvars.reinforce_hasReinforceBlock=hasReinforceBlock
- 
+
   if not mvars.reinforce_hasReinforceBlock then
-    --InfMenu.DebugPrint"not reinforce_hasReinforceBlock"--DEBUG
+--    InfMenu.DebugPrint"not reinforce_hasReinforceBlock"--DEBUG
     return
-  end 
+  end
   --InfMenu.DebugPrint"SetUpReinforceBlock"--DEBUG
   for n,soldierName in ipairs(this.REINFORCE_SOLDIER_NAMES)do
     this._SetEnabledSoldier(soldierName,false)
@@ -119,21 +119,21 @@ function this.SetUpReinforceBlock()
   mvars.reinforce_activated=false
 end
 function this.LoadReinforceBlock(reinforceType,reinforceCpId,reinforceColoringType)
-  --InfMenu.DebugPrint"LoadReinforceBlock"--DEBUG
+--  InfMenu.DebugPrint"LoadReinforceBlock"--DEBUG
   if mvars.reinforce_activated then
-    --InfMenu.DebugPrint"LoadReinforceBlock reinforce_activated already true"--DEBUG
+--    InfMenu.DebugPrint"LoadReinforceBlock reinforce_activated already true, aborting"--DEBUG
     return
   end
   if mvars.reinforce_reinforceCpId~=NULL_ID and mvars.reinforce_reinforceCpId~=reinforceCpId then
-    --InfMenu.DebugPrint"LoadReinforceBlock cpId doesnt match reinforce_reinforceCpId"--DEBUG
+--    InfMenu.DebugPrint("LoadReinforceBlock cpId:"..tostring(reinforceCpId).." doesnt match reinforce_reinforceCpId:"..tostring(mvars.reinforce_reinforceCpId)..", aborting")--DEBUG
     return
   end
   if not mvars.reinforce_hasReinforceBlock then
-    --InfMenu.DebugPrint"LoadReinforceBlock no reinforceblock"--DEBUG
+--    InfMenu.DebugPrint"LoadReinforceBlock no reinforceblock"--DEBUG
     return
   end
   if reinforceType==this.REINFORCE_TYPE.HELI and GameObject.DoesGameObjectExistWithTypeName"TppEnemyHeli"then
-    --InfMenu.DebugPrint"LoadReinforceBlock reinforcetype heli, has TppEnemyHeli"--DEBUG
+--    InfMenu.DebugPrint"LoadReinforceBlock reinforcetype heli, has TppEnemyHeli"--DEBUG
     return
   end
   local reinforceBlockId=this.GetReinforceBlockId()
@@ -161,13 +161,14 @@ function this.LoadReinforceBlock(reinforceType,reinforceCpId,reinforceColoringTy
       end
     end
     if hasVehicle then
-      --InfMenu.DebugPrint"LoadReinforceBlock hasvehicle"
+--      InfMenu.DebugPrint"LoadReinforceBlock hasvehicle"--DEBUG
       vehicleId=GameObject.GetGameObjectId("TppVehicle2",this.REINFORCE_VEHICLE_NAME)
       driverId=GameObject.GetGameObjectId("TppSoldier2",this.REINFORCE_DRIVER_SOLDIER_NAME)
     end
-    --InfMenu.DebugPrint"LoadReinforceBlock pre setnom"--DEBUG
+--    InfMenu.DebugPrint"LoadReinforceBlock SetNominateList"--DEBUG
     SendCommand({type="TppCommandPost2"},{id="SetNominateList",driver=driverId,vehicle=vehicleId,sol01=reinforceSoldiers[1],sol02=reinforceSoldiers[2],sol03=reinforceSoldiers[3],sol04=reinforceSoldiers[4]})
   else
+--    InfMenu.DebugPrint"reinforceType==this.REINFORCE_TYPE.NONE"--DEBUG
     mvars.reinforce_reinforceCpId=NULL_ID
   end
 end
@@ -196,11 +197,12 @@ function this.StartReinforce(cpId)
 --    InfMenu.DebugPrint"StartReinforce REINFORCE_TYPE.NONE"--DEBUG
     return
   end
+  --NMC: cpid mismatch is usually due to a quest heli aleady being set up
   if(cpId~=nil and cpId~=NULL_ID)and mvars.reinforce_reinforceCpId~=cpId then
---    InfMenu.DebugPrint"StartReinforce cpId doesnt match"--DEBUG
+--    InfMenu.DebugPrint"StartReinforce cpId doesnt match, aborting"--DEBUG
     return
   end
---  InfMenu.DebugPrint"StartReinforce do ScriptBlock.Activate"--DEBUG
+  --  InfMenu.DebugPrint"StartReinforce do ScriptBlock.Activate"--DEBUG
   local reinforceBlockId=this.GetReinforceBlockId()
   ScriptBlock.Activate(reinforceBlockId)
   mvars.reinforce_activated=true
@@ -261,22 +263,22 @@ function this._HasSoldier()
     return true
   end--<
 
-  if((mvars.reinforce_reinforceType==this.REINFORCE_TYPE.HELI or 
-    mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_WAV_ROCKET)or 
-    mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_TANK)or 
+  if((mvars.reinforce_reinforceType==this.REINFORCE_TYPE.HELI or
+    mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_WAV_ROCKET)or
+    mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_TANK)or
     mvars.reinforce_reinforceType==this.REINFORCE_TYPE.WEST_TANK then
     return false
   end
   return true
 end
 function this._HasVehicle()
-  if((((mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_WAV 
+  if((((mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_WAV
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_WAV_ROCKET)
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.WEST_WAV)
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.WEST_WAV_CANNON)
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_TANK)
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.WEST_TANK then
-    --InfMenu.DebugPrint("_HasVehicle reinforce_reinforceType="..mvars.reinforce_reinforceType.."="..this.REINFORCE_TYPE_NAME[mvars.reinforce_reinforceType+1] )         
+    --InfMenu.DebugPrint("_HasVehicle reinforce_reinforceType="..mvars.reinforce_reinforceType.."="..this.REINFORCE_TYPE_NAME[mvars.reinforce_reinforceType+1] )
     return true
   end
   --InfMenu.DebugPrint("_HasVehicle false")
@@ -296,7 +298,7 @@ function this._SetEnabledSoldier(soldierName,enabled)
   if soldierId==NULL_ID then
     return
   end
-  --TppMarker2System.EnableMarker{gameObjectId=soldierId}--DEBUG
+--  TppMarker.Enable(soldierId,0,"moving","all",0,true,false)--tex DEBUG
   SendCommand(soldierId,{id="SetEnabled",enabled=enabled})
 end
 function this._SetEnabledVehicle(name,enable)
@@ -337,7 +339,7 @@ function this._ActivateReinforce()
   local vehicleId,driverId,soldier1Id,soldier2Id,soldier3Id,soldier4Id
   local reinforceSoldiers={}
   if hasSoldier and (Ivars.forceSuperReinforce:Is(0) or not mvars.reinforce_isEnabledSoldiers) then--tex added conditions
-    --InfMenu.DebugPrint("_ActivateReinforce hassoldier")--DEBUG
+--    InfMenu.DebugPrint("_ActivateReinforce hassoldier, enabling")--DEBUG
     mvars.reinforce_isEnabledSoldiers=true
     for n,soldierName in ipairs(this.REINFORCE_SOLDIER_NAMES)do
       this._SetEnabledSoldier(soldierName,true)
@@ -352,18 +354,18 @@ function this._ActivateReinforce()
     table.insert(reinforceSoldiers,soldier4Id)
   end
   if hasVehicle then
-    --InfMenu.DebugPrint("_ActivateReinforce hasvehicle")--DEBUG
+--    InfMenu.DebugPrint("_ActivateReinforce hasvehicle")--DEBUG
     mvars.reinforce_isEnabledVehicle=true
     this._SetEnabledVehicle(this.REINFORCE_VEHICLE_NAME,true)
     this._SetEnabledSoldier(this.REINFORCE_DRIVER_SOLDIER_NAME,true)
     vehicleId=GameObject.GetGameObjectId("TppVehicle2",this.REINFORCE_VEHICLE_NAME)
     driverId=GameObject.GetGameObjectId("TppSoldier2",this.REINFORCE_DRIVER_SOLDIER_NAME)
     table.insert(reinforceSoldiers,driverId)
-    --TppMarker2System.EnableMarker{gameObjectId=vehicleId}--DEBUG
-    --TppMarker2System.EnableMarker{gameObjectId=driverId}--DEBUG
+--    TppMarker.Enable(vehicleId,0,"moving","all",0,true,false)--tex DEBUG
+--    TppMarker.Enable(driverId,0,"moving","all",0,true,false)--tex DEBUG
   end
   if hasHeli then
-    --InfMenu.DebugPrint("_ActivateReinforce hasheli")--DEBUG
+--    InfMenu.DebugPrint("_ActivateReinforce hasheli")--DEBUG
     local heliId=GameObject.GetGameObjectId(this.REINFORCE_HELI_NAME)
     --ORPHAN local heliRoute=this._GetHeliRoute(mvars.reinforce_cpId)
     local cp=mvars.ene_cpList[mvars.reinforce_reinforceCpId]
@@ -376,12 +378,13 @@ function this._ActivateReinforce()
       TppHelicopter.SetEnemyColoring(mvars.reinforce_reinforceColoringType)
     end
   end
+--  InfMenu.DebugPrint("_ActivateReinforce >> ApplyPowerSettingsForReinforce")--DEBUG
   TppRevenge.ApplyPowerSettingsForReinforce(reinforceSoldiers)
   GameObject.SendCommand({type="TppCommandPost2"},{id="SetReinforcePrepared"})
 end
 function this._DeactivateReinforce()
   if mvars.reinforce_isEnabledSoldiers then
-    local leaveSoldiers=this._HasSoldier and Ivars.forceSuperReinforce:Is()>0--tex 
+    local leaveSoldiers=this._HasSoldier and Ivars.forceSuperReinforce:Is()>0--tex
     if not leaveSoldiers then--tex added check
       mvars.reinforce_isEnabledSoldiers=false
       for n,soldierName in ipairs(this.REINFORCE_SOLDIER_NAMES)do
@@ -415,6 +418,7 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this._OnRequestLoadReinforce(reinforceCpId)--NMC game message "RequestLoadReinforce"
+--  InfMenu.DebugPrint"_OnRequestLoadReinforce"--DEBUG
   local reinforceType=TppRevenge.SelectReinforceType()
   local reinforceColoringType
   if TppRevenge.IsUsingBlackSuperReinforce()then
@@ -425,16 +429,23 @@ function this._OnRequestLoadReinforce(reinforceCpId)--NMC game message "RequestL
     end
   end
   this.LoadReinforceBlock(reinforceType,reinforceCpId,reinforceColoringType)
-  if Ivars.forceReinforceRequest:Is(1) then--tex
-    --if vars.missionCode==TppDefine.SYS_MISSION_ID.AFGH_FREE or vars.missionCode==TppDefine.SYS_MISSION_ID.MAFR_FREE then
-      this.StartReinforce(reinforceCpId)--tex just force this shit, in vanilla missions that use super reinforce this is called via "RequestAppearReinforce"/_OnRequestAppearReinforce via engine, however in free mode this doesnt seem fire consistantly suggesting there's some condition stopping it
-    --end
-  end--
+
+  --tex WORKAROUND just force this shit, in vanilla missions that use super reinforce this is called via "RequestAppearReinforce"/_OnRequestAppearReinforce via engine, however in free mode this doesnt seem fire consistantly suggesting there's some condition stopping it
+  --it does however break normal vehicle reinforcements (so they're blocked in SelectReinforceType for free roam)
+  local isFree=vars.missionCode==TppDefine.SYS_MISSION_ID.AFGH_FREE or vars.missionCode==TppDefine.SYS_MISSION_ID.MAFR_FREE
+  if Ivars.forceReinforceRequest:Is(1) or isFree then
+    if reinforceType==this.REINFORCE_TYPE.HELI then
+--      InfMenu.DebugPrint"_OnRequestLoadReinforce forcing StartReinforce"--DEBUG
+      this.StartReinforce(reinforceCpId)
+    end
+  end
 end
 function this._OnRequestAppearReinforce(cpId)
+--  InfMenu.DebugPrint"_OnRequestAppearReinforce"--DEBUG
   this.StartReinforce(cpId)
 end
 function this._OnCancelReinforce(cpId)
+--  InfMenu.DebugPrint"_OnCancelReinforce"--DEBUG
   if mvars.reinforce_activated then
     return
   end

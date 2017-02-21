@@ -109,7 +109,7 @@ function this._UpdateActiveAnimalBlock(a,o)
   end
 end
 function this._GetAnimalBlockAreaName(areaSetting,maxAreaNum,areaId,n,a)
-  --local o=areaSetting
+  local o=areaSetting
   for t=1,maxAreaNum do
     local t=areaSetting[t]
     local e=t[areaId]
@@ -123,26 +123,26 @@ function this._GetAnimalBlockAreaName(areaSetting,maxAreaNum,areaId,n,a)
     end
   end
 end
-function this._GetSetupTable(e)
-  if e=="Goat"then
+function this._GetSetupTable(animalType)
+  if animalType=="Goat"then
     return animalsTable.Goat
-  elseif e=="Wolf"then
+  elseif animalType=="Wolf"then
     return animalsTable.Wolf
-  elseif e=="Bear"then
+  elseif animalType=="Bear"then
     return animalsTable.Bear
-  elseif e=="Nubian"then
+  elseif animalType=="Nubian"then
     return animalsTable.Nubian
-  elseif e=="Jackal"then
+  elseif animalType=="Jackal"then
     return animalsTable.Jackal
-  elseif e=="Zebra"then
+  elseif animalType=="Zebra"then
     return animalsTable.Zebra
-  elseif e=="BuddyPuppy"then
+  elseif animalType=="BuddyPuppy"then
     return animalsTable.BuddyPuppy
-  elseif e=="MotherDog"then
+  elseif animalType=="MotherDog"then
     return animalsTable.MotherDog
-  elseif e=="Rat"then
+  elseif animalType=="Rat"then
     return animalsTable.Rat
-  elseif e=="NoAnimal"then
+  elseif animalType=="NoAnimal"then
     return animalsTable.NoAnimal
   else
     return nil

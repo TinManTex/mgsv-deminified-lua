@@ -408,7 +408,8 @@ function this.DEBUG_SetFobPlayerDefence()
   local chimeraInfo={
     {
       equipId=TppEquip.EQP_WP_30235,
-      partsInfo={barrel=TppEquip.BA_30214,
+      partsInfo={
+        barrel=TppEquip.BA_30214,
         ammo=TppEquip.AM_30232,
         stock=TppEquip.SK_30205,
         muzzle=TppEquip.MZ_30232,

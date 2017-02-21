@@ -86,9 +86,19 @@ this.requires={
   "/Assets/tpp/script/lib/InfMenuCommands.lua",
   "/Assets/tpp/script/lib/InfMenuDefs.lua",
   "/Assets/tpp/script/lib/InfMenu.lua",
+  "/Assets/tpp/script/lib/InfEneFova.lua",
+  --OFF "/Assets/tpp/script/lib/InfEquip.lua",
+  --OFF "/Assets/tpp/script/lib/InfSplash.lua",
+  "/Assets/tpp/script/lib/InfVehicle.lua",
+  "/Assets/tpp/script/lib/InfRevenge.lua",
+  --OFF "/Assets/tpp/script/lib/InfReinforce.lua",
+  "/Assets/tpp/script/lib/InfCamera.lua",
+  "/Assets/tpp/script/lib/InfUserMarker.lua",
   --CULL"/Assets/tpp/script/lib/InfPatch.lua",
+  "/Assets/tpp/script/lib/InfNPC.lua",
   "/Assets/tpp/script/lib/InfSoldierParams.lua",
   "/Assets/tpp/script/lib/InfInspect.lua",
+  "/Assets/tpp/script/lib/InfFova.lua",
   "/Assets/tpp/script/lib/InfLZ.lua",
   "/Assets/tpp/script/lib/InfHooks.lua",--<
 }
@@ -243,7 +253,8 @@ function this.MakeMessageExecTable(messages)
             s[l]=n
           end
         end
-        d=r[s32_func]o=r[s32_option]
+        d=r[s32_func]
+        o=r[s32_option]
       end
       if d then
         n[e][l]=n[e][l]or{}
@@ -299,20 +310,20 @@ function this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,
     end
   end
 end
-function this.GetRotationY(e)
-  if not e then
+function this.GetRotationY(rotQuat)
+  if not rotQuat then
     return
   end
-  if(type(e.Rotate)=="function")then
-    local e=e:Rotate(Vector3(0,0,1))
-    local e=foxmath.Atan2(e:GetX(),e:GetZ())
-    return TppMath.RadianToDegree(e)
+  if(type(rotQuat.Rotate)=="function")then
+    local rotVec=rotQuat:Rotate(Vector3(0,0,1))
+    local rotRadian=foxmath.Atan2(rotVec:GetX(),rotVec:GetZ())
+    return TppMath.RadianToDegree(rotRadian)
   end
 end
 function this.GetLocator(identifier,key)
-  local pos,rot=this.GetLocatorByTransform(identifier,key)
+  local pos,rotQuat=this.GetLocatorByTransform(identifier,key)
   if pos~=nil then
-    return TppMath.Vector3toTable(pos),this.GetRotationY(rot)
+    return TppMath.Vector3toTable(pos),this.GetRotationY(rotQuat)
   else
     return nil
   end
@@ -385,7 +396,7 @@ function this.SetGameStatus(status)
     for uiName,statusType in pairs(TppDefine.UI_STATUS_TYPE_ALL)do    
       local t=target[uiName]
       local unsetUiSetting=mvars.ui_unsetUiSetting
-      if Ivars.disableHeadMarkers:Is(1) and (uiName=="HeadMarker" or uiName=="WorldMarker" )then--tex> bit of a kludge implementation, but lua doesnt support continue in for loops--TODO more testing
+      if (Ivars.disableHeadMarkers:Is(1) and uiName=="HeadMarker") or (Ivars.disableWorldMarkers:Is(1) and uiName=="WorldMarker")then--tex> bit of a kludge implementation, but lua doesnt support continue in for loops--TODO more testing
         t=nil
         unsetUiSetting=nil
       end--<

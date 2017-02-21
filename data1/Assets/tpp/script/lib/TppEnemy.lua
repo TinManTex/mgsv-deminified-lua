@@ -856,7 +856,7 @@ function this.GetSoldierType(soldierId)--tex> now pulls type for subtype> ORIG i
 
   if InfMain.IsDDBodyEquip(vars.missionCode) then
     local isFemale=GameObject.SendCommand(soldierId,{id="isFemale"})
-    local bodyInfo=InfMain.GetCurrentDDBodyInfo(isFemale)
+    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo(isFemale)
     if bodyInfo and bodyInfo.soldierSubType then
       return InfMain.soldierTypeForSubtypes[bodyInfo.soldierSubType]
     end
@@ -911,7 +911,7 @@ function this.GetSoldierSubType(soldierId,soldierType)
   end--<
   if InfMain.IsDDBodyEquip(vars.missionCode) then--tex>
     local isFemale=GameObject.SendCommand(soldierId,{id="isFemale"})
-    local bodyInfo=InfMain.GetCurrentDDBodyInfo(isFemale)
+    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo(isFemale)
     if bodyInfo and bodyInfo.soldierSubType then
       return bodyInfo.soldierSubType
     else
@@ -2298,13 +2298,13 @@ function this.RegistRoutePointMessage(e)
   mvars.ene_routePointMessage.sequence=mvars.ene_routePointMessage.sequence or{}
   local messages={}
   messages[StrCode32"GameObject"]=Tpp.StrCode32Table(e.messages)
-  local n=(Tpp.MakeMessageExecTable(messages))[StrCode32"GameObject"]
+  local messageExecTable=(Tpp.MakeMessageExecTable(messages))[StrCode32"GameObject"]
   local sequenceName=e.sequenceName
   if sequenceName then
     mvars.ene_routePointMessage.sequence[sequenceName]=mvars.ene_routePointMessage.sequence[sequenceName]or{}
-    Tpp.MergeTable(mvars.ene_routePointMessage.sequence[sequenceName],n,true)
+    Tpp.MergeTable(mvars.ene_routePointMessage.sequence[sequenceName],messageExecTable,true)
   else
-    Tpp.MergeTable(mvars.ene_routePointMessage.main,n,true)
+    Tpp.MergeTable(mvars.ene_routePointMessage.main,messageExecTable,true)
   end
 end
 function this.IsBaseCp(e)

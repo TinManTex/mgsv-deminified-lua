@@ -60,7 +60,7 @@ function this.RegisterSequenceTable(e)
     end
   end
 end
-function this.SetNextSequence(sequenceName,e)
+function this.SetNextSequence(sequenceName,params)
   local sequenceId=nil
   if mvars.seq_sequenceNames then
     sequenceId=mvars.seq_sequenceNames[sequenceName]
@@ -72,49 +72,50 @@ function this.SetNextSequence(sequenceName,e)
   local isExecGameOver=false
   local isExecDemoPlaying=false
   local isExecMissionPrepare=true
-  if e and IsTable(e)then
-    isExecMissionClear=e.isExecMissionClear
-    isExecGameOver=e.isExecGameOver
-    isExecDemoPlaying=e.isExecDemoPlaying
-    isExecMissionPrepare=e.isExecMissionPrepare
+  if params and IsTable(params)then
+    isExecMissionClear=params.isExecMissionClear
+    isExecGameOver=params.isExecGameOver
+    isExecDemoPlaying=params.isExecDemoPlaying
+    isExecMissionPrepare=params.isExecMissionPrepare
   end
   if TppMission.CheckMissionState(isExecMissionClear,isExecGameOver,isExecDemoPlaying,isExecMissionPrepare)then
     svars.seq_sequence=sequenceId
     return
   end
 end
-function this.ReserveNextSequence(s,n)
+function this.ReserveNextSequence(sequenceName,params)
   TppScriptVars.SetSVarsNotificationEnabled(false)
-  this.SetNextSequence(s,n)
+  this.SetNextSequence(sequenceName,params)
   TppScriptVars.SetSVarsNotificationEnabled(true)
 end
 function this.GetCurrentSequenceIndex()
   return svars.seq_sequence
 end
 function this.GetSequenceIndex(n)
-  local e=mvars.seq_sequenceNames
-  if e then
-    return e[n]
+  local seq_sequenceNames=mvars.seq_sequenceNames
+  if seq_sequenceNames then
+    return seq_sequenceNames[n]
   end
 end
 function this.GetSequenceNameWithIndex(n)
-  local e=mvars.seq_sequenceNames
-  if e then
-    local e=e[n]
+  local seq_sequenceNames=mvars.seq_sequenceNames
+  if seq_sequenceNames then
+    local e=seq_sequenceNames[n]
     if e then
       return e
     end
   end
-  return""end
-local i=this.GetSequenceNameWithIndex
+  return""
+end
+local GetSequenceNameWithIndex=this.GetSequenceNameWithIndex--NMC: wut..
 function this.GetCurrentSequenceName()
   if svars then
-    return i(svars.seq_sequence)
+    return GetSequenceNameWithIndex(svars.seq_sequence)
   end
 end
 function this.GetMissionStartSequenceName()
   if mvars.seq_missionStartSequence then
-    return i(mvars.seq_missionStartSequence)
+    return GetSequenceNameWithIndex(mvars.seq_missionStartSequence)
   end
 end
 function this.GetMissionStartSequenceIndex()
@@ -498,7 +499,7 @@ function this.DebugUpdate()
   local s=svars
   local n=(nil).NewContext()
   if e.debug.showCurrentSequence or e.debug.showSequenceHistory then
-    if e.debug.showCurrentSequence then(nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showCurrSequence");(nil).Print(n," current_sequence = "..tostring(i(s.seq_sequence)))
+    if e.debug.showCurrentSequence then(nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showCurrSequence");(nil).Print(n," current_sequence = "..tostring(GetSequenceNameWithIndex(s.seq_sequence)))
     end
     if e.debug.showSequenceHistory then(nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showSeqHistory")
       for s,e in ipairs(e.debug.seq_sequenceHistory)do
