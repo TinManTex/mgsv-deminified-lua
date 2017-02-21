@@ -64,7 +64,7 @@ missionPackTable[10020]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   if TppPackList.IsMissionPackLabel"afterMissionClearMovie"then
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10020/s10020_area02.fpk"
-    else
+  else
     TppPackList.AddLocationCommonMissionAreaPack(missionCode)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_TRUCK)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_TRUCK_MATERIAL)
@@ -205,26 +205,26 @@ missionPackTable[10070]=function(p)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MILLER)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HUEY)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10070/s10070_area04.fpk"
-    elseif TppPackList.IsMissionPackLabel"beforeSahelanAttackDemo"then
+  elseif TppPackList.IsMissionPackLabel"beforeSahelanAttackDemo"then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HUEY)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.SAHELAN)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MANTIS)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10070/s10070_area03.fpk"
-    elseif TppPackList.IsMissionPackLabel"afterSahelanTestDemo"then
+  elseif TppPackList.IsMissionPackLabel"afterSahelanTestDemo"then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_MISSION_AREA)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_DECOY)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ENEMY_HELI)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10070/s10070_area02.fpk"
-    else
+  else
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HUEY)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.SKULLFACE)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_LV)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_TRUCK)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10070/s10070_area01.fpk"
-    end
+  end
 end
 missionPackTable[10080]=function(p)
   TppPackList.AddLocationCommonScriptPack(p)
@@ -232,9 +232,9 @@ missionPackTable[10080]=function(p)
   if TppPackList.IsMissionPackLabel"afterPumpStopDemo"then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10080/s10080_area02.fpk"
-    else
+  else
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10080/s10080_area01.fpk"
-    end
+  end
 end
 missionPackTable[10086]=function(p)
   TppPackList.AddLocationCommonScriptPack(p)
@@ -337,7 +337,7 @@ missionPackTable[10110]=function(p)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MANTIS)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.VOLGIN)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10110/s10110_area02.fpk"
-    else
+  else
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_MISSION_AREA)
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.RAVEN)
     TppPackList.AddDefaultMissionAreaPack(p)
@@ -597,7 +597,7 @@ missionPackTable[10050]=function(p)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.RAVEN)
   if TppPackList.IsMissionPackLabel"MotherBaseDemo"then
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10050/s10050_area01.fpk"
-    else
+  else
     TppPackList.AddDefaultMissionAreaPack(p)
   end
 end
@@ -642,10 +642,19 @@ missionPackTable[30010]=function(missionCode)
   else
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30010/f30010.fpk"
   end
-  if InfMain.IsWildCardEnabled(missionCode) then--tex>
+  if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
     local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
+    end
+  end--<
+  
+  if Ivars.enemyHeliPatrol:Is()>0 then--tex>
+    TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_afgh.fpk"
+    if InfNPCHeli.GetEnemyHeliColorName()=="BLACK" then
+      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
+    elseif InfNPCHeli.GetEnemyHeliColorName()=="RED" then
+      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
     end
   end--<
 end
@@ -654,34 +663,44 @@ missionPackTable[30020]=function(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ORDER_BOX)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30020/f30020.fpk"
-   
-  if InfMain.IsWildCardEnabled(missionCode) then--tex>
+
+  if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
     local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
   end--<
+  
+  if Ivars.enemyHeliPatrol:Is()>0 then--tex>
+    TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_mafr.fpk"
+    if InfNPCHeli.GetEnemyHeliColorName()=="BLACK" then
+      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
+    elseif InfNPCHeli.GetEnemyHeliColorName()=="RED" then
+      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
+    end
+  end--<
 end
-missionPackTable[30050]=function(missionCode)  
+missionPackTable[30050]=function(missionCode)
+
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MTBS_MISSION_AREA)
 
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/mis_com_mafr_hostage.fpk"--tex DEBUGNOW
-  
-  if Ivars.mbEnemyHeli:Is(1) then--tex>
-    TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_mafr.fpk"
-    if Ivars.mbEnemyHeliColor:Is"BLACK" then
+
+  if Ivars.mbEnemyHeli:Is(1) or Ivars.npcHeliUpdate:Is"UTH_AND_HP48" then--tex>
+    TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_afgh.fpk"
+    if InfNPCHeli.GetEnemyHeliColorName()=="BLACK" then
       TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
-    elseif Ivars.mbEnemyHeliColor:Is"RED" then
+    elseif InfNPCHeli.GetEnemyHeliColorName()=="RED" then
       TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
     end
   end--<
   if Ivars.mbEnableOcelot:Is(1) and Ivars.mbWarGamesProfile:Is(0) then--tex>
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30050/f30050_ocelot.fpk"
   end--<
- 
+
   --tex IsDDBodyEquip add mission packs>
   if InfMain.IsDDBodyEquip(missionCode) then
     local bodyInfo=InfEneFova.GetCurrentDDBodyInfo()
@@ -696,7 +715,7 @@ missionPackTable[30050]=function(missionCode)
   if Ivars.mbZombies:Is(1)then--tex>
     TppSoldierFace.SetUseZombieFova{enabled=true}
   end--<
-    
+
   do
     if TppPackList.IsMissionPackLabel"AfterDemo"or TppPackList.IsMissionPackLabel"BattleHanger"then
       TppDemo.SetNextMBDemo(nil)
@@ -783,7 +802,7 @@ missionPackTable[40010]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/title_sequence.fpk"
     TppPackList.AddAvatarEditPack()
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/heli/h40010/h40010_avatar.fpk"
-    else
+  else
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/title_sequence.fpk"
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/heli/heli_ui.fpk"
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
@@ -825,7 +844,7 @@ missionPackTable[40050]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/title_sequence.fpk"
     TppPackList.AddAvatarEditPack()
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/heli/h40050/h40050_avatar.fpk"
-    else
+  else
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/title_sequence.fpk"
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/heli/heli_ui.fpk"
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
@@ -864,13 +883,13 @@ missionPackTable[50050]=function(missionCode)
   if TppEnemy.IsHostageEventFOB()then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.FOB_HOSTAGE)
     do
-      local s={
+      local settings={
         {type="hostage",name="hos_o50050_event5_0000",faceId=621,bodyId=143},
         {type="hostage",name="hos_o50050_event5_0001",faceId=640,bodyId=143},
         {type="hostage",name="hos_o50050_event5_0002",faceId=641,bodyId=143},
         {type="hostage",name="hos_o50050_event5_0003",faceId=646,bodyId=143}
       }
-      TppEneFova.AddUniqueSettingPackage(s)
+      TppEneFova.AddUniqueSettingPackage(settings)
     end
   end
   if TppEnemy.IsZombieEventFOB()then--RETAILPATCH: 1070>

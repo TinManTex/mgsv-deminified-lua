@@ -22,6 +22,9 @@ local GAME_OBJECT_TYPE_BOSSQUIET2=TppGameObject.GAME_OBJECT_TYPE_BOSSQUIET2
 local GAME_OBJECT_TYPE_PARASITE2=TppGameObject.GAME_OBJECT_TYPE_PARASITE2
 local GAME_OBJECT_TYPE_SECURITYCAMERA2=TppGameObject.GAME_OBJECT_TYPE_SECURITYCAMERA2
 local GAME_OBJECT_TYPE_UAV=TppGameObject.GAME_OBJECT_TYPE_UAV
+local GetUserMode=TppGameMode.GetUserMode--RETAILPATCH 1081>
+local U_KONAMI_LOGIN=TppGameMode.U_KONAMI_LOGIN
+local GetOnlineChallengeTaskVersion=TppNetworkUtil.GetOnlineChallengeTaskVersion--<
 local PHASE_ALERT=TppGameObject.PHASE_ALERT
 local NULL_ID=GameObject.NULL_ID
 local bnot=bit.bnot
@@ -95,7 +98,10 @@ this.requires={
   "/Assets/tpp/script/lib/InfCamera.lua",
   "/Assets/tpp/script/lib/InfUserMarker.lua",
   --CULL"/Assets/tpp/script/lib/InfPatch.lua",
+  "/Assets/tpp/script/lib/InfEnemyPhase.lua",
+  "/Assets/tpp/script/lib/InfHelicopter.lua",
   "/Assets/tpp/script/lib/InfNPC.lua",
+  "/Assets/tpp/script/lib/InfNPCHeli.lua",
   "/Assets/tpp/script/lib/InfSoldierParams.lua",
   "/Assets/tpp/script/lib/InfInspect.lua",
   "/Assets/tpp/script/lib/InfFova.lua",
@@ -188,6 +194,12 @@ function this.MergeTable(table1,table2,n)
   end
   return mergedTable
 end
+function this.IsOnlineMode()--RETAILPATCH 1081
+  return(GetUserMode()==U_KONAMI_LOGIN)
+end
+function this.IsValidLocalOnlineChallengeTaskVersion()
+  return(GetOnlineChallengeTaskVersion()==gvars.localOnlineChallengeTaskVersion)
+end--<
 function this.BfsPairs(r)
   local i,t,l={r},1,1
   local function p(n,e)
@@ -830,25 +842,25 @@ function this.DEBUG_DumpTable(l,n)
     end
   end
 end
-function this.DEBUG_Where(e)
-  local e=debug.getinfo(e+1)
-  if e then
-    return e.short_src..(":"..e.currentline)
+function this.DEBUG_Where(stackLevel)
+  local stackInfo=debug.getinfo(stackLevel+1)
+  if stackInfo then
+    return stackInfo.short_src..(":"..stackInfo.currentline)
   end
   return"(unknown)"
 end
-function this.DEBUG_StrCode32ToString(e)
-  if e~=nil then
-    local n
+function this.DEBUG_StrCode32ToString(str32string)
+  if str32string~=nil then
+    local originalString
     if(TppDbgStr32)then
-      n=TppDbgStr32.DEBUG_StrCode32ToString(e)
+      originalString=TppDbgStr32.DEBUG_StrCode32ToString(str32string)
     end
-    if n then
-      return n
+    if originalString then
+      return originalString
     else
-      if type(e)=="string"then
+      if type(str32string)=="string"then
       end
-      return tostring(e)
+      return tostring(str32string)
     end
   else
     return"nil"
@@ -856,15 +868,15 @@ function this.DEBUG_StrCode32ToString(e)
 end
 function this.DEBUG_Fatal(e,e)
 end
-function this.DEBUG_SetPreference(n,t,l)
-  local n=Preference.GetPreferenceEntity(n)
-  if(n==nil)then
+function this.DEBUG_SetPreference(entityName,property,value)
+  local entity=Preference.GetPreferenceEntity(entityName)
+  if(entity==nil)then
     return
   end
-  if(n[t]==nil)then
+  if(entity[property]==nil)then
     return
   end
-  Command.SetProperty{entity=n,property=t,value=l}
+  Command.SetProperty{entity=entity,property=property,value=value}
 end
 this._requireList={}
 do

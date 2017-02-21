@@ -438,14 +438,14 @@ function this.Messages()
                   checkDeadFlag=DeadMessageFlag.FIRE_OR_DYING
                 end
                 local isFobSneak=TppMission.IsFOBMission(vars.missionCode)and TppServerManager.FobIsSneak()
-                local n=SendCommand(gameId,{id="GetStateFlag"})--RETAILPATCH 1070
+                local stateFlag=SendCommand(gameId,{id="GetStateFlag"})--RETAILPATCH 1070
                 if(deadMessageFlag~=nil)and(band(deadMessageFlag,checkDeadFlag)~=0)then
                   if not isFobSneak then
                     if not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
                     this.SetAndAnnounceHeroicOgrePoint(this.FIRE_KILL_SOLDIER)
                     end
                   else
-                    if band(n,StateFlag.ZOMBIE)~=StateFlag.ZOMBIE then--RETAILPATCH 1070 check added
+                    if band(stateFlag,StateFlag.ZOMBIE)~=StateFlag.ZOMBIE then--RETAILPATCH 1070 check added
                       this.SetAndAnnounceHeroicOgrePoint(this.FIRE_KILL_SOLDIER_FOB_SNEAK)
                     end
                   end
@@ -455,7 +455,7 @@ function this.Messages()
                     this.SetAndAnnounceHeroicOgrePoint(this.KILL_SOLDIER)
                     end
                   else
-                    if band(n,StateFlag.ZOMBIE)~=StateFlag.ZOMBIE then--RETAILPATCH 1070 check added
+                    if band(stateFlag,StateFlag.ZOMBIE)~=StateFlag.ZOMBIE then--RETAILPATCH 1070 check added
                       this.SetAndAnnounceHeroicOgrePoint(this.KILL_SOLDIER_FOB_SNEAK)
                     end
                   end

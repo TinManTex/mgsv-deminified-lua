@@ -441,9 +441,9 @@ function this.ExecuteRestartMission(i)
       this.ResetMBFreeStartPositionToCommand()
     end
   end
-  local n=TppPackList.GetLocationNameFormMissionCode(vars.missionCode)
-  if n then
-    local locationCode=TppDefine.LOCATION_ID[n]
+  local locationName=TppPackList.GetLocationNameFormMissionCode(vars.missionCode)
+  if locationName then
+    local locationCode=TppDefine.LOCATION_ID[locationName]
     if locationCode then
       vars.locationCode=locationCode
     end
@@ -476,17 +476,17 @@ function this.ExecuteRestartMission(i)
   end
 end
 function this.ContinueFromCheckPoint(n)
-  local i
-  local s
+  local isNoFade
+  local isReturnToMission
   if n then
-    i=n.isNoFade
-    s=n.isReturnToMission
+    isNoFade=n.isNoFade
+    isReturnToMission=n.isReturnToMission
   end
   TppMain.EnablePause()
-  if s then
+  if isReturnToMission then
     mvars.mis_isReturnToMission=true
   end
-  if i then
+  if isNoFade then
     this.ExecuteContinueFromCheckPoint(nil,nil,mvars.mis_isReturnToMission)
   else
     TppUI.FadeOut(TppUI.FADE_SPEED.FADE_NORMALSPEED,"ContinueFromCheckPointFadeOutFinish",nil,{setMute=true,exceptGameStatus={AnnounceLog="INVALID_LOG"}})
@@ -497,7 +497,7 @@ function this.ReturnToMission(n)
   n.isReturnToMission=true
   this.DisableInGameFlag()
   this.ResetEmegerncyMissionSetting()
-  local s,i=vars.missionHeroicPoint,vars.missionOgrePoint
+  local missionHeroicPoint,missionOgrePoint=vars.missionHeroicPoint,vars.missionOgrePoint
   if(vars.missionCode==50050)then
     TppSave.VarRestoreOnContinueFromCheckPoint()
     if TppNetworkUtil.IsSessionConnect()then
@@ -509,7 +509,7 @@ function this.ReturnToMission(n)
   else
     TppSave.VarRestoreOnMissionStart()
   end
-  this.SetHeroicAndOgrePointInSlot(s,i)
+  this.SetHeroicAndOgrePointInSlot(missionHeroicPoint,missionOgrePoint)
   this.RestartMission(n)
 end
 function this.ExecuteContinueFromCheckPoint(RENpopupId,a,RENdoMissionCallback)
@@ -892,7 +892,7 @@ function this.GameOverReturnToTitle()
   end
   this.ExecuteMissionAbort()
 end
-function this.ReserveGameOver(n,i,s)
+function this.ReserveGameOver(gameOverType,gameOverRadio,isAborting)
   if svars.mis_isDefiniteMissionClear then
     return false
   end
@@ -900,20 +900,20 @@ function this.ReserveGameOver(n,i,s)
     TppMain.DisablePlayerPad()
     TppUiStatusManager.SetStatus("PauseMenu","INVALID")
   end
-  mvars.mis_isAborting=s
+  mvars.mis_isAborting=isAborting
   mvars.mis_isReserveGameOver=true
   svars.mis_isDefiniteGameOver=true
-  if type(n)=="number"and n<TppDefine.GAME_OVER_TYPE.MAX then
-    svars.mis_gameOverType=n
+  if type(gameOverType)=="number"and gameOverType<TppDefine.GAME_OVER_TYPE.MAX then
+    svars.mis_gameOverType=gameOverType
   end
-  if type(i)=="number"and i<TppDefine.GAME_OVER_RADIO.MAX then
-    svars.mis_gameOverRadio=i
+  if type(gameOverRadio)=="number"and gameOverRadio<TppDefine.GAME_OVER_RADIO.MAX then
+    svars.mis_gameOverRadio=gameOverRadio
   end
   return true
 end
-function this.ReserveGameOverOnPlayerKillChild(n)
+function this.ReserveGameOverOnPlayerKillChild(gameId)
   if not mvars.mis_childGameObjectIdKilledPlayer then
-    mvars.mis_childGameObjectIdKilledPlayer=n
+    mvars.mis_childGameObjectIdKilledPlayer=gameId
     this.ReserveGameOver(TppDefine.GAME_OVER_TYPE.PLAYER_KILL_CHILD_SOLDIER,TppDefine.GAME_OVER_RADIO.PLAYER_KILL_CHILD_SOLDIER)
   end
 end
@@ -952,14 +952,14 @@ function this.OnCanMissionClear()
     end
   end
   TppUiCommand.ShowHotZone()
-  local e=mvars.snd_bgmList
-  if e and e.bgm_escape then
+  local bgmList=mvars.snd_bgmList
+  if bgmList and bgmList.bgm_escape then
     mvars.mis_needSetEscapeBgm=true
   end
 end
-function this.SetMissionClearState(e)
-  if gvars.mis_missionClearState<e then
-    gvars.mis_missionClearState=e
+function this.SetMissionClearState(missionClearState)
+  if gvars.mis_missionClearState<missionClearState then
+    gvars.mis_missionClearState=missionClearState
     return true
   else
     return false
@@ -1466,8 +1466,8 @@ function this.IsFreeMission(missionCode)
   end
 end
 function this.IsMbFreeMissions(missionCode)
-  local freeMissions={[30050]=true,[30150]=true,[30250]=true}
-  if freeMissions[missionCode]then
+  local mbFreeMissions={[30050]=true,[30150]=true,[30250]=true}
+  if mbFreeMissions[missionCode]then
     return true
   else
     return false
@@ -2176,7 +2176,7 @@ function this.CheckMessageOption(messages)
   end
   return this.CheckMissionState(isExecMissionClear,isExecGameOver,isExecDemoPlaying,isExecMissionPrepare)
 end
-function this.CheckMissionState(isExecMissionClear,isExecGameOver,isExecDemoPlaying,isExecMissionPrepare)
+function this.CheckMissionState(checkMissionClear,checkGameOver,checkDemoPlaying,checkMissionPrepare)
   local mvars=mvars
   local svars=svars
   if svars==nil then
@@ -2189,13 +2189,13 @@ function this.CheckMissionState(isExecMissionClear,isExecGameOver,isExecDemoPlay
   if svars.seq_sequence<=1 then
     startSequence=true
   end
-  if isMissionclear and not isExecMissionClear then
+  if isMissionclear and not checkMissionClear then
     return false
-  elseif isGameOver and not isExecGameOver then
+  elseif isGameOver and not checkGameOver then
     return false
-  elseif demoIsNotPlayable and not isExecDemoPlaying then
+  elseif demoIsNotPlayable and not checkDemoPlaying then
     return false
-  elseif startSequence and not isExecMissionPrepare then
+  elseif startSequence and not checkMissionPrepare then
     return false
   else
     return true
@@ -2932,11 +2932,11 @@ function this.SetFobPlayerStartPoint()
     clusterGrade=clusterGrade-1
   end
   local gradeByOne=clusterGrade-1
-  if gradeByOne<0 then
+  if gradeByOne<0 then--NMC I would have though they would have wanted to kick up a fuss if this happened instead of silently returning
     return false
   end
   local locatorName=""
-  if TppNetworkUtil.IsHost()==false then
+  if TppNetworkUtil.IsHost()==false then 
     locatorName="player_locator_clst"..(cluster.."_plnt0_df0")
     local pos,rot=Tpp.GetLocator("MtbsStartPointIdentifier",locatorName)
     if pos then
@@ -3712,14 +3712,14 @@ function this.GetObjectiveRadioOption(n)
     end
   end
   if FadeFunction.IsFadeProcessing()then
-    local n=e.delayTime
-    local i=TppUI.FADE_SPEED.FADE_NORMALSPEED+1.2
-    if IsTypeString(n)then
-      e.delayTime=TppRadio.PRESET_DELAY_TIME[n]+i
-    elseif IsTypeNumber(n)then
-      e.delayTime=n+i
+    local delayTime=e.delayTime
+    local fadeTime=TppUI.FADE_SPEED.FADE_NORMALSPEED+1.2
+    if IsTypeString(delayTime)then
+      e.delayTime=TppRadio.PRESET_DELAY_TIME[delayTime]+fadeTime
+    elseif IsTypeNumber(delayTime)then
+      e.delayTime=delayTime+fadeTime
     else
-      e.delayTime=i
+      e.delayTime=fadeTime
     end
   end
   return e

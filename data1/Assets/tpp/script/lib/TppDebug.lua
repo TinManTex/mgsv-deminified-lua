@@ -78,27 +78,27 @@ function this.DEBUG_SVarsClear()
   end
 end
 function this.DEBUG_GetSysVarsLog()
-  local a=svars or{}
-  local e=mvars or{}
-  local e={
-    "missionName = "..(tostring(e.mis_missionName)..(", vars.missionCode = "..(tostring(vars.missionCode)..(", vars.locationCode = "..tostring(vars.locationCode))))),
-    "mvars.mis_missionStateIsNotInGame = "..tostring(e.mis_missionStateIsNotInGame),
+  local svars=svars or{}
+  local mvars=mvars or{}
+  local svarsLog={
+    "missionName = "..(tostring(mvars.mis_missionName)..(", vars.missionCode = "..(tostring(vars.missionCode)..(", vars.locationCode = "..tostring(vars.locationCode))))),
+    "mvars.mis_missionStateIsNotInGame = "..tostring(mvars.mis_missionStateIsNotInGame),
     "missionClearState = "..tostring(TppDefine.MISSION_CLEAR_STATE_LIST[gvars.mis_missionClearState+1]),
     "gvars.pck_missionPackLabelName = "..tostring(gvars.pck_missionPackLabelName),
     "gvars.mis_orderBoxName = "..tostring(gvars.mis_orderBoxName),
     "gvars.heli_missionStartRoute = "..tostring(gvars.heli_missionStartRoute),
     "gvars.mis_nextMissionCodeForMissionClear = "..tostring(gvars.mis_nextMissionCodeForMissionClear),
     "gvars.mis_nextMissionCodeForEmergency = "..tostring(gvars.mis_nextMissionCodeForEmergency),
-    "vars.mbLayoutCode = "..(tostring(vars.mbLayoutCode)..(", mvars.mis_nextLayoutCode = "..tostring(e.mis_nextLayoutCode))),
-    "vars.mbClusterId = "..(tostring(vars.mbClusterId)..(", mvars.mis_nextClusterId = "..tostring(e.mis_nextClusterId))),
-    "mvars.mis_isOutsideOfMissionArea = "..tostring(e.mis_isOutsideOfMissionArea),
-    "svars.mis_isDefiniteGameOver = "..(tostring(a.mis_isDefiniteGameOver)..(", svars.mis_isDefiniteMissionClear = "..tostring(a.mis_isDefiniteMissionClear))),
+    "vars.mbLayoutCode = "..(tostring(vars.mbLayoutCode)..(", mvars.mis_nextLayoutCode = "..tostring(mvars.mis_nextLayoutCode))),
+    "vars.mbClusterId = "..(tostring(vars.mbClusterId)..(", mvars.mis_nextClusterId = "..tostring(mvars.mis_nextClusterId))),
+    "mvars.mis_isOutsideOfMissionArea = "..tostring(mvars.mis_isOutsideOfMissionArea),
+    "svars.mis_isDefiniteGameOver = "..(tostring(svars.mis_isDefiniteGameOver)..(", svars.mis_isDefiniteMissionClear = "..tostring(svars.mis_isDefiniteMissionClear))),
     "gvars.needWaitMissionInitialize = "..tostring(gvars.needWaitMissionInitialize),
     "gvars.canExceptionHandling = "..tostring(gvars.canExceptionHandling),
     "vars.playerVehicleGameObjectId = "..tostring(vars.playerVehicleGameObjectId),
     "TppServerManager.FobIsSneak() = "..tostring(TppServerManager.FobIsSneak()),
-    "svars.scoreTime = "..tostring(a.scoreTime)}
-  return e
+    "svars.scoreTime = "..tostring(svars.scoreTime)}
+  return svarsLog
 end
 function this.DEBUG_WarpHelicopter(RENHeliName,route,position,point,n)
   if not IsTypeTable(soldierNameTable)then
@@ -551,23 +551,25 @@ function this.QAReleaseDebugUpdate()
     end
   end
   if mvars.qaDebug.showWeaponVars then
-    local a={"PRIMARY_HIP","PRIMARY_BACK","SECONDARY"}
+    local slots={"PRIMARY_HIP","PRIMARY_BACK","SECONDARY"}
     Print(newContext,{.5,.5,1},"LuaSystem WeaponVars")
-    for a,o in ipairs(a)do
-      local a=TppDefine.WEAPONSLOT[o]
-      Print(newContext,string.format("Slot:%16s : vars.initWeapons = %04d, vars.weapons = %04d",o,vars.initWeapons[a],vars.weapons[a]))
+    for n,slotName in ipairs(slots)do
+      local slotId=TppDefine.WEAPONSLOT[slotName]
+      Print(newContext,string.format("Slot:%16s : vars.initWeapons = %04d, vars.weapons = %04d",slotName,vars.initWeapons[slotId],vars.weapons[slotId]))
     end
-    for a=0,7 do
-      Print(newContext,string.format("Slot:%d : vars.supportWeapons = %04d, vars.initSupportWeapons = %04d, gvars.ply_lastWeaponsUsingTemp = %04d",a,vars.supportWeapons[a],vars.initSupportWeapons[a],gvars.ply_lastWeaponsUsingTemp[a+TppDefine.WEAPONSLOT.SUPPORT_0]))
+    for i=0,7 do
+      Print(newContext,string.format("Slot:%d : vars.supportWeapons = %04d, vars.initSupportWeapons = %04d, gvars.ply_lastWeaponsUsingTemp = %04d",i,vars.supportWeapons[i],vars.initSupportWeapons[i],gvars.ply_lastWeaponsUsingTemp[i+TppDefine.WEAPONSLOT.SUPPORT_0]))
     end
-    for a=0,7 do
-      Print(newContext,string.format("Slot:%d : vars.items = %04d, vars.initItems = %04d, gvars.ply_lastItemsUsingTemp = %04d",a,vars.items[a],vars.initItems[a],gvars.ply_lastItemsUsingTemp[a]))
+    for i=0,7 do
+      Print(newContext,string.format("Slot:%d : vars.items = %04d, vars.initItems = %04d, gvars.ply_lastItemsUsingTemp = %04d",i,vars.items[i],vars.initItems[i],gvars.ply_lastItemsUsingTemp[i]))
     end
   end
   if mvars.qaDebug.showPlayerPartsType then
     Print(newContext,{.5,.5,1},"LuaSystem ShowPlayerPartsType")
     Print(newContext,"gvars.ply_isUsingTempPlayerType = "..tostring(gvars.ply_isUsingTempPlayerType))
-    Print(newContext,string.format("vars.playerPartsType = %04d, gvars.ply_lastPlayerPartsTypeUsingTemp = %04d",vars.playerPartsType,gvars.ply_lastPlayerPartsTypeUsingTemp))Print(newContext,string.format("vars.playerCamoType = %04d, gvars.ply_lastPlayerCamoTypeUsingTemp = %04d",vars.playerCamoType,gvars.ply_lastPlayerCamoTypeUsingTemp))Print(newContext,string.format("vars.playerType = %04d, gvars.ply_lastPlayerTypeUsingTemp = %04d",vars.playerType,gvars.ply_lastPlayerTypeUsingTemp))
+    Print(newContext,string.format("vars.playerPartsType = %04d, gvars.ply_lastPlayerPartsTypeUsingTemp = %04d",vars.playerPartsType,gvars.ply_lastPlayerPartsTypeUsingTemp))
+    Print(newContext,string.format("vars.playerCamoType = %04d, gvars.ply_lastPlayerCamoTypeUsingTemp = %04d",vars.playerCamoType,gvars.ply_lastPlayerCamoTypeUsingTemp))
+    Print(newContext,string.format("vars.playerType = %04d, gvars.ply_lastPlayerTypeUsingTemp = %04d",vars.playerType,gvars.ply_lastPlayerTypeUsingTemp))
   end
   if mvars.qaDebug.gotFobStatusCount then
     Print(newContext,{.5,.5,1},">> Done TppServerManager.GetFobStatus()")
@@ -589,14 +591,16 @@ function this.QAReleaseDebugUpdate()
     local function s(t,a,i)
       local n
       if FobUI.IsCompleteEventTask(a,i)then
-        n=" o "else
-        n=" x "end
+        n=" o "
+      else
+        n=" x "
+      end
       local s=t[a]and t[a].detectType
       if s then
         local o=mvars.qaDebug.debugEventTaskTextTable and mvars.qaDebug.debugEventTaskTextTable[s]
         if not o then
           o="threshold is"
-          end
+        end
         Print(newContext,string.format("   Task %1d : [%s] %s %06.2f : ( Current %06.2f )",a,n,o,t[a].threshold,FobUI.GetCurrentEventTaskValue(a,i)))
       end
     end
@@ -732,21 +736,21 @@ function this.DebugUpdate()
     local a
     if mvars.mis_isOutsideOfMissionArea then
       a="Outside"
-      else
+    else
       a="Inside"
-      end
+    end
     Print(newContext,"outerZone : "..a)
     if mvars.mis_isAlertOutOfMissionArea then
       a="Outside"
-      else
+    else
       a="Inside"
-      end
+    end
     Print(newContext,"innerZone : "..a)
     if mvars.mis_isOutsideOfHotZone then
       a="Outside"
-      else
+    else
       a="Inside"
-      end
+    end
     Print(newContext,"hotZone : "..a)
     Print(newContext,"hotZone clear check : isNotAlert = "..(tostring(mvars.debug.notHotZone_isNotAlert)..(", isPlayerStatusNormal = "..(tostring(mvars.debug.notHotZone_isPlayerStatusNormal)..(", isNotHelicopter = "..tostring(mvars.debug.notHotZone_isNotHelicopter))))))
     Print(newContext,"Mission clear timer: "..tostring(IsTimerActive"Timer_OutsideOfHotZoneCount"))

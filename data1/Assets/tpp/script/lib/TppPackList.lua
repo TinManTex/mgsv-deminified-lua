@@ -67,22 +67,22 @@ function this.AddLocationCommonMissionAreaPack(missionCode)
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_DECOY)
   end
 end
-function this.IsMissionPackLabelList(n)
-  if not Tpp.IsTypeTable(n)then
+function this.IsMissionPackLabelList(labelList)
+  if not Tpp.IsTypeTable(labelList)then
     return
   end
-  for i,n in ipairs(n)do
-    if this.IsMissionPackLabel(n)then
+  for i,label in ipairs(labelList)do
+    if this.IsMissionPackLabel(label)then
       return true
     end
   end
   return false
 end
-function this.IsMissionPackLabel(e)
-  if not Tpp.IsTypeString(e)then
+function this.IsMissionPackLabel(label)
+  if not Tpp.IsTypeString(label)then
     return
   end
-  if gvars.pck_missionPackLabelName==Fox.StrCode32(e)then
+  if gvars.pck_missionPackLabelName==Fox.StrCode32(label)then
     return true
   else
     return false
@@ -137,9 +137,9 @@ function this.SetUseDdEmblemFova(missionCode)
     TppSoldierFace.SetUseBlackDdFova{enabled=false}
   end
 end
-function this.SetMissionPackLabelName(e)
-  if Tpp.IsTypeString(e)then
-    gvars.pck_missionPackLabelName=Fox.StrCode32(e)
+function this.SetMissionPackLabelName(labelName)
+  if Tpp.IsTypeString(labelName)then
+    gvars.pck_missionPackLabelName=Fox.StrCode32(labelName)
   end
 end
 function this.SetDefaultMissionPackLabelName()

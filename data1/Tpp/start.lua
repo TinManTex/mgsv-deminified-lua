@@ -95,55 +95,56 @@ if TppCoverPointProvider then
   TppCoverPointProvider.Create()
 end
 NavTactical.SetTacticalActionSystemScript"/Assets/tpp/editor_scripts/fox/tactical_action/TppTacticalActionSystem.lua"
-local a=true
+local enableWindowsDX11Texture=true
 if not AssetConfiguration.IsDiscOrHddImage()then
-  a=AssetConfiguration.GetConfigurationFromAssetManager"EnableWindowsDX11Texture"
+  enableWindowsDX11Texture=AssetConfiguration.GetConfigurationFromAssetManager"EnableWindowsDX11Texture"
 end
 if GrDaemon then
-  local e=Fox.GetPlatformName()
-  local t=""if GrTools then
-    t=GrTools.GetDeviceName()
+  local platformName=Fox.GetPlatformName()
+  local deviceName=""
+  if GrTools then
+    deviceName=GrTools.GetDeviceName()
   end
-  if e=="Windows"then
-    if t=="directx9"then
+  if platformName=="Windows"then
+    if deviceName=="directx9"then
       GrTools.LoadShaderPack"shaders/win32/TppShaders_win32.fsop"
-      if a then
+      if enableWindowsDX11Texture then
         dofile"shaders/win32/TppShadersNoLnm_win32.lua"else
         dofile"shaders/win32/TppShaders_win32.lua"
       end
     end
-    if t=="directx11"then
+    if deviceName=="directx11"then
       GrTools.LoadShaderPack"shaders/dx11/TppShaders_dx11.fsop"
-      if a then
+      if enableWindowsDX11Texture then
         dofile"shaders/dx11/TppShadersNoLnm_dx11.lua"
       else
         dofile"shaders/dx11/TppShaders_dx11.lua"
       end
     end
-  elseif e=="Xbox360"then
+  elseif platformName=="Xbox360"then
     GrTools.LoadShaderPack"shaders\\xbox360\\TppShaders_x360.fsop"
     dofile"shaders/xbox360/TppShaders_x360.lua"
-  elseif e=="PS3"then
+  elseif platformName=="PS3"then
     GrTools.LoadShaderPack"shaders/ps3/TppShaders_ps3.fsop.sdat"
     dofile"shaders/ps3/TppShaders_ps3.lua"
-  elseif e=="XboxOne"then
+  elseif platformName=="XboxOne"then
     GrTools.LoadShaderPack"shaders/xboxone/TppShaders_xone.fsop"
     dofile"shaders/xboxone/TppShadersNoLnm_xone.lua"
-  elseif e=="PS4"then
+  elseif platformName=="PS4"then
     GrTools.LoadShaderPack"shaders/ps4/TppShaders_ps4.fsop"
     dofile"shaders/ps4/TppShadersNoLnm_ps4.lua"
   end
 end
 TppFadeOutEffectHolder.Create()
-TppEffectUtility.SetEnableWindowsDirectX11Textures(a)
+TppEffectUtility.SetEnableWindowsDirectX11Textures(enableWindowsDX11Texture)
 TppEffectUtility.InitThermalReactionObjectUnionMaterial()
 if Preference then
-  local e=Preference.GetPreferenceEntity"FxEditorSetting"
-  if not Entity.IsNull(e)and Fox.GetPlatformName()=="Windows"then
-    if#e.defineFiles==0 then
-      Command.AddPropertyElement{entity=e,property="defineFiles"}
+  local fxEditorPreferenceEntity=Preference.GetPreferenceEntity"FxEditorSetting"
+  if not Entity.IsNull(fxEditorPreferenceEntity)and Fox.GetPlatformName()=="Windows"then
+    if#fxEditorPreferenceEntity.defineFiles==0 then
+      Command.AddPropertyElement{entity=fxEditorPreferenceEntity,property="defineFiles"}
     end
-    e.defineFiles[1]="../../Tpp/Tpp/Fox/LevelEditor/Fx/tppFxModuleDefines.xml"
+    fxEditorPreferenceEntity.defineFiles[1]="../../Tpp/Tpp/Fox/LevelEditor/Fx/tppFxModuleDefines.xml"
   end
 end
 if FxDaemon then
@@ -362,7 +363,7 @@ GeoPathService.BindEdgeTag("Fence","Window")
 GeoPathService.BindEdgeTag("StepOn","Fulton")
 GeoPathService.BindEdgeTag("StepOn","LineCheck")
 GeoPathService.BindEdgeTag("StepOn","Window")
-local e=PhDaemon.GetInstance()
+local phDaemon=PhDaemon.GetInstance()
 if platformName=="Xbox360"then
   PhDaemon.SetMemorySize(1792,1024,768)
 elseif platformName=="PS3"then
@@ -379,65 +380,65 @@ end
 PhDaemon.SetUpdateDtMax(1/15)
 PhDaemon.SetWorldMin(Vector3(-4200,-1e3,-4200))
 PhDaemon.SetWorldMax(Vector3(4200,3e3,4200))
-e.SetCollisionGroupState(1,3,false)
-e.SetCollisionGroupState(1,4,true)
-e.SetCollisionGroupState(1,6,true)
-e.SetCollisionGroupState(3,3,true)
-e.SetCollisionGroupState(3,4,true)
-e.SetCollisionGroupState(3,5,true)
-e.SetCollisionGroupState(6,3,false)
-e.SetCollisionGroupState(6,9,false)
-e.SetCollisionGroupState(7,1,false)
-e.SetCollisionGroupState(7,2,false)
-e.SetCollisionGroupState(7,3,false)
-e.SetCollisionGroupState(7,4,false)
-e.SetCollisionGroupState(7,5,false)
-e.SetCollisionGroupState(7,6,false)
-e.SetCollisionGroupState(7,8,false)
-e.SetCollisionGroupState(7,9,false)
-e.SetCollisionGroupState(7,10,false)
-e.SetCollisionGroupState(9,3,false)
-e.SetCollisionGroupState(9,10,false)
-e.SetCollisionGroupState(10,9,false)
-e.SetCollisionGroupState(11,3,true)
-e.SetCollisionGroupState(11,4,true)
-e.SetCollisionGroupState(11,5,true)
-e.SetCollisionGroupState(12,3,true)
-e.SetCollisionGroupState(12,4,true)
-e.SetCollisionGroupState(12,5,true)
+phDaemon.SetCollisionGroupState(1,3,false)
+phDaemon.SetCollisionGroupState(1,4,true)
+phDaemon.SetCollisionGroupState(1,6,true)
+phDaemon.SetCollisionGroupState(3,3,true)
+phDaemon.SetCollisionGroupState(3,4,true)
+phDaemon.SetCollisionGroupState(3,5,true)
+phDaemon.SetCollisionGroupState(6,3,false)
+phDaemon.SetCollisionGroupState(6,9,false)
+phDaemon.SetCollisionGroupState(7,1,false)
+phDaemon.SetCollisionGroupState(7,2,false)
+phDaemon.SetCollisionGroupState(7,3,false)
+phDaemon.SetCollisionGroupState(7,4,false)
+phDaemon.SetCollisionGroupState(7,5,false)
+phDaemon.SetCollisionGroupState(7,6,false)
+phDaemon.SetCollisionGroupState(7,8,false)
+phDaemon.SetCollisionGroupState(7,9,false)
+phDaemon.SetCollisionGroupState(7,10,false)
+phDaemon.SetCollisionGroupState(9,3,false)
+phDaemon.SetCollisionGroupState(9,10,false)
+phDaemon.SetCollisionGroupState(10,9,false)
+phDaemon.SetCollisionGroupState(11,3,true)
+phDaemon.SetCollisionGroupState(11,4,true)
+phDaemon.SetCollisionGroupState(11,5,true)
+phDaemon.SetCollisionGroupState(12,3,true)
+phDaemon.SetCollisionGroupState(12,4,true)
+phDaemon.SetCollisionGroupState(12,5,true)
 dofile"Tpp/Scripts/Ui/TppUiBootInit.lua"
 TppCassetteTapeInfo.Setup()
 if Editor then
   package.path=package.path..";/Assets/tpp/editor_scripts/?.lua"
 end
 if Editor then
-  local e=Application:GetInstance()
-  local t=e:GetMainGame()
-  local e=e:GetScene"MainScene"
-  local e=t:CreateBucket("SetupBucket",e)
-  e:LoadProjectFile"/Assets/tpp/level/location/SetupLocation2.fxp"
+  local application=Application:GetInstance()
+  local mainGame=application:GetMainGame()
+  local mainScene=application:GetScene"MainScene"
+  local setupBucket=mainGame:CreateBucket("SetupBucket",mainScene)
+  setupBucket:LoadProjectFile"/Assets/tpp/level/location/SetupLocation2.fxp"
 end
 if platformName=="Windows"then
   if TppLightCapture then
     TppLightCapture.InitInstance()
   end
 end
-local e=(.73*1024)*1024
-e=e+258*1024
+local systemBlockSize=(.73*1024)*1024
+systemBlockSize=systemBlockSize+258*1024
 if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-  e=635*1024
+  systemBlockSize=635*1024
 end
 if platformName=="Xbox360"then
-  e=e+20*1024
+  systemBlockSize=systemBlockSize+20*1024
 end
 if platformName=="Windows"then
-  e=((e+450*1024)+400*1024)+100*1024
+  systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024
 elseif platformName=="XboxOne"then
-  e=((e+450*1024)+400*1024)+100*1024
+  systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024
 elseif platformName=="PS4"then
-  e=((e+450*1024)+400*1024)+100*1024
+  systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024
 end
-TppGameSequence.SetSystemBlockSize(e,(40.5*1024)*1024)
+TppGameSequence.SetSystemBlockSize(systemBlockSize,(40.5*1024)*1024)
 TppGameSequence.LoadResidentBlock"/Assets/tpp/pack/resident/resident00.fpk"
 if TppSystemUtility.GetCurrentGameMode()~="MGO"then
   Player.CreateResidentMotionBlock{size=((6*1024)*1024-8*1024)-(.55*1024)*1024}

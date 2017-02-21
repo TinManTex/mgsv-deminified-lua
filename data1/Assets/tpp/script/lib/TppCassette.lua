@@ -1,11 +1,13 @@
 local this={}
-local t={"tp_m_10020_03","tp_m_10020_04","tp_m_10020_05","tp_m_10020_06","tp_m_10020_12","tp_m_10280_11","tp_c_00000_03"}
+
+local someMissionTapes={"tp_m_10020_03","tp_m_10020_04","tp_m_10020_05","tp_m_10020_06","tp_m_10020_12","tp_m_10280_11","tp_c_00000_03"}
+
 local missionClearTapes={}
 missionClearTapes[10010]={"tp_m_10010_01","tp_m_10010_02","tp_m_10010_03","tp_m_10010_05","tp_m_10010_06","tp_m_10010_07","tp_m_10010_10","tp_m_10110_03","tp_bgm_11_32"}
 missionClearTapes[10020]={"tp_m_10020_01","tp_m_10020_02","tp_m_10280_11"}
 missionClearTapes[10030]={"tp_m_10010_04","tp_m_10010_08","tp_m_10010_09"}
-missionClearTapes[10036]=t
-missionClearTapes[10043]=t
+missionClearTapes[10036]=someMissionTapes
+missionClearTapes[10043]=someMissionTapes
 missionClearTapes[10033]={"tp_m_10020_03","tp_m_10020_04","tp_m_10020_05","tp_m_10020_06","tp_m_10020_12","tp_m_10280_11","tp_c_00000_14","tp_c_00000_03"}
 missionClearTapes[10040]={"tp_m_10040_03","tp_c_00000_12"}
 missionClearTapes[10041]={}
@@ -41,6 +43,7 @@ missionClearTapes[10240]={"tp_m_10240_01","tp_m_10240_02"}
 missionClearTapes[10260]={"tp_m_10260_03"}
 missionClearTapes[10280]={"tp_m_10150_13","tp_m_10280_02","tp_m_10280_03","tp_m_10280_08","tp_m_10280_09","tp_m_10280_10","tp_m_10280_12","tp_m_10280_13","tp_m_10280_14","tp_m_10280_15","tp_m_10280_16","tp_m_10280_17"}
 missionClearTapes[10230]={}
+
 local missionOpenTapes={}
 missionOpenTapes[10010]={}
 missionOpenTapes[10020]={}
@@ -82,11 +85,12 @@ missionOpenTapes[10240]={"tp_m_10240_00"}
 missionOpenTapes[10260]={"tp_m_10260_00"}
 missionOpenTapes[10280]={}
 missionOpenTapes[10230]={}
+
 local buddyTapesAquire={
   [BuddyType.QUIET]=function()
     local cassetteList={"tp_c_00000_02"}
-    local t=TppBuddyService.GetFriendlyPoint(BuddyFriendlyType.QUIET)
-    if t>60 then
+    local quietFriendlyPoints=TppBuddyService.GetFriendlyPoint(BuddyFriendlyType.QUIET)
+    if quietFriendlyPoints>60 then
       table.insert(cassetteList,"tp_sp_01_04")
     end
     this.Acquire{cassetteList=cassetteList,pushReward=true}
@@ -95,18 +99,18 @@ local buddyTapesAquire={
     this.Acquire{cassetteList={"tp_c_00000_01"},pushReward=true}
   end
 }
-function this.Acquire(t)
+function this.Acquire(cassettesInfo)
   local cassetteList,isShowAnnounceLog,pushReward
-  if Tpp.IsTypeTable(t)then
-    cassetteList=t.cassetteList
-    isShowAnnounceLog=t.isShowAnnounceLog
-    pushReward=t.pushReward
+  if Tpp.IsTypeTable(cassettesInfo)then
+    cassetteList=cassettesInfo.cassetteList
+    isShowAnnounceLog=cassettesInfo.isShowAnnounceLog
+    pushReward=cassettesInfo.pushReward
   end
-  for e,t in ipairs(cassetteList)do
-    if not TppMotherBaseManagement.IsGotCassetteTapeTrack(t)then
-      TppMotherBaseManagement.AddCassetteTapeTrack(t)
+  for n,trackId in ipairs(cassetteList)do
+    if not TppMotherBaseManagement.IsGotCassetteTapeTrack(trackId)then
+      TppMotherBaseManagement.AddCassetteTapeTrack(trackId)
       if pushReward then
-        local langId=TppUiCommand.GetTapeLangIdByTrackId(t)
+        local langId=TppUiCommand.GetTapeLangIdByTrackId(trackId)
         TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.CASSET_TAPE,arg1=langId}
       end
       if isShowAnnounceLog then
@@ -114,15 +118,16 @@ function this.Acquire(t)
         if Tpp.IsTypeTable(isShowAnnounceLog)then
           delay=isShowAnnounceLog.delayTimeSec
         end
-        TppUI.ShowAnnounceLog("get_tape",t,nil,delay)
+        TppUI.ShowAnnounceLog("get_tape",trackId,nil,delay)
       end
     end
   end
 end
-function this.AcquireOnMissionClear(t)
-  local _=missionClearTapes[t]
-  if _ then
-    this.Acquire{cassetteList=_,pushReward=true}
+
+function this.AcquireOnMissionClear(missionCode)
+  local cassetteList=missionClearTapes[missionCode]
+  if cassetteList then
+    this.Acquire{cassetteList=cassetteList,pushReward=true}
   end
   local buddyTapes=buddyTapesAquire[vars.buddyType]
   if buddyTapes then
@@ -138,11 +143,11 @@ function this.AcquireOnMissionOpen(missionCode)
     this.Acquire{cassetteList=tapes,pushReward=true}
   end
 end
-function this.AcquireOnPickUp(_)
-  Gimmick.NotifyOfTakingCassette(_)
-  TppMotherBaseManagement.AddCassetteTapeTrackByIndex(_)
-  local _=TppUiCommand.GetTrackLangIdBySaveIndex(_)
-  TppUI.ShowAnnounceLog("get_tape",_)
+function this.AcquireOnPickUp(cassetteIndex)
+  Gimmick.NotifyOfTakingCassette(cassetteIndex)
+  TppMotherBaseManagement.AddCassetteTapeTrackByIndex(cassetteIndex)
+  local trackLangId=TppUiCommand.GetTrackLangIdBySaveIndex(cassetteIndex)
+  TppUI.ShowAnnounceLog("get_tape",trackLangId)
 end
 function this.OnEstablishMissionClear()
   local missionCode=TppMission.GetMissionID()
@@ -160,19 +165,19 @@ function this.OnEstablishMissionClear()
   end
 end
 function this.OnEnterFreeHeliPlay()
-  local _=TppStory.GetCurrentStorySequence()
+  local currentStorySequence=TppStory.GetCurrentStorySequence()
   if TppStory.IsNowOccurringElapsedMission(TppDefine.ELAPSED_MISSION_EVENT.QUIET_VISIT_MISSION)or TppQuest.IsCleard"mtbs_q99011"then
     this.Acquire{cassetteList={"tp_m_10050_02"},isShowAnnounceLog={delayTimeSec=2}}
     this.Acquire{cassetteList={"tp_c_00000_06"},isShowAnnounceLog={delayTimeSec=2}}
   end
-  if _>=TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_BEFORE_ENDRESS_PROXY_WAR then
+  if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_BEFORE_ENDRESS_PROXY_WAR then
     this.Acquire{cassetteList={"tp_c_00001_03"},isShowAnnounceLog={delayTimeSec=2}}
   end
-  if _>=TppDefine.STORY_SEQUENCE.CLEARD_CAPTURE_THE_WEAPON_DEALER then
+  if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_CAPTURE_THE_WEAPON_DEALER then
     this.Acquire{cassetteList={"tp_m_10120_01"},isShowAnnounceLog={delayTimeSec=2}}
     this.Acquire{cassetteList={"tp_m_10120_02"},isShowAnnounceLog={delayTimeSec=2}}
   end
-  if _>=TppDefine.STORY_SEQUENCE.CLEARD_METALLIC_ARCHAEA then
+  if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_METALLIC_ARCHAEA then
     this.Acquire{cassetteList={"tp_m_10140_05"},isShowAnnounceLog={delayTimeSec=2}}
     this.Acquire{cassetteList={"tp_m_10140_06"},isShowAnnounceLog={delayTimeSec=2}}
     this.Acquire{cassetteList={"tp_c_00000_04"},isShowAnnounceLog={delayTimeSec=2}}

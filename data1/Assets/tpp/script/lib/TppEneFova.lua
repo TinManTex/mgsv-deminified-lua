@@ -654,7 +654,7 @@ function fovaSetupFuncs.Afghan(n,missionId)
   end
 
   --tex>wildcard soviet boddies
-  if InfMain.IsWildCardEnabled(missionId) then
+  if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
     InfEneFova.WildCardFova(bodies)
 
     for n,bodyId in pairs(InfEneFova.wildCardBodiesAfgh)do
@@ -740,7 +740,7 @@ function fovaSetupFuncs.Africa(n,missionId)
   end
 
   --tex> wildcard pf bodies
-  if InfMain.IsWildCardEnabled(missionId) then
+  if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
     InfEneFova.WildCardFova(bodies)
 
     for n,bodyId in pairs(InfEneFova.wildCardBodiesMafr)do

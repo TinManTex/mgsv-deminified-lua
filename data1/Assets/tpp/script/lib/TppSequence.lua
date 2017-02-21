@@ -2,7 +2,7 @@ local this={}
 local baseSequences={}
 local requiredSequences={}
 local MAX_SEQUENCES=256
-local c=0
+local none=0
 local canStartTimespan=180
 local StrCode32=Fox.StrCode32
 local IsFunc=Tpp.IsTypeFunc
@@ -10,16 +10,16 @@ local IsTable=Tpp.IsTypeTable
 local StartTimer=GkEventTimerManager.Start
 local SVarsIsSynchronized=TppScriptVars.SVarsIsSynchronized
 this.MISSION_PREPARE_STATE=Tpp.Enum{"START","WAIT_INITALIZE","WAIT_TEXTURE_LOADING","END_TEXTURE_LOADING","WAIT_SAVING_FILE","END_SAVING_FILE","FINISH"}
-local function s(n)
-  local e=mvars.seq_sequenceTable
-  if e then
-    return e[n]
+local function s(sequenceIndex)
+  local seq_sequenceTable=mvars.seq_sequenceTable
+  if seq_sequenceTable then
+    return seq_sequenceTable[sequenceIndex]
   end
 end
-local function d(n)
-  local e=mvars.seq_sequenceNames
-  if e then
-    return s(e[n])
+local function d(sequenceIndex)
+  local seq_sequenceNames=mvars.seq_sequenceNames
+  if seq_sequenceNames then
+    return s(seq_sequenceNames[sequenceIndex])
   end
 end
 function this.RegisterSequences(sequenceNames)
@@ -91,18 +91,19 @@ end
 function this.GetCurrentSequenceIndex()
   return svars.seq_sequence
 end
-function this.GetSequenceIndex(n)
+function this.GetSequenceIndex(sequenceName)
   local seq_sequenceNames=mvars.seq_sequenceNames
   if seq_sequenceNames then
-    return seq_sequenceNames[n]
+    return seq_sequenceNames[sequenceName]
   end
 end
-function this.GetSequenceNameWithIndex(n)
+--NMC wut
+function this.GetSequenceNameWithIndex(sequenceId)
   local seq_sequenceNames=mvars.seq_sequenceNames
   if seq_sequenceNames then
-    local e=seq_sequenceNames[n]
-    if e then
-      return e
+    local sequenceId=seq_sequenceNames[sequenceId]
+    if sequenceId then
+      return sequenceId
     end
   end
   return""
@@ -122,8 +123,8 @@ function this.GetMissionStartSequenceIndex()
   return mvars.seq_missionStartSequence
 end
 function this.GetContinueCount()
-  local e=svars.seq_sequence
-  return svars.seq_sequenceContinueCount[e]
+  local sequenceId=svars.seq_sequence
+  return svars.seq_sequenceContinueCount[sequenceId]
 end
 function this.MakeSVarsTable(saveVarsList)
   local svarTable={}
@@ -143,7 +144,7 @@ function this.MakeSVarsTable(saveVarsList)
   end
   return svarTable
 end
-local o=1
+local waitStartTime=1
 local s=6
 local noTelopFadeinTime=2
 requiredSequences={"Seq_Mission_Prepare"}
@@ -178,7 +179,7 @@ baseSequences.Seq_Mission_Prepare={
   end,--Messages=func
   OnEnter=function(n)
     mvars.seq_missionPrepareState=this.MISSION_PREPARE_STATE.WAIT_INITALIZE
-    mvars.seq_textureLoadWaitStartTime=c
+    mvars.seq_textureLoadWaitStartTime=none
     mvars.seq_canMissionStartWaitStartTime=Time.GetRawElapsedTimeSinceStartUp()
     TppMain.OnEnterMissionPrepare()
     TppMain.DisablePause()
@@ -312,14 +313,14 @@ baseSequences.Seq_Mission_Prepare={
       TppMain.OnMissionCanStart()
       if TppUiCommand.IsEndLoadingTips()then
         TppUI.FinishLoadingTips()
-        StartTimer("Timer_WaitStartingGame",o)
+        StartTimer("Timer_WaitStartingGame",waitStartTime)
       else
         if gvars.waitLoadingTipsEnd then
           mvars.seq_nowWaitingPushEndLoadingTips=true
           TppUiCommand.PermitEndLoadingTips()
         else
           TppUI.FinishLoadingTips()
-          StartTimer("Timer_WaitStartingGame",o)
+          StartTimer("Timer_WaitStartingGame",waitStartTime)
         end
       end
     end
@@ -407,11 +408,11 @@ function this.CanHandleSignInUserChangedException()
   end
 end
 function this.IncrementContinueCount()
-  local e=svars.seq_sequence
-  local n=svars.seq_sequenceContinueCount[e]+1
-  local s=255
-  if n<=s then
-    svars.seq_sequenceContinueCount[e]=n
+  local sequenceId=svars.seq_sequence
+  local count=svars.seq_sequenceContinueCount[sequenceId]+1
+  local max=255
+  if count<=max then
+    svars.seq_sequenceContinueCount[sequenceId]=count
   end
 end
 function this.DeclareSVars()
@@ -425,7 +426,9 @@ end
 function this.DEBUG_Init()
 end
 function this.Init(missionTable)
-  this.MakeSequenceMessageExecTable()svars.seq_sequence=this.GetSequenceIndex"Seq_Mission_Prepare"if missionTable.sequence then
+  this.MakeSequenceMessageExecTable()
+  svars.seq_sequence=this.GetSequenceIndex"Seq_Mission_Prepare"
+  if missionTable.sequence then
     if missionTable.sequence.SKIP_TEXTURE_LOADING_WAIT then
       mvars.seq_skipTextureLoadingWait=true
     end
@@ -457,9 +460,9 @@ function this.OnChangeSVars(name,s)
     if s==nil then
       return
     end
-    local n=mvars.seq_sequenceTable[mvars.seq_currentSequence]
-    if n and n.OnLeave then
-      n.OnLeave(n,this.GetSequenceNameWithIndex(svars.seq_sequence))
+    local currentSequenceTable=mvars.seq_sequenceTable[mvars.seq_currentSequence]
+    if currentSequenceTable and currentSequenceTable.OnLeave then
+      currentSequenceTable.OnLeave(currentSequenceTable,this.GetSequenceNameWithIndex(svars.seq_sequence))
     end
     mvars.seq_currentSequence=mvars.seq_sequenceNames[svars.seq_sequence]
     if s.OnEnter then
@@ -480,18 +483,18 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this.Update()
-  local e=mvars
-  local n=svars
-  if e.seq_currentSequence==nil then
+  local mvars=mvars
+  local svars=svars
+  if mvars.seq_currentSequence==nil then
     return
   end
-  local e=e.seq_sequenceTable[e.seq_currentSequence]
-  if e==nil then
+  local currentSequenceTable=mvars.seq_sequenceTable[mvars.seq_currentSequence]
+  if currentSequenceTable==nil then
     return
   end
-  local n=e.OnUpdate
-  if n then
-    n(e)
+  local OnUpdate=currentSequenceTable.OnUpdate
+  if OnUpdate then
+    OnUpdate(currentSequenceTable)
   end
 end
 function this.DebugUpdate()
@@ -499,9 +502,12 @@ function this.DebugUpdate()
   local s=svars
   local n=(nil).NewContext()
   if e.debug.showCurrentSequence or e.debug.showSequenceHistory then
-    if e.debug.showCurrentSequence then(nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showCurrSequence");(nil).Print(n," current_sequence = "..tostring(GetSequenceNameWithIndex(s.seq_sequence)))
+    if e.debug.showCurrentSequence then
+    (nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showCurrSequence")
+    ;(nil).Print(n," current_sequence = "..tostring(GetSequenceNameWithIndex(s.seq_sequence)))
     end
-    if e.debug.showSequenceHistory then(nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showSeqHistory")
+    if e.debug.showSequenceHistory then
+    (nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showSeqHistory")
       for s,e in ipairs(e.debug.seq_sequenceHistory)do
         (nil).Print(n," seq["..(tostring(s)..("] = "..tostring(e))))
       end

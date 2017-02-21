@@ -406,8 +406,7 @@ function this.IsUsingBlackSuperReinforce()
 end
 function this.GetReinforceCount()
   if Ivars.forceReinforceRequest:Is(1) then--tex>
-    local doCustom=Ivars.revengeMode:Is"CUSTOM" or Ivars.revengeModeForMissions:Is"CUSTOM" or Ivars.revengeModeForMb:Is"CUSTOM"--tex TODO: a proper check
-    if not doCustom then
+    if not InfRevenge.DoCustomRevenge() then
       mvars.revenge_revengeConfig.REINFORCE_COUNT=99
     end
   end--<
@@ -913,8 +912,7 @@ function this._GetUiParameterValue(revengeLevel)
   return 0
 end
 function this._SetUiParameters()
-  local doCustom=Ivars.revengeMode:Is"CUSTOM" or Ivars.revengeModeForMissions:Is"CUSTOM" or Ivars.revengeModeForMb:Is"CUSTOM"--tex>
-  if doCustom then
+  if InfRevenge.DoCustomRevenge() then--tex> set ui params
     InfRevenge.SetCustomRevengeUiParameters()
     return
   end--<
@@ -1261,7 +1259,7 @@ function this._CreateRevengeConfig(revengeTypes)
   end
 
   --tex>customrevengeconfig
-  local doCustom=Ivars.revengeMode:Is"CUSTOM" or Ivars.revengeModeForMissions:Is"CUSTOM" or Ivars.revengeModeForMb:Is"CUSTOM"
+  local doCustom=InfRevenge.DoCustomRevenge()
   if doCustom then
     revengeConfig=InfRevenge.CreateCustomRevengeConfig()
     for powerType,setting in pairs(revengeConfig)do
@@ -1466,9 +1464,8 @@ function this._AllocateResources(config)
   end
   if TppEquip.RequestLoadToEquipMissionBlock then
     TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
-
-
-    if InfMain.IsWildCardEnabled(missionId) then--tex> TODO: pare it down to actual used
+    --tex> TODO: pare it down to actual used
+    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
       local equipLoadTable={}
       for weaponType,weaponId in pairs(TppEnemy.weaponIdTable.WILDCARD.NORMAL)do
         table.insert(equipLoadTable,weaponId)
@@ -2247,7 +2244,7 @@ function this._OnReinforceRespawn(soldierIds)
     TppEnemy.AddPowerSetting(soldierIds,{})
     o50050_enemy.AssignAndSetupRespawnSoldier(soldierIds)
   else
-    --    InfMenu.DebugPrint"_OnReinforceRespawn"--tex DEBUGNOW>
+    --    InfMenu.DebugPrint"_OnReinforceRespawn"--tex DEBUG>
     --    local ins=InfInspect.Inspect(soldierIds)
     --    InfMenu.DebugPrint(ins)--<
     this.ApplyPowerSettingsForReinforce{soldierIds}

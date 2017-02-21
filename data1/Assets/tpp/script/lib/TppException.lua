@@ -469,12 +469,26 @@ function this.OnReload(n)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.Messages()
-  return Tpp.StrCode32Table{Network={{msg="InvitationAccept",func=this.OnInvitationAccept},{msg="DisconnectFromPsn",func=this.OnDisconnectFromPsn},{msg="DisconnectFromKonami",func=this.OnDisconnectFromKonami},{msg="DisconnectFromNetwork",func=this.OnDisconnectFromNetwork},{msg="SignInUserChanged",func=this.SignInUserChanged},{msg="InvitationAcceptByOther",func=this.OnInvitationAcceptByOther},{msg="InvitationAcceptWithoutSignIn",func=this.OnInvitationAcceptWithoutSignIn}},Nt={{msg="SessionDisconnectFromHost",func=this.OnSessionDisconnectFromHost},{msg="SessionDeleteMember",func=function()
-    if TppServerManager.FobIsSneak()then
-      local e=4181
-      TppUiCommand.ShowErrorPopup(e)
-    end
-  end}},Dlc={{msg="DlcStatusChanged",func=this.OnDlcStatusChanged}}}
+  return Tpp.StrCode32Table{
+    Network={
+      {msg="InvitationAccept",func=this.OnInvitationAccept},
+      {msg="DisconnectFromPsn",func=this.OnDisconnectFromPsn},
+      {msg="DisconnectFromKonami",func=this.OnDisconnectFromKonami},
+      {msg="DisconnectFromNetwork",func=this.OnDisconnectFromNetwork},
+      {msg="SignInUserChanged",func=this.SignInUserChanged},
+      {msg="InvitationAcceptByOther",func=this.OnInvitationAcceptByOther},
+      {msg="InvitationAcceptWithoutSignIn",func=this.OnInvitationAcceptWithoutSignIn}
+    },
+    Nt={
+      {msg="SessionDisconnectFromHost",func=this.OnSessionDisconnectFromHost},
+      {msg="SessionDeleteMember",func=function()
+        if TppServerManager.FobIsSneak()then
+          local e=4181
+          TppUiCommand.ShowErrorPopup(e)
+        end
+      end}
+    },
+    Dlc={{msg="DlcStatusChanged",func=this.OnDlcStatusChanged}}}
 end
 function this.OnInvitationAccept()
   local n=this.GetCurrentGameMode()

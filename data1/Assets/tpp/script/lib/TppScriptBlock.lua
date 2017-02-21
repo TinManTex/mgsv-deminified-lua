@@ -5,7 +5,7 @@ local IsTypeTable=Tpp.IsTypeTable
 local GetCurrentScriptBlockId=ScriptBlock.GetCurrentScriptBlockId
 local GetScriptBlockState=ScriptBlock.GetScriptBlockState
 local blockArraySize=8
-local c=-127
+--ORPHAN local RENsomeValue=-127
 function this.DeclareSVars()
   return{
     {name="sbl_scriptBlockName",type=TppScriptVars.TYPE_UINT32,arraySize=blockArraySize,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
@@ -16,17 +16,17 @@ end
 function this.GetCurrentPackListName(blockName)
   local blockId=ScriptBlock.GetScriptBlockId(blockName)
   if blockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
-    local t=mvars.sbl_scriptBlockPackList[blockName]
-    if not t then
+    local packList=mvars.sbl_scriptBlockPackList[blockName]
+    if not packList then
       return
     end
-    local e=svars.sbl_scriptBlockPack[blockId]
-    if e==0 then
+    local currentPackNameStr32=svars.sbl_scriptBlockPack[blockId]
+    if currentPackNameStr32==0 then
       return
     end
-    for t,c in pairs(t)do
-      if e==Fox.StrCode32(t)then
-        return t
+    for packName,packPath in pairs(packList)do
+      if currentPackNameStr32==Fox.StrCode32(packName)then
+        return packName
       end
     end
   else
@@ -42,38 +42,38 @@ function this.OnAllocate(missionTable)
     this.RegisterCommonBlockPackList("demo_block",missionTable.demo.demoBlockList)
   end
 end
-function this.RegisterCommonBlockPackList(e,t)
-  if type(e)~="string"then
+function this.RegisterCommonBlockPackList(blockName,blockPackList)
+  if type(blockName)~="string"then
     return
   end
-  if IsTypeTable(t)then
-    mvars.sbl_scriptBlockPackList[e]={}
-    mvars.sbl_scriptBlockStrCode32PackList[e]={}
-    for t,c in pairs(t)do
-      mvars.sbl_scriptBlockPackList[e][t]=c
+  if IsTypeTable(blockPackList)then
+    mvars.sbl_scriptBlockPackList[blockName]={}
+    mvars.sbl_scriptBlockStrCode32PackList[blockName]={}
+    for packName,packPath in pairs(blockPackList)do
+      mvars.sbl_scriptBlockPackList[blockName][packName]=packPath
     end
   else
     return
   end
 end
-function this.InitScriptBlockState(t)
-  this.SetScriptBlockState(t,TppDefine.SCRIPT_BLOCK_STATE.ALLOCATED)
+function this.InitScriptBlockState(blockId)
+  this.SetScriptBlockState(blockId,TppDefine.SCRIPT_BLOCK_STATE.ALLOCATED)
 end
-function this.FinalizeScriptBlockState(t)
-  this.SetScriptBlockState(t,TppDefine.SCRIPT_BLOCK_STATE.EMPTY)
+function this.FinalizeScriptBlockState(blockId)
+  this.SetScriptBlockState(blockId,TppDefine.SCRIPT_BLOCK_STATE.EMPTY)
 end
 function this.ActivateScriptBlockState(blockId)
-  local e=this.SetScriptBlockState(blockId,TppDefine.SCRIPT_BLOCK_STATE.ACTIVATED)
-  if e then
+  local activated=this.SetScriptBlockState(blockId,TppDefine.SCRIPT_BLOCK_STATE.ACTIVATED)
+  if activated then
     svars.sbl_isActive[blockId]=true
     ScriptBlock.Activate(blockId)
   end
 end
-function this.DeactivateScriptBlockState(t)
-  local e=this.SetScriptBlockState(t,TppDefine.SCRIPT_BLOCK_STATE.INITIALIZED)
-  if e then
-    svars.sbl_isActive[t]=false
-    ScriptBlock.Deactivate(t)
+function this.DeactivateScriptBlockState(blockId)
+  local deactivated=this.SetScriptBlockState(blockId,TppDefine.SCRIPT_BLOCK_STATE.INITIALIZED)
+  if deactivated then
+    svars.sbl_isActive[blockId]=false
+    ScriptBlock.Deactivate(blockId)
   end
 end
 function this.RequestActivate(blockName)
@@ -82,8 +82,8 @@ function this.RequestActivate(blockName)
 end
 function this.RequestActivateByBlockId(blockId)
   if blockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
-    local c=ScriptBlock.GetScriptBlockState(blockId)
-    if c<=ScriptBlock.SCRIPT_BLOCK_STATE_EMPTY then
+    local blockState=ScriptBlock.GetScriptBlockState(blockId)
+    if blockState<=ScriptBlock.SCRIPT_BLOCK_STATE_EMPTY then
       return
     end
     if mvars.sbl_scriptBlockState[blockId]<TppDefine.SCRIPT_BLOCK_STATE.ACTIVATE_REQUESTED then
@@ -99,7 +99,7 @@ function this.IsRequestActivate(_blockId)
     return false
   end
 end
-function this.SetScriptBlockState(_blockId,c)
+function this.SetScriptBlockState(_blockId,blockState)
   local blockId=_blockId or GetCurrentScriptBlockId()
   if blockId==ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
     return false
@@ -107,15 +107,15 @@ function this.SetScriptBlockState(_blockId,c)
   if blockId>=blockArraySize then
     return false
   end
-  if(c>=TppDefine.SCRIPT_BLOCK_STATE.MIN)or(c<TppDefine.SCRIPT_BLOCK_STATE.MAX)then
-    mvars.sbl_scriptBlockState[blockId]=c
+  if(blockState>=TppDefine.SCRIPT_BLOCK_STATE.MIN)or(blockState<TppDefine.SCRIPT_BLOCK_STATE.MAX)then
+    mvars.sbl_scriptBlockState[blockId]=blockState
     return true
   else
     return false
   end
 end
-function this.LoadDemoBlock(t,c)
-  this.Load("demo_block",t,true,c)
+function this.LoadDemoBlock(packName,load)
+  this.Load("demo_block",packName,true,load)
 end
 function this.Load(blockName,packName,doActivate,load)
   local doLoad=true
@@ -150,9 +150,9 @@ function this.Unload(blockName)
     return false
   end
 end
-function this.SaveScriptBlockId(t,e)
-  local t=Fox.StrCode32(t)
-  svars.sbl_scriptBlockName[e]=t
+function this.SaveScriptBlockId(blockName,blockId)
+  local blockNameStr32=Fox.StrCode32(blockName)
+  svars.sbl_scriptBlockName[blockId]=blockNameStr32
 end
 function this.FindPackList(blockName,packName)
   if Tpp.IsTypeTable(mvars.sbl_scriptBlockPackList)then
@@ -161,15 +161,18 @@ function this.FindPackList(blockName,packName)
     end
   end
 end
-function this.PreloadRequestOnMissionStart(e)
-  if not IsTypeTable(e)then
+
+--REF param = {{ demo_block = "Demo_ArrivalInAfghanistan" },}
+function this.PreloadRequestOnMissionStart(params)
+  if not IsTypeTable(params)then
     return
   end
-  local r=mvars.sbl_preloadRequestTable
-  for t,e in pairs(e)do
-    local c,t=next(e)
-    local e={}e[c]=t
-    table.insert(r,e)
+  local preloadRequestTable=mvars.sbl_preloadRequestTable
+  for n,request in pairs(params)do
+    local blockName,packName=next(request)
+    local preloadRequest={}
+    preloadRequest[blockName]=packName
+    table.insert(preloadRequestTable,preloadRequest)
   end
 end
 function this.DEBUG_PreloadRequest(t)
@@ -182,16 +185,17 @@ function this.DEBUG_ClearPreloadRequest()
   this.DEBUG_preloadRequestTable=nil
 end
 function this.PreloadSettingOnMissionStart()
-  local e=mvars.sbl_preloadRequestTable
-  if not next(e)then
+  local preloadRequestTable=mvars.sbl_preloadRequestTable
+  if not next(preloadRequestTable)then
     return
   end
-  for t,e in pairs(e)do
-    if next(e)then
-      for e,t in pairs(e)do
-        local e=ScriptBlock.GetScriptBlockId(e)
-        if e~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
-          svars.sbl_scriptBlockPack[e]=StrCode32(t)svars.sbl_isActive[e]=true
+  for n,request in pairs(preloadRequestTable)do
+    if next(request)then
+      for blockName,packName in pairs(request)do
+        local blockId=ScriptBlock.GetScriptBlockId(blockName)
+        if blockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
+          svars.sbl_scriptBlockPack[blockId]=StrCode32(packName)
+          svars.sbl_isActive[blockId]=true
         end
       end
     end
@@ -199,27 +203,27 @@ function this.PreloadSettingOnMissionStart()
 end
 function this.ReloadScriptBlock()
   mvars.sbl_currentScriptBlockPackInfo={}
-  for t=0,(blockArraySize-1)do
-    this.ResolveSavedScriptBlockInfo(t)
+  for blockId=0,(blockArraySize-1)do
+    this.ResolveSavedScriptBlockInfo(blockId)
   end
-  for e,scriptBlockPackInfo in pairs(mvars.sbl_currentScriptBlockPackInfo)do
-    svars.sbl_scriptBlockPack[e]=scriptBlockPackInfo.packListKeyHash
-    svars.sbl_scriptBlockName[e]=scriptBlockPackInfo.scriptBlockNameHash
+  for blockId,scriptBlockPackInfo in pairs(mvars.sbl_currentScriptBlockPackInfo)do
+    svars.sbl_scriptBlockPack[blockId]=scriptBlockPackInfo.packListKeyHash
+    svars.sbl_scriptBlockName[blockId]=scriptBlockPackInfo.scriptBlockNameHash
   end
-  for blockName,t in pairs(mvars.sbl_scriptBlockPackList)do
+  for blockName,packList in pairs(mvars.sbl_scriptBlockPackList)do
     local blockId=ScriptBlock.GetScriptBlockId(blockName)
     if blockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
       mvars.sbl_scriptBlockStrCode32PackList[blockId]={}
-      for t,c in pairs(t)do
-        mvars.sbl_scriptBlockStrCode32PackList[blockId][StrCode32(t)]=c
+      for packName,packPath in pairs(packList)do
+        mvars.sbl_scriptBlockStrCode32PackList[blockId][StrCode32(packName)]=packPath
       end
     end
   end
   for blockId=0,(blockArraySize-1)do
-    local c=svars.sbl_scriptBlockPack[blockId]
-    if c>0 then
+    local packNameStr32=svars.sbl_scriptBlockPack[blockId]
+    if packNameStr32>0 then
       if mvars.sbl_scriptBlockStrCode32PackList[blockId]then
-        local packPath=mvars.sbl_scriptBlockStrCode32PackList[blockId][c]
+        local packPath=mvars.sbl_scriptBlockStrCode32PackList[blockId][packNameStr32]
         if packPath then
           ScriptBlock.Load(blockId,packPath)
           if svars.sbl_isActive[blockId]then
@@ -230,34 +234,35 @@ function this.ReloadScriptBlock()
     end
   end
 end
-function this.ResolveSavedScriptBlockInfo(t)
-  local r=svars.sbl_scriptBlockName[t]
-  local i=svars.sbl_scriptBlockPack[t]
-  if r==0 then
+function this.ResolveSavedScriptBlockInfo(blockId)
+  local scriptBlockNameHash=svars.sbl_scriptBlockName[blockId]
+  local packListKeyHash=svars.sbl_scriptBlockPack[blockId]
+  if scriptBlockNameHash==0 then
     return
   end
-  if i==0 then
+  if packListKeyHash==0 then
     return
   end
-  local c
-  for e,t in pairs(mvars.sbl_scriptBlockPackList)do
-    if Fox.StrCode32(e)==r then
-      c=e
+  local currentBlockName
+  for blockName,packList in pairs(mvars.sbl_scriptBlockPackList)do
+    if Fox.StrCode32(blockName)==scriptBlockNameHash then
+      currentBlockName=blockName
       break
     end
   end
-  if not c then
-    this.ClearSavedScriptBlockInfo(t)
+  if not currentBlockName then
+    this.ClearSavedScriptBlockInfo(blockId)
     return
   end
-  local l=ScriptBlock.GetScriptBlockId(c)
-  if l~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
-    mvars.sbl_currentScriptBlockPackInfo[l]={scriptBlockNameHash=r,packListKeyHash=i}
+  local blockId=ScriptBlock.GetScriptBlockId(currentBlockName)
+  if blockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
+    mvars.sbl_currentScriptBlockPackInfo[blockId]={scriptBlockNameHash=scriptBlockNameHash,packListKeyHash=packListKeyHash}
   else
-    this.ClearSavedScriptBlockInfo(t,c)
+    this.ClearSavedScriptBlockInfo(blockId,currentBlockName)
   end
 end
-function this.ClearSavedScriptBlockInfo(e,t)svars.sbl_scriptBlockName[e]=0
-  svars.sbl_scriptBlockPack[e]=0
+function this.ClearSavedScriptBlockInfo(blockId,blockName)
+  svars.sbl_scriptBlockName[blockId]=0
+  svars.sbl_scriptBlockPack[blockId]=0
 end
 return this

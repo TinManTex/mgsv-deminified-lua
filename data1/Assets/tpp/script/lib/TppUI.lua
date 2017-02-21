@@ -1112,7 +1112,7 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this.OnChangeSVars(name,RENparam2)
-  local e=TppServerManager.FobIsSneak()
+  --ORPHAN local isSneak=TppServerManager.FobIsSneak()
   if FobUI then
     FobUI.OnChangeSVars(name,RENparam2)--RETAILPATCH 1070 some stuff pushed from here into this function <<
   end

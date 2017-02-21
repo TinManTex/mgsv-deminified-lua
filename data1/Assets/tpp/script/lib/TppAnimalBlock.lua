@@ -1,9 +1,9 @@
 local this={}
-local d=ScriptBlock.GetCurrentScriptBlockId
-local t=ScriptBlock.GetScriptBlockState
-local r=GameObject.NULL_ID
-local i=Tpp.IsTypeTable
-local c=Tpp.IsTypeString
+local GetCurrentScriptBlockId=ScriptBlock.GetCurrentScriptBlockId
+local GetScriptBlockState=ScriptBlock.GetScriptBlockState
+local NULL_ID=GameObject.NULL_ID
+local IsTable=Tpp.IsTypeTable
+local IsString=Tpp.IsTypeString
 local animalBlockName="animal_block"
 local CheckBlockArea=Tpp.CheckBlockArea
 local animalsTable={
@@ -17,45 +17,45 @@ local animalsTable={
   MotherDog={type="TppJackal",locatorFormat="anml_MotherDog_%02d",routeFormat="rt_anml_BuddyPuppy_%02d",nightRouteFormat="rt_anml_BuddyPuppy_%02d",isHerd=false,isDead=true},
   Rat={type="TppRat",locatorFormat="anml_rat_%02d",routeFormat="rt_anml_rat_%02d",nightRouteFormat="rt_anml_rat_%02d",isHerd=false,isDead=false},
   NoAnimal={type="NoAnimal",locatorFormat="anml_NoAnimal_%02d",routeFormat="rt_anml_BuddyPuppy_%02d",nightRouteFormat="rt_anml_BuddyPuppy_%02d",isHerd=false,isDead=false}
-  }
-local nightTimes={
-Goat={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-Wolf={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-Bear={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-Nubian={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-Jackal={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-Zebra={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-BuddyPuppy={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-MotherDog={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-Rat={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
-NoAnimal={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"}
 }
-local m=5
+local nightTimes={
+  Goat={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  Wolf={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  Bear={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  Nubian={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  Jackal={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  Zebra={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  BuddyPuppy={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  MotherDog={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  Rat={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"},
+  NoAnimal={nightStartTime="18:00:00",nightEndTime="06:00:00",timeLag="00:10:00"}
+}
+local maxAnimals=5
 this.CLOCK_MESSAGE_AT_NIGHT_FORMAT="AnimalRouteChangeAtNight%02d"
 this.CLOCK_MESSAGE_AT_MORNING_FORMAT="AnimalRouteChangeAtMorning%02d"
 this.weatherTable={}
-local l=0
-local o=0
-function this.GetDefaultTimeTable(e)
-  if e=="Goat"then
+local weatherTableCount=0
+local l_numAnimals=0
+function this.GetDefaultTimeTable(animal)
+  if animal=="Goat"then
     return nightTimes.Goat
-  elseif e=="Wolf"then
+  elseif animal=="Wolf"then
     return nightTimes.Wolf
-  elseif e=="Bear"then
+  elseif animal=="Bear"then
     return nightTimes.Bear
-  elseif e=="Nubian"then
+  elseif animal=="Nubian"then
     return nightTimes.Nubian
-  elseif e=="Jackal"then
+  elseif animal=="Jackal"then
     return nightTimes.Jackal
-  elseif e=="Zebra"then
+  elseif animal=="Zebra"then
     return nightTimes.Zebra
-  elseif e=="BuddyPuppy"then
+  elseif animal=="BuddyPuppy"then
     return nightTimes.BuddyPuppy
-  elseif e=="MotherDog"then
+  elseif animal=="MotherDog"then
     return nightTimes.MotherDog
-  elseif e=="Rat"then
+  elseif animal=="Rat"then
     return nightTimes.Rat
-  elseif e=="NoAnimal"then
+  elseif animal=="NoAnimal"then
     return nightTimes.NoAnimal
   else
     return nil
@@ -87,25 +87,25 @@ function this.UpdateLoadAnimalBlock(i,o)
   end
 end
 function this.GetCurrentAnimalBlockAreaName()
-  local e=mvars.animalBlockAreaName
-  if e==nil then
+  local name=mvars.animalBlockAreaName
+  if name==nil then
   end
-  return e
+  return name
 end
 function this._UpdateActiveAnimalBlock(a,o)
-  local t=mvars.loc_locationAnimalSettingTable
-  local l=t.animalAreaSetting
-  local t=t.MAX_AREA_NUM
-  if not t then
+  local loc_locationAnimalSettingTable=mvars.loc_locationAnimalSettingTable
+  local animalAreaSetting=loc_locationAnimalSettingTable.animalAreaSetting
+  local MAX_AREA_NUM=loc_locationAnimalSettingTable.MAX_AREA_NUM
+  if not MAX_AREA_NUM then
     return
   end
-  local t,e=this._GetAnimalBlockAreaName(l,t,"activeArea",a,o)
+  local t,e=this._GetAnimalBlockAreaName(animalAreaSetting,MAX_AREA_NUM,"activeArea",a,o)
   if e~=nil then
-    local e=ScriptBlock.GetScriptBlockId(animalBlockName)
-    TppScriptBlock.ActivateScriptBlockState(e)
+    local blockId=ScriptBlock.GetScriptBlockId(animalBlockName)
+    TppScriptBlock.ActivateScriptBlockState(blockId)
   else
-    local e=ScriptBlock.GetScriptBlockId(animalBlockName)
-    TppScriptBlock.DeactivateScriptBlockState(e)
+    local blockId=ScriptBlock.GetScriptBlockId(animalBlockName)
+    TppScriptBlock.DeactivateScriptBlockState(blockId)
   end
 end
 function this._GetAnimalBlockAreaName(areaSetting,maxAreaNum,areaId,n,a)
@@ -152,97 +152,101 @@ function this._IsNight(e,t,a)
   local e=(e<a)or(e>=t)
   return e
 end
-function this._IsNightForAnimalType(t,a)
-  local t=this.GetDefaultTimeTable(t)
-  local n=t.nightStartTime
-  local n=TppClock.ParseTimeString(n,"number")
-  local t=t.nightEndTime
-  local t=TppClock.ParseTimeString(t,"number")
-  return this._IsNight(a,n,t)
+function this._IsNightForAnimalType(animalType,time)
+  local timeTable=this.GetDefaultTimeTable(animalType)
+  local nightStartString=timeTable.nightStartTime
+  local nightStart=TppClock.ParseTimeString(nightStartString,"number")
+  local nightEndString=timeTable.nightEndTime
+  local nightEnd=TppClock.ParseTimeString(nightEndString,"number")
+  return this._IsNight(time,nightStart,nightEnd)
 end
-function this._InitializeCommonAnimalSetting(o,a,t)
-  local l=1
-  if i(a)then
-    l=a.groupNumber or 0
+function this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable)
+  local groupNumber=1
+  if IsTable(animalSetting)then
+    groupNumber=animalSetting.groupNumber or 0
   end
-  local n=a.nightStartTime
+  local n=animalSetting.nightStartTime
   if n==nil then
-    n=this.GetDefaultTimeTable(o).nightStartTime
+    n=this.GetDefaultTimeTable(animalType).nightStartTime
   end
   local r=TppClock.ParseTimeString(n,"number")
-  local n=a.nightEndTime
+  local n=animalSetting.nightEndTime
   if n==nil then
-    n=this.GetDefaultTimeTable(o).nightEndTime
+    n=this.GetDefaultTimeTable(animalType).nightEndTime
   end
   local c=TppClock.ParseTimeString(n,"number")
-  local n=a.timeLag
-  if n==nil then
-    n=this.GetDefaultTimeTable(o).timeLag
+  local time=animalSetting.timeLag
+  if time==nil then
+    time=this.GetDefaultTimeTable(animalType).timeLag
   end
-  local o=TppClock.ParseTimeString(n,"number")
-  local i=TppClock.GetTime"number"local n=0
-  if t.isDead==false then
-    if t.isHerd==false then
-      for a=0,(l-1)do
+  local o=TppClock.ParseTimeString(time,"number")
+  local currentTime=TppClock.GetTime"number"
+  local n=0
+  if setupTable.isDead==false then
+    if setupTable.isHerd==false then
+      for a=0,(groupNumber-1)do
         n=o*a
-        if this._IsNight(i,r+n,c+n)then
-          this._SetRoute(t.type,t.locatorFormat,t.nightRouteFormat,a)
+        if this._IsNight(currentTime,r+n,c+n)then
+          this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,a)
         else
-          this._SetRoute(t.type,t.locatorFormat,t.routeFormat,a)
+          this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,a)
         end
       end
     else
-      for a=0,(l-1)do
+      for a=0,(groupNumber-1)do
         n=o*a
-        if this._IsNight(i,r+n,c+n)then
-          this._SetHerdRoute(t.type,t.locatorFormat,t.nightRouteFormat,a)
+        if this._IsNight(currentTime,r+n,c+n)then
+          this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,a)
         else
-          this._SetHerdRoute(t.type,t.locatorFormat,t.routeFormat,a)
+          this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,a)
         end
       end
     end
   else
-    this._ChangeDeadState(t.type,a.position,a.degRotationY)
+    this._ChangeDeadState(setupTable.type,animalSetting.position,animalSetting.degRotationY)
   end
 end
-function this._SetHerdRoute(e,a,n,t)
-  local e={type=e,index=0}
-  if e==r then
+function this._SetHerdRoute(type,a,n,t)
+  local herdId={type=type,index=0}
+  if herdId==NULL_ID then
     return
   end
-  local a=string.format(a,t)
-  local t=string.format(n,t)
-  local t={id="SetHerdEnabledCommand",type="Route",name=a,instanceIndex=0,route=t}
-  GameObject.SendCommand(e,t)
+  local name=string.format(a,t)
+  local route=string.format(n,t)
+  local command={id="SetHerdEnabledCommand",type="Route",name=name,instanceIndex=0,route=route}
+  GameObject.SendCommand(herdId,command)
 end
-function this._SetRoute(e,a,n,t)
-  local e={type=e,index=0}
-  if e==r then
+function this._SetRoute(type,a,n,t)
+  local herdId={type=type,index=0}
+  if herdId==NULL_ID then
     return
   end
-  local a=string.format(a,t)
-  local t=string.format(n,t)
-  local t={id="SetRoute",name=a,route=t}
-  GameObject.SendCommand(e,t)
+  local name=string.format(a,t)
+  local route=string.format(n,t)
+  local command={id="SetRoute",name=name,route=route}
+  GameObject.SendCommand(herdId,command)
 end
-function this._ChangeDeadState(e,t,a)
-  local e={type=e,index=0}
-  if e==r then
+function this._ChangeDeadState(type,position,rotY)
+  local herdId={type=type,index=0}
+  if herdId==NULL_ID then
     return
   end
-  local n=t or Vector3(0,0,0)
-  local t=a or 0
-  local t={id="ChangeDeadState",position=n,degRotationY=t}
-  GameObject.SendCommand(e,t)
+  local position=position or Vector3(0,0,0)
+  local degRotationY=rotY or 0
+  local command={id="ChangeDeadState",position=position,degRotationY=degRotationY}
+  GameObject.SendCommand(herdId,command)
 end
-function this._RegisterWeatherTable(t,a,n)
-  this.weatherTable[l]={msg="Clock",sender=t,func=function(l,a)
-    if n then
-      n(t,a)
-    else
-      this._ChangeRouteAtTime(t,a)
+function this._RegisterWeatherTable(sender,param,func)
+  this.weatherTable[weatherTableCount]={
+    msg="Clock",sender=sender,func=function(l,a)
+      if func then
+        func(sender,a)
+      else
+        this._ChangeRouteAtTime(sender,a)
+      end
     end
-  end}l=l+1
+  }
+  weatherTableCount=weatherTableCount+1
 end
 function this._RegisterClockMessage(t,i,o,n,a,l)
   local t=string.format(t,a)
@@ -253,14 +257,14 @@ function this._RegisterClockMessage(t,i,o,n,a,l)
   return t
 end
 function this._AddClockMessage(n,t,a,r)
-  local a=1
-  if i(t)then
-    a=t.groupNumber or 0
+  local numAnimals=1
+  if IsTable(t)then
+    numAnimals=t.groupNumber or 0
   end
-  if r+a>m then
+  if r+numAnimals>maxAnimals then
     return
   end
-  local m=r+a
+  local m=r+numAnimals
   local a=t.nightStartTime
   if a==nil then
     a=this.GetDefaultTimeTable(n).nightStartTime
@@ -276,10 +280,11 @@ function this._AddClockMessage(n,t,a,r)
     t=this.GetDefaultTimeTable(n).timeLag
   end
   local t=TppClock.ParseTimeString(t,"number")
-  l=0
+  weatherTableCount=0
   for a=r,m-1 do
     this._RegisterClockMessage(this.CLOCK_MESSAGE_AT_NIGHT_FORMAT,c,t,true,a)
-    this._RegisterClockMessage(this.CLOCK_MESSAGE_AT_MORNING_FORMAT,i,t,false,a)o=o+1
+    this._RegisterClockMessage(this.CLOCK_MESSAGE_AT_MORNING_FORMAT,i,t,false,a)
+    l_numAnimals=l_numAnimals+1
   end
 end
 function this._ChangeRouteAtTime(t,m)
@@ -298,9 +303,9 @@ function this._ChangeRouteAtTime(t,m)
   for m,e in pairs(o)do
     local o
     local t
-    if c(e)then
+    if IsString(e)then
       o=e
-    elseif i(e)then
+    elseif IsTable(e)then
       o=m
       t=e
     end
@@ -339,18 +344,18 @@ function this._MakeMessageExecTable()
   mvars.animalBlockScript.messageExecTable=Tpp.MakeMessageExecTable(mvars.animalBlockScript.Messages)
 end
 function this._GetAnimalBlockState()
-  local e=ScriptBlock.GetScriptBlockId(animalBlockName)
-  if e==ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
+  local blockId=ScriptBlock.GetScriptBlockId(animalBlockName)
+  if blockId==ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
     return
   end
-  return ScriptBlock.GetScriptBlockState(e)
+  return ScriptBlock.GetScriptBlockState(blockId)
 end
 function this.InitializeBlockStatus()
-  local e=ScriptBlock.GetScriptBlockId(animalBlockName)
-  if e==ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
+  local blockId=ScriptBlock.GetScriptBlockId(animalBlockName)
+  if blockId==ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
     return
   end
-  TppScriptBlock.ClearSavedScriptBlockInfo(e)
+  TppScriptBlock.ClearSavedScriptBlockInfo(blockId)
 end
 function this.OnActivateAnimalBlock(e)
   for e,e in pairs(e)do
@@ -364,26 +369,26 @@ function this.OnInitializeAnimalBlock()
   end
   mvars.animalBlockScript.DidInitialized=true
   mvars.animalBlockScript.Messages=Tpp.StrCode32Table{Block={{msg="StageBlockCurrentSmallBlockIndexUpdated",func=function(t,a)this._UpdateActiveAnimalBlock(t,a)end}}}
-  o=0
+  l_numAnimals=0
   this.weatherTable={}
   local t=mvars.loc_locationAnimalSettingTable
   local t=t.animalTypeSetting[mvars.animalBlockKeyName]
   local l=0
   for o,n in pairs(t)do
-    local t
-    local a
-    if c(n)then
-      t=n
-    elseif i(n)then
-      t=o
-      a=n
+    local animalType
+    local animalSetting
+    if IsString(n)then
+      animalType=n
+    elseif IsTable(n)then
+      animalType=o
+      animalSetting=n
     end
-    local n=this._GetSetupTable(t)
-    if n~=nil and t~="NoAnimal"then
-      this._InitializeCommonAnimalSetting(t,a,n)
-      this._AddClockMessage(t,a,n,l)
-      TppFreeHeliRadio.RegistAnimalOptionalRadio(t)
-      local e=a.groupNumber or 0
+    local setupTable=this._GetSetupTable(animalType)
+    if setupTable~=nil and animalType~="NoAnimal"then
+      this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable)
+      this._AddClockMessage(animalType,animalSetting,setupTable,l)
+      TppFreeHeliRadio.RegistAnimalOptionalRadio(animalType)
+      local e=animalSetting.groupNumber or 0
       l=l+e
     end
   end
@@ -399,33 +404,34 @@ function this.OnReload()
   if not mvars.loc_locationAnimalSettingTable or not mvars.animalBlockKeyName then
     return
   end
-  local t=mvars.loc_locationAnimalSettingTable
-  local t=t.animalTypeSetting[mvars.animalBlockKeyName]
-  local a=0
-  for r,n in pairs(t)do
-    local t
+  local locationAnimalSettingTable=mvars.loc_locationAnimalSettingTable
+  local animalSetting=locationAnimalSettingTable.animalTypeSetting[mvars.animalBlockKeyName]
+  local numAnimals=0
+  for k,v in pairs(animalSetting)do
+    local animalType
     local l
-    if c(n)then
-      t=n
-    elseif i(n)then
-      t=r
-      l=n
+    if IsString(v)then
+      animalType=v
+    elseif IsTable(v)then
+      animalType=k
+      l=v
     end
-    local e=this._GetSetupTable(t)
-    if e~=nil and t~="NoAnimal"then
-      local e=l.groupNumber or 0
-      if a+e>m then
+    --REF setupTable {type="TppGoat",locatorFormat="anml_goat_%02d",routeFormat="rt_anml_goat_%02d",nightRouteFormat="rt_anml_goat_n%02d",isHerd=true,isDead=false},
+    local setupTable=this._GetSetupTable(animalType)
+    if setupTable~=nil and animalType~="NoAnimal"then
+      local groupNumber=l.groupNumber or 0
+      if numAnimals+groupNumber>maxAnimals then
         break
       end
-      a=a+e
+      numAnimals=numAnimals+groupNumber
     end
   end
-  o=a
+  l_numAnimals=numAnimals
   this._MakeMessageExecTable()
 end
 function this.OnAllocate(a)
-  local t=d()
-  TppScriptBlock.InitScriptBlockState(t)
+  local blockId=GetCurrentScriptBlockId()
+  TppScriptBlock.InitScriptBlockState(blockId)
   mvars.animalBlockScript=a
   local t,a=Tpp.GetCurrentStageSmallBlockIndex()
   this._UpdateActiveAnimalBlock(t,a)
@@ -434,14 +440,15 @@ function this.OnAllocate(a)
 end
 function this.OnTerminate()
   if mvars.animalBlockScript.DidInitialized then
-    for a=0,o-1 do
+    for a=0,l_numAnimals-1 do
       local t=string.format(this.CLOCK_MESSAGE_AT_NIGHT_FORMAT,a)
-      TppClock.UnregisterClockMessage(t)t=string.format(this.CLOCK_MESSAGE_AT_MORNING_FORMAT,a)
+      TppClock.UnregisterClockMessage(t)
+      t=string.format(this.CLOCK_MESSAGE_AT_MORNING_FORMAT,a)
       TppClock.UnregisterClockMessage(t)
     end
   end
-  local e=d()
-  TppScriptBlock.FinalizeScriptBlockState(e)
+  local blockId=GetCurrentScriptBlockId()
+  TppScriptBlock.FinalizeScriptBlockState(blockId)
   TppFreeHeliRadio.UnregistAnimalOptionalRadio()
   mvars.animalBlockScript.DidInitialized=nil
   mvars.animalBlockScript.OnReload=nil

@@ -1,6 +1,7 @@
+--TppDemoBlock.lua
 local this={}
-local c=ScriptBlock.GetCurrentScriptBlockId
-local t=ScriptBlock.GetScriptBlockState
+local GetCurrentScriptBlockId=ScriptBlock.GetCurrentScriptBlockId
+local GetScriptBlockState=ScriptBlock.GetScriptBlockState
 this.isAllocatedMtbsEnemy=false
 function this.OnAllocate()
   TppScriptBlock.InitScriptBlockState()
@@ -13,14 +14,14 @@ end
 function this.OnInitialize()
 end
 function this.OnUpdate()
-  local e=c()
-  local t=t(e)
-  if t==ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE then
+  local blockId=GetCurrentScriptBlockId()
+  local blockState=GetScriptBlockState(blockId)
+  if blockState==ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE then
     TppDemo.PlayOnDemoBlock()
     return
   end
-  if TppScriptBlock.IsRequestActivate(e)then
-    TppScriptBlock.ActivateScriptBlockState(e)
+  if TppScriptBlock.IsRequestActivate(blockId)then
+    TppScriptBlock.ActivateScriptBlockState(blockId)
   end
 end
 function this.OnTerminate()
