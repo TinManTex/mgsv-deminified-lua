@@ -270,166 +270,6 @@ this.bodyIdTable={
     ARMOR={TppEnemyBodyId.sva0_v00_a},
     RADIO={TppEnemyBodyId.svs0_rdo_v00_b}
   },
-  SOVIET_WILDCARD={
-    ASSAULT={
-      TppEnemyBodyId.svs0_unq_v010,
-      TppEnemyBodyId.svs0_unq_v020,
-      TppEnemyBodyId.svs0_unq_v070,
-      TppEnemyBodyId.svs0_unq_v071,
-      TppEnemyBodyId.svs0_unq_v072,
-      TppEnemyBodyId.svs0_unq_v009,
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-    },
-    SNIPER={
-      TppEnemyBodyId.svs0_unq_v020,
-      TppEnemyBodyId.svs0_unq_v070,
-      TppEnemyBodyId.svs0_unq_v071,
-      TppEnemyBodyId.svs0_unq_v072,
-      TppEnemyBodyId.svs0_unq_v009,
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-      TppEnemyBodyId.svs0_unq_v010,
-    },
-    SHOTGUN={
-      TppEnemyBodyId.svs0_unq_v070,
-      TppEnemyBodyId.svs0_unq_v071,
-      TppEnemyBodyId.svs0_unq_v072,
-      TppEnemyBodyId.svs0_unq_v009,
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-      TppEnemyBodyId.svs0_unq_v010,
-      TppEnemyBodyId.svs0_unq_v020,
-    },
-    MG={
-      TppEnemyBodyId.svs0_unq_v071,
-      TppEnemyBodyId.svs0_unq_v072,
-      TppEnemyBodyId.svs0_unq_v009,
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-      TppEnemyBodyId.svs0_unq_v010,
-      TppEnemyBodyId.svs0_unq_v020,
-      TppEnemyBodyId.svs0_unq_v070,
-    },
-    MISSILE={
-      TppEnemyBodyId.svs0_unq_v072,
-      TppEnemyBodyId.svs0_unq_v009,
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-      TppEnemyBodyId.svs0_unq_v010,
-      TppEnemyBodyId.svs0_unq_v020,
-      TppEnemyBodyId.svs0_unq_v070,
-      TppEnemyBodyId.svs0_unq_v071,
-    },
-    SHIELD={
-      TppEnemyBodyId.svs0_unq_v009,
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-      TppEnemyBodyId.svs0_unq_v010,
-      TppEnemyBodyId.svs0_unq_v020,
-      TppEnemyBodyId.svs0_unq_v070,
-      TppEnemyBodyId.svs0_unq_v071,
-      TppEnemyBodyId.svs0_unq_v072,
-    },
-    ARMOR={TppEnemyBodyId.sva0_v00_a},
-    RADIO={
-      TppEnemyBodyId.svs0_unq_v060,
-      TppEnemyBodyId.svs0_unq_v100,
-      TppEnemyBodyId.svs0_unq_v420,
-      TppEnemyBodyId.svs0_unq_v010,
-      TppEnemyBodyId.svs0_unq_v020,
-      TppEnemyBodyId.svs0_unq_v070,
-      TppEnemyBodyId.svs0_unq_v071,
-      TppEnemyBodyId.svs0_unq_v072,
-      TppEnemyBodyId.svs0_unq_v009,
-    }
-  },
-  PF_WILDCARD={
-    ASSAULT={
-      TppEnemyBodyId.pfs0_unq_v210,
-      TppEnemyBodyId.pfs0_unq_v250,
-      TppEnemyBodyId.pfs0_unq_v360,
-      TppEnemyBodyId.pfs0_unq_v280,
-      TppEnemyBodyId.pfs0_unq_v150,
-      TppEnemyBodyId.pfs0_unq_v140,
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-    },
-    SNIPER={
-      TppEnemyBodyId.pfs0_unq_v250,
-      TppEnemyBodyId.pfs0_unq_v360,
-      TppEnemyBodyId.pfs0_unq_v280,
-      TppEnemyBodyId.pfs0_unq_v150,
-      TppEnemyBodyId.pfs0_unq_v140,
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-      TppEnemyBodyId.pfs0_unq_v210,
-    },
-    SHOTGUN={
-      TppEnemyBodyId.pfs0_unq_v360,
-      TppEnemyBodyId.pfs0_unq_v280,
-      TppEnemyBodyId.pfs0_unq_v150,
-      TppEnemyBodyId.pfs0_unq_v140,
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-      TppEnemyBodyId.pfs0_unq_v210,
-      TppEnemyBodyId.pfs0_unq_v250,
-    },
-    MG={
-      TppEnemyBodyId.pfs0_unq_v280,
-      TppEnemyBodyId.pfs0_unq_v150,
-      TppEnemyBodyId.pfs0_unq_v140,
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-      TppEnemyBodyId.pfs0_unq_v210,
-      TppEnemyBodyId.pfs0_unq_v250,
-      TppEnemyBodyId.pfs0_unq_v360,
-    },
-    MISSILE={
-      TppEnemyBodyId.pfs0_unq_v150,
-      TppEnemyBodyId.pfs0_unq_v140,
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-      TppEnemyBodyId.pfs0_unq_v210,
-      TppEnemyBodyId.pfs0_unq_v250,
-      TppEnemyBodyId.pfs0_unq_v360,
-      TppEnemyBodyId.pfs0_unq_v280,
-    },
-    SHIELD={
-      TppEnemyBodyId.pfs0_unq_v140,
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-      TppEnemyBodyId.pfs0_unq_v210,
-      TppEnemyBodyId.pfs0_unq_v250,
-      TppEnemyBodyId.pfs0_unq_v360,
-      TppEnemyBodyId.pfs0_unq_v280,
-      TppEnemyBodyId.pfs0_unq_v150,
-    },
-    ARMOR={TppEnemyBodyId.pfa0_v00_a,TppEnemyBodyId.pfa0_v00_b,TppEnemyBodyId.pfa0_v00_c},
-    RADIO={
-      TppEnemyBodyId.pfs0_unq_v241,
-      TppEnemyBodyId.pfs0_unq_v450,
-      TppEnemyBodyId.pfs0_unq_v440,
-      TppEnemyBodyId.pfs0_unq_v210,
-      TppEnemyBodyId.pfs0_unq_v250,
-      TppEnemyBodyId.pfs0_unq_v360,
-      TppEnemyBodyId.pfs0_unq_v280,
-      TppEnemyBodyId.pfs0_unq_v150,
-      TppEnemyBodyId.pfs0_unq_v140,
-    },
-  },
   PF_A={
     ASSAULT={TppEnemyBodyId.pfs0_rfl_v00_a,TppEnemyBodyId.pfs0_mcg_v00_a},
     ASSAULT_OB={TppEnemyBodyId.pfs0_rfl_v00_a,TppEnemyBodyId.pfs0_rfl_v01_a,TppEnemyBodyId.pfs0_mcg_v00_a},
@@ -618,11 +458,17 @@ local MbsDevelopedEquipType=MbsDevelopedEquipType or{}
 this.DDWeaponIdInfo={
   HANDGUN={{equipId=TppEquip.EQP_WP_West_hg_010}},
   SMG={
+    {equipId=TppEquip.EQP_WP_East_sm_04b,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2102},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_East_sm_04a,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2101},
+    {equipId=TppEquip.EQP_WP_East_sm_049,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2100},--<
     {equipId=TppEquip.EQP_WP_East_sm_047,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2044},--grade7
     {equipId=TppEquip.EQP_WP_East_sm_045,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2043},--grade5
     {equipId=TppEquip.EQP_WP_East_sm_044,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2042},--grade4
     {equipId=TppEquip.EQP_WP_East_sm_043,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2041},--grade3
     {equipId=TppEquip.EQP_WP_East_sm_042,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SM_2040_NOKILL,developId=2040},--grade2
+    {equipId=TppEquip.EQP_WP_West_sm_01b,developedEquipType=MbsDevelopedEquipType.SM_2014,developId=2072},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_West_sm_01a,developedEquipType=MbsDevelopedEquipType.SM_2014,developId=2071},
+    {equipId=TppEquip.EQP_WP_West_sm_019,developedEquipType=MbsDevelopedEquipType.SM_2014,developId=2070},--<
     {equipId=TppEquip.EQP_WP_West_sm_017,developedEquipType=MbsDevelopedEquipType.SM_2014,developId=2014},--grade7
     {equipId=TppEquip.EQP_WP_West_sm_016,developedEquipType=MbsDevelopedEquipType.SM_2010,developId=2013},--grade6
     {equipId=TppEquip.EQP_WP_West_sm_015,developedEquipType=MbsDevelopedEquipType.SM_2010,developId=2012},--grade5
@@ -643,11 +489,17 @@ this.DDWeaponIdInfo={
     {equipId=TppEquip.EQP_WP_Com_sg_011,developedEquipType=MbsDevelopedEquipType.SG_4020,developId=4020}--grade2
   },
   ASSAULT={
+    {equipId=TppEquip.EQP_WP_West_ar_07b,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3132},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_West_ar_07a,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3131},
+    {equipId=TppEquip.EQP_WP_West_ar_079,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3130},--<
     {equipId=TppEquip.EQP_WP_West_ar_077,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3064},--grade7
     {equipId=TppEquip.EQP_WP_West_ar_075,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3063},--grade5
     {equipId=TppEquip.EQP_WP_West_ar_070,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3062},--grade4
     {equipId=TppEquip.EQP_WP_West_ar_063,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3061},--grade3
     {equipId=TppEquip.EQP_WP_West_ar_060,isNoKill=true,developedEquipType=MbsDevelopedEquipType.AR_3060_NOKILL,developId=3060},--grade2
+    {equipId=TppEquip.EQP_WP_West_ar_05b,developedEquipType=MbsDevelopedEquipType.AR_3036,developId=3102},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_West_ar_05a,developedEquipType=MbsDevelopedEquipType.AR_3036,developId=3101},
+    {equipId=TppEquip.EQP_WP_West_ar_059,developedEquipType=MbsDevelopedEquipType.AR_3036,developId=3100},--<
     {equipId=TppEquip.EQP_WP_West_ar_057,developedEquipType=MbsDevelopedEquipType.AR_3036,developId=3042},--grade7
     {equipId=TppEquip.EQP_WP_West_ar_050,developedEquipType=MbsDevelopedEquipType.AR_3036,developId=3038},--grade5
     {equipId=TppEquip.EQP_WP_West_ar_055,developedEquipType=MbsDevelopedEquipType.AR_3036,developId=3037},--grade4
@@ -656,12 +508,18 @@ this.DDWeaponIdInfo={
     {equipId=TppEquip.EQP_WP_West_ar_040}
   },
   SNIPER={
+    {equipId=TppEquip.EQP_WP_West_sr_04b,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6037_NOKILL,developId=6132},--RETAILPATCH 1090
+    {equipId=TppEquip.EQP_WP_West_sr_04a,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6037_NOKILL,developId=6131},
+    {equipId=TppEquip.EQP_WP_West_sr_049,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6037_NOKILL,developId=6130},--<
     {equipId=TppEquip.EQP_WP_West_sr_048,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6037_NOKILL,developId=6039},--grade8
     {equipId=TppEquip.EQP_WP_West_sr_047,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6037_NOKILL,developId=6038},--grade7
     {equipId=TppEquip.EQP_WP_West_sr_037,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6037_NOKILL,developId=6037},--grade5
     {equipId=TppEquip.EQP_WP_East_sr_034,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6005_NOKILL,developId=6006},--grade4
     {equipId=TppEquip.EQP_WP_East_sr_033,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6005_NOKILL,developId=6008},--grade3
     {equipId=TppEquip.EQP_WP_East_sr_032,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SR_6005_NOKILL,developId=6005},--grade2
+    {equipId=TppEquip.EQP_WP_West_sr_02b,developedEquipType=MbsDevelopedEquipType.SR_6030,developId=6102},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_West_sr_02a,developedEquipType=MbsDevelopedEquipType.SR_6030,developId=6101},
+    {equipId=TppEquip.EQP_WP_West_sr_029,developedEquipType=MbsDevelopedEquipType.SR_6030,developId=6100},--<
     {equipId=TppEquip.EQP_WP_West_sr_027,developedEquipType=MbsDevelopedEquipType.SR_6030,developId=6033},--grade7
     {equipId=TppEquip.EQP_WP_West_sr_020,developedEquipType=MbsDevelopedEquipType.SR_6030,developId=6032},--grade5
     {equipId=TppEquip.EQP_WP_West_sr_014,developedEquipType=MbsDevelopedEquipType.SR_6030,developId=6031},--grade4
@@ -669,6 +527,9 @@ this.DDWeaponIdInfo={
     {equipId=TppEquip.EQP_WP_West_sr_011,developedEquipType=MbsDevelopedEquipType.SR_6010,developId=6010}--grade2
   },
   MG={
+    {equipId=TppEquip.EQP_WP_West_mg_03b,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7052},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_West_mg_03a,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7051},
+    {equipId=TppEquip.EQP_WP_West_mg_039,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7050},--<
     {equipId=TppEquip.EQP_WP_West_mg_037,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7004},--grade7
     {equipId=TppEquip.EQP_WP_West_mg_030,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7003},--grad5
     {equipId=TppEquip.EQP_WP_West_mg_024,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7002},--grade4
@@ -676,7 +537,13 @@ this.DDWeaponIdInfo={
     {equipId=TppEquip.EQP_WP_West_mg_020,developedEquipType=MbsDevelopedEquipType.MG_7000,developId=7e3}--grade2
   },
   MISSILE={
+    {equipId=TppEquip.EQP_WP_West_ms_02b,isNoKill=true,developedEquipType=MbsDevelopedEquipType.MS_8013_NOKILL,developId=8072},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_West_ms_02a,isNoKill=true,developedEquipType=MbsDevelopedEquipType.MS_8013_NOKILL,developId=8071},
+    {equipId=TppEquip.EQP_WP_West_ms_029,isNoKill=true,developedEquipType=MbsDevelopedEquipType.MS_8013_NOKILL,developId=8070},--<
     {equipId=TppEquip.EQP_WP_West_ms_020,isNoKill=true,developedEquipType=MbsDevelopedEquipType.MS_8013_NOKILL,developId=8013},--grade7
+    {equipId=TppEquip.EQP_WP_Com_ms_02b,developedEquipType=MbsDevelopedEquipType.MS_8020,developId=8052},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_WP_Com_ms_02a,developedEquipType=MbsDevelopedEquipType.MS_8020,developId=8051},
+    {equipId=TppEquip.EQP_WP_Com_ms_029,developedEquipType=MbsDevelopedEquipType.MS_8020,developId=8050},--<
     {equipId=TppEquip.EQP_WP_Com_ms_026,developedEquipType=MbsDevelopedEquipType.MS_8020,developId=8023},--grade6
     {equipId=TppEquip.EQP_WP_Com_ms_020,developedEquipType=MbsDevelopedEquipType.MS_8020,developId=8022},--grade5
     {equipId=TppEquip.EQP_WP_Com_ms_024,developedEquipType=MbsDevelopedEquipType.MS_8020,developId=8021},--grade4
@@ -686,6 +553,9 @@ this.DDWeaponIdInfo={
     {equipId=TppEquip.EQP_SLD_DD,developedEquipType=MbsDevelopedEquipType.SD_9000,developId=9e3}--grade2
   },
   GRENADE={
+    {equipId=TppEquip.EQP_SWP_Grenade_G08,developedEquipType=MbsDevelopedEquipType.GRENADE,developId=11122},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_SWP_Grenade_G07,developedEquipType=MbsDevelopedEquipType.GRENADE,developId=11121},
+    {equipId=TppEquip.EQP_SWP_Grenade_G06,developedEquipType=MbsDevelopedEquipType.GRENADE,developId=11120},--<
     {equipId=TppEquip.EQP_SWP_Grenade_G05,developedEquipType=MbsDevelopedEquipType.GRENADE,developId=10045},--grade8
     {equipId=TppEquip.EQP_SWP_Grenade_G04,developedEquipType=MbsDevelopedEquipType.GRENADE,developId=10044},--grade5
     {equipId=TppEquip.EQP_SWP_Grenade_G03,developedEquipType=MbsDevelopedEquipType.GRENADE,developId=10043},--grade4
@@ -694,12 +564,18 @@ this.DDWeaponIdInfo={
     {equipId=TppEquip.EQP_SWP_Grenade}
   },
   STUN_GRENADE={
+    {equipId=TppEquip.EQP_SWP_StunGrenade_G06,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=11152},--RETAILPATCH 1090>
+    {equipId=TppEquip.EQP_SWP_StunGrenade_G05,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=11151},
+    {equipId=TppEquip.EQP_SWP_StunGrenade_G04,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=11150},--<
     {equipId=TppEquip.EQP_SWP_StunGrenade_G03,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=10063},--grade8
     {equipId=TppEquip.EQP_SWP_StunGrenade_G02,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=10062},--grade5
     {equipId=TppEquip.EQP_SWP_StunGrenade_G01,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=10061},--grade4
     {equipId=TppEquip.EQP_SWP_StunGrenade,isNoKill=true,developedEquipType=MbsDevelopedEquipType.STUN_GRENADE,developId=10060}--grade3
   },
   SNEAKING_SUIT={
+    {equipId=9,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19302},--RETAILPATCH 1090
+    {equipId=8,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19301},
+    {equipId=7,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19300},--<
     {equipId=6,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19042},--grade8 --RETAILPATCH: 1060 added>
     {equipId=5,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19057},--grade7
     {equipId=4,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19056},--grade6--<
@@ -708,6 +584,9 @@ this.DDWeaponIdInfo={
     {equipId=1,isNoKill=true,developedEquipType=MbsDevelopedEquipType.SNEAKING_SUIT,developId=19050}--grade2
   },
   BATTLE_DRESS={
+    {equipId=9,developedEquipType=MbsDevelopedEquipType.BATTLE_DRESS,developId=19352},--RETAILPATCH 1090
+    {equipId=8,developedEquipType=MbsDevelopedEquipType.BATTLE_DRESS,developId=19351},
+    {equipId=7,developedEquipType=MbsDevelopedEquipType.BATTLE_DRESS,developId=19350},--<
     {equipId=6,developedEquipType=MbsDevelopedEquipType.BATTLE_DRESS,developId=19043},--grade8--RETAILPATCH: 1060 added>
     {equipId=5,developedEquipType=MbsDevelopedEquipType.BATTLE_DRESS,developId=19059},--grade7
     {equipId=4,developedEquipType=MbsDevelopedEquipType.BATTLE_DRESS,developId=19058},--grade6<
@@ -982,10 +861,10 @@ function this._CreateDDWeaponIdTable(developedEquipGradeTable,soldierEquipGrade,
   mvars.ene_ddWeaponCount=0
   ddWeaponNormalTable.IS_NOKILL={}
   local DDWeaponIdInfo=this.DDWeaponIdInfo
-  for powerType,weaponInfo in pairs(DDWeaponIdInfo)do
-    for n,value in ipairs(weaponInfo)do
+  for powerType,weaponInfoTable in pairs(DDWeaponIdInfo)do
+    for n,ddWeaponInfo in ipairs(weaponInfoTable)do
       local addWeapon=false
-      local developedEquipType=value.developedEquipType
+      local developedEquipType=ddWeaponInfo.developedEquipType
       --      local developId=value.developId--tex DEBUG-->
       --      local developRank=TppMotherBaseManagement.GetEquipDevelopRank(developId)
       --      local developedGrade=developedEquipGradeTable[developedEquipType]
@@ -995,20 +874,23 @@ function this._CreateDDWeaponIdTable(developedEquipGradeTable,soldierEquipGrade,
 
       if developedEquipType==nil then
         addWeapon=true
-      elseif value.isNoKill and not isNoKillMode then
+      elseif ddWeaponInfo.isNoKill and not isNoKillMode then
         addWeapon=false
       else
-        local developId=value.developId
+        local developId=ddWeaponInfo.developId
         local developRank=TppMotherBaseManagement.GetEquipDevelopRank(developId)
+        --InfMenu.DebugPrint("dd power:"..tostring(powerType).." developid:"..tostring(ddWeaponInfo.developId).." developRank:"..tostring(developRank))--DEBUG
 
         local overrideDeveloped=false--tex>
-        if InfMain.IsDDEquip() and Ivars.allowUndevelopedDDEquip:Is(0) then
-          --tex WORKAROUND developedEquipGradeTable is zeroed if mission is not motherbase
-          if TppMotherBaseManagement.IsEquipDevelopedFromDevelopID{equipDevelopID=developId} then
+        if InfMain.IsDDEquip() then
+          if Ivars.allowUndevelopedDDEquip:Is(0) then
+            --tex WORKAROUND developedEquipGradeTable is zeroed if mission is not motherbase
+            if TppMotherBaseManagement.IsEquipDevelopedFromDevelopID{equipDevelopID=developId} then
+              overrideDeveloped=true
+            end
+          else
             overrideDeveloped=true
           end
-        else
-          overrideDeveloped=true
         end--<
 
         if(soldierEquipGrade>=developRank and (developedEquipGradeTable[developedEquipType]>=developRank or overrideDeveloped))then--tex added override
@@ -1016,19 +898,19 @@ function this._CreateDDWeaponIdTable(developedEquipGradeTable,soldierEquipGrade,
         end
       end
       if addWeapon then
-        mvars.ene_ddWeaponCount=mvars.ene_ddWeaponCount+1
+        mvars.ene_ddWeaponCount=mvars.ene_ddWeaponCount+1--tex NMC GOTCHA this will be inaccurate for overridevelop, but doesn't seem to be used anyway
         if ddWeaponNormalTable[powerType]then
         else
-          ddWeaponNormalTable[powerType]=value.equipId
-          if value.isNoKill then
+          ddWeaponNormalTable[powerType]=ddWeaponInfo.equipId
+          if ddWeaponInfo.isNoKill then
             ddWeaponNormalTable.IS_NOKILL[powerType]=true
           end
+          --InfMenu.DebugPrint("adding dd power:"..tostring(powerType).." developid:"..tostring(ddWeaponInfo.developId))--DEBUG
         end
       end
     end
   end
-  --  local ins=InfInspect.Inspect(ddWeaponIdTable)--tex DEBUG
-  --  InfMenu.DebugPrint(ins)--<
+  --InfInspect.PrintInspect(ddWeaponIdTable)--DEBUG
   return ddWeaponIdTable
 end
 function this.GetDDWeaponCount()
@@ -3359,7 +3241,7 @@ function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
     end
     return routeSetType
   end
-  
+
   if routeTypeStr32==0 then
     routeTypeStr32=false
   end
@@ -3563,7 +3445,7 @@ function this.MergeRouteSetDefine(routeSets)
       end
     end
   end
-  
+
   for cpName,routeSet in pairs(routeSets)do
     mvars.ene_routeSetsDefine[cpName]=mvars.ene_routeSetsDefine[cpName]or{}
     local _routeSet=routeSet

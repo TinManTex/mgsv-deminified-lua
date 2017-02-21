@@ -121,7 +121,11 @@ missionPackTable[10040]=function(p)
     local a="sol_s10040_0000"
     local p="sol_s10040_0001"
     local s="sol_s10040_0002"
-    local s={{type="enemy",name=a,faceId=603,bodyId=TppEnemyBodyId.svs0_unq_v040},{type="enemy",name=p,faceId=604,bodyId=TppEnemyBodyId.svs0_unq_v050},{type="enemy",name=s,faceId=605,bodyId=TppEnemyBodyId.svs0_unq_v060}}
+    local s={
+      {type="enemy",name=a,faceId=603,bodyId=TppEnemyBodyId.svs0_unq_v040},
+      {type="enemy",name=p,faceId=604,bodyId=TppEnemyBodyId.svs0_unq_v050},
+      {type="enemy",name=s,faceId=605,bodyId=TppEnemyBodyId.svs0_unq_v060}
+    }
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -135,7 +139,11 @@ missionPackTable[10041]=function(p)
     local a="sol_vip_field"
     local s="sol_vip_village"
     local p="sol_vip_enemyBase"
-    local s={{type="enemy",name=a,faceId=637,bodyId=268},{type="enemy",name=s,faceId=638,bodyId=269},{type="enemy",name=p,faceId=639,bodyId=270}}
+    local s={
+      {type="enemy",name=a,faceId=637,bodyId=268},
+      {type="enemy",name=s,faceId=638,bodyId=269},
+      {type="enemy",name=p,faceId=639,bodyId=270}
+    }
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -172,7 +180,10 @@ missionPackTable[10052]=function(p)
   do
     local s="hos_target_0000"
     local p="sol_s10052_transportVehicle_0000"
-    local s={{type="hostage",name=s,faceId=607,bodyId=200},{type="enemy",name=p,faceId=608,bodyId=263}}
+    local s={
+      {type="hostage",name=s,faceId=607,bodyId=200},
+      {type="enemy",name=p,faceId=608,bodyId=263}
+    }
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -193,7 +204,10 @@ missionPackTable[10054]=function(p)
   do
     local p="hos_s10054_0002"
     local s="hos_s10054_0004"
-    local s={{type="hostage",name=p,faceId="female",bodyId=113},{type="hostage",name=s,faceId="female",bodyId=113}}
+    local s={
+      {type="hostage",name=p,faceId="female",bodyId=113},
+      {type="hostage",name=s,faceId="female",bodyId=113}
+    }
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -249,8 +263,15 @@ missionPackTable[10086]=function(p)
     local t="hos_mis_0003"
     local i="sol_interpreter"
     local a="sol_interrogator"
-    local s={{type="hostage",name=p,faceId=610,bodyId=111},{type="hostage",name=s,faceId=611,bodyId=111},{type="hostage",name=e,faceId=612,bodyId=111},{type="hostage",name=t,faceId="female",bodyId=113},{type="enemy",name=i,faceId=609,bodyId=255},{type="enemy",name=a,faceId=629,bodyId=TppEnemyBodyId.pfs0_unq_v155}}
-    TppEneFova.AddUniqueSettingPackage(s)
+    local uniqueSettings={
+      {type="hostage",name=p,faceId=610,bodyId=111},
+      {type="hostage",name=s,faceId=611,bodyId=111},
+      {type="hostage",name=e,faceId=612,bodyId=111},
+      {type="hostage",name=t,faceId="female",bodyId=113},
+      {type="enemy",name=i,faceId=609,bodyId=255},
+      {type="enemy",name=a,faceId=629,bodyId=TppEnemyBodyId.pfs0_unq_v155}
+    }
+    TppEneFova.AddUniqueSettingPackage(uniqueSettings)
   end
 end
 missionPackTable[10082]=function(p)
@@ -302,7 +323,10 @@ missionPackTable[10091]=function(p)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
   TppPackList.AddDefaultMissionAreaPack(p)
   do
-    local s={{type="hostage",name="hos_s10091_0001",faceId="dd",bodyId=176},{type="hostage",name="hos_s10091_0000",faceId="dd",bodyId=143}}
+    local s={
+      {type="hostage",name="hos_s10091_0001",faceId="dd",bodyId=176},
+      {type="hostage",name="hos_s10091_0000",faceId="dd",bodyId=143}
+    }
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -317,13 +341,20 @@ missionPackTable[10100]=function(p)
   TppPackList.AddDefaultMissionAreaPack(p)
   do
     local o="sol_target_0000"
-    local s=EnemyFova.INVALID_FOVA_VALUE
+    local INVALID_FOVA_VALUE=EnemyFova.INVALID_FOVA_VALUE
     local t="hos_diamond_0000"
     local i="hos_diamond_0001"
     local e="hos_diamond_0002"
     local p="hos_diamond_0003"
     local a="hos_diamond_0004"
-    local s={{type="enemy",name=o,faceId=616,bodyId=251},{type="hostage",name=t,faceId=s,bodyId=130},{type="hostage",name=i,faceId=s,bodyId=131},{type="hostage",name=e,faceId=s,bodyId=132},{type="hostage",name=p,faceId=s,bodyId=133},{type="hostage",name=a,faceId=s,bodyId=134}}
+    local s={
+    {type="enemy",name=o,faceId=616,bodyId=251},
+    {type="hostage",name=t,faceId=INVALID_FOVA_VALUE,bodyId=130},
+    {type="hostage",name=i,faceId=INVALID_FOVA_VALUE,bodyId=131},
+    {type="hostage",name=e,faceId=INVALID_FOVA_VALUE,bodyId=132},
+    {type="hostage",name=p,faceId=INVALID_FOVA_VALUE,bodyId=133},
+    {type="hostage",name=a,faceId=INVALID_FOVA_VALUE,bodyId=134}
+    }
     TppEneFova.AddUniqueSettingPackage(s)
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostageUnique",hostageType="MovingChild"}
@@ -360,7 +391,9 @@ missionPackTable[10195]=function(p)
   do
     local s="sol_dealer"
     local p="sol_vip"
-    local s={{type="enemy",name=s,faceId=614,bodyId=250},{type="enemy",name=p,faceId=615,bodyId=256}}
+    local s={
+    {type="enemy",name=s,faceId=614,bodyId=250},
+    {type="enemy",name=p,faceId=615,bodyId=256}}
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -642,20 +675,19 @@ missionPackTable[30010]=function(missionCode)
   else
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30010/f30010.fpk"
   end
+
+  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
     local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
   end--<
-  
+
   if Ivars.enemyHeliPatrol:Is()>0 then--tex>
     TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_afgh.fpk"
-    if InfNPCHeli.GetEnemyHeliColorName()=="BLACK" then
-      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
-    elseif InfNPCHeli.GetEnemyHeliColorName()=="RED" then
-      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
-    end
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
   end--<
 end
 missionPackTable[30020]=function(missionCode)
@@ -664,20 +696,18 @@ missionPackTable[30020]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ORDER_BOX)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30020/f30020.fpk"
 
+  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
     local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
   end--<
-  
+
   if Ivars.enemyHeliPatrol:Is()>0 then--tex>
     TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_mafr.fpk"
-    if InfNPCHeli.GetEnemyHeliColorName()=="BLACK" then
-      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
-    elseif InfNPCHeli.GetEnemyHeliColorName()=="RED" then
-      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
-    end
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
   end--<
 end
 missionPackTable[30050]=function(missionCode)
@@ -686,16 +716,13 @@ missionPackTable[30050]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MTBS_MISSION_AREA)
 
-  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
+  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/mis_com_mafr_hostage.fpk"--tex DEBUGNOW
 
   if Ivars.mbEnemyHeli:Is(1) or Ivars.npcHeliUpdate:Is"UTH_AND_HP48" then--tex>
     TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_afgh.fpk"
-    if InfNPCHeli.GetEnemyHeliColorName()=="BLACK" then
-      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
-    elseif InfNPCHeli.GetEnemyHeliColorName()=="RED" then
-      TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
-    end
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
   end--<
   if Ivars.mbEnableOcelot:Is(1) and Ivars.mbWarGamesProfile:Is(0) then--tex>
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30050/f30050_ocelot.fpk"

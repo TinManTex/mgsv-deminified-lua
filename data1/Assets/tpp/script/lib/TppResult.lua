@@ -231,6 +231,9 @@ function this.SetMissionFinalScore()
     svars.playStyle=0
     this.ClearNewestPlayStyleHistory()
   end
+  if OnlineChallengeTask then--RETAILPATCH 1090>
+    OnlineChallengeTask.DecideTaskFromResult()
+  end--<
 end
 function this.IsUsedChickCap()
   if bit.band(vars.playerPlayFlag,PlayerPlayFlag.USE_CHICK_CAP)==PlayerPlayFlag.USE_CHICK_CAP then
@@ -1203,40 +1206,43 @@ else
   return svars.tacticalActionPointClient
 end
 end--<
-function this.AddTacticalActionPoint(takedownInfo)--RETAILPATCH 1070 reworked
+--RETAILPATCH 1070 reworked>
+function this.AddTacticalActionPoint(takedownInfo)
   if mvars.res_noTacticalTakeDown then
     return
-end
-local function SetSvar(t,actionPoint)
-  if t then
-    svars.tacticalActionPoint=actionPoint
-  else
-    if vars.missionCode~=50050 then
-      return
+  end
+  local function SetSvar(t,actionPoint)
+    if t then
+      svars.tacticalActionPoint=actionPoint
+    else
+      if vars.missionCode~=50050 then
+        return
+      end
+      svars.tacticalActionPointClient=actionPoint
     end
-    svars.tacticalActionPointClient=actionPoint
   end
-end
-local a=true
-if takedownInfo and(takedownInfo.isSneak==false)then
-  a=false
-end
-local s=this.GetTacticalActionPoint(a)
-if a then
-  Tpp.IncrementPlayData"rnk_TotalTacticalTakeDownCount"
-  TppChallengeTask.RequestUpdate"PLAY_RECORD"end
-if s>=mvars.res_missionScoreTable.tacticalTakeDownPoint.countLimit then
-  return
-end
-SetSvar(a,s+1)
-if a then
-  this.CallCountAnnounce("result_tactical_takedown",svars.tacticalActionPoint,n)
-  TppTutorial.DispGuide("TAKE_DOWN",TppTutorial.DISPLAY_OPTION.TIPS)
-  local e=takedownInfo and takedownInfo.tacticalTakeDownType
-  if e then
-    Mission.SendMessage("Mission","OnAddTacticalActionPoint",takedownInfo.gameObjectId,takedownInfo.tacticalTakeDownType)
+  local a=true
+  if takedownInfo and(takedownInfo.isSneak==false)then
+    a=false
   end
-end
+  local s=this.GetTacticalActionPoint(a)
+  if a then
+    Tpp.IncrementPlayData"rnk_TotalTacticalTakeDownCount"
+    TppChallengeTask.RequestUpdate"PLAY_RECORD"
+    TppUI.UpdateOnlineChallengeTask{detectType=31,diff=1}--RETAILPATCH 1090
+  end
+  if s>=mvars.res_missionScoreTable.tacticalTakeDownPoint.countLimit then
+    return
+  end
+  SetSvar(a,s+1)
+  if a then
+    this.CallCountAnnounce("result_tactical_takedown",svars.tacticalActionPoint,n)
+    TppTutorial.DispGuide("TAKE_DOWN",TppTutorial.DISPLAY_OPTION.TIPS)
+    local e=takedownInfo and takedownInfo.tacticalTakeDownType
+    if e then
+      Mission.SendMessage("Mission","OnAddTacticalActionPoint",takedownInfo.gameObjectId,takedownInfo.tacticalTakeDownType)
+    end
+  end
 end
 function this.CallCountAnnounce(t,a,s)
   TppUiCommand.CallCountAnnounce(t,a,s)
@@ -1321,6 +1327,7 @@ function this.OnHeadShot(a,a,e,t)
   if e then
     Tpp.IncrementPlayData"totalheadShotCount"
     TppChallengeTask.RequestUpdate"PLAY_RECORD"--RETAILPATCH 1070
+    TppUI.UpdateOnlineChallengeTask{detectType=29,diff=1}--RETAILPATCH 1090
   end
   if mvars.res_noResult then
     return

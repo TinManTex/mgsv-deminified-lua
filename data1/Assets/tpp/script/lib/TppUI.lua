@@ -171,7 +171,8 @@ this.ANNOUNCE_LOG_TYPE={
   find_plant="announce_find_plant",
   refresh="announce_refresh",
   get_hero="announce_get_hero",
-  lost_hero="announce_lost_hero"
+  lost_hero="announce_lost_hero",
+  challenge_task="announce_challenge_task_d90",--RETAILPATCH 1090
 }
 this.ANNOUNCE_LOG_PRIORITY={"eliminateTarget","recoveredFilmCase","recoverTarget","destroyTarget","achieveAllObjectives","achieveObjectiveCount","getIntel","updateMissionInfo","updateMissionInfo_AddDocument","updateMap"}
 this.BUDDY_LANG_ID={[BuddyType.HORSE]="name_buddy_dh",[BuddyType.DOG]="name_buddy_dd",[BuddyType.QUIET]="marker_chara_quiet"}
@@ -331,9 +332,9 @@ function this.ShowEmergencyAnnounceLog(n)
   if not(TppUiStatusManager.CheckStatus("AnnounceLog","INVALID_LOG")or TppUiStatusManager.CheckStatus("AnnounceLog","SUSPEND_LOG"))then
     if n==true then
       TppSoundDaemon.PostEvent"sfx_s_fob_emergency"
-      else
+    else
       TppSoundDaemon.PostEvent"sfx_s_fob_alert"
-      end
+    end
   end
 end
 function this.EnableMissionPhoto(i,e,n,a,t)
@@ -463,6 +464,7 @@ function this.EnableMissionTask(taskInfo,isComplete)
     end
     TppMission.SetPlayRecordClearInfo()--RETAILPATCH 1070>
     TppChallengeTask.RequestUpdate"MISSION_TASK"--<
+    this.UpdateOnlineChallengeTask{detectType=(34+taskNo),diff=1}--RETAILPATCH 1090
     if this.IsAllTaskCompleted(missionCode)then
       TppEmblem.AcquireOnAllMissionTaskComleted(missionCode)
     end
@@ -527,6 +529,13 @@ function this.IsAllTaskCompleted(n)
   end
   return false
 end
+--RETAILPATCH 1090>
+function this.UpdateOnlineChallengeTask(e)
+  if OnlineChallengeTask then
+    OnlineChallengeTask.Update(e)
+  end
+end
+--<
 function this.ShowControlGuide(n)
   if not IsTypeTable(n)then
     return
@@ -979,10 +988,10 @@ function this.Init()
       if Ivars.abortMenuItemControl:Is(0) then--tex added switch
         if TppMission.IsStartFromHelispace() or Ivars.mis_isGroundStart:Is(1) then--tex added mis_isGroundStart
           table.insert(pauseMenuItems,3,GamePauseMenu.ABORT_MISSION_RETURN_TO_ACC)
-        end
-        if TppMission.IsStartFromFreePlay()then
-          table.insert(pauseMenuItems,3,GamePauseMenu.ABORT_MISSION)
-        end
+      end
+      if TppMission.IsStartFromFreePlay()then
+        table.insert(pauseMenuItems,3,GamePauseMenu.ABORT_MISSION)
+      end
       end
       if vars.missionCode~=10115 then
         table.insert(pauseMenuItems,1,GamePauseMenu.RESTART_FROM_CHECK_POINT)
@@ -1009,8 +1018,8 @@ function this.Init()
     else
       local gameOverMenuItems={GameOverMenu.GAME_OVER_RESTART,GameOverMenu.GAME_OVER_TITLE}
       if Ivars.abortMenuItemControl:Is(0) then--tex added switch
-      if TppMission.IsStartFromHelispace()then
-        table.insert(gameOverMenuItems,3,GameOverMenu.GAME_OVER_ABORT_RETURN_TO_ACC)
+        if TppMission.IsStartFromHelispace()then
+          table.insert(gameOverMenuItems,3,GameOverMenu.GAME_OVER_ABORT_RETURN_TO_ACC)
       end
       if TppMission.IsStartFromFreePlay()then
         table.insert(gameOverMenuItems,3,GameOverMenu.GAME_OVER_ABORT)
@@ -1133,17 +1142,17 @@ end
 function this.EnableGameStatusOnFadeInStart()
   Tpp.SetGameStatus{
     target={
-        S_DISABLE_NPC=true,
-        S_DISABLE_NPC_NOTICE=true,
-        S_DISABLE_TARGET=true,
-        S_DISABLE_PLAYER_PAD=true,
-        S_DISABLE_PLAYER_DAMAGE=true,
-        S_DISABLE_THROWING=true,
-        S_DISABLE_PLACEMENT=true
-      },
-      enable=true,
-      scriptName="TppUI.lua"
-    }
+      S_DISABLE_NPC=true,
+      S_DISABLE_NPC_NOTICE=true,
+      S_DISABLE_TARGET=true,
+      S_DISABLE_PLAYER_PAD=true,
+      S_DISABLE_PLAYER_DAMAGE=true,
+      S_DISABLE_THROWING=true,
+      S_DISABLE_PLACEMENT=true
+    },
+    enable=true,
+    scriptName="TppUI.lua"
+  }
 end
 function this.EnableGameStatusOnFade()
   local exceptGameStatus,onEndInExceptGameStatus

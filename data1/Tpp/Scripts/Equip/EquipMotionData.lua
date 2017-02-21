@@ -1,3 +1,5 @@
+--EquipMotionData.lua
+--RETAILPATCH 1090 various additions
 this={}
 TppEquip.ReloadEquipMotionData{
   MotionDataTable={
@@ -77,8 +79,10 @@ TppEquip.ReloadEquipMotionData{
     {TppEquip.EQP_WP_SP_sm_010,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sm02_default.mtar"},
     {TppEquip.EQP_WP_SP_sg_010,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sg02_default.mtar"},
     {TppEquip.EQP_WP_EX_hg_000,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},
-    {TppEquip.EQP_WP_EX_hg_000_G01,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},--RETAILPATCH 1080
-    {TppEquip.EQP_WP_EX_hg_000_G02,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},--RETAILPATCH 1080
+    {TppEquip.EQP_WP_EX_hg_000_G01,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},
+    {TppEquip.EQP_WP_EX_hg_000_G02,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},
+    {TppEquip.EQP_WP_EX_hg_000_G03,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},
+    {TppEquip.EQP_WP_EX_hg_000_G04,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},
     {TppEquip.EQP_WP_EX_gl_000,"/Assets/tpp/motion/mtar/equip/chimera/receiver/gl00_default.mtar"},
     {TppEquip.EQP_WP_EX_sr_000,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sr04_default.mtar"},
     {TppEquip.EQP_WP_West_sm_016,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
@@ -90,7 +94,38 @@ TppEquip.ReloadEquipMotionData{
     {TppEquip.EQP_WP_West_sr_047,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
     {TppEquip.EQP_WP_West_sr_048,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
     {TppEquip.EQP_WP_West_mg_037,"/Assets/tpp/motion/mtar/equip/chimera/assemble/mg01_asm.mtar"},
-    {TppEquip.EQP_WP_Com_ms_026,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms03_asm.mtar"}
+    {TppEquip.EQP_WP_Com_ms_026,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms03_asm.mtar"},
+    {TppEquip.EQP_WP_West_sm_019,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
+    {TppEquip.EQP_WP_West_sm_01a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
+    {TppEquip.EQP_WP_West_sm_01b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
+    {TppEquip.EQP_WP_East_sm_049,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
+    {TppEquip.EQP_WP_East_sm_04a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
+    {TppEquip.EQP_WP_East_sm_04b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},
+    {TppEquip.EQP_WP_West_ar_059,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ar00_asm.mtar"},
+    {TppEquip.EQP_WP_West_ar_05a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ar00_asm.mtar"},
+    {TppEquip.EQP_WP_West_ar_05b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ar00_asm.mtar"},
+    {TppEquip.EQP_WP_West_ar_079,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ar03_asm.mtar"},
+    {TppEquip.EQP_WP_West_ar_07a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ar03_asm.mtar"},
+    {TppEquip.EQP_WP_West_ar_07b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ar03_asm.mtar"},
+    {TppEquip.EQP_WP_West_sr_029,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
+    {TppEquip.EQP_WP_West_sr_02a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
+    {TppEquip.EQP_WP_West_sr_02b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
+    {TppEquip.EQP_WP_West_sr_049,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
+    {TppEquip.EQP_WP_West_sr_04a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
+    {TppEquip.EQP_WP_West_sr_04b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sr00_asm.mtar"},
+    {TppEquip.EQP_WP_West_mg_039,"/Assets/tpp/motion/mtar/equip/chimera/assemble/mg01_asm.mtar"},
+    {TppEquip.EQP_WP_West_mg_03a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/mg01_asm.mtar"},
+    {TppEquip.EQP_WP_West_mg_03b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/mg01_asm.mtar"},
+    {TppEquip.EQP_WP_West_ms_029,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms02_asm.mtar"},
+    {TppEquip.EQP_WP_West_ms_02a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms02_asm.mtar"},
+    {TppEquip.EQP_WP_West_ms_02b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms02_asm.mtar"},
+    {TppEquip.EQP_WP_Com_ms_029,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms03_asm.mtar"},
+    {TppEquip.EQP_WP_Com_ms_02a,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms03_asm.mtar"},
+    {TppEquip.EQP_WP_Com_ms_02b,"/Assets/tpp/motion/mtar/equip/chimera/assemble/ms03_asm.mtar"},
+    {TppEquip.EQP_WP_EX_hg_010,"/Assets/tpp/motion/mtar/equip/chimera/assemble/hg03_asm.mtar"},
+    {TppEquip.EQP_WP_EX_hg_011,"/Assets/tpp/motion/mtar/equip/chimera/assemble/hg03_asm.mtar"},
+    {TppEquip.EQP_WP_EX_hg_012,"/Assets/tpp/motion/mtar/equip/chimera/assemble/hg03_asm.mtar"},
+    {TppEquip.EQP_WP_EX_hg_013,"/Assets/tpp/motion/mtar/equip/chimera/assemble/hg03_asm.mtar"}
   }
 }
 return this

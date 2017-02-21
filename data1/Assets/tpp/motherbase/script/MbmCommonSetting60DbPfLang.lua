@@ -1,3 +1,4 @@
+--MbmCommonSetting60DbPfLang.lua
 this={}
 TppMotherBaseManagement.RegisterS10240LockStaffParam{totalLockStaffCount=49,totalLockFemaleMaxCount=8,sectionLockStaffParam1={section=TppMotherBaseManagementConst.SECTION_SECURITY,lockStaffCount=29,lockFemaleMaxCount=1},sectionLockStaffParam2={section=TppMotherBaseManagementConst.SECTION_DEVELOP,lockStaffCount=20,lockFemaleMaxCount=7},sectionLockStaffParam3={section=TppMotherBaseManagementConst.SECTION_COMBAT,lockStaffCount=45,lockFemaleMaxCount=8},sectionLockStaffParam4={section=TppMotherBaseManagementConst.SECTION_WAIT,lockStaffCount=45,lockFemaleMaxCount=8},sectionLockStaffParam5={section=TppMotherBaseManagementConst.SECTION_BASE_DEV,lockStaffCount=45,lockFemaleMaxCount=8},sectionLockStaffParam6={section=TppMotherBaseManagementConst.SECTION_SUPPORT,lockStaffCount=45,lockFemaleMaxCount=8},sectionLockStaffParam7={section=TppMotherBaseManagementConst.SECTION_SPY,lockStaffCount=45,lockFemaleMaxCount=8},sectionLockStaffParam8={section=TppMotherBaseManagementConst.SECTION_MEDICAL,lockStaffCount=45,lockFemaleMaxCount=8},sectionLockStaffParam9={section=TppMotherBaseManagementConst.SECTION_HOSPITAL,lockStaffCount=45,lockFemaleMaxCount=8},ignoreUniqueTypeIdList={110,111},ignoreDevelopSkillStaffFlag=true}
 TppMotherBaseManagement.RegisterAnimalParam{dataBaseId=TppMotherBaseManagementConst.ANIMAL_100,gmp=500,animalRarity=TppMotherBaseManagementConst.ANIMAL_RARE_N,isAfgh=true}
@@ -110,7 +111,25 @@ TppMotherBaseManagement.RegisterMissionGettableDesign{missionId=10130,dataBaseId
 TppMotherBaseManagement.RegisterMissionGettableDesign{missionId=10171,dataBaseId=TppMotherBaseManagementConst.DESIGN_2026}
 end
 TppMotherBaseManagement.RegisterFobSecurityCostParam{soldierBasicGmp=100,grade0=0,grade1=100,grade2=200,grade3=300,grade4=400,grade5=500,grade6=600,grade7=700,grade8=800,grade9=900}
-TppMotherBaseManagement.RegisterSecurityCostPerUnit{soldier={0,0,200,300,500,800,1e3,1200},noKillSoldier={0,150,200,300,300,500,800,1e3},weapon={100,150,200,350,500,500,2e3,3e3},noKillWeapon={100,150,200,350,500,500,2e3,3e3},sniper={100,150,200,350,500,500,2e3,2e3},noKillSniper={100,150,200,350,500,500,2e3,3e3},sensor={0,0,1e3,1e3,2e3,2e3,3e3,3e3},protect={0,0,1500,1500,1500,1500,2500,5e3},camera={0,0,2e3,2e3,3e3,4e3,4e3,4e3},gunCamera={0,0,0,0,0,4500,7e3,9500},noKillUav={0,0,0,4e3,4e3,5e3,6e3,7e3},uav={0,0,3e3,3e3,3e3,3500,5e3,5e3},decoy={0,1200,2300,3600,4900,4900,4900,4900},mine={0,0,1400,2900,4700,4700,4700,6700},noKillMine={0,0,0,2800,4600,4600,4600,6800},nvg={0,0,0,0,0,400,400,400}}
+TppMotherBaseManagement.RegisterSecurityCostPerUnit{--RETAILPATCH 1090 extra levels added (was #8, now #15 values
+  soldier={0,0,200,300,500,800,1e3,1200,2200,2400,2600,2600,2600,2600,2600},
+  noKillSoldier={0,150,200,300,300,500,800,1e3,2e3,2200,2400,2400,2400,2400,2400},
+  weapon={100,150,200,350,500,500,2e3,3e3,4e3,5e3,6e3,6e3,6e3,6e3,6e3},
+  noKillWeapon={100,150,200,350,500,500,2e3,3e3,4e3,5e3,6e3,6e3,6e3,6e3,6e3},
+  sniper={100,150,200,350,500,500,2e3,2e3,3e3,4e3,5e3,5e3,5e3,5e3,5e3},
+  noKillSniper={100,150,200,350,500,500,2e3,3e3,4e3,5e3,6e3,6e3,6e3,6e3,6e3},
+  sensor={0,0,1e3,1e3,2e3,2e3,3e3,3e3,3e3,3e3,3e3,3e3,3e3,3e3,3e3},
+  protect={0,0,1500,1500,1500,1500,2500,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3},
+  camera={0,0,2e3,2e3,3e3,4e3,4e3,4e3,4e3,4e3,4e3,4e3,4e3,4e3,4e3},
+  gunCamera={0,0,0,0,0,4500,7e3,9500,9500,9500,9500,9500,9500,9500,9500},
+  noKillUav={0,0,0,4e3,4e3,5e3,6e3,7e3,8e3,9e3,1e4,1e4,1e4,1e4,1e4},
+  uav={0,0,3e3,3e3,3e3,3500,5e3,5e3,6e3,7e3,8e3,8e3,8e3,8e3,8e3},
+  decoy={0,1200,2300,3600,4900,4900,4900,4900,4900,4900,4900,4900,4900,4900,4900},
+  mine={0,0,1400,2900,4700,4700,4700,6700,6700,6700,6700,6700,6700,6700,6700},
+  noKillMine={0,0,0,2800,4600,4600,4600,6800,6800,6800,6800,6800,6800,6800,6800},
+  nvg={0,0,0,0,0,400,400,400,400,400,400,400,400,400,400},
+  antiSleep={0,0,0,400,500,600,700,700,700,700,700,700,700,700,700}--RETAILPATCH 1090 added
+}
 TppMotherBaseManagement.RegisterPfRatingPointParam{point=1e4,rank="A",section="Combat"}
 TppMotherBaseManagement.RegisterPfRatingPointParam{point=1e4,rank="A",section="Develop"}
 TppMotherBaseManagement.RegisterPfRatingPointParam{point=1e4,rank="A",section="BaseDev"}

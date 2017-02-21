@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppEneFova.lua
 local this={}
 local MAX_REALIZED_COUNT=EnemyFova.MAX_REALIZED_COUNT
 local RENlang0=0
@@ -656,11 +657,6 @@ function fovaSetupFuncs.Afghan(n,missionId)
   --tex>wildcard soviet boddies
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
     InfEneFova.WildCardFova(bodies)
-
-    for n,bodyId in pairs(InfEneFova.wildCardBodiesAfgh)do
-      local entry={bodyId,MAX_REALIZED_COUNT}
-      table.insert(bodies,entry)
-    end
   end--<
   TppSoldierFace.OverwriteMissionFovaData{body=bodies}
   TppSoldierFace.SetBodyFovaUserType{hostage={TppEnemyBodyId.prs2_main0_v00}}
@@ -742,11 +738,6 @@ function fovaSetupFuncs.Africa(n,missionId)
   --tex> wildcard pf bodies
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
     InfEneFova.WildCardFova(bodies)
-
-    for n,bodyId in pairs(InfEneFova.wildCardBodiesMafr)do
-      local entry={bodyId,MAX_REALIZED_COUNT}
-      table.insert(bodies,entry)
-    end
   end--<
   TppSoldierFace.OverwriteMissionFovaData{body=bodies}
   TppSoldierFace.SetBodyFovaUserType{hostage={TppEnemyBodyId.prs5_main0_v00}}
@@ -1235,9 +1226,9 @@ end
 function this.GetFaceId_s10091_1()
   return faceIdS10091_1
 end
-function this.GetFaceIdForFemaleHostage(e)
+function this.GetFaceIdForFemaleHostage(missionCode)
   local n=RENsomeNumber
-  if e==10086 then
+  if missionCode==10086 then
     return 613,n
   end
   local t=i
@@ -1787,9 +1778,40 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
   end
   return setUav,uavType,isNLUav
 end
-
----
-
-
-
+--<
+--RETAILPATCH 1090>
+function this.GetUavCombatGradeAndEmpLevel(p1,p2,p3,p4)
+  if p1<9 then
+    return nil,0
+  end
+  local d={[9]={4,2},[10]={5,3},[11]={6,4}}
+  local n,e
+  if p2 then
+    e=2
+    n=p4
+  else
+    e=1
+    n=p3
+  end
+  local a
+  for t,d in pairs(d)do
+    if d[e]==n then
+      a=t
+    end
+  end
+  if not a then
+    if n>d[11][e]then
+    end
+    return nil,0
+  end
+  local e,n
+  if p1<=a then
+    e=p1
+  else
+    e=a
+  end
+  n=e-8
+  return e,n
+end
+--<
 return this

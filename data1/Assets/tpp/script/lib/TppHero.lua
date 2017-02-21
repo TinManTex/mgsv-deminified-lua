@@ -302,6 +302,7 @@ function this.OnHelicopterLostControl(gameId,attackerId)
     PlayRecord.RegistPlayRecord"HERI_DESTROY"
     Tpp.IncrementPlayData"totalHelicopterDestoryCount"
     this.SetAndAnnounceHeroicOgrePoint(this.ENEMY_HELI_LOST_CONTROLE)
+    TppUI.UpdateOnlineChallengeTask{detectType=27,diff=1}--RETAILPATCH 1090
   end
 end
 function this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(i,o)
@@ -530,6 +531,7 @@ function this.Messages()
               TppTrophy.Unlock(18)
               Tpp.IncrementPlayData"totalAnnihilateBaseCount"
               TppChallengeTask.RequestUpdate"ENEMY_BASE"--RETAILPATCH 1070
+              TppUI.UpdateOnlineChallengeTask{detectType=32,diff=1}--RETAILPATCH 1090
               end
             TppEmblem.AcquireOnCommandPostAnnihilated(n)
           elseif TppEnemy.IsOuterBaseCp(n)then
@@ -538,22 +540,23 @@ function this.Messages()
               TppChallengeTask.RequestUpdate"ENEMY_BASE"--RETAILPATCH 1070
               Tpp.IncrementPlayData"totalAnnihilateOutPostCount"
               TppTrophy.Unlock(18)
+              TppUI.UpdateOnlineChallengeTask{detectType=33,diff=1}--RETAILPATCH 1090
             end
             TppEmblem.AcquireOnCommandPostAnnihilated(n)
           end
         end
         if TppCommandPost2.SetCpDominated then
-          local e=TppLocation.GetLocationName()
-          if e=="afgh"or e=="mafr"then
-            local n=mvars.ene_cpList[n]
-            local i=TppCommandPost2.SetCpDominated{cpName=n,type=e}
-            local n=TppCommandPost2.GetDominatedCpCount{type=e}
-            local o=TppTrophy.DOMINATION_TARGET_CP_COUNT[e]
+          local locationName=TppLocation.GetLocationName()
+          if locationName=="afgh"or locationName=="mafr"then
+            local cpName=mvars.ene_cpList[n]
+            local i=TppCommandPost2.SetCpDominated{cpName=cpName,type=locationName}
+            local dominatedCpCount=TppCommandPost2.GetDominatedCpCount{type=locationName}
+            local targetDominatedCpCount=TppTrophy.DOMINATION_TARGET_CP_COUNT[locationName]
             if i then
             end
-            if n==o then
-              local n={afgh=19,mafr=20}
-              TppTrophy.Unlock(n[e])
+            if dominatedCpCount==targetDominatedCpCount then
+              local trophyIds={afgh=19,mafr=20}
+              TppTrophy.Unlock(trophyIds[locationName])
             end
           end
         end

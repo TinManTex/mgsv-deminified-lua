@@ -238,7 +238,25 @@ function this.InitializeForNewMission(missionTable)
   Gimmick.RestoreSaveDataPermanentGimmickFromMission()
   TppMotherBaseManagement.SetupAfterRestoreFromSVars()
   RecordRanking.WriteServerRankingScore()--RETAILPATCH 1070: Added
+  --RETAILPATCH 1090>
+  if not gvars.ini_isTitleMode then
+    this.InitializeOnlineChallengeTaskVarsForNewMission()
+  end
+  --<
 end
+--RETAILPATCH 1090>
+function this.InitializeOnlineChallengeTaskVarsForNewMission()
+  if Tpp.IsOnlineMode()and(not Tpp.IsValidLocalOnlineChallengeTaskVersion())then
+    gvars.localOnlineChallengeTaskVersion=TppNetworkUtil.GetOnlineChallengeTaskVersion()
+    this.InitializeOnlineChallengeTaskLocalCompletedVars()
+  end
+end
+function this.InitializeOnlineChallengeTaskLocalCompletedVars()
+  for e=0,23 do
+    TppChallengeTask.SetFlagCompletedOnlineTask(e,false)
+  end
+end
+--<
 function this.InitializeForContinue(e)
   TppSave.VarRestoreOnContinueFromCheckPoint()
   TppEnemy.RestoreOnContinueFromCheckPoint()
