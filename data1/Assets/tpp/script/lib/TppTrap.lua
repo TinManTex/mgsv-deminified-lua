@@ -17,22 +17,22 @@ function this.OnAllocate(missionTable)
       return
     end
     mvars.trp_variableTrapTable={}
-    for r,e in ipairs(mvars.trp_variableTrapList)do
-      local a=e.name
-      if not IsString(a)then
+    for i,trapInfo in ipairs(mvars.trp_variableTrapList)do
+      local trapName=trapInfo.name
+      if not IsString(trapName)then
         return
       end
-      if e.initialState==nil then
+      if trapInfo.initialState==nil then
         return
       end
-      if e.type==nil then
+      if trapInfo.type==nil then
         return
       end
-      mvars.trp_variableTrapTable[a]={}
-      mvars.trp_variableTrapTable[a].type=e.type
-      mvars.trp_variableTrapTable[a].initialState=e.initialState
-      mvars.trp_variableTrapTable[a].index=r
-      mvars.trp_variableTrapTable[a].packLabel=e.packLabel
+      mvars.trp_variableTrapTable[trapName]={}
+      mvars.trp_variableTrapTable[trapName].type=trapInfo.type
+      mvars.trp_variableTrapTable[trapName].initialState=trapInfo.initialState
+      mvars.trp_variableTrapTable[trapName].index=i
+      mvars.trp_variableTrapTable[trapName].packLabel=trapInfo.packLabel
     end
   end
 end
@@ -53,11 +53,11 @@ function this.DebugUpdate()
     if mvars.debug.trapStatusScroll>1 then
       e=mvars.debug.trapStatusScroll
     end
-    for a,n in ipairs(mvars.trp_variableTrapList)do
-      if a>=e then
-        local e=n.name
-        local a=svars.trp_variableTrapEnable[a]
-        print(context,{.5,.5,1},"trapName = "..(tostring(e)..(", status = "..tostring(a))))
+    for i,trapInfo in ipairs(mvars.trp_variableTrapList)do
+      if i>=e then
+        local trapName=trapInfo.name
+        local enabled=svars.trp_variableTrapEnable[i]
+        print(context,{.5,.5,1},"trapName = "..(tostring(trapName)..(", status = "..tostring(enabled))))
       end
     end
   end
@@ -66,18 +66,18 @@ function this.InitializeVariableTraps()
   if mvars.trp_variableTrapList==nil then
     return
   end
-  for t,e in ipairs(mvars.trp_variableTrapList)do
-    local t=true
-    if e.packLabel then
-      t=TppPackList.IsMissionPackLabelList(e.packLabel)
+  for i,trapInfo in ipairs(mvars.trp_variableTrapList)do
+    local isMissionPackLabel=true
+    if trapInfo.packLabel then
+      isMissionPackLabel=TppPackList.IsMissionPackLabelList(trapInfo.packLabel)
     end
-    if t then
-      if e.initialState==TppDefine.TRAP_STATE.ENABLE then
-        this.Enable(e.name)
-      elseif e.initialState==TppDefine.TRAP_STATE.DISABLE then
-        this.Disable(e.name)
+    if isMissionPackLabel then
+      if trapInfo.initialState==TppDefine.TRAP_STATE.ENABLE then
+        this.Enable(trapInfo.name)
+      elseif trapInfo.initialState==TppDefine.TRAP_STATE.DISABLE then
+        this.Disable(trapInfo.name)
       else
-        this.Enable(e.name)
+        this.Enable(trapInfo.name)
       end
     end
   end
@@ -86,16 +86,16 @@ function this.RestoreVariableTrapState()
   if mvars.trp_variableTrapList==nil then
     return
   end
-  for r,e in ipairs(mvars.trp_variableTrapList)do
-    local t=true
-    if e.packLabel then
-      t=TppPackList.IsMissionPackLabelList(e.packLabel)
+  for i,trapInfo in ipairs(mvars.trp_variableTrapList)do
+    local InvisibleMeshFromIdentifier=true
+    if trapInfo.packLabel then
+      InvisibleMeshFromIdentifier=TppPackList.IsMissionPackLabelList(trapInfo.packLabel)
     end
-    if t then
-      if svars.trp_variableTrapEnable[r]then
-        this.Enable(e.name)
+    if InvisibleMeshFromIdentifier then
+      if svars.trp_variableTrapEnable[i]then
+        this.Enable(trapInfo.name)
       else
-        this.Disable(e.name)
+        this.Disable(trapInfo.name)
       end
     end
   end
@@ -103,34 +103,34 @@ end
 function this.DeclareSVars()
   return{{name="trp_variableTrapEnable",arraySize=trapListMax,type=TppScriptVars.TYPE_BOOL,value=true,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},nil}
 end
-function this.Enable(e)
-  this.ChangeTrapState(e,true)
+function this.Enable(trapName)
+  this.ChangeTrapState(trapName,true)
 end
-function this.Disable(e)
-  this.ChangeTrapState(e,false)
+function this.Disable(trapName)
+  this.ChangeTrapState(trapName,false)
 end
-function this.ChangeTrapState(e,t)
-  local r=mvars.trp_variableTrapTable[e]
-  if r==nil then
+function this.ChangeTrapState(trapName,enable)
+  local trapInfo=mvars.trp_variableTrapTable[trapName]
+  if trapInfo==nil then
     return
   end
-  local i=r.index
-  local n
-  if r.type==TppDefine.TRAP_TYPE.NORMAL then
-    n=this.ChangeNormalTrapState(e,t)
-  elseif r.type==TppDefine.TRAP_TYPE.TRIGGER then
-    n=this.ChangeTriggerTrapState(e,t)
+  local i=trapInfo.index
+  local trapFound
+  if trapInfo.type==TppDefine.TRAP_TYPE.NORMAL then
+    trapFound=this.ChangeNormalTrapState(trapName,enable)
+  elseif trapInfo.type==TppDefine.TRAP_TYPE.TRIGGER then
+    trapFound=this.ChangeTriggerTrapState(trapName,enable)
   else
-    n=this.ChangeNormalTrapState(e,t)
+    trapFound=this.ChangeNormalTrapState(trapName,enable)
   end
-  if n then
-    svars.trp_variableTrapEnable[i]=t
+  if trapFound then
+    svars.trp_variableTrapEnable[i]=enable
   end
 end
-function this.ChangeNormalTrapState(a,t)
-  local e=Tpp.GetDataBodyWithIdentifier("VariableTrapIdentifier",a,"GeoTrap")
+function this.ChangeNormalTrapState(trapName,enable)
+  local e=Tpp.GetDataBodyWithIdentifier("VariableTrapIdentifier",trapName,"GeoTrap")
   if e then
-    TppDataUtility.SetEnableDataFromIdentifier("VariableTrapIdentifier",a,t)
+    TppDataUtility.SetEnableDataFromIdentifier("VariableTrapIdentifier",trapName,enable)
     return true
   end
 end

@@ -1,5 +1,6 @@
 --TppLocation.lua
 local this={}
+local StrCode32=Fox.StrCode32
 function this.GetLocationName()
   if vars.locationCode==10 then
     return"afgh"
@@ -116,7 +117,7 @@ function this.RegistBaseAssetTable(onActiveTable,onActiveSmallBlockTable)
   if onActiveTable then
     mvars.loc_locationBaseAssetOnActive={}
     for name,OnActive in pairs(onActiveTable)do
-      mvars.loc_locationBaseAssetOnActive[Fox.StrCode32(name)]=OnActive
+      mvars.loc_locationBaseAssetOnActive[StrCode32(name)]=OnActive
     end
   end
   if onActiveSmallBlockTable then
@@ -136,7 +137,7 @@ function this.RegistMissionAssetInitializeTable(baseOnActiveTable,onActiveSmallB
   if baseOnActiveTable then
     mvars.loc_missionAssetOnActive={}
     for cpName,cpOnActiveFunction in pairs(baseOnActiveTable)do
-      mvars.loc_missionAssetOnActive[Fox.StrCode32(cpName)]=cpOnActiveFunction
+      mvars.loc_missionAssetOnActive[StrCode32(cpName)]=cpOnActiveFunction
     end
   end
   if onActiveSmallBlockTable then

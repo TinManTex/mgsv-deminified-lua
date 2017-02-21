@@ -1,6 +1,7 @@
 -- DOBUILD: 1
 --TppRevenge.lua
 local this={}
+local StrCode32=InfLog.StrCode32 --tex was Fox.StrCode32
 local GetGameObjectId=GameObject.GetGameObjectId
 local GetTypeIndex=GameObject.GetTypeIndex
 local SendCommand=GameObject.SendCommand
@@ -410,7 +411,7 @@ end
 function this.GetReinforceCount()
   --tex>
   if Ivars.forceReinforceRequest:Is(1) then
-    if not Ivars.IsForMission("revengeMode","CUSTOM") then
+    if not IvarProc.IsForMission("revengeMode","CUSTOM") then
       mvars.revenge_revengeConfig.REINFORCE_COUNT=99
     end
   end
@@ -501,7 +502,7 @@ function this.RegisterCommonMineList(mineList)
       for i,minefield in ipairs(mineFields)do
         local trapName=minefield.trapName
         local mineTrapTable={areaIndex=i,trapName=trapName,baseName=cpName}
-        mvars.rev_mineTrapTable[Fox.StrCode32(trapName)]=mineTrapTable
+        mvars.rev_mineTrapTable[StrCode32(trapName)]=mineTrapTable
       end
     end
   end
@@ -549,7 +550,7 @@ function this.AddBaseMissionMineList(cpName,mineFields)
     end
   end
   for trapName,mineField in pairs(mineFields)do
-    local mineTrapTable=mvars.rev_mineTrapTable[Fox.StrCode32(trapName)]
+    local mineTrapTable=mvars.rev_mineTrapTable[StrCode32(trapName)]
     if mineTrapTable then
       local areaIndex=mineTrapTable.areaIndex
       local mineList=mineListForAreas[areaIndex]
@@ -616,7 +617,7 @@ function this.UpdateLastVisitedMineArea(cpName,areaIndex,trapName)
   if not lastVisitedMineAreaVarsName then
     return
   end
-  local cpNameStr32=Fox.StrCode32(cpName)
+  local cpNameStr32=StrCode32(cpName)
   if gvars.rev_lastUpdatedBaseName==cpNameStr32 then
     return
   else
@@ -869,7 +870,7 @@ function this.AddRevengePointByTriggerType(revengeTriggerType)
     local newPoints=gvars.rev_revengePoint[revType]
     --NMC ORPHAN debugText=debugText..(this.REVENGE_TYPE_NAME[revType+1]..(":"..(tostring(currentRevengePoints)..("->"..(tostring(newPoints).." ")))))
   end
-  --InfMenu.DebugPrint(debugText)--tex might as well use their helpfully created string
+  --InfLog.DebugPrint(debugText)--tex might as well use their helpfully created string
 end
 function this.SetRevengePoint(revengeType,points)
   local maxLevel=this.GetRevengeLvMax(revengeType)
@@ -917,7 +918,7 @@ function this._GetUiParameterValue(revengeType)
   return 0
 end
 function this._SetUiParameters()
-  if Ivars.IsForMission("revengeMode","CUSTOM") then--tex> set ui params
+  if IvarProc.IsForMission("revengeMode","CUSTOM") then--tex> set ui params
     InfRevenge.SetCustomRevengeUiParameters()
     return
   end--<
@@ -993,7 +994,7 @@ end
 function this.OnMissionClearOrAbort(missionId,isAbort)--tex added isAbort
   gvars.rev_revengeRandomValue=math.random(0,2147483647)
   this.ApplyMissionTendency(missionId,isAbort)--tex added isAbort
-  this._ReduceRevengePointByTime(missionId)--tex added
+  InfMBVisit._ReduceRevengePointByTime(missionId)--tex added
   this._ReduceRevengePointByChickenCap(missionId)
   this._ReduceBlockedCount(missionId)
   this._ReceiveClearedDeployRevengeMission()
@@ -1102,36 +1103,6 @@ function this._ReduceRevengePointByChickenCap(missionId)
     this._ReduceRevengePointOther()
   end
 end
---tex>
-function this._ReduceRevengePointByTime(missionId)
-
-  if missionId==nil then
-    missionId=TppMission.GetMissionID()
-  end
-  --  if this.IsNoRevengeMission(missionId)then
-  --    return
-  --  end
-  if missionId~=30050 then
-    return
-  end
-  if bit.band(vars.playerPlayFlag,PlayerPlayFlag.USE_CHICKEN_CAP)==PlayerPlayFlag.USE_CHICKEN_CAP then
-    return
-  end
-
-  if Ivars.revengeDecayOnLongMbVisit:Is(0) then
-    return
-  end
-
-  local getMbVisitRevengeDecay=InfMain.GetMbVisitRevengeDecay()
-  if getMbVisitRevengeDecay>0 then
-    InfMenu.PrintLangId"mb_visit_revenge_decay"
-    for i=1,getMbVisitRevengeDecay do
-      this._ReduceRevengePointStealthCombat()
-      this._ReduceRevengePointOther()
-    end
-  end
-end
---<
 function this.ReduceRevengePointOnAbort(missionId)
 end
 function this._GetMissionTendency(missionId)
@@ -1178,7 +1149,7 @@ function this.ApplyMissionTendency(missionId,isAbort)
       if combatLevel>#missionTendancyPointTable.COMBAT then
         combatLevel=#missionTendancyPointTable.COMBAT
       end
-      --InfMenu.DebugPrint(missionTendancy.." add points: stealth:"..tostring(missionTendancyPointTable.STEALTH[stealthLevel])..", combat:"..tostring(missionTendancyPointTable.COMBAT[combatLevel]))--DEBUG
+      --InfLog.DebugPrint(missionTendancy.." add points: stealth:"..tostring(missionTendancyPointTable.STEALTH[stealthLevel])..", combat:"..tostring(missionTendancyPointTable.COMBAT[combatLevel]))--DEBUG
       --tex> bit of a kludge, would prefer to scale free roam by time in world
       local notFree=missionId~=30010 and missionId~=30020
       local didSomething=this.GetRevengePoint(this.REVENGE_TYPE.M_STEALTH)>0 or this.GetRevengePoint(this.REVENGE_TYPE.M_COMBAT)>0
@@ -1204,11 +1175,11 @@ function this.CanUseReinforceHeli()
 end
 function this.SelectReinforceType()
   if mvars.reinforce_reinforceType==TppReinforceBlock.REINFORCE_TYPE.HELI then--tex why? for quest helis?
-    --    InfMenu.DebugPrint("SelectReinforceType already heli")--DEBUG
+    --    InfLog.DebugPrint("SelectReinforceType already heli")--DEBUG
     return TppReinforceBlock.REINFORCE_TYPE.HELI
   end
   if not this.IsUsingSuperReinforce()then
-    --    InfMenu.DebugPrint("SelectReinforceType not superreinforce, REINFORCE_TYPE.NONE")--DEBUG
+    --    InfLog.DebugPrint("SelectReinforceType not superreinforce, REINFORCE_TYPE.NONE")--DEBUG
     return TppReinforceBlock.REINFORCE_TYPE.NONE
   end
   local reinforceVehicleTypes={}
@@ -1218,7 +1189,7 @@ function this.SelectReinforceType()
   end--
   local canUseReinforceHeli=this.CanUseReinforceHeli() and mvars.revenge_isEnabledSuperReinforce--tex added isEnabledSuper, which is only set by quest heli and shouldnt stop other vehicle
   if canuseReinforceVehicle then
-    --InfMenu.DebugPrint("SelectReinforceType canuseReinforceVehicle")
+    --InfLog.DebugPrint("SelectReinforceType canuseReinforceVehicle")
     local reinforceVehiclesForLocation={
       AFGH={TppReinforceBlock.REINFORCE_TYPE.EAST_WAV,TppReinforceBlock.REINFORCE_TYPE.EAST_TANK},
       MAFR={TppReinforceBlock.REINFORCE_TYPE.WEST_WAV,TppReinforceBlock.REINFORCE_TYPE.WEST_WAV_CANNON,TppReinforceBlock.REINFORCE_TYPE.WEST_TANK}
@@ -1230,15 +1201,15 @@ function this.SelectReinforceType()
     end
   end
   if canUseReinforceHeli then
-    --InfMenu.DebugPrint("SelectReinforceType canuseReinforceHeli")
+    --InfLog.DebugPrint("SelectReinforceType canuseReinforceHeli")
     table.insert(reinforceVehicleTypes,TppReinforceBlock.REINFORCE_TYPE.HELI)
   end
   if#reinforceVehicleTypes==0 then
-    --InfMenu.DebugPrint("SelectReinforceType #reinforceVehicleTypes==0")--DEBUG
+    --InfLog.DebugPrint("SelectReinforceType #reinforceVehicleTypes==0")--DEBUG
     return TppReinforceBlock.REINFORCE_TYPE.NONE
   end
   local randomVehicleType=math.random(1,#reinforceVehicleTypes)
-  --  InfMenu.DebugPrint("SelectReinforceType randomVehicleType: "..TppReinforceBlock.REINFORCE_TYPE_NAME[reinforceVehicleTypes[randomVehicleType]+1])--DEBUG
+  --  InfLog.DebugPrint("SelectReinforceType randomVehicleType: "..TppReinforceBlock.REINFORCE_TYPE_NAME[reinforceVehicleTypes[randomVehicleType]+1])--DEBUG
   return reinforceVehicleTypes[randomVehicleType]
 end
 function this.ApplyPowerSettingsForReinforce(soldierIds)
@@ -1306,7 +1277,7 @@ function this._CreateRevengeConfig(revengeTypes)
   end
 
   --tex>customrevengeconfig
-  local doCustom=Ivars.IsForMission("revengeMode","CUSTOM")
+  local doCustom=IvarProc.IsForMission("revengeMode","CUSTOM")
   if doCustom then
     revengeConfig=InfRevenge.CreateCustomRevengeConfig()
 
@@ -1333,6 +1304,19 @@ function this._CreateRevengeConfig(revengeTypes)
         end
       end
     end--for revengetypes
+
+    --tex>
+    local applyNonDefault=IvarProc.IsForMission("revengeMode","NONDEFAULT")
+    if applyNonDefault then
+      local nonDefaultConfig=InfRevenge.CreateCustomRevengeConfig(applyNonDefault)
+
+      for powerType,setting in pairs(nonDefaultConfig)do
+        revengeConfig[powerType]=setting
+        mvars.ene_missionRequiresPowerSettings[powerType]=setting
+        disablePowerSettings[powerType]=nil
+      end
+    end
+    --<
   end
 
   if not revengeConfig.IGNORE_BLOCKED then
@@ -1346,7 +1330,7 @@ function this._CreateRevengeConfig(revengeTypes)
   if Tpp.IsTypeNumber(revengeConfig.ARMOR)and not this.CanUseArmor() then
     if not disablePowerSettings.SHIELD then
       local shieldCount=revengeConfig.SHIELD or 0
-      if Ivars.disableConvertArmorToShield:Is(0) then--DEBUGNOW or shieldCount==0 then--tex added disable/0 check
+      if Ivars.disableConvertArmorToShield:Is(0) then-- or shieldCount==0 then--tex added disable/0 check
         if Tpp.IsTypeNumber(shieldCount)then
           revengeConfig.SHIELD=shieldCount+revengeConfig.ARMOR
       end
@@ -1354,6 +1338,37 @@ function this._CreateRevengeConfig(revengeTypes)
     end
     revengeConfig.ARMOR=nil
   end
+
+  --tex limit armor
+  --armor uses seperate models than the normal bodies with some internal limit,
+  --beyond that it will either default to the default bodyid for that soldier, or not render a body at all.
+  --likewise the collision model has a limit, but will be mismatched
+  --(ie some visually armored soldiers will be able to be shot like they have no armor, or visa versa)
+  --the limit is somewhere between 70-80 (as tested by setting armor in TppEnemy.ApplyPowerSetting to 100%, and off if above the count/testing limit,
+  --edit: nope, still hit it at 61, ugh
+  --then warping to soldiers to verify)
+  --KLUDGE, TODO: cant be bothered mathing it at the moment, fit this to num cps and total soldiers, under the limit (and covering forced noArmorForMission missions), better handled in _ApplyRevengeToCp
+  --currently just setting to 2 soldiers per cp, which is 78 for afghs 39 cps (and preventing lrrps in TppRevenge._ApplyRevengeToCp)
+  --Still possibly will hit the limit (especially if sideops 8 soldiers get set), but less blatant than the prior CUSTOM 100% or COMBAT_5 with 4 soldiers
+  --EDIT: dropping to 1
+  if revengeConfig.ARMOR and this.CanUseArmor() then
+    --InfLog.Add("_CreateRevengeConfig Limiting Armor:"..revengeConfig.ARMOR)--DEBUG
+    if type(revengeConfig.ARMOR)=="string" then--tex is a "some%", which is only possible via custom config
+      --tex no finnese here, just convert from supposed average cp size of 5 (have no idea what actual average is)
+      revengeConfig.ARMOR=this.GetSoldierCountFromPercentPower(revengeConfig.ARMOR,5)
+    end
+    local cpLimit=1--EDIT: dropping from 2 to 1
+    local missionCode=vars.missionCode
+    if TppMission.IsStoryMission(missionCode) then
+      if not TppEneFova.noArmorForMission[missionCode] then
+        --tex assuming normal armor missions are ok with 4/COMBAT_5 max, TODO: _GetSettingSoldierCount should be limiting it to 4 reguardless, but i'm seeing more, probably something im munging
+        cpLimit=4
+      end
+    end
+    revengeConfig.ARMOR=math.min(revengeConfig.ARMOR,cpLimit)
+    --InfLog.Add("_CreateRevengeConfig Armor limited:"..revengeConfig.ARMOR)--DEBUG
+  end
+  --<
   local revengeComboExclusionNonRequire={NO_KILL_WEAPON={"MG"}}
   if not mvars.ene_missionRequiresPowerSettings.SHIELD then
     revengeComboExclusionNonRequire.MISSILE={"SHIELD"}
@@ -1375,7 +1390,7 @@ function this._CreateRevengeConfig(revengeTypes)
   end
   end
   local missionId=TppMission.GetMissionID()
-  if TppMission.IsFOBMission(missionId)or InfMain.IsDDEquip(missionId) then--tex
+  if TppMission.IsFOBMission(missionId)or IvarProc.EnabledForMission"customWeaponTable" then--tex added customWeaponTable check
     local weaponTable=TppEnemy.weaponIdTable.DD
     if revengeConfig.NO_KILL_WEAPON and weaponTable then
       local normalTable=weaponTable.NORMAL
@@ -1396,6 +1411,8 @@ function this._CreateRevengeConfig(revengeTypes)
       end
     end
   end
+  InfLog.Add"TppRevenge._CreateRevengeConfig"--tex DEBUG
+  InfLog.PrintInspect(revengeConfig)--tex DEBUG
   return revengeConfig
 end
 --INPUT: mvars.revenge_revengeConfig < _CreateRevengeConfig
@@ -1434,7 +1451,7 @@ local weaponTypes={
   "MISSILE",
 }
 
-function this._AllocateResourcesNEW(config)--DEBUGNOW WIP
+function this._AllocateResources(config)
   mvars.revenge_loadedEquip={}
   local missionRequiresSettings=mvars.ene_missionRequiresPowerSettings
   local loadWeaponIds={}
@@ -1496,14 +1513,17 @@ function this._AllocateResourcesNEW(config)--DEBUGNOW WIP
     else
       local weaponStrength=weaponStrengths[weaponName]
       local weaponId=weaponIdTable[weaponStrength][weaponName] or weaponIdTable.NORMAL[weaponName]
-      if Tpp.IsTypeTable(weaponId)then
+      if weaponId==nil then
+      --tex will happen if prep requests weapon types the weapon table doesnt have, which should only happen on MB if default mb table (only assault) and prep ha
+      --InfLog.DebugPrint("weaponidTable "..weaponName.." is nil")--DEBUG
+      elseif Tpp.IsTypeTable(weaponId)then
         for i,weaponId in ipairs(weaponId)do
           loadWeaponIds[weaponId]=true
         end
       else
         loadWeaponIds[weaponId]=true
       end
-      mvars.revenge_loadedEquip[weaponName]=weaponId 
+      mvars.revenge_loadedEquip[weaponName]=weaponId
     end
   end
 
@@ -1521,7 +1541,7 @@ function this._AllocateResourcesNEW(config)--DEBUGNOW WIP
   if TppEquip.RequestLoadToEquipMissionBlock then
     TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
     --tex> TODO: pare it down to actual used
-    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
+    if Ivars.enableWildCardFreeRoam:EnabledForMission(missionId) then
       local equipLoadTable={}
       for weaponType,weaponId in pairs(TppEnemy.weaponIdTable.WILDCARD.NORMAL)do
         table.insert(equipLoadTable,weaponId)
@@ -1530,139 +1550,126 @@ function this._AllocateResourcesNEW(config)--DEBUGNOW WIP
     end--<
   end
 end
---ORIG 
-function this._AllocateResources(config)--DEBUGNOW
+--ORIG
 --function this._AllocateResources(config)
-  mvars.revenge_loadedEquip={}
-  local missionRequiresSettings=mvars.ene_missionRequiresPowerSettings
-  local loadWeaponIds={}
-  local nullId=NULL_ID
-  local defaultSoldierType=TppEnemy.GetSoldierType(nullId)
-  local defaultSubType=TppEnemy.GetSoldierSubType(nullId)
-  local weaponIdTable=TppEnemy.GetWeaponIdTable(defaultSoldierType,defaultSubType)
-  if weaponIdTable==nil then
-    TppEnemy.weaponIdTable.DD={NORMAL={HANDGUN=TppEquip.EQP_WP_West_hg_010,ASSAULT=TppEquip.EQP_WP_West_ar_040}}
-    weaponIdTable=TppEnemy.weaponIdTable.DD
-  end
-  local disablePowerSettings=mvars.ene_disablePowerSettings
-  local missionId=TppMission.GetMissionID()
-  local useAllWeapons=true
-  if this.CANNOT_USE_ALL_WEAPON_MISSION[missionId]then
-    useAllWeapons=false
-  end
-  --tex>
-  if (Ivars.disableMissionsWeaponRestriction:Is(1) and vars.missionCode~=30050)or(Ivars.disableMotherbaseWeaponRestriction:Is(1) and vars.missionCode==30050) then--WIP
-    useAllWeapons=true
-  end--<
-  local restrictWeaponTable={}
-  if not useAllWeapons then
-    if not config.SHIELD or config.MISSILE then
-      if not missionRequiresSettings.SHIELD then
-        restrictWeaponTable.SHIELD=true
-        disablePowerSettings.SHIELD=true
-      end
-    else
-      if not missionRequiresSettings.MISSILE then
-        restrictWeaponTable.MISSILE=true
-        disablePowerSettings.MISSILE=true
-      end
-    end
-    if defaultSoldierType~=EnemyType.TYPE_DD then
-      if config.SHOTGUN then
-        if not missionRequiresSettings.MG then
-          restrictWeaponTable.MG=true
-          disablePowerSettings.MG=true
-        end
-      else
-        if not missionRequiresSettings.SHOTGUN then
-          restrictWeaponTable.SHOTGUN=true
-          disablePowerSettings.SHOTGUN=true
-        end
-      end
-    end
-  end
-  for powerType,n in pairs(missionRequiresSettings)do
-    restrictWeaponTable[powerType]=nil
-    disablePowerSettings[powerType]=nil
-  end
-
-  do
-    local basePowerTypes={HANDGUN=true,SMG=true,ASSAULT=true,SHOTGUN=true,MG=true,SHIELD=true}
-    local baseWeaponIdTable=weaponIdTable.NORMAL
-    if this.IsUsingStrongWeapon()and weaponIdTable.STRONG then
-      baseWeaponIdTable=weaponIdTable.STRONG
-    end
-    if Tpp.IsTypeTable(baseWeaponIdTable)then
-      for powerType,weaponId in pairs(baseWeaponIdTable)do
-        if not basePowerTypes[powerType]then
-        elseif disablePowerSettings[powerType]then
-        elseif restrictWeaponTable[powerType]then
-        else
-          loadWeaponIds[weaponId]=true
-          mvars.revenge_loadedEquip[powerType]=weaponId
-        end
-      end
-    end
-  end
-
-  if not disablePowerSettings.MISSILE and not restrictWeaponTable.MISSILE then
-    local missileIdTable={}
-    if this.IsUsingStrongMissile()and weaponIdTable.STRONG then
-      missileIdTable=weaponIdTable.STRONG
-    else
-      missileIdTable=weaponIdTable.NORMAL
-    end
-    local missileId=missileIdTable.MISSILE
-    if missileId then
-      loadWeaponIds[missileId]=true
-      mvars.revenge_loadedEquip.MISSILE=missileId
-    end
-  end
-  if not disablePowerSettings.SNIPER and not restrictWeaponTable.SNIPER then
-    local sniperIdTable={}
-    if this.IsUsingStrongSniper()and weaponIdTable.STRONG then
-      sniperIdTable=weaponIdTable.STRONG
-    else
-      sniperIdTable=weaponIdTable.NORMAL
-    end
-    local sniperId=sniperIdTable.SNIPER
-    if sniperId then
-      loadWeaponIds[sniperId]=true
-      mvars.revenge_loadedEquip.SNIPER=sniperId
-    end
-  end
-
-  do
-    local primary,secondary,tertiary=TppEnemy.GetWeaponId(NULL_ID,{})
-    TppSoldier2.SetDefaultSoldierWeapon{primary=primary,secondary=secondary,tertiary=tertiary}
-  end
-  local equipLoadTable={}
-  for weaponId,bool in pairs(loadWeaponIds)do
-    --tex>
-    if Tpp.IsTypeTable(weaponId) then
-      for i,weaponId in ipairs(weaponId)do
-        table.insert(equipLoadTable,weaponId)
-      end
-    else
-    --<
-      table.insert(equipLoadTable,weaponId)
-    end
-  end
-  if missionId==10080 or missionId==11080 then
-    table.insert(equipLoadTable,TppEquip.EQP_WP_Wood_ar_010)
-  end
-  if TppEquip.RequestLoadToEquipMissionBlock then
-    TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
-    --tex> TODO: pare it down to actual used
-    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
-      local equipLoadTable={}
-      for weaponType,weaponId in pairs(TppEnemy.weaponIdTable.WILDCARD.NORMAL)do
-        table.insert(equipLoadTable,weaponId)
-      end
-      TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
-    end--<
+--  mvars.revenge_loadedEquip={}
+--  local missionRequiresSettings=mvars.ene_missionRequiresPowerSettings
+--  local loadWeaponIds={}
+--  local nullId=NULL_ID
+--  local defaultSoldierType=TppEnemy.GetSoldierType(nullId)
+--  local defaultSubType=TppEnemy.GetSoldierSubType(nullId)
+--  local weaponIdTable=TppEnemy.GetWeaponIdTable(defaultSoldierType,defaultSubType)
+--  if weaponIdTable==nil then
+--    TppEnemy.weaponIdTable.DD={NORMAL={HANDGUN=TppEquip.EQP_WP_West_hg_010,ASSAULT=TppEquip.EQP_WP_West_ar_040}}
+--    weaponIdTable=TppEnemy.weaponIdTable.DD
+--  end
+--  local disablePowerSettings=mvars.ene_disablePowerSettings
+--  local missionId=TppMission.GetMissionID()
+--  local useAllWeapons=true
+--  if this.CANNOT_USE_ALL_WEAPON_MISSION[missionId]then
+--    useAllWeapons=false
+--  end
+--  local restrictWeaponTable={}
+--  if not useAllWeapons then
+--    if not config.SHIELD or config.MISSILE then
+--      if not missionRequiresSettings.SHIELD then
+--        restrictWeaponTable.SHIELD=true
+--        disablePowerSettings.SHIELD=true
+--      end
+--    else
+--      if not missionRequiresSettings.MISSILE then
+--        restrictWeaponTable.MISSILE=true
+--        disablePowerSettings.MISSILE=true
+--      end
+--    end
+--    if defaultSoldierType~=EnemyType.TYPE_DD then
+--      if config.SHOTGUN then
+--        if not missionRequiresSettings.MG then
+--          restrictWeaponTable.MG=true
+--          disablePowerSettings.MG=true
+--        end
+--      else
+--        if not missionRequiresSettings.SHOTGUN then
+--          restrictWeaponTable.SHOTGUN=true
+--          disablePowerSettings.SHOTGUN=true
+--        end
+--      end
+--    end
+--  end
+--  for powerType,n in pairs(missionRequiresSettings)do
+--    restrictWeaponTable[powerType]=nil
+--    disablePowerSettings[powerType]=nil
+--  end
+--
+--  do
+--    local basePowerTypes={HANDGUN=true,SMG=true,ASSAULT=true,SHOTGUN=true,MG=true,SHIELD=true}
+--    local baseWeaponIdTable=weaponIdTable.NORMAL
+--    if this.IsUsingStrongWeapon()and weaponIdTable.STRONG then
+--      baseWeaponIdTable=weaponIdTable.STRONG
+--    end
+--    if Tpp.IsTypeTable(baseWeaponIdTable)then
+--      for powerType,weaponId in pairs(baseWeaponIdTable)do
+--        if not basePowerTypes[powerType]then
+--        elseif disablePowerSettings[powerType]then
+--        elseif restrictWeaponTable[powerType]then
+--        else
+--          loadWeaponIds[weaponId]=true
+--          mvars.revenge_loadedEquip[powerType]=weaponId
+--        end
+--      end
+--    end
+--  end
+--
+--  if not disablePowerSettings.MISSILE and not restrictWeaponTable.MISSILE then
+--    local missileIdTable={}
+--    if this.IsUsingStrongMissile()and weaponIdTable.STRONG then
+--      missileIdTable=weaponIdTable.STRONG
+--    else
+--      missileIdTable=weaponIdTable.NORMAL
+--    end
+--    local missileId=missileIdTable.MISSILE
+--    if missileId then
+--      loadWeaponIds[missileId]=true
+--      mvars.revenge_loadedEquip.MISSILE=missileId
+--    end
+--  end
+--  if not disablePowerSettings.SNIPER and not restrictWeaponTable.SNIPER then
+--    local sniperIdTable={}
+--    if this.IsUsingStrongSniper()and weaponIdTable.STRONG then
+--      sniperIdTable=weaponIdTable.STRONG
+--    else
+--      sniperIdTable=weaponIdTable.NORMAL
+--    end
+--    local sniperId=sniperIdTable.SNIPER
+--    if sniperId then
+--      loadWeaponIds[sniperId]=true
+--      mvars.revenge_loadedEquip.SNIPER=sniperId
+--    end
+--  end
+--
+--  do
+--    local primary,secondary,tertiary=TppEnemy.GetWeaponId(NULL_ID,{})
+--    TppSoldier2.SetDefaultSoldierWeapon{primary=primary,secondary=secondary,tertiary=tertiary}
+--  end
+--  local equipLoadTable={}
+--  for weaponId,bool in pairs(loadWeaponIds)do
+--    table.insert(equipLoadTable,weaponId)
+--  end
+--  if missionId==10080 or missionId==11080 then
+--    table.insert(equipLoadTable,TppEquip.EQP_WP_Wood_ar_010)
+--  end
+--  if TppEquip.RequestLoadToEquipMissionBlock then
+--    TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
+--  end
+--end
+--tex taken from below>
+function this.GetSoldierCountFromPercentPower(powerSetting,soldierCount)
+  if powerSetting:sub(-1)=="%"then
+    local percentage=powerSetting:sub(1,-2)+0
+    return math.ceil(soldierCount*(percentage/100))
   end
 end
+--<
 function this._GetSettingSoldierCount(power,powerSetting,soldierCount)
   local abilities={
     NO_KILL_WEAPON=true,
@@ -1718,7 +1725,7 @@ local function CreateCpConfig(revengeConfig,totalSoldierCount,powerComboExclusio
         settingSoldierCount=unfulfilledPowers[powerType]
       end--<
       --      if Ivars.selectedCp:Is()==cpId then--tex DEBUG
-      --        InfMenu.DebugPrint(mvars.ene_cpList[cpId].." powerType:"..powerType.."="..tostring(powerSetting).." settingSoldierCount="..settingSoldierCount.." of "..totalSoldierCount)--DEBUG
+      --        InfLog.DebugPrint(mvars.ene_cpList[cpId].." powerType:"..powerType.."="..tostring(powerSetting).." settingSoldierCount="..settingSoldierCount.." of "..totalSoldierCount)--DEBUG
       --      end--
       local comboExcludeList=powerComboExclusionList[powerType]or{}
       local soldierCount=settingSoldierCount
@@ -1780,6 +1787,27 @@ local function CreateCpConfig(revengeConfig,totalSoldierCount,powerComboExclusio
   return cpConfig
 end
 
+--tex broken out from _ApplyRevengeToCp, for mb
+--IN/OUT: soldierIds
+function this.SetEnableSoldierLocatorList(cpId,plant,soldierIds)
+  local zero=0
+  local cpName=mvars.ene_cpList[cpId]
+  if(mtbs_enemy and mtbs_enemy.cpNameToClsterIdList~=nil)and mvars.mbSoldier_enableSoldierLocatorList~=nil then
+    local clusterIdList=mtbs_enemy.cpNameToClsterIdList[cpName]
+    if clusterIdList then
+      soldierIds={}
+      local soldierLocators=mvars.mbSoldier_enableSoldierLocatorList[clusterIdList]
+      for n,soldierName in ipairs(soldierLocators)do
+        local soldierPlant=tonumber(string.sub(soldierName,-6,-6))
+        if soldierPlant~=nil and soldierPlant==plant then
+          local soldierId=GameObject.GetGameObjectId("TppSoldier2",soldierName)
+          soldierIds[soldierId]=soldierName--tex was zero, see note in TppEnemy.DefineSoldiers
+        end
+      end
+    end
+  end
+end
+
 --CALLER: SetUpEnemy
 --INPUT: mvars.revenge_revengeConfig < _CreateRevengeConfig
 function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
@@ -1792,22 +1820,7 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   local soldierIdForConfigIdTable={}
   local totalSoldierCount=0
   if TppLocation.IsMotherBase()or TppLocation.IsMBQF()then
-    local r=0
-    local cpName=mvars.ene_cpList[cpId]
-    if(mtbs_enemy and mtbs_enemy.cpNameToClsterIdList~=nil)and mvars.mbSoldier_enableSoldierLocatorList~=nil then
-      local clusterIdList=mtbs_enemy.cpNameToClsterIdList[cpName]
-      if clusterIdList then
-        soldierIds={}
-        local soldierLocators=mvars.mbSoldier_enableSoldierLocatorList[clusterIdList]
-        for n,soldierName in ipairs(soldierLocators)do
-          local soldierPlant=tonumber(string.sub(soldierName,-6,-6))
-          if soldierPlant~=nil and soldierPlant==plant then
-            local soldierId=GameObject.GetGameObjectId("TppSoldier2",soldierName)
-            soldierIds[soldierId]=r
-          end
-        end
-      end
-    end
+    this.SetEnableSoldierLocatorList(cpId,soldierIds)--tex broken out for clarity
   end
   if soldierIds==nil then
     return
@@ -1832,7 +1845,7 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   --OFF unused local outerBaseSoldierTable={}
   --OFF unused local lrrpSoldierTable={}--tex added, was combined with above
 
-  for soldierId,E in pairs(soldierIds)do
+  for soldierId,soldierName in pairs(soldierIds)do
     table.insert(soldierIdForConfigIdTable,soldierId)
     totalSoldierCount=totalSoldierCount+1
     if missionPowerSoldiers[soldierId]then
@@ -1852,6 +1865,16 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   if totalSoldierCount==0 then--tex> early out
     return
   end--<
+
+  --tex limit armor, see 'limit armor' in _CreateRevengeConfig>
+  if isLrrpCp or isOuterBaseCp then
+    if revengeConfigCp.ARMOR then
+      if IvarProc.EnabledForMission"allowHeavyArmor" or IvarProc.EnabledForMission"revengeMode" then
+        revengeConfigCp.ARMOR=false
+      end
+    end
+  end
+  --<
 
   local cpConfig={}--NMC: the main point of the function
   for soldierConfigId=1,totalSoldierCount do
@@ -2000,9 +2023,8 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   end
 
   --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG
-  --      InfMenu.DebugPrint("totalSoldierCount:" .. totalSoldierCount.." totalWanted weapons:"..totalWanted)
-  --      local ins=InfInspect.Inspect(wantedWeapons)--DEBUG
-  --      InfMenu.DebugPrint(ins)
+  --      InfLog.DebugPrint("totalSoldierCount:" .. totalSoldierCount.." totalWanted weapons:"..totalWanted)
+  --      InfLog.PrintInspect(wantedWeapons)--DEBUG
   --    end--
 
   --    if revengeConfigCp.SMG==nil then
@@ -2022,8 +2044,7 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   numBalance,sumBalance,originalWeaponSettings=InfRevenge.GetSumBalance(balanceWeaponTypes,revengeConfigCp,totalSoldierCount,originalWeaponSettings)
 
   --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG>
-  --      local ins=InfInspect.Inspect(originalWeaponSettings)
-  --      InfMenu.DebugPrint(ins)
+  --      InfLog.PrintInspect(originalWeaponSettings)
   --    end--<
 
   if numBalance>0 and sumBalance>Ivars.balanceWeaponPowers.balanceWeaponsThreshold then
@@ -2037,12 +2058,10 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   end
 
   --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG>
-  --      InfMenu.DebugPrint("revengeConfig")
-  --      local ins=InfInspect.Inspect(revengeConfig)
-  --      InfMenu.DebugPrint(ins)
-  --      InfMenu.DebugPrint("revengeConfigCp")
-  --      local ins=InfInspect.Inspect(revengeConfigCp)
-  --      InfMenu.DebugPrint(ins)
+  --      InfLog.DebugPrint("revengeConfig")
+  --      InfLog.PrintInspect(revengeConfig)
+  --      InfLog.DebugPrint("revengeConfigCp")
+  --      InfLog.PrintInspect(revengeConfigCp)
   --    end--<
   end--balanceWeaponPowers
 
@@ -2103,26 +2122,25 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   end--<
 
   --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG
-  --      --if not InfMain.IsTableEmpty(unfulfilledPowers) then
-  --      InfMenu.DebugPrint"unfulfilledPowers:"
-  --      local instr=InfInspect.Inspect(unfulfilledPowers)
-  --      InfMenu.DebugPrint(instr)
+  --      --if not InfUtil.IsTableEmpty(unfulfilledPowers) then
+  --      InfLog.DebugPrint"unfulfilledPowers:"
+  --      InfLog.PrintInspect(unfulfilledPowers)
   --      --end--
   --    end--<
   --
   --  if Ivars.selectedCp:Is()==cpId then--tex DEBUG
-  --    local instr=InfInspect.Inspect(cpConfig)
-  --    InfMenu.DebugPrint(instr)
+  --    InfLog.PrintInspect(cpConfig)
   --  end--<
 
   --tex fix issues with RADIO body>
   local applyPowersToLrrp=Ivars.applyPowersToLrrp:Is()>0
-  local isVehiclePatrols=Ivars.vehiclePatrolProfile:Is()>0 and Ivars.vehiclePatrolProfile:MissionCheck()
+  local isVehiclePatrols=Ivars.vehiclePatrolProfile:EnabledForMission()
   for soldierConfigId,soldierConfig in ipairs(cpConfig)do
     local soldierId=soldierIdForConfigIdTable[soldierConfigId]
     local addRadio=false
+
     if isLrrpVehicleCp and isVehiclePatrols then
-      local vehicleInfo=mvars.inf_patrolVehicleInfo[isLrrpVehicleCp]
+      local vehicleInfo=InfVehicle.inf_patrolVehicleInfo[isLrrpVehicleCp]
       if vehicleInfo then
         local baseTypeInfo=InfVehicle.vehicleBaseTypes[vehicleInfo.baseType]
         if baseTypeInfo and not baseTypeInfo.enclosed then
@@ -2439,7 +2457,7 @@ end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-local AttackIsVehicle=function(attackId)--RETAILBUG: seems like attackid must be a typo and f
+local AttackIsVehicle=function(attackId)
   if(((((((((((((attackId==TppDamage.ATK_VehicleHit
     or attackId==TppDamage.ATK_Tankgun_20mmAutoCannon)
     or attackId==TppDamage.ATK_Tankgun_30mmAutoCannon)
@@ -2455,13 +2473,13 @@ local AttackIsVehicle=function(attackId)--RETAILBUG: seems like attackid must be
     or attackId==TppDamage.ATK_HeliMiniGun)
     or attackId==TppDamage.ATK_HeliChainGun)
     or attackId==TppDamage.ATK_WalkerGear_BodyAttack
-then
-  return true
-end
-return false
+  then
+    return true
+  end
+  return false
 end
 --ORIG: RETAILBUG: --RETAILBUG: seems like attackid must be a typo (unless they randomly decided to use one Global and stop using camelCase
---local AttackedByVehicle=function(e)--RETAILBUG: seems like attackid must be a typo and f
+--local AttackedByVehicle=function(e)
 --  if(((((((((((((attackid==TppDamage.ATK_VehicleHit or e==TppDamage.ATK_Tankgun_20mmAutoCannon)or e==TppDamage.ATK_Tankgun_30mmAutoCannon)or e==TppDamage.ATK_Tankgun_105mmRifledBoreGun)or e==TppDamage.ATK_Tankgun_120mmSmoothBoreGun)or e==TppDamage.ATK_Tankgun_125mmSmoothBoreGun)or e==TppDamage.ATK_Tankgun_82mmRocketPoweredProjectile)or e==TppDamage.ATK_Tankgun_30mmAutoCannon)or e==TppDamage.ATK_Wav1)or e==TppDamage.ATK_WavCannon)or e==TppDamage.ATK_TankCannon)or e==TppDamage.ATK_WavRocket)or e==TppDamage.ATK_HeliMiniGun)or e==TppDamage.ATK_HeliChainGun)or attackid==TppDamage.ATK_WalkerGear_BodyAttack then
 --    return true
 --  end
@@ -2473,9 +2491,8 @@ function this._OnReinforceRespawn(soldierIds)
     TppEnemy.AddPowerSetting(soldierIds,{})
     o50050_enemy.AssignAndSetupRespawnSoldier(soldierIds)
   else
-    --    InfMenu.DebugPrint"_OnReinforceRespawn"--tex DEBUG>
-    --    local ins=InfInspect.Inspect(soldierIds)
-    --    InfMenu.DebugPrint(ins)--<
+    --    InfLog.DebugPrint"_OnReinforceRespawn"--tex DEBUG>
+    --    InfLog.PrintInspect(soldierIds)--<
     this.ApplyPowerSettingsForReinforce{soldierIds}
   end
 end

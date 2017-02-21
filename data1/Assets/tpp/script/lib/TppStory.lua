@@ -1,5 +1,6 @@
 -- DOBUILD: 1
 local this={}
+local StrCode32=Fox.StrCode32
 this.storySequenceTable={}
 this.storySequenceTable_Master={
   {main="s10010"},
@@ -1730,7 +1731,7 @@ function this.UpdateStorySequence(params)
   return updateSequence
 end
 function this.UpdateStorySequenceOnMissionClear(missionId)
-  for t,id in pairs(TppDefine.SYS_MISSION_ID)do
+  for name,id in pairs(TppDefine.SYS_MISSION_ID)do
     if(missionId==id)then
       return
     end
@@ -1791,19 +1792,19 @@ function this._UpdateStorySequence()
   until(r or next(nextStorySequence))
   return nextStorySequence
 end
-function this.CheckNeedProceedStorySequence(n)
+function this.CheckNeedProceedStorySequence(storySequenceTable)
   local t={}
-  local function i(n)
-    local missionCode=TppMission.ParseMissionName(n)
+  local function AddMissionCleared(missionCodeName)
+    local missionCode=TppMission.ParseMissionName(missionCodeName)
     local isMissionCleared=this.IsMissionCleard(missionCode)
     table.insert(t,isMissionCleared)
   end
-  if n.main then
-    i(n.main)
+  if storySequenceTable.main then
+    AddMissionCleared(storySequenceTable.main)
   end
-  if n.flag then
-    for n,e in pairs(n.flag)do
-      i(e)
+  if storySequenceTable.flag then
+    for n,e in pairs(storySequenceTable.flag)do
+      AddMissionCleared(e)
     end
   end
   local e=true
@@ -1814,14 +1815,14 @@ function this.CheckNeedProceedStorySequence(n)
     end
   end
   local t=#t
-  if n.proceedCount then
-    t=n.proceedCount
+  if storySequenceTable.proceedCount then
+    t=storySequenceTable.proceedCount
   end
   if i<t then
     e=false
   end
-  if e and n.condition then
-    e=n.condition()
+  if e and storySequenceTable.condition then
+    e=storySequenceTable.condition()
   end
   return e
 end
@@ -1884,7 +1885,7 @@ function this.CompleteAllHardMissionSRankCleared()
   TppTerminal.AcquireKeyItem{dataBaseId=TppMotherBaseManagementConst.DESIGN_3019,pushReward=true}
 end
 function this.IsCompletedMbMedicalSpecialPlatform(e,n,t)
-  if((e==Fox.StrCode32"MotherBase")and(n==Fox.StrCode32"Medical"))and(t==1)then
+  if((e==StrCode32"MotherBase")and(n==StrCode32"Medical"))and(t==1)then
     return true
   else
     return false
@@ -1942,7 +1943,7 @@ function this.RequestLoseQuiet()
   end
 end
 function this.CanArrivalLiquidInMB()
-  if Ivars.mbShowEli:Is(1) and Ivars.mbWarGamesProfile:Is(0) then return true end--tex added mbshow
+  if Ivars.mbShowEli:Is(1) and not InfGameEvent.IsMbEvent() then return true end--tex added mbshow
   local e=this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA
   local n=not TppDemo.IsPlayedMBEventDemo"TheGreatEscapeLiquid"
   return e and n
@@ -1956,7 +1957,7 @@ function this.HueyHasKantokuGrass()
   return this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_METALLIC_ARCHAEA
 end
 function this.CanArrivalCodeTalkerInMB()
-  return this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_CODE_TALKER or (Ivars.mbShowCodeTalker:Is(1)and Ivars.mbWarGamesProfile:Is(0))--tex added mbshow
+  return this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_CODE_TALKER or (Ivars.mbShowCodeTalker:Is(1)and not InfGameEvent.IsMbEvent())--tex added mbshow
 end
 function this.CanArrivalDDogInMB()
   local e=TppBuddyService.CanSortieBuddyType(BuddyType.DOG)

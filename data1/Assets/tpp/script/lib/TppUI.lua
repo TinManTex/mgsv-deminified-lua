@@ -1,7 +1,7 @@
 -- DOBUILD: 1
 -- TppUi.lua
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfLog.StrCode32--tex was Fox.StrCode32
 local IsTypeTable=Tpp.IsTypeTable
 local GetGameObjectId=GameObject.GetGameObjectId
 local NULL_ID=GameObject.NULL_ID
@@ -9,6 +9,7 @@ local CallFadeIn=FadeFunction.CallFadeIn
 local CallFadeOut=FadeFunction.CallFadeOut
 local subGoal0=0
 this.FADE_SPEED={FADE_MOMENT=0,FADE_HIGHESTSPEED=.5,FADE_HIGHSPEED=1,FADE_NORMALSPEED=2,FADE_LOWSPEED=4,FADE_LOWESTSPEED=8}
+--NMC tex this extra layer of indiraction is annoying
 this.ANNOUNCE_LOG_TYPE={
   updateMissionInfo="announce_mission_info_update",
   updateMissionInfo_AddDocument="announce_doc_add",
@@ -174,10 +175,11 @@ this.ANNOUNCE_LOG_TYPE={
   get_hero="announce_get_hero",
   lost_hero="announce_lost_hero",
   challenge_task="announce_challenge_task_d90",--RETAILPATCH 1090
+  quest_extract_animal="announce_quest_extract_animal",--tex
 }
 this.ANNOUNCE_LOG_PRIORITY={"eliminateTarget","recoveredFilmCase","recoverTarget","destroyTarget","achieveAllObjectives","achieveObjectiveCount","getIntel","updateMissionInfo","updateMissionInfo_AddDocument","updateMap"}
 this.BUDDY_LANG_ID={[BuddyType.HORSE]="name_buddy_dh",[BuddyType.DOG]="name_buddy_dd",[BuddyType.QUIET]="marker_chara_quiet"}
-this.EMBLEM_ANNOUNCE_LOG_TYPE={[Fox.StrCode32"front"]="find_em_front",[Fox.StrCode32"base"]="find_em_back",[Fox.StrCode32"word"]="find_em_string"}
+this.EMBLEM_ANNOUNCE_LOG_TYPE={[StrCode32"front"]="find_em_front",[StrCode32"base"]="find_em_back",[StrCode32"word"]="find_em_string"}
 function this.Messages()
   return Tpp.StrCode32Table{
     GameObject={
@@ -220,11 +222,11 @@ function this.Messages()
     }
   }
 end
-local function ToStrCode32(e)
-  if type(e)=="string"then
-    return Fox.StrCode32(e)
-  elseif type(e)=="number"then
-    return e
+local function ToStrCode32(value)
+  if type(value)=="string"then
+    return StrCode32(value)
+  elseif type(value)=="number"then
+    return value
   end
   return nil
 end
@@ -534,9 +536,9 @@ function this.IsAllTaskCompleted(n)
   return false
 end
 --RETAILPATCH 1090>
-function this.UpdateOnlineChallengeTask(e)
+function this.UpdateOnlineChallengeTask(taskInfo)
   if OnlineChallengeTask then
-    OnlineChallengeTask.Update(e)
+    OnlineChallengeTask.Update(taskInfo)
   end
 end
 --<
@@ -1126,10 +1128,10 @@ end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.OnChangeSVars(name,RENparam2)
+function this.OnChangeSVars(name,key)
   --ORPHAN local isSneak=TppServerManager.FobIsSneak()
   if FobUI then
-    FobUI.OnChangeSVars(name,RENparam2)--RETAILPATCH 1070 some stuff pushed from here into this function <<
+    FobUI.OnChangeSVars(name,key)--RETAILPATCH 1070 some stuff pushed from here into this function <<
   end
 end
 function this.DisableGameStatusOnFade(n)

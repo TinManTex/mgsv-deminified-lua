@@ -2,9 +2,9 @@ do
   return{}
 end
 local this={}
-function this.SetPlayLogEnabled(e)
+function this.SetPlayLogEnabled(enable)
   if TppPlayLog then
-    TppPlayLog.SetPlayLogEnabled(e)
+    TppPlayLog.SetPlayLogEnabled(enable)
   end
 end
 function this.RequestResetPlayLog()
@@ -23,37 +23,52 @@ function this.ExportSavedPlayLog()
   end
 end
 this.PERF_CHECK_TYPE=Tpp.Enum{"OnUpdate","OnMessage","OnEnter"}
-local s={}
-local m={}
-local l={}
-local v=2
-local i=0
-local n=0
+local perfCheckTimes={}
+local unk2Table={}
+local perfCheckTimesStrings={}
+local unk4Num=2
+local unk5Num=0
+local unk6Num=0
 local ApendArray=Tpp.ApendArray
 local IsTypeTable=Tpp.IsTypeTable
 local IsTimerActive=GkEventTimerManager.IsTimerActive
 local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
-this.Colors={black=Color(0,0,0,1),white=Color(1,1,1,1),red=Color(1,0,0,1),green=Color(0,1,0,1),blue=Color(0,0,1,1),yellow=Color(1,1,0,1),magenta=Color(1,0,1,1),cyan=Color(0,1,1,1),darkRed=Color(.5,0,0,1),darkGreen=Color(0,.5,0,1),darkBlue=Color(0,0,.5,1),darkYellow=Color(.5,.5,0,1),purple=Color(.5,0,.5,1),darkCyan=Color(0,.5,.5,1)}
-function this.DEBUG_SetSVars(e)
-  if not IsTypeTable(e)then
+this.Colors={
+  black=Color(0,0,0,1),
+  white=Color(1,1,1,1),
+  red=Color(1,0,0,1),
+  green=Color(0,1,0,1),
+  blue=Color(0,0,1,1),
+  yellow=Color(1,1,0,1),
+  magenta=Color(1,0,1,1),
+  cyan=Color(0,1,1,1),
+  darkRed=Color(.5,0,0,1),
+  darkGreen=Color(0,.5,0,1),
+  darkBlue=Color(0,0,.5,1),
+  darkYellow=Color(.5,.5,0,1),
+  purple=Color(.5,0,.5,1),
+  darkCyan=Color(0,.5,.5,1)
+}
+function this.DEBUG_SetSVars(setList)
+  if not IsTypeTable(setList)then
     return
   end
-  for e,a in pairs(e)do
-    Tpp._DEBUG_svars[e]=a
+  for name,value in pairs(setList)do
+    Tpp._DEBUG_svars[name]=value
   end
 end
-function this.DEBUG_SetGVars(e)
-  if not IsTypeTable(e)then
+function this.DEBUG_SetGVars(setList)
+  if not IsTypeTable(setList)then
     return
   end
-  for e,a in pairs(e)do
-    Tpp._DEBUG_gvars[e]=a
+  for name,value in pairs(setList)do
+    Tpp._DEBUG_gvars[name]=value
   end
 end
 function this.DEBUG_RestoreSVars()
   if next(Tpp._DEBUG_svars)then
-    for a,e in pairs(Tpp._DEBUG_svars)do
-      svars[a]=e
+    for name,value in pairs(Tpp._DEBUG_svars)do
+      svars[name]=value
     end
     TppSave.VarSave()
   end
@@ -68,8 +83,8 @@ function this.DEBUG_SetOrderBoxPlayerPosition()
 end
 function this.DEBUG_SVarsClear()
   if next(Tpp._DEBUG_svars)then
-    for e,a in pairs(Tpp._DEBUG_svars)do
-      if e=="dbg_seq_sequenceName"then
+    for name,value in pairs(Tpp._DEBUG_svars)do
+      if name=="dbg_seq_sequenceName"then
         TppSave.ReserveVarRestoreForContinue()
       end
     end
@@ -100,7 +115,7 @@ function this.DEBUG_GetSysVarsLog()
     "svars.scoreTime = "..tostring(svars.scoreTime)}
   return svarsLog
 end
-function this.DEBUG_WarpHelicopter(RENHeliName,route,position,point,n)
+function this.DEBUG_WarpHelicopter(RENHeliName,route,position,point,setRoute)
   if not IsTypeTable(soldierNameTable)then
     soldierNameTable={soldierNameTable}
   end
@@ -109,48 +124,48 @@ function this.DEBUG_WarpHelicopter(RENHeliName,route,position,point,n)
   if not point then
     point=0
   end
-  for s,a in pairs(soldierNameTable)do
-    local a=GetGameObjectId(a)
-    SendCommand(a,{id="SetEnabled",enabled=false})
-    SendCommand(a,{id="SetSneakRoute",route=route,point=point})
-    SendCommand(a,{id="SetCautionRoute",route=route,point=point})
-    if n then
-      SendCommand(a,{id="SetAlertRoute",enabled=true,route=route,point=point})
+  for k,soldierName in pairs(soldierNameTable)do
+    local soldierId=GetGameObjectId(soldierName)
+    SendCommand(soldierId,{id="SetEnabled",enabled=false})
+    SendCommand(soldierId,{id="SetSneakRoute",route=route,point=point})
+    SendCommand(soldierId,{id="SetCautionRoute",route=route,point=point})
+    if setRoute then
+      SendCommand(soldierId,{id="SetAlertRoute",enabled=true,route=route,point=point})
     else
-      SendCommand(a,{id="SetAlertRoute",enabled=false,route="",point=point})
+      SendCommand(soldierId,{id="SetAlertRoute",enabled=false,route="",point=point})
     end
-    SendCommand(a,{id="SetEnabled",enabled=true})
+    SendCommand(soldierId,{id="SetEnabled",enabled=true})
   end
-  local a=GetGameObjectId(RENHeliName)
-  SendCommand(a,{id="SetPosition",position=position,rotY=0})
+  local heliId=GetGameObjectId(RENHeliName)
+  SendCommand(heliId,{id="SetPosition",position=position,rotY=0})
 end
-function this.DEBUG_WarpVehicleAndSoldier(RENsoldierNameTable,RENvehiclename,route,position,point,l)
-  if not IsTypeTable(RENsoldierNameTable)then
-    RENsoldierNameTable={RENsoldierNameTable}
+function this.DEBUG_WarpVehicleAndSoldier(soldierNameTable,vehiclename,route,position,point,setRoute)
+  if not IsTypeTable(soldierNameTable)then
+    soldierNameTable={soldierNameTable}
   end
   local GetGameObjectId=GameObject.GetGameObjectId
   local SendCommand=GameObject.SendCommand
   if not point then
     point=0
   end
-  for o,a in pairs(RENsoldierNameTable)do
-    local a=GetGameObjectId(a)
-    SendCommand(a,{id="SetEnabled",enabled=false})
-    SendCommand(a,{id="SetSneakRoute",route=route,point=point})
-    SendCommand(a,{id="SetCautionRoute",route=route,point=point})
-    if l then
-      SendCommand(a,{id="SetAlertRoute",enabled=true,route=route,point=point})
+  for k,soldierName in pairs(soldierNameTable)do
+    local soldierId=GetGameObjectId(soldierName)
+    SendCommand(soldierId,{id="SetEnabled",enabled=false})
+    SendCommand(soldierId,{id="SetSneakRoute",route=route,point=point})
+    SendCommand(soldierId,{id="SetCautionRoute",route=route,point=point})
+    if setRoute then
+      SendCommand(soldierId,{id="SetAlertRoute",enabled=true,route=route,point=point})
     else
-      SendCommand(a,{id="SetAlertRoute",enabled=false,route="",point=point})
+      SendCommand(soldierId,{id="SetAlertRoute",enabled=false,route="",point=point})
     end
-    SendCommand(a,{id="SetEnabled",enabled=true})
+    SendCommand(soldierId,{id="SetEnabled",enabled=true})
   end
-  local r=GetGameObjectId(RENvehiclename)
-  SendCommand(r,{id="SetPosition",position=position,rotY=0})
+  local vehicleId=GetGameObjectId(vehiclename)
+  SendCommand(vehicleId,{id="SetPosition",position=position,rotY=0})
 end
 this.DEBUG_SkipOnChangeSVarsLog={timeLimitforSneaking=true,timeLimitforNonAbort=true}
-function this.DEBUG_AddSkipLogSVarsName(e)
-  this.DEBUG_SkipOnChangeSVarsLog[e]=true
+function this.DEBUG_AddSkipLogSVarsName(svarName)
+  this.DEBUG_SkipOnChangeSVarsLog[svarName]=true
 end
 function this.DEBUG_FobGPU()
   local Debug_setupfob=function(topologyType)
@@ -642,15 +657,15 @@ function this.QAReleaseDebugUpdate()
         local t
         if TppChallengeTask.IsCompletedOnlineTask(o)then
           t=" o "
-          else
+        else
           t=" x "
-          end
+        end
         local s=n[o]and n[o].detectType
         if s then
           local r=mvars.qaDebug.debugOnlineChallengeTaskTextTable and mvars.qaDebug.debugOnlineChallengeTaskTextTable[s]
           if not r then
             r="threshold is"
-            end
+          end
           Print(newContext,string.format("   Task %02d : [%s] %s %06.2f : ( Current %06.2f )",o,t,r,n[o].threshold,OnlineChallengeTask.GetCurrentTaskValue(o)))
         end
       end
@@ -732,18 +747,18 @@ function this.DEBUG_Init()
   mvars.debug.selectedWeaponId=0;(nil).AddDebugMenu("LuaWeapon","weaponSelect","int32",mvars.debug,"selectedWeaponId")
   mvars.debug.enableWeaponChange=false;(nil).AddDebugMenu("LuaWeapon","enableWeaponChange","bool",mvars.debug,"enableWeaponChange")
 end
-function this.DEBUG_OnReload(r)
-  s={}
-  m={}
-  l={}
-  i=0
-  n=0
+function this.DEBUG_OnReload(missionTable)
+  perfCheckTimes={}
+  unk2Table={}
+  perfCheckTimesStrings={}
+  unk5Num=0
+  unk6Num=0
   this.PERF_CHECK_TYPE=Tpp.Enum(this.PERF_CHECK_TYPE)
   local strCode32List={}
   Tpp.ApendArray(strCode32List,TppDbgStr32.DEBUG_strCode32List)
-  for n,a in pairs(r)do
-    if a.DEBUG_strCode32List then
-      Tpp.ApendArray(strCode32List,a.DEBUG_strCode32List)
+  for name,module in pairs(missionTable)do
+    if module.DEBUG_strCode32List then
+      Tpp.ApendArray(strCode32List,module.DEBUG_strCode32List)
     end
   end
   TppDbgStr32.DEBUG_RegisterStrcode32invert(strCode32List)
@@ -844,7 +859,7 @@ function this.DebugUpdate()
   end
   if mvarsDebug.showDebugPerfCheck then
     Print(newContext,{.5,.5,1},"LuaSystem DBG.showPerf")
-    for t,e in pairs(l)do
+    for t,e in pairs(perfCheckTimesStrings)do
       Print(newContext," perf["..(this.PERF_CHECK_TYPE[t]..("] = "..e)))
     end
   end
@@ -874,15 +889,15 @@ function this.DebugUpdate()
       local t=""
       if mvars.animalBlockScript.OnMessage then
         t="exist"
-        else
+      else
         t="  not"
-        end
+      end
       local n=""
       if mvars.animalBlockScript.OnReload then
         n="exist"
-        else
+      else
         n="  not"
-        end
+      end
       Print(newContext,"OnMessage "..(tostring(t)..(" OnReload "..tostring(n))))
       this.ShowMessageTable(newContext,"MessageTable",mvars.animalBlockScript.messageExecTable)
     else
@@ -1006,56 +1021,56 @@ function this.ShowMessageTable(r,o,a)
     end
   end
 end
-function this.PerfCheckStart(e)
-  local a=this
-  if((e<=0)and(e>#a.PERF_CHECK_TYPE))then
+function this.PerfCheckStart(perCheckTypeEnum)
+  local this=this
+  if((perCheckTypeEnum<=0)and(perCheckTypeEnum>#this.PERF_CHECK_TYPE))then
     return
   end
-  if(e==a.PERF_CHECK_TYPE.OnUpdate)then
-    if(s[a.PERF_CHECK_TYPE.OnUpdate]~=nil)then
-      i=i+(os.clock()-s[a.PERF_CHECK_TYPE.OnUpdate])
+  if(perCheckTypeEnum==this.PERF_CHECK_TYPE.OnUpdate)then
+    if(perfCheckTimes[this.PERF_CHECK_TYPE.OnUpdate]~=nil)then
+      unk5Num=unk5Num+(os.clock()-perfCheckTimes[this.PERF_CHECK_TYPE.OnUpdate])
     end
   end
-  s[e]=os.clock()
+  perfCheckTimes[perCheckTypeEnum]=os.clock()
 end
-function this.PerfCheckEnd(e,r)
-  local t=mvars
-  local o=this
-  if((e<=0)and(e>#o.PERF_CHECK_TYPE))then
+function this.PerfCheckEnd(perCheckTypeEnum,r)
+  local mvars=mvars
+  local this=this
+  if((perCheckTypeEnum<=0)and(perCheckTypeEnum>#this.PERF_CHECK_TYPE))then
     return
   end
   local p=r or""
   local r=0
-  local a=os.clock()-s[e]
-  if(e==o.PERF_CHECK_TYPE.OnUpdate)then
-    if(i<v)then
-      if(a>n)then
-        n=a
+  local perfDelta=os.clock()-perfCheckTimes[perCheckTypeEnum]
+  if(perCheckTypeEnum==this.PERF_CHECK_TYPE.OnUpdate)then
+    if(unk5Num<unk4Num)then
+      if(perfDelta>unk6Num)then
+        unk6Num=perfDelta
       end
     else
-      i=0
-      n=a
+      unk5Num=0
+      unk6Num=perfDelta
     end
-    r=n
+    r=unk6Num
   else
-    r=a
+    r=perfDelta
   end
-  l[e]=string.format("%4.2f",r*1e3)..("ms."..p)
-  if t.debug and t.debug.showDebugPerfCheck then
+  perfCheckTimesStrings[perCheckTypeEnum]=string.format("%4.2f",r*1e3)..("ms."..p)
+  if mvars.debug and mvars.debug.showDebugPerfCheck then
     if(r>1/60)then
     else
-      if(e~=o.PERF_CHECK_TYPE.OnUpdate)then
+      if(perCheckTypeEnum~=this.PERF_CHECK_TYPE.OnUpdate)then
       end
     end
   end
 end
 function this.ErrorNotSupportYet(e)
 end
-function this._GetColor(e)
-  local e=this.Colors[e]
-  if(e==nil)then
+function this._GetColor(name)
+  local color=this.Colors[name]
+  if(color==nil)then
     return nil
   end
-  return e
+  return color
 end
 return this

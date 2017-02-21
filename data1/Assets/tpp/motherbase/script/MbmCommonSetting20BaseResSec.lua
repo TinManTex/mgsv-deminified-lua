@@ -1,4 +1,6 @@
+-- MbmCommonSetting20BaseResSec.lua
 local this={}
+
 TppMotherBaseManagement.RegisterCommandClusterBuildParam{base="MotherBase",grade=1,addCombatLimit=30,addDevelopLimit=30,addBaseDevLimit=30,addSupportLimit=30,addSpyLimit=30,addMedicalLimit=30,addSecurityLimit=25,gmp=0,resourceA="None",resourceACount=0,resourceB="None",resourceBCount=0,timeMinute=0}
 TppMotherBaseManagement.RegisterCommandClusterBuildParam{base="MotherBase",grade=2,addCombatLimit=5,addDevelopLimit=5,addBaseDevLimit=5,addSupportLimit=5,addSpyLimit=5,addMedicalLimit=5,addSecurityLimit=25,gmp=9e4,resourceA="MinorMetal",resourceACount=1e3,resourceB="FuelResource",resourceBCount=1e3,timeMinute=120}
 TppMotherBaseManagement.RegisterCommandClusterBuildParam{base="MotherBase",grade=3,addCombatLimit=5,addDevelopLimit=5,addBaseDevLimit=5,addSupportLimit=5,addSpyLimit=5,addMedicalLimit=5,addSecurityLimit=25,gmp=18e4,resourceA="MinorMetal",resourceACount=2e3,resourceB="FuelResource",resourceBCount=4e3,timeMinute=120}
@@ -139,9 +141,12 @@ TppMotherBaseManagement.RegisterSectionClusterBuildParam{base="Fob4",category="M
 TppMotherBaseManagement.RegisterSectionClusterBuildParam{base="Fob4",category="Medical",grade=2,addLimit=15,gmp=338e4,resourceA="BioticResource",resourceACount=41600,resourceB="FuelResource",resourceBCount=41600,timeMinute=720}
 TppMotherBaseManagement.RegisterSectionClusterBuildParam{base="Fob4",category="Medical",grade=3,addLimit=15,gmp=392e4,resourceA="BioticResource",resourceACount=112e3,resourceB="FuelResource",resourceBCount=112e3,timeMinute=4320}
 TppMotherBaseManagement.RegisterSectionClusterBuildParam{base="Fob4",category="Medical",grade=4,addLimit=15,gmp=45e5,resourceA="BioticResource",resourceACount=18e4,resourceB="FuelResource",resourceBCount=18e4,timeMinute=5760}
+
 TppMotherBaseManagement.SetSmallDiamondGmp{gmp=TppDefine.SMALL_DIAMOND_GMP}
 TppMotherBaseManagement.SetLargeDiamondGmp{gmp=TppDefine.LARGE_DIAMOND_GMP}
+
 TppMotherBaseManagement.RegisterResourceBaseExtractingTimeMinute{timeMinute=1}
+
 TppMotherBaseManagement.RegisterContainerParam{
   commonMetalCounts={white=750,red=7500,yellow=1500},
   fuelResourceCounts={white=750,red=7500,yellow=1500},
@@ -152,6 +157,7 @@ TppMotherBaseManagement.RegisterContainerParam{
   redContainerCountRate=40,
   yellowContainerCountRate=40
 }
+
 TppMotherBaseManagement.RegisterResourceParam{resource="CommonMetal",baseSalePrice=100,countInContainer=50,countPer1Minute=4}
 TppMotherBaseManagement.RegisterResourceParam{resource="FuelResource",baseSalePrice=100,countInContainer=50,countPer1Minute=4}
 TppMotherBaseManagement.RegisterResourceParam{resource="BioticResource",baseSalePrice=100,countInContainer=50,countPer1Minute=4}
@@ -197,6 +203,7 @@ TppMotherBaseManagement.RegisterResourceParam{resource="EmplacementGunWest",base
 TppMotherBaseManagement.RegisterResourceParam{resource="Mortar",baseSalePrice=9e3}
 TppMotherBaseManagement.RegisterResourceParam{resource="AntiAirGatlingGunEast",baseSalePrice=2e4}
 TppMotherBaseManagement.RegisterResourceParam{resource="AntiAirGatlingGunWest",baseSalePrice=2e4}
+
 TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="commFacility_cntn001",resource="CommonMetal",containerVisual=TppMotherBaseManagementConst.CONTAINER_VISUAL_WHITE}
 TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="commFacility_cntn002",resource="BioticResource",containerVisual=TppMotherBaseManagementConst.CONTAINER_VISUAL_WHITE}
 TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="enemyBase_cntn001",resource="CommonMetal",containerVisual=TppMotherBaseManagementConst.CONTAINER_VISUAL_WHITE}
@@ -312,6 +319,7 @@ TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="powerPlant_cntn00
 TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="powerPlant_cntn002",resource="FuelResource",containerVisual=TppMotherBaseManagementConst.CONTAINER_VISUAL_RED}
 TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="powerPlant_cntn003",resource="PreciousMetal",containerVisual=TppMotherBaseManagementConst.CONTAINER_VISUAL_RED}
 TppMotherBaseManagement.RegisterStageGimmickParam{gimmickName="powerPlant_cntn004",resource="CommonMetal",containerVisual=TppMotherBaseManagementConst.CONTAINER_VISUAL_RED}
+
 TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBaseManagementConst.SECTION_FUNC_ID_COMBAT_DEPLOY,fLv=1,eLv=9,dLv=19,cLv=33,bLv=51,aLv=73,sLv=99}
 TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBaseManagementConst.SECTION_FUNC_ID_COMBAT_DEFENCE,dLv=14,cLv=25,bLv=41,aLv=61,sLv=85}
 TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBaseManagementConst.SECTION_FUNC_ID_DEVELOP_WEAPON,fLv=1,eLv=5,dLv=14,cLv=25,bLv=41,aLv=61,sLv=85}
@@ -351,7 +359,9 @@ TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBase
 TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBaseManagementConst.SECTION_FUNC_ID_SECURITY_BASE_DEFENCE_STAFF,fLv=1,eLv=9,dLv=19,cLv=33,bLv=51,aLv=73,sLv=99}
 TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBaseManagementConst.SECTION_FUNC_ID_SECURITY_BASE_DEFENCE_MACHINE,fLv=1,eLv=5,dLv=14,cLv=25,bLv=41,aLv=61,sLv=85}
 TppMotherBaseManagement.RegisterSectionFuncRankLines{sectionFuncId=TppMotherBaseManagementConst.SECTION_FUNC_ID_SECURITY_BASE_BLOCKADE,fLv=1,eLv=9,dLv=19,cLv=33,bLv=51,aLv=73,sLv=99}
+
 TppMotherBaseManagement.RegisterCombatSectionFuncAutoGmp{f=2e4,e=3e4,d=4e4,c=5e4,b=6e4,a=7e4,s=8e4}
+
 TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=1,sectionFuncRank="F",count=6e3,commonMetalRate=33,minorMetalRate=1,preciousMetalRate=0,fuelResourceRate=33,bioticResourceRate=33}
 TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=1,sectionFuncRank="E",count=6500,commonMetalRate=31,minorMetalRate=6,preciousMetalRate=1,fuelResourceRate=31,bioticResourceRate=31}
 TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=1,sectionFuncRank="D",count=7e3,commonMetalRate=29,minorMetalRate=10,preciousMetalRate=2,fuelResourceRate=30,bioticResourceRate=29}
@@ -457,6 +467,7 @@ TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=70,sectionFuncRank
 TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=70,sectionFuncRank="B",count=1445,commonMetalRate=26,minorMetalRate=18,preciousMetalRate=3,fuelResourceRate=41,bioticResourceRate=26}
 TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=70,sectionFuncRank="A",count=1530,commonMetalRate=26,minorMetalRate=20,preciousMetalRate=4,fuelResourceRate=38,bioticResourceRate=25}
 TppMotherBaseManagement.RegisterAutoResourceParam{oceanAreaId=70,sectionFuncRank="S",count=1700,commonMetalRate=25,minorMetalRate=22,preciousMetalRate=5,fuelResourceRate=36,bioticResourceRate=24}
+
 TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="F",commonMetalTimeMinute=60,minorMetalTimeMinute=60,preciousMetalTimeMinute=60,fuelResourceTimeMinute=60,bioticResourceTimeMinute=60}
 TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="E",commonMetalTimeMinute=48,minorMetalTimeMinute=48,preciousMetalTimeMinute=48,fuelResourceTimeMinute=48,bioticResourceTimeMinute=48}
 TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="D",commonMetalTimeMinute=36,minorMetalTimeMinute=36,preciousMetalTimeMinute=36,fuelResourceTimeMinute=36,bioticResourceTimeMinute=36}
@@ -464,7 +475,11 @@ TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="C",com
 TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="B",commonMetalTimeMinute=15,minorMetalTimeMinute=15,preciousMetalTimeMinute=15,fuelResourceTimeMinute=15,bioticResourceTimeMinute=15}
 TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="A",commonMetalTimeMinute=12,minorMetalTimeMinute=12,preciousMetalTimeMinute=12,fuelResourceTimeMinute=12,bioticResourceTimeMinute=12}
 TppMotherBaseManagement.RegisterContainerProcessingParam{sectionFuncRank="S",commonMetalTimeMinute=10,minorMetalTimeMinute=10,preciousMetalTimeMinute=10,fuelResourceTimeMinute=10,bioticResourceTimeMinute=10}
+
 TppMotherBaseManagement.RegisterContainerProcessingBasicParam{commonMetalProcessCount=500,minorMetalProcessCount=250,preciousMetalProcessCount=50,fuelResourceProcessCount=500,bioticResourceProcessCount=500,fobRate=.15}
+
 TppMotherBaseManagement.RegisterMedicalSectionFuncTreatmentParam{treatmentTimeMinute=12,treatmentRates={none=0,f=50,e=55,d=60,c=70,b=80,a=90,s=100},worseRate=50,deadRates={weight1=1,weight2=2,weight3=3,weight4=4,weight5=5,weight6=10,weight7=20},deadCountLimit=5,initWeightMildMin=1,initWeightMildMax=2,initWeightStandardMin=2,initWeightStandardMax=4,initWeightCriticalMin=3,initWeightCriticalMax=5,sickRateWithRed=5,sickCountLimitWithRed=3}
+
 TppMotherBaseManagement.RegisterBaseDevSectionFuncPlatformExtentionParam{f=100,e=90,d=80,c=70,b=60,a=55,s=50}
+
 return this

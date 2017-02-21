@@ -1,3 +1,4 @@
+-- TppSequence.lua
 local this={}
 local baseSequences={}
 local requiredSequences={}
@@ -150,7 +151,7 @@ local noTelopFadeinTime=2
 requiredSequences={"Seq_Mission_Prepare"}
 this.SYS_SEQUENCE_LENGTH=#requiredSequences
 baseSequences.Seq_Mission_Prepare={
-  Messages=function(e)
+  Messages=function(sequenceTable)
     return Tpp.StrCode32Table{
       UI={
         {msg="EndFadeIn",sender="FadeInOnGameStart",func=function()end,
@@ -161,7 +162,7 @@ baseSequences.Seq_Mission_Prepare={
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="StartMissionTelopFadeOut",func=function()
           mvars.seq_nowWaitingStartMissionTelopFadeOut=nil
-          e.FadeInStartOnGameStart()
+          sequenceTable.FadeInStartOnGameStart()
         end,
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="PushEndLoadingTips",func=function()
@@ -170,14 +171,14 @@ baseSequences.Seq_Mission_Prepare={
         end,
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}}},
       Timer={
-        {msg="Finish",sender="Timer_WaitStartingGame",func=e.MissionGameStart,option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
-        {msg="Finish",sender="Timer_HelicopterMoveStart",func=e.HelicopterMoveStart,option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
-        {msg="Finish",sender="Timer_FadeInStartOnNoTelopHelicopter",func=e.FadeInStartOnGameStart,option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}
+        {msg="Finish",sender="Timer_WaitStartingGame",func=sequenceTable.MissionGameStart,option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
+        {msg="Finish",sender="Timer_HelicopterMoveStart",func=sequenceTable.HelicopterMoveStart,option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
+        {msg="Finish",sender="Timer_FadeInStartOnNoTelopHelicopter",func=sequenceTable.FadeInStartOnGameStart,option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}
         }
       }
     }--strcodetable
   end,--Messages=func
-  OnEnter=function(n)
+  OnEnter=function(unk1)
     mvars.seq_missionPrepareState=this.MISSION_PREPARE_STATE.WAIT_INITALIZE
     mvars.seq_textureLoadWaitStartTime=none
     mvars.seq_canMissionStartWaitStartTime=Time.GetRawElapsedTimeSinceStartUp()
@@ -187,8 +188,8 @@ baseSequences.Seq_Mission_Prepare={
       TppNetworkUtil.RequestGetFobServerParameter()
     end
   end,
-  OnLeave=function(s,n)
-    TppMain.OnMissionGameStart(n)
+  OnLeave=function(unk1,unk2)
+    TppMain.OnMissionGameStart(unk2)
     this.DoOnEndMissionPrepareFunction()
     if this.IsFirstLandStart()then
       if not TppSave.IsReserveVarRestoreForContinue()then
@@ -241,11 +242,11 @@ baseSequences.Seq_Mission_Prepare={
       return true
     end
   end,
-  DEBUG_TextPrint=function(n)
+  DEBUG_TextPrint=function(text)
     local e=(nil).NewContext();
-    (nil).Print(e,{.5,.5,1},n)
+    (nil).Print(e,{.5,.5,1},text)
   end,
-  OnUpdate=function(t)
+  OnUpdate=function(sequenceTable)
     if(mvars.seq_missionPrepareState<this.MISSION_PREPARE_STATE.END_TEXTURE_LOADING)then
       TppUI.ShowAccessIconContinue()
     end
@@ -257,7 +258,7 @@ baseSequences.Seq_Mission_Prepare={
     local textureLoadedRate=Mission.GetTextureLoadedRate()
     local missionCanStart=TppMission.CanStart()
     local isEndedSyncControl=TppMotherBaseManagement.IsEndedSyncControl()
-    if t.SkipTextureLoadingWait()then
+    if sequenceTable.SkipTextureLoadingWait()then
       textureLoadedRate=1
     end
     local textureLoadStartDelta=0
@@ -447,14 +448,14 @@ function this.MakeSequenceMessageExecTable()
   if not mvars.seq_sequenceTable then
     return
   end
-  for n,e in pairs(mvars.seq_sequenceTable)do
-    if e.Messages and IsFunc(e.Messages)then
-      local e=e.Messages(e)
-      mvars.seq_sequenceTable[n]._messageExecTable=Tpp.MakeMessageExecTable(e)
+  for sequenceName,sequenceTable in pairs(mvars.seq_sequenceTable)do
+    if sequenceTable.Messages and IsFunc(sequenceTable.Messages)then
+      local messagesSCode32Table=sequenceTable.Messages(sequenceTable)
+      mvars.seq_sequenceTable[sequenceName]._messageExecTable=Tpp.MakeMessageExecTable(messagesSCode32Table)
     end
   end
 end
-function this.OnChangeSVars(name,s)
+function this.OnChangeSVars(name,key)
   if name=="seq_sequence"then
     local s=d(svars.seq_sequence)
     if s==nil then

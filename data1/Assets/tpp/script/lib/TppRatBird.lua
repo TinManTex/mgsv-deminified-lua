@@ -10,15 +10,15 @@ function this.RegisterBird(birdList,birdFlyZoneList)
   mvars.rat_bird_birdList=birdList
   mvars.rat_bird_flyZoneList=birdFlyZoneList
   if mvars.rat_bird_birdType then
-    for n,birdInfo in ipairs(mvars.rat_bird_birdList)do
+    for i,birdInfo in ipairs(mvars.rat_bird_birdList)do
       birdInfo.birdType=mvars.rat_bird_birdType
     end
   end
 end
 function this.RegisterBaseList(baseList)
   mvars.rat_bird_baseStrCodeList={}
-  for a,blockName in ipairs(baseList)do
-    mvars.rat_bird_baseStrCodeList[StrCode32(blockName)]=blockName
+  for i,baseName in ipairs(baseList)do
+    mvars.rat_bird_baseStrCodeList[StrCode32(baseName)]=baseName
   end
 end
 function this.EnableRat()
@@ -49,15 +49,15 @@ function this.OnMissionCanStart()
   if not mvars.rat_bird_baseStrCodeList then
     return
   end
-  local a=Tpp.GetLoadedLargeBlock()
-  if a then
-    this._OnChangeLargeBlockState(a,StageBlock.ACTIVE)
+  local blockNameStr32=Tpp.GetLoadedLargeBlock()
+  if blockNameStr32 then
+    this._OnChangeLargeBlockState(blockNameStr32,StageBlock.ACTIVE)
   end
 end
-function this._WarpRats(e)
+function this._WarpRats(baseName)
   local tppRat={type="TppRat",index=0}
-  for n,name in ipairs(mvars.rat_bird_ratList)do
-    local ratRouteInfo=mvars.rat_bird_ratRouteList[e][n]
+  for index,name in ipairs(mvars.rat_bird_ratList)do
+    local ratRouteInfo=mvars.rat_bird_ratRouteList[baseName][index]
     if ratRouteInfo then
       local command={id="Warp",name=name,ratIndex=0,position=ratRouteInfo.pos,degreeRotationY=0,route=ratRouteInfo.name,nodeIndex=0}
       GameObject.SendCommand(tppRat,command)
@@ -74,13 +74,13 @@ function this._EnableRats(enabled)
     GameObject.SendCommand(tppRatId,command)
   end
 end
-function this._WarpBird(e)
+function this._WarpBird(baseName)
   if not mvars.rat_bird_birdList then
     return
   end
-  for i,birdInfo in ipairs(mvars.rat_bird_birdList)do
+  for index,birdInfo in ipairs(mvars.rat_bird_birdList)do
     local birdTypeTppObject={type=birdInfo.birdType,index=0}
-    local flyZone=mvars.rat_bird_flyZoneList[e][i]
+    local flyZone=mvars.rat_bird_flyZoneList[baseName][index]
     if flyZone then
       local command={id="ChangeFlyingZone",name=birdInfo.name,center=flyZone.center,radius=flyZone.radius,height=flyZone.height}
       GameObject.SendCommand(birdTypeTppObject,command)
@@ -105,22 +105,22 @@ function this._WarpBird(e)
     end
   end
 end
-function this._EnableBirds(enabled)
+--RETAILBUG: birdindex not defined, I assume it's the index of rat_bird_birdList but not sure, the equivalent for rats just sets 0, this function is overridden to a function that does nothing in TppAnimal
+function this._EnableBirds(enable)
   for n,birdInfo in ipairs(mvars.rat_bird_birdList)do
     local tppBirdTypeId={type=birdInfo.birdType,index=0}
-    --RETAILBUG: birdindex not defined, I assume it's the index of rat_bird_birdList but not sure, the equivalent for rats just sets 0, this function is overridden to a function that does nothing in TppAnimal
-    local command={id="SetEnabled",name=birdInfo.name,birdIndex=i,enabled=enabled}
+    local command={id="SetEnabled",name=birdInfo.name,birdIndex=i,enabled=enable}--RETAILBUG: see above
     GameObject.SendCommand(tppBirdTypeId,command)
   end
 end
-function this._Activate(a)
+function this._Activate(baseName)
   if mvars.rat_bird_enableRat then
     this._EnableRats(true)
-    this._WarpRats(a)
+    this._WarpRats(baseName)
   end
   if mvars.rat_bird_enableBird then
     this._EnableBirds(true)
-    this._WarpBird(a)
+    this._WarpBird(baseName)
   end
 end
 function this._Deactivate()
@@ -132,11 +132,11 @@ function this._Deactivate()
   end
 end
 function this._OnChangeLargeBlockState(blockNameStr32,blockState)
-  local a=mvars.rat_bird_baseStrCodeList[blockNameStr32]
+  local baseName=mvars.rat_bird_baseStrCodeList[blockNameStr32]
   if blockState==StageBlock.ACTIVE then
-    this._Activate(a)
+    this._Activate(baseName)
   else
-    this._Deactivate(a)
+    this._Deactivate(baseName)
   end
 end
 return this

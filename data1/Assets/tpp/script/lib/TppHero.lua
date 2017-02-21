@@ -314,10 +314,10 @@ function this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(i,o)
   end
   this.SetAndAnnounceHeroicOgrePoint(i,nil,n)
 end
-function this.SetAndAnnounceHeroicOgrePointForQuestClear(n)
-  local n=this.QUEST_CLEAR[n]
-  if n then
-    this.SetAndAnnounceHeroicOgrePoint(n)
+function this.SetAndAnnounceHeroicOgrePointForQuestClear(rank)
+  local pointTable=this.QUEST_CLEAR[rank]
+  if pointTable then
+    this.SetAndAnnounceHeroicOgrePoint(pointTable)
   end
 end
 function this.HorseRided(n)
@@ -504,7 +504,7 @@ function this.Messages()
           this.SetAndAnnounceHeroicOgrePoint(this.DYING_PARASITE,"destroyed_skull","destroyed_skull")
         elseif Tpp.IsBossQuiet(soldierId)then
           local quietType=SendCommand({type="TppBossQuiet2"},{id="GetQuietType"})
-          if quietType==Fox.StrCode32"Cam"then
+          if quietType==StrCode32"Cam"then
             this.SetAndAnnounceHeroicOgrePoint(this.DYING_PARASITE,"destroyed_skull","destroyed_skull")
           end
         end
@@ -523,7 +523,8 @@ function this.Messages()
       {msg="CommandPostAnnihilated",func=function(cpId,o,i)
         local o=false
         if mvars.ene_cpList then
-          local e=mvars.ene_cpList[cpId]o=TppTrophy.DOMINATION_TARGET_CP_NAME_LIST[e]
+          local cpName=mvars.ene_cpList[cpId]
+          o=TppTrophy.DOMINATION_TARGET_CP_NAME_LIST[cpName]
         end
         if i==0 then
           if TppEnemy.IsBaseCp(cpId)then

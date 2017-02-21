@@ -25,7 +25,7 @@ function this.GetCurrentPackListName(blockName)
       return
     end
     for packName,packPath in pairs(packList)do
-      if currentPackNameStr32==Fox.StrCode32(packName)then
+      if currentPackNameStr32==StrCode32(packName)then
         return packName
       end
     end
@@ -151,7 +151,7 @@ function this.Unload(blockName)
   end
 end
 function this.SaveScriptBlockId(blockName,blockId)
-  local blockNameStr32=Fox.StrCode32(blockName)
+  local blockNameStr32=StrCode32(blockName)
   svars.sbl_scriptBlockName[blockId]=blockNameStr32
 end
 function this.FindPackList(blockName,packName)
@@ -245,7 +245,7 @@ function this.ResolveSavedScriptBlockInfo(blockId)
   end
   local currentBlockName
   for blockName,packList in pairs(mvars.sbl_scriptBlockPackList)do
-    if Fox.StrCode32(blockName)==scriptBlockNameHash then
+    if StrCode32(blockName)==scriptBlockNameHash then
       currentBlockName=blockName
       break
     end

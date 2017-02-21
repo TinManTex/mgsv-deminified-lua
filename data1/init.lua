@@ -1,3 +1,9 @@
+-- DOBUILD: 1
+-- init.lua
+-- tex first script loaded by engine
+
+Script.LoadLibrary("/Assets/tpp/script/lib/InfLog.lua")--tex
+
 local platform=Fox.GetPlatformName()
 local deviceName=""
 if GrTools then
@@ -61,7 +67,7 @@ end
 AssetConfiguration.RegisterExtensionInfo{
   extensions={"bnk","col","demo","demox","dfrm","evb","fclo","fcnp","fdes","fmdl","fmdlb","info","fpk","fpkd","frdv","frig","fstb","ftex","ftexs","gani","lani","mtar","mtard","caar","geom","gskl","nav","nav2","sani","sand","mog","fv2","cani","fmtt","lpsh","ffnt","fova","pftxs","frl","frld","frt","atsh","pcsp","uia","uif","uilb","uigb","fnt","rdf","nta","subp","lba","ladb","lng"},
   categories={"Target"}
-  }
+}
 AssetConfiguration.RegisterExtensionInfo{extensions={"sad","evfl"},categories={"Language"}}
 AssetConfiguration.RegisterExtensionInfo{extensions={"sbp","stm","mas","wem","fsm"},categories={"Target","Language"}}
 if GrDaemon then
@@ -287,9 +293,9 @@ if CameraPriority then
   CameraPriority.RegisterPriorities{"Debug","Editor","Demo","Game","GameWeakest"}
 end
 if CameraSelector then
-  local e=CameraSelector{name="MainCameraSelector",scene="MainScene",viewport="MainViewport",priorities={"Debug","Editor","Demo","Game","GameWeakest"},listener="MainListener",rumble={0,1,2,3}}
-  e:SetMainListener()
-  CameraSelector.SetMainInstance(e)
+  local cameraSelector=CameraSelector{name="MainCameraSelector",scene="MainScene",viewport="MainViewport",priorities={"Debug","Editor","Demo","Game","GameWeakest"},listener="MainListener",rumble={0,1,2,3}}
+  cameraSelector:SetMainListener()
+  CameraSelector.SetMainInstance(cameraSelector)
 end
 if editor then
   editor:Setup()
@@ -446,3 +452,4 @@ if EdRouteDataNodeEvent then
   EdRouteDataEdgeEvent.SetEventDefinitionPath("DummyRoute","Fox/Scripts/RouteEvents/AiRtEvDummyRoute.lua")
 end
 Fox.SetBreakIgnore(true)
+InfLog.AddFlow"init.lua done"--tex

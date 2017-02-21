@@ -10,23 +10,23 @@ this.DEMO_END_TYPE_NONE=0
 this.DEMO_END_TYPE_SIT=1
 this.DEMO_END_TYPE_DOWN=2
 local pazLocator="mtbs_uq0040_plnt0000|uq_00400000|uq_0040_asset|TppPazLocator"
-local b={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_book_idl.gani"}
-local t={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl.gani"}
-local S={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_2.gani"}
-local U={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_ver2.gani"}
-local q={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_3_st.gani"}
-local y={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_3_lp.gani"}
-local F={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_3_ed.gani"}
-local I={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_pic.gani"}
-local R={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_pic2.gani"}
-local G={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_pic1.gani"}
-local E={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_pic_idl.gani"}
-local m={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_come_snk.gani"}
-local P={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_bed_dwn.gani"}
-local s={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_p_idl1.gani"}
-local A={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_p_idl2.gani"}
-local l={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_drop_book.gani"}
-local C={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_book.gani"}
+local paz1_q_book_idl={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_book_idl.gani"}
+local paz1_q_sit_idl={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl.gani"}
+local paz1_q_sit_idl_2={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_2.gani"}
+local paz1_q_sit_idl_ver2={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_ver2.gani"}
+local paz1_q_sit_idl_3_st={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_3_st.gani"}
+local paz1_q_sit_idl_3_lp={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_3_lp.gani"}
+local paz1_q_sit_idl_3_ed={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_sit_idl_3_ed.gani"}
+local paz1_q_take_pic={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_pic.gani"}
+local paz1_q_take_pic2={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_pic2.gani"}
+local paz1_q_take_pic1={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_pic1.gani"}
+local paz1_q_pic_idl={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_pic_idl.gani"}
+local paz1_q_come_snk={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_come_snk.gani"}
+local paz1_q_bed_dwn={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_bed_dwn.gani"}
+local paz1_p_idl1={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_p_idl1.gani"}
+local paz1_p_idl2={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_p_idl2.gani"}
+local paz1_q_drop_book={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_drop_book.gani"}
+local paz1_q_take_book={"PlayMotion","/Assets/tpp/motion/SI_game/fani/bodies/paz1/paz1/paz1_q_take_book.gani"}
 local statePaz_q_sit_idl={"PlayState","statePaz_q_sit_idl"}
 local statePaz_q_sit_idl_f={"PlayState","statePaz_q_sit_idl_f"}
 local statePaz_q_sit_idl_ver2={"PlayState","statePaz_q_sit_idl_ver2"}
@@ -37,27 +37,27 @@ local statePaz_q_take_pic2={"PlayState","statePaz_q_take_pic2"}
 local statePaz_q_pic_idl_f={"PlayState","statePaz_q_pic_idl_f"}
 local snappaz_give_bookGani="/Assets/tpp/motion/SI_game/fani/bodies/snap/snappaz/snappaz_give_book.gani"
 local snappaz_give_picGani="/Assets/tpp/motion/SI_game/fani/bodies/snap/snappaz/snappaz_give_pic.gani"
-local te={b}
-local le={S}
-local B={q}
+local bookIdleAnims={paz1_q_book_idl}
+local sitIdle2Anims={paz1_q_sit_idl_2}
+local sitIdle3Anims={paz1_q_sit_idl_3_st}
 local actionsTable={
-  b,
-  t,
-  S,
-  U,
-  q,
-  y,
-  F,
-  I,
-  R,
-  G,
-  E,
-  m,
-  P,
-  s,
-  A,
-  l,
-  C,
+  paz1_q_book_idl,
+  paz1_q_sit_idl,
+  paz1_q_sit_idl_2,
+  paz1_q_sit_idl_ver2,
+  paz1_q_sit_idl_3_st,
+  paz1_q_sit_idl_3_lp,
+  paz1_q_sit_idl_3_ed,
+  paz1_q_take_pic,
+  paz1_q_take_pic2,
+  paz1_q_take_pic1,
+  paz1_q_pic_idl,
+  paz1_q_come_snk,
+  paz1_q_bed_dwn,
+  paz1_p_idl1,
+  paz1_p_idl2,
+  paz1_q_drop_book,
+  paz1_q_take_book,
   statePaz_q_sit_idl,
   statePaz_q_sit_idl_f,
   statePaz_q_sit_idl_ver2,
@@ -74,7 +74,7 @@ local paz_room04="paz_room04"
 local paz_misete01T={"paz_misete01"}
 local paz_misete02="paz_misete02"
 local paz_atamaT={"paz_atama01","paz_atama02","paz_atama03","paz_atama04"}
-local ie={"paz_misete01","paz_atama01","paz_atama03","paz_atama04"}
+local unk4={"paz_misete01","paz_atama01","paz_atama03","paz_atama04"}
 local photoNames={"paz_photo01","paz_photo02","paz_photo03","paz_photo04","paz_photo05","paz_photo06","paz_photo07","paz_photo08","paz_photo09","paz_photo10"}
 local paz_room_book01="paz_room_book01"
 local paz_room_book02="paz_room_book02"
@@ -209,26 +209,26 @@ end
 function this.OnDemoEnter()
   mvars.paz_isActive=true
   local action=nil
-  local t=nil
+  local commandId=nil
   local demoEndType=this.GetDemoEndType()
   if demoEndType==this.DEMO_END_TYPE_SIT then
     action=statePaz_q_sit_idl
-    t="Book"
+    commandId="Book"
   elseif demoEndType==this.DEMO_END_TYPE_DOWN then
-    action=A
-    t="Blood"
+    action=paz1_p_idl2
+    commandId="Blood"
   end
   if action~=nil then
-    this.SendCommandSpecialAction(action,t)
+    this.SendCommandSpecialAction(action,commandId)
   end
   this.messageExecTable=Tpp.MakeMessageExecTable(this.ActiveMessages())
   this.InitUi()
   this.InitMusic()
 end
-function this.OnEnter(f)
+function this.OnEnter(isSkipPlayerInit)
   mvars.paz_isActive=true
   mvars.paz_lastMonologueLabel=""
-  mvars.paz_takeActionPath=I
+  mvars.paz_takeActionPath=paz1_q_take_pic
   mvars.paz_giveActionPath=snappaz_give_picGani
   mvars.paz_isSeeYouMonologueEnabled=false
   mvars.paz_isShowMeMonologueEnabled=true
@@ -241,10 +241,10 @@ function this.OnEnter(f)
   local paz_startRotationY=this.GetRotationY()
   local demoEndType=this.GetDemoEndType()
   local startType=this.GetStartType()
-  local n=nil
-  local o=false
-  local t=nil
-  local r=nil
+  local animationTable=nil
+  local doWarp=false
+  local postionOffset=nil
+  local rotationOffset=nil
   local paz_doesSnakeHasPicture=false
   if demoEndType==this.DEMO_END_TYPE_SIT then
     paz_doesSnakeHasPicture=true
@@ -252,43 +252,43 @@ function this.OnEnter(f)
   else
     if startType==this.START_TYPE_NO_PICTURE then
       if mvars.paz_hasPerceivedSnake then
-        n=statePaz_q_sit_idl
+        animationTable=statePaz_q_sit_idl
       else
-        n=this.GetItemInTableAtRandom(te)
+        animationTable=this.GetItemInTableAtRandom(bookIdleAnims)
       end
     elseif startType==this.START_TYPE_PICTURE then
       if mvars.paz_hasPerceivedSnake then
-        n=statePaz_q_sit_idl
+        animationTable=statePaz_q_sit_idl
       else
-        n=this.GetItemInTableAtRandom(le)
+        animationTable=this.GetItemInTableAtRandom(sitIdle2Anims)
       end
       paz_doesSnakeHasPicture=true
     elseif startType==this.START_TYPE_DOWN then
-      n=s
+      animationTable=paz1_p_idl1
     end
   end
-  if n~=nil then
-    local a=0
+  if animationTable~=nil then
+    local heightAdjust=0
     if this.IsReal()then
-      a=.8
+      heightAdjust=.8
     end
-    if n[2]==S[2]or n[2]==statePaz_q_come_snk[2]then
-      t=Vector3(.05535,.48294+a,-.1489)
-      r=-foxmath.PI*.5
-      o=true
-    elseif n[2]==s[2]then
-      t=Vector3(-.2,.5033+a,-.2)
-      r=-foxmath.PI*.5
-      o=true
+    if animationTable[2]==paz1_q_sit_idl_2[2]or animationTable[2]==statePaz_q_come_snk[2]then
+      postionOffset=Vector3(.05535,.48294+heightAdjust,-.1489)
+      rotationOffset=-foxmath.PI*.5
+      doWarp=true
+    elseif animationTable[2]==paz1_p_idl1[2]then
+      postionOffset=Vector3(-.2,.5033+heightAdjust,-.2)
+      rotationOffset=-foxmath.PI*.5
+      doWarp=true
     end
-    if o then
-      local a=paz_startPosition+Quat.RotationY(paz_startRotationY-foxmath.PI*.5):Rotate(t)
-      local n=paz_startRotationY+r
-      this.Warp(a,n)
+    if doWarp then
+      local position=paz_startPosition+Quat.RotationY(paz_startRotationY-foxmath.PI*.5):Rotate(postionOffset)
+      local rotation=paz_startRotationY+rotationOffset
+      this.Warp(position,rotation)
     end
-    this.SendCommandSpecialAction(n)
+    this.SendCommandSpecialAction(animationTable)
   end
-  if n==statePaz_q_sit_idl then
+  if animationTable==statePaz_q_sit_idl then
     if gvars.pazLookedPictureCount<7 then
       this.SendCommandCallMonologue(paz_roomT)
     else
@@ -304,7 +304,7 @@ function this.OnEnter(f)
   mvars.paz_doesSnakeHasPicture=paz_doesSnakeHasPicture
   mvars.paz_demoEndType=this.DEMO_END_TYPE_NONE
   this.InitUi()
-  if not f then
+  if not isSkipPlayerInit then
     this.InitPlayer()
   end
   this.InitMusic()
@@ -325,110 +325,110 @@ end
 function this.NeedsToWaitLeave()
   return mvars.paz_isSpeeching and this.IsInTable(mvars.paz_lastMonologueLabel,matane)
 end
-function this.OnSpecialActionEnd(o,o,t)
-  if t==StrCode32(statePaz_q_come_snk[2])then
+function this.OnSpecialActionEnd(gameId,actionId,commandId)
+  if commandId==StrCode32(statePaz_q_come_snk[2])then
     this.SendCommandSpecialAction(statePaz_q_sit_idl)
     this.SendCommandCallMonologue(paz_misete01T[math.random(#paz_misete01T)])
-  elseif t==StrCode32(I[2])then
-    this.SendCommandSpecialAction(E)
+  elseif commandId==StrCode32(paz1_q_take_pic[2])then
+    this.SendCommandSpecialAction(paz1_q_pic_idl)
     this.SendCommandCallMonologue(photoNames[gvars.pazLookedPictureCount])
-  elseif t==StrCode32(R[2])or t==StrCode32(statePaz_q_take_pic2[2])then
-    this.SendCommandSpecialAction(E)
-  elseif t==StrCode32(G[2])or t==StrCode32(statePaz_q_take_pic1[2])then
-    this.SendCommandSpecialAction(E)
-  elseif t==StrCode32(statePaz_q_drop_book[2])then
+  elseif commandId==StrCode32(paz1_q_take_pic2[2])or commandId==StrCode32(statePaz_q_take_pic2[2])then
+    this.SendCommandSpecialAction(paz1_q_pic_idl)
+  elseif commandId==StrCode32(paz1_q_take_pic1[2])or commandId==StrCode32(statePaz_q_take_pic1[2])then
+    this.SendCommandSpecialAction(paz1_q_pic_idl)
+  elseif commandId==StrCode32(statePaz_q_drop_book[2])then
     this.SendCommandSpecialAction(statePaz_q_sit_idl)
-    mvars.paz_takeActionPath=C
+    mvars.paz_takeActionPath=paz1_q_take_book
     mvars.paz_giveActionPath=snappaz_give_bookGani
-  elseif t==StrCode32(C[2])then
+  elseif commandId==StrCode32(paz1_q_take_book[2])then
     this.SendCommandSpecialAction(statePaz_q_sit_idl)
     this.SendCommandCallMonologue(paz_room_book02)
-  elseif t==StrCode32(P[2])then
-    this.SendCommandSpecialAction(s)
-  elseif t==StrCode32(q[2])then
-    this.SendCommandSpecialAction(y)
+  elseif commandId==StrCode32(paz1_q_bed_dwn[2])then
+    this.SendCommandSpecialAction(paz1_p_idl1)
+  elseif commandId==StrCode32(paz1_q_sit_idl_3_st[2])then
+    this.SendCommandSpecialAction(paz1_q_sit_idl_3_lp)
     this.SendCommandCallMonologue(paz_koiT)
-  elseif t==StrCode32(F[2])then
+  elseif commandId==StrCode32(paz1_q_sit_idl_3_ed[2])then
     this.SendCommandSpecialAction(statePaz_q_sit_idl)
-  elseif t==StrCode32(U[2])then
+  elseif commandId==StrCode32(paz1_q_sit_idl_ver2[2])then
     this.SendCommandSpecialAction(statePaz_q_sit_idl)
-  elseif t==StrCode32(statePaz_q_sit_idl_ver2[2])then
+  elseif commandId==StrCode32(statePaz_q_sit_idl_ver2[2])then
     this.SendCommandSpecialAction(statePaz_q_sit_idl)
   end
 end
-function this.OnMonologueEnd(s,a,o)
-  if this.IsMonologuePhotoSpeech(a)then
+function this.OnMonologueEnd(GameObjectId,speechLabel,isSuccess)
+  if this.IsMonologuePhotoSpeech(speechLabel)then
     if gvars.pazLookedPictureCount<7 then
       GkEventTimerManager.Start(PazTimerSenderDown,2+foxmath.FRnd()*2)
     else
       GkEventTimerManager.Start(PazTimerSenderPhotoAfter,2+foxmath.FRnd()*2)
     end
-  elseif this.IsInTable(a,paz_roomT)then
+  elseif this.IsInTable(speechLabel,paz_roomT)then
     GkEventTimerManager.Start(PazTimerSenderEnableIdleMonologue,60)
-  elseif a==StrCode32(paz_room02)then
+  elseif speechLabel==StrCode32(paz_room02)then
     GkEventTimerManager.Start(PazTimerSenderEnableIdleMonologue,60)
-  elseif a==StrCode32(paz_room04)then
+  elseif speechLabel==StrCode32(paz_room04)then
     GkEventTimerManager.Start(PazTimerSenderEnableIdleMonologue,60)
-  elseif a==StrCode32(paz_misete02)then
+  elseif speechLabel==StrCode32(paz_misete02)then
     GkEventTimerManager.Stop(PazTimerSenderEnableIdleMonologue)
     GkEventTimerManager.Start(PazTimerSenderEnableIdleMonologue,30)
     mvars.paz_isIdleMonologueEnabled=false
-  elseif a==StrCode32(paz_room_book02)then
+  elseif speechLabel==StrCode32(paz_room_book02)then
     GkEventTimerManager.Stop(PazTimerSenderEnableIdleMonologue)
     GkEventTimerManager.Start(PazTimerSenderEnableIdleMonologue,30)
     mvars.paz_isIdleMonologueEnabled=false
-  elseif this.IsInTable(a,matane)then
+  elseif this.IsInTable(speechLabel,matane)then
     GkEventTimerManager.Stop(PazTimerSenderEnableIdleMonologue)
     GkEventTimerManager.Start(PazTimerSenderEnableIdleMonologue,30)
     mvars.paz_isIdleMonologueEnabled=false
-  elseif this.IsInTable(a,paz_koiT)then
+  elseif this.IsInTable(speechLabel,paz_koiT)then
     GkEventTimerManager.Start(PazTimerSenderHumming,5+foxmath.FRnd()*5)
-  elseif a==StrCode32(photoAfter4)then
+  elseif speechLabel==StrCode32(photoAfter4)then
     GkEventTimerManager.Start(PazTimerSenderDown,2+foxmath.FRnd()*2)
-  elseif this.IsInTable(a,negoto)then
+  elseif this.IsInTable(speechLabel,negoto)then
     GkEventTimerManager.Start(PazTimerSenderSleep,10+foxmath.FRnd()*10)
-  elseif this.IsInTable(a,paz_atamaT)then
+  elseif this.IsInTable(speechLabel,paz_atamaT)then
     GkEventTimerManager.Start(PazTimerSenderAimDefault,2+foxmath.FRnd()*2)
   end
-  if o~=0 then
+  if isSuccess~=0 then
     mvars.paz_isSpeeching=false
   end
 end
-function this.OnFinishTimer(n)
-  if n==PazTimerSenderPhotoAfter then
+function this.OnFinishTimer(timerName)
+  if timerName==PazTimerSenderPhotoAfter then
     this.SendCommandCallMonologue(photoAfter4)
-  elseif n==PazTimerSenderDown then
-    this.SendCommandSpecialAction(P)
-  elseif n==PazTimerSenderHumming then
+  elseif timerName==PazTimerSenderDown then
+    this.SendCommandSpecialAction(paz1_q_bed_dwn)
+  elseif timerName==PazTimerSenderHumming then
     if not mvars.paz_hasPerceivedSnake then
       this.SendCommandCallMonologue(paz_koiT)
-    elseif mvars.paz_currentAction==y then
+    elseif mvars.paz_currentAction==paz1_q_sit_idl_3_lp then
       this.SendCommandCallMonologue(paz_koiT)
     end
-  elseif n==PazTimerSenderPerceive then
-    if mvars.paz_currentAction==S then
+  elseif timerName==PazTimerSenderPerceive then
+    if mvars.paz_currentAction==paz1_q_sit_idl_2 then
       this.SendCommandSpecialAction(statePaz_q_come_snk)
-    elseif mvars.paz_currentAction==b then
+    elseif mvars.paz_currentAction==paz1_q_book_idl then
       this.SendCommandSpecialAction(statePaz_q_drop_book)
     end
-  elseif n==PazTimerSenderSleep then
-    if mvars.paz_currentAction==s or mvars.paz_currentAction==A then
+  elseif timerName==PazTimerSenderSleep then
+    if mvars.paz_currentAction==paz1_p_idl1 or mvars.paz_currentAction==paz1_p_idl2 then
       this.SendCommandCallMonologue(negoto)
     end
-  elseif n==PazTimerSenderEnableSeeYou then
+  elseif timerName==PazTimerSenderEnableSeeYou then
     mvars.paz_isSeeYouMonologueEnabled=true
-  elseif n==PazTimerSenderEnableShowMe then
+  elseif timerName==PazTimerSenderEnableShowMe then
     mvars.paz_isShowMeMonologueEnabled=true
-  elseif n==PazTimerSenderConfusionOutAngle then
+  elseif timerName==PazTimerSenderConfusionOutAngle then
     if mvars.paz_isOutAngle and mvars.paz_currentAction==statePaz_q_sit_idl_f then
       this.SendCommandSpecialAction(statePaz_q_sit_idl)
       this.SendCommandCallMonologue(paz_atamaT)
     end
-  elseif n==PazTimerSenderAimDefault then
+  elseif timerName==PazTimerSenderAimDefault then
     if mvars.paz_isOutAngle then
       this.SendCommandSpecialAction(statePaz_q_sit_idl_f)
     end
-  elseif n==PazTimerSenderCheckIdleAction then
+  elseif timerName==PazTimerSenderCheckIdleAction then
     GkEventTimerManager.Start(PazTimerSenderCheckIdleAction,2)
     if mvars.paz_isIdleActionEnabled and mvars.paz_currentAction==statePaz_q_sit_idl then
       local playerPosition=Vector3(vars.playerPosX,vars.playerPosY,vars.playerPosZ)
@@ -439,9 +439,9 @@ function this.OnFinishTimer(n)
         mvars.paz_isIdleActionEnabled=false
       end
     end
-  elseif n==PazTimerSenderEnableIdleAction then
+  elseif timerName==PazTimerSenderEnableIdleAction then
     mvars.paz_isIdleActionEnabled=true
-  elseif n==PazTimerSenderIdleMonologue then
+  elseif timerName==PazTimerSenderIdleMonologue then
     if not mvars.paz_isSpeeching then
       if mvars.paz_isSnakeStopping then
         if mvars.paz_currentAction==statePaz_q_sit_idl then
@@ -451,22 +451,22 @@ function this.OnFinishTimer(n)
       else
         if mvars.paz_isIdleMonologueEnabled then
           if mvars.paz_currentAction==statePaz_q_sit_idl or mvars.paz_currentAction==statePaz_q_sit_idl_ver2 then
-            this.SendCommandCallMonologue(ie)
+            this.SendCommandCallMonologue(unk4)
           end
         end
       end
     end
     GkEventTimerManager.Start(PazTimerSenderIdleMonologue,10+foxmath.FRnd()*10)
-  elseif n==PazTimerSenderEnableIdleMonologue then
+  elseif timerName==PazTimerSenderEnableIdleMonologue then
     mvars.paz_isIdleMonologueEnabled=true
     GkEventTimerManager.Stop(PazTimerSenderIdleMonologue)
     GkEventTimerManager.Start(PazTimerSenderIdleMonologue,2+foxmath.FRnd()*2)
   end
 end
 function this.OnPazPerceiveSnake()
-  if mvars.paz_currentAction==S then
+  if mvars.paz_currentAction==paz1_q_sit_idl_2 then
     this.SendCommandSpecialAction(statePaz_q_come_snk)
-  elseif mvars.paz_currentAction==b then
+  elseif mvars.paz_currentAction==paz1_q_book_idl then
     this.SendCommandSpecialAction(statePaz_q_drop_book)
   end
 end
@@ -475,19 +475,19 @@ function this.OnPazHasAimedDefault()
     mvars.paz_idleActionSameCount=0
   end
   if mvars.paz_isSnakeStopping then
-    local n=nil
+    local action=nil
     if mvars.paz_idleActionSameCount>=1 then
-      n=this.GetItemInTableAtRandom(B)
+      action=this.GetItemInTableAtRandom(sitIdle3Anims)
     else
-      n=this.GetItemInTableAtRandom(B)
+      action=this.GetItemInTableAtRandom(sitIdle3Anims)
     end
-    if n==mvars.pazLastIdleAction then
+    if action==mvars.pazLastIdleAction then
       mvars.paz_idleActionSameCount=mvars.paz_idleActionSameCount+1
     else
       mvars.paz_idleActionSameCount=0
     end
-    this.SendCommandSpecialAction(n)
-    mvars.pazLastIdleAction=n
+    this.SendCommandSpecialAction(action)
+    mvars.pazLastIdleAction=action
   elseif mvars.paz_isOutAngle then
     GkEventTimerManager.Start(PazTimerSenderConfusionOutAngle,2+foxmath.FRnd()*5)
   else
@@ -505,12 +505,12 @@ end
 function this.OnIconOk()
   this.SendCommandSpecialAction(mvars.paz_takeActionPath)
   this.PlayPlayerMotion(mvars.paz_giveActionPath)
-  if mvars.paz_takeActionPath[2]==C[2]then
+  if mvars.paz_takeActionPath[2]==paz1_q_take_book[2]then
     mvars.paz_isSeeYouMonologueEnabled=true
   end
 end
 function this.OnIconSwitchShown()
-  if((((((mvars.paz_currentAction~=s and mvars.paz_currentAction~=A)and mvars.paz_currentAction~=P)and mvars.paz_currentAction~=E)and mvars.paz_currentAction~=I)and mvars.paz_currentAction~=G)and mvars.paz_currentAction~=R)and mvars.paz_isSeeYouMonologueEnabled then
+  if((((((mvars.paz_currentAction~=paz1_p_idl1 and mvars.paz_currentAction~=paz1_p_idl2)and mvars.paz_currentAction~=paz1_q_bed_dwn)and mvars.paz_currentAction~=paz1_q_pic_idl)and mvars.paz_currentAction~=paz1_q_take_pic)and mvars.paz_currentAction~=paz1_q_take_pic1)and mvars.paz_currentAction~=paz1_q_take_pic2)and mvars.paz_isSeeYouMonologueEnabled then
     this.SendCommandCallMonologue(matane)
     GkEventTimerManager.Stop(PazTimerSenderEnableSeeYou)
     GkEventTimerManager.Start(PazTimerSenderEnableSeeYou,30)
@@ -522,7 +522,7 @@ function this.OnIconSwitchShown()
 end
 function this.OnPazRelaxEndTiming()
   if not mvars.paz_isOutAngle and not mvars.paz_isSnakeStopping then
-    this.SendCommandSpecialAction(F)
+    this.SendCommandSpecialAction(paz1_q_sit_idl_3_ed)
     if mvars.paz_isSpeeching and this.IsInTable(mvars.paz_lastMonologueLabel,paz_koiT)then
       this.SendCommandCallMonologue""
     end
@@ -574,13 +574,13 @@ function this.SendCommandSpecialAction(action,commandId)
   mvars.paz_currentAction=action
   if path==statePaz_q_sit_idl[2]then
     mvars.paz_hasPerceivedSnake=true
-  elseif path==S[2]then
+  elseif path==paz1_q_sit_idl_2[2]then
     if foxmath.FRnd()<.5 then
       this.SendCommandCallMonologue(this.GetItemInTableAtRandom(paz_koiT))
     else
       GkEventTimerManager.Start(PazTimerSenderPerceive,.5+foxmath.FRnd()*.5)
     end
-  elseif path==b[2]then
+  elseif path==paz1_q_book_idl[2]then
     if foxmath.FRnd()<.5 then
       this.SendCommandCallMonologue(this.GetItemInTableAtRandom(paz_koiT))
     else
@@ -608,15 +608,15 @@ function this.SendCommandSpecialAction(action,commandId)
     mvars.paz_hasDroppedBook=true
     this.SendCommandCallMonologue(paz_room_book01)
     mvars.paz_hasPerceivedSnake=true
-  elseif path==C[2]then
+  elseif path==paz1_q_take_book[2]then
     mvars.paz_hasDroppedBook=false
-  elseif path==I[2]then
+  elseif path==paz1_q_take_pic[2]then
     mvars.paz_doesSnakeHasPicture=false
-  elseif path==P[2]then
+  elseif path==paz1_q_bed_dwn[2]then
     this.SendCommandCallMonologue(photoAfterT[math.random(#photoAfterT)])
-  elseif path==s[2]then
+  elseif path==paz1_p_idl1[2]then
     GkEventTimerManager.Start(PazTimerSenderSleep,10+foxmath.FRnd()*10)
-  elseif path==A[2]then
+  elseif path==paz1_p_idl2[2]then
     GkEventTimerManager.Start(PazTimerSenderSleep,10+foxmath.FRnd()*10)
   end
   this.UpdateIcon()
@@ -723,7 +723,7 @@ end
 function this.UpdateIcon()
   if(mvars.paz_isIconEnabled and mvars.paz_currentAction==statePaz_q_sit_idl)and(mvars.paz_doesSnakeHasPicture or mvars.paz_hasDroppedBook)then
     if not mvars.paz_isIconVisible then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=Fox.StrCode32"IconOk",messageArg=""}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=StrCode32"IconOk",messageArg=""}
       mvars.paz_isIconVisible=true
       if((mvars.paz_doesSnakeHasPicture and mvars.paz_isShowMeMonologueEnabled)and not mvars.paz_isSpeeching)and mvars.paz_lastMonologueLabel~=paz_misete02 then
         this.SendCommandCallMonologue(paz_misete02)
@@ -738,44 +738,44 @@ function this.UpdateIcon()
     end
   end
 end
-function this.PlayPlayerMotion(e)
-  Player.RequestToPlayDirectMotion{"handBookToPaz",{e,false,pazLocator,"Move","MTP_GLOBAL_C",false}}
+function this.PlayPlayerMotion(actionPath)
+  Player.RequestToPlayDirectMotion{"handBookToPaz",{actionPath,false,pazLocator,"Move","MTP_GLOBAL_C",false}}
 end
 function this.PlayCameraAnimation()
   Player.RequestToPlayCameraNonAnimation{characterId=this.GetPazGameObjectId(),isFollowPos=true,isFollowRot=true,followTime=6,followDelayTime=.5,candidateRots={{-10,110}},skeletonNames={"SKL_002_CHEST"},skeletonCenterOffsets={Vector3(0,0,0)},skeletonBoundings={Vector3(.1,.1,.1)},offsetTarget=Vector3(0,.5,.5),offsetPos=Vector3(0,0,-1),focalLength=21,aperture=4,timeToSleep=6,interpTimeAtStart=1,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,isCollisionCheck=false}
   Player.RequestToSetCameraRotation{rotX=10,rotY=45,interpTime=1}
 end
-function this.IsMonologuePhotoSpeech(a)
-  for t,e in ipairs(photoNames)do
-    if StrCode32(e)==a then
+function this.IsMonologuePhotoSpeech(speechLable)
+  for i,photoName in ipairs(photoNames)do
+    if StrCode32(photoName)==speechLable then
       return true
     end
   end
   return false
 end
-function this.GetItemInTableAtRandom(e,t)
+function this.GetItemInTableAtRandom(table,t)
   if t==nil then
-    return e[math.random(#e)]
+    return table[math.random(#table)]
   else
     local n={}
     local a=0
-    for o,e in ipairs(e)do
-      if e~=t then
+    for k,v in ipairs(table)do
+      if v~=t then
         a=a+1
-        n[a]=e
+        n[a]=v
       end
     end
     return n[math.random(#n)]
   end
 end
-function this.IsInTable(e,a)
-  for t,a in ipairs(a)do
-    if type(e)=="number"then
-      if StrCode32(a)==e then
+function this.IsInTable(item,t)
+  for k,v in ipairs(t)do
+    if type(item)=="number"then
+      if StrCode32(v)==item then
         return true
       end
     else
-      if a==e then
+      if v==item then
         return true
       end
     end

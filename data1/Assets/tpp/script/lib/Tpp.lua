@@ -1,7 +1,8 @@
 -- DOBUILD: 1
 -- Tpp.lua
+InfLog.AddFlow"Load Tpp.lua"--tex
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfLog.StrCode32--tex was Fox.StrCode32
 local type=type
 local GetGameObjectId=GameObject.GetGameObjectId
 local GetTypeIndex=GameObject.GetTypeIndex
@@ -30,7 +31,9 @@ local PHASE_ALERT=TppGameObject.PHASE_ALERT
 local NULL_ID=GameObject.NULL_ID
 local bnot=bit.bnot
 local band,bor,bxor=bit.band,bit.bor,bit.bxor
+local InfLog=InfLog--tex
 this.requires={
+  --"/Assets/tpp/script/lib/InfDebugMarkFlow.lua",--tex DEBUG
   "/Assets/tpp/script/lib/TppDefine.lua",
   "/Assets/tpp/script/lib/TppMath.lua",
   "/Assets/tpp/script/lib/TppSave.lua",
@@ -83,37 +86,19 @@ this.requires={
   "/Assets/tpp/script/lib/TppRanking.lua",
   "/Assets/tpp/script/lib/TppTrophy.lua",
   "/Assets/tpp/script/lib/TppMbFreeDemo.lua",
-  "/Assets/tpp/script/lib/Ivars.lua",--tex>
-  "/Assets/tpp/script/lib/InfLang.lua",
-  "/Assets/tpp/script/lib/InfButton.lua",
+  "/Assets/tpp/script/lib/IvarProc.lua",--tex>
+  "/Assets/tpp/script/lib/InfButton.lua",  
+  "/Assets/tpp/script/lib/InfUtil.lua",
   "/Assets/tpp/script/lib/InfMain.lua",
-  "/Assets/tpp/script/lib/InfMenuCommands.lua",
-  "/Assets/tpp/script/lib/InfMenuDefs.lua",
-  "/Assets/tpp/script/lib/InfQuickMenuDefs.lua",
   "/Assets/tpp/script/lib/InfMenu.lua",
   "/Assets/tpp/script/lib/InfEneFova.lua",
-  "/Assets/tpp/script/lib/InfEquip.lua",
-  --OFF "/Assets/tpp/script/lib/InfSplash.lua",
-  "/Assets/tpp/script/lib/InfVehicle.lua",
   "/Assets/tpp/script/lib/InfRevenge.lua",
-  --OFF "/Assets/tpp/script/lib/InfReinforce.lua",
-  "/Assets/tpp/script/lib/InfCamera.lua",
-  "/Assets/tpp/script/lib/InfUserMarker.lua",
-  --CULL"/Assets/tpp/script/lib/InfPatch.lua",
-  "/Assets/tpp/script/lib/InfEnemyPhase.lua",
-  "/Assets/tpp/script/lib/InfHelicopter.lua",
-  "/Assets/tpp/script/lib/InfNPC.lua",
-  "/Assets/tpp/script/lib/InfNPCOcelot.lua",
-  "/Assets/tpp/script/lib/InfNPCHeli.lua",
-  "/Assets/tpp/script/lib/InfWalkerGear.lua",
-  "/Assets/tpp/script/lib/InfInterrogation.lua",
   "/Assets/tpp/script/lib/InfSoldierParams.lua",
-  "/Assets/tpp/script/lib/InfInspect.lua",
   "/Assets/tpp/script/lib/InfFova.lua",
   "/Assets/tpp/script/lib/InfLZ.lua",
   "/Assets/tpp/script/lib/InfGameEvent.lua",
-  "/Assets/tpp/script/lib/InfParasite.lua",
-  "/Assets/tpp/script/lib/InfBuddy.lua",
+  "/Assets/tpp/script/lib/InfInspect.lua",
+  "/Assets/tpp/script/lib/InfPersistence.lua",
   "/Assets/tpp/script/lib/InfHooks.lua",--<
 }
 function this.IsTypeFunc(e)
@@ -318,16 +303,31 @@ function this.DoMessage(messageExecTable,CheckMessageOption,sender,messageId,arg
   this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText,RENsomebool)
 end
 function this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText)
-  if messageIdRecievers.func then
-    if CheckMessageOption(messageIdRecievers.option)then
-      messageIdRecievers.func(arg0,arg1,arg2,arg3)
+  --tex>
+  if ivars.debugMode>0 and ivars.debugMessages>0 then
+    if messageIdRecievers.func then
+      if CheckMessageOption(messageIdRecievers.option)then
+        InfLog.PCallDebug(messageIdRecievers.func,arg0,arg1,arg2,arg3)
+      end
     end
+    local sender=messageIdRecievers.sender
+    if sender and sender[arg0]then
+      if CheckMessageOption(messageIdRecievers.senderOption[arg0])then
+        InfLog.PCallDebug(sender[arg0],arg0,arg1,arg2,arg3)
+      end
+    end
+  else--<
+    if messageIdRecievers.func then
+      if CheckMessageOption(messageIdRecievers.option)then
+        messageIdRecievers.func(arg0,arg1,arg2,arg3)
+      end
   end
   local sender=messageIdRecievers.sender
   if sender and sender[arg0]then
     if CheckMessageOption(messageIdRecievers.senderOption[arg0])then
       sender[arg0](arg0,arg1,arg2,arg3)
     end
+  end
   end
 end
 function this.GetRotationY(rotQuat)
@@ -403,8 +403,8 @@ function this.SetGameStatus(status)
     return
   end
   if IsTypeTable(except)then
-    for t,n in pairs(except)do
-      target[t]=n
+    for statusName,set in pairs(except)do
+      target[statusName]=set
     end
   end
   if enable then
@@ -438,13 +438,13 @@ function this.SetGameStatus(status)
       end
     end
     for gameStatusName,statusType in pairs(TppDefine.GAME_STATUS_TYPE_ALL)do
-      local e=target[gameStatusName]
-      if e then
+      local set=target[gameStatusName]
+      if set then
         TppGameStatus.Set(scriptName,gameStatusName)
       end
     end
   end
-  if Ivars.debugMode:Is()>0 then--tex> TODO: this doesn't seem to catch all cases of announcelog being disabled, during Load on return from MB for example
+  if Ivars.debugMode:Is()>0 or InfLog.doneStartup==false then--tex> TODO: this doesn't seem to catch all cases of announcelog being disabled, during Load on return from MB for example
     TppUiStatusManager.ClearStatus("AnnounceLog")
   end--<
 end
@@ -565,15 +565,15 @@ end
 function this.IsMarkerLocator(e)
   return IsGameObjectType(e,GAME_OBJECT_TYPE_MARKER2_LOCATOR)
 end
-function this.IsAnimal(e)
-  if e==nil then
+function this.IsAnimal(gameId)
+  if gameId==nil then
     return
   end
-  if e==NULL_ID then
+  if gameId==NULL_ID then
     return
   end
-  local e=GetTypeIndex(e)
-  return TppDefine.ANIMAL_GAMEOBJECT_TYPE[e]
+  local typeIndex=GetTypeIndex(gameId)
+  return TppDefine.ANIMAL_GAMEOBJECT_TYPE[typeIndex]
 end
 function this.IsBossQuiet(e)
   return IsGameObjectType(e,GAME_OBJECT_TYPE_BOSSQUIET2)
@@ -910,4 +910,5 @@ do
     end
   end
 end
+InfLog.AddFlow"Tpp.lua done"--tex
 return this

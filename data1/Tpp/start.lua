@@ -1,8 +1,6 @@
 -- DOBUILD: 1
 --start.lua
---local splash=SplashScreen.Create("startstart","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_fox_logo_clp_nmp.ftex",640,640)--tex
---SplashScreen.Show(splash,.2,1,.2)--tex
-
+InfLog.AddFlow"start.lua"--tex
 local function yield()
   coroutine.yield()
 end
@@ -629,6 +627,24 @@ if Script.LoadLibrary then
     Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceGroupId.lua"
     Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceGroup.lua"
     yield()
+    --tex>
+    local InfModelRegistry=InfLog.LoadBoxed"InfModelRegistry.lua"
+    InfLog.InfModelRegistry=InfModelRegistry
+    if InfModelRegistry then
+      local commonHeadPath="/Assets/tpp/pack/fova/common_source/chara/cm_head/"
+      for i,moduleName in ipairs(InfModelRegistry.headFovaModNames)do
+        if type(moduleName)=="string"then
+          Script.LoadLibrary(commonHeadPath..moduleName..".lua")
+          if _G[moduleName] then
+            InfLog.Add("InfModelRegistry loaded module "..moduleName)
+          else
+            InfLog.Add("InfModelRegistry could not load module "..moduleName)
+          end
+        end
+      end
+    end
+    yield()
+    --<
     Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/Soldier2FaceAndBodyData.lua"
     yield()
   end
@@ -710,14 +726,14 @@ GrTools.SetEnableLocalReflection(true)
 GrTools.SetLightingColorScale(1.8)
 yield()
 do
-  local e=coroutine.create(loadfile"Tpp/Scripts/System/start2nd.lua")
+  local co=coroutine.create(loadfile"Tpp/Scripts/System/start2nd.lua")
   repeat
     coroutine.yield()
-    local a,t=coroutine.resume(e)
-    if not a then
-      error(t)
+    local ok,ret=coroutine.resume(co)
+    if not ok then
+      error(ret)
     end
-  until coroutine.status(e)=="dead"
+  until coroutine.status(co)=="dead"
 end
 if TppSystemUtility.GetCurrentGameMode()=="MGO"then
   dofile"Tpp/Scripts/System/start3rd.lua"
@@ -730,6 +746,6 @@ TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil,{setMute=true})
 TppVarInit.InitializeOnStartTitle()
 TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
+InfLog.AddFlow"start.lua done"--tex
 
---local splash=SplashScreen.Create("startend","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_kjp_logo_clp_nmp.ftex",640,640)--tex
---SplashScreen.Show(splash,.2,1,.2)--tex
+

@@ -1,7 +1,7 @@
 -- TppGimmick.lua
 local this={}
 local StrCode32=Fox.StrCode32
-local IsTypeTable=GameObject.GetTypeIndex
+local GetTypeIndex=GameObject.GetTypeIndex
 local GetGameObjectId=GameObject.GetGameObjectId
 local NULL_ID=GameObject.NULL_ID
 local IsTypeTable=Tpp.IsTypeTable
@@ -396,44 +396,48 @@ function this.MafrRiverPrimSetting()
   if not TppEffectUtility.UpdatePrimRiver then
     return
   end
+  --Mission 13 - Pitch Dark
   if vars.missionCode==10080 or vars.missionCode==11080 then
     this.SetMafrRiverPrimVisibility(false)
   else
     this.SetMafrRiverPrimVisibility(true)
   end
 end
-function this.SetMafrRiverPrimVisibility(o)
-  local e={"cleanRiver","dirtyRiver","oilMud_open","dirtyFlow"}
-  local i={true,false,false,false}
-  for n,t in ipairs(e)do
-    local e
-    if o then
-      e=i[n]
+function this.SetMafrRiverPrimVisibility(someBool)
+  local primLayers={"cleanRiver","dirtyRiver","oilMud_open","dirtyFlow"}
+  local primLayerShow={true,false,false,false}
+  for i,layerName in ipairs(primLayers)do
+    local show
+    if someBool then
+      show=primLayerShow[i]
     else
-      e=not i[n]
+      show=not primLayerShow[i]
     end
-    TppEffectUtility.SetPrimRiverVisibility(t,e)
+    TppEffectUtility.SetPrimRiverVisibility(layerName,show)
   end
   TppEffectUtility.UpdatePrimRiver()
 end
-function this.SetUpIdentifierTable(e)
+--<location>_gimmick.gimmickIdentifierParamTable or mvars.mbItem_funcGetGimmickIdentifierTable
+function this.SetUpIdentifierTable(identifierTable)
   mvars.gim_identifierParamTable={}
-  Tpp.MergeTable(mvars.gim_identifierParamTable,e)
+  Tpp.MergeTable(mvars.gim_identifierParamTable,identifierTable)
   mvars.gim_identifierParamStrCode32Table={}
   mvars.gim_gimmackNameStrCode32Table={}
-  for n,t in pairs(e)do
-    local e=StrCode32(n)
-    mvars.gim_identifierParamStrCode32Table[e]=t
-    mvars.gim_gimmackNameStrCode32Table[e]=n
+  for identifier,params in pairs(identifierTable)do
+    local idStr32=StrCode32(identifier)
+    mvars.gim_identifierParamStrCode32Table[idStr32]=params
+    mvars.gim_gimmackNameStrCode32Table[idStr32]=identifier
   end
   mvars.gim_identifierTable={}
-  for o,e in pairs(e)do
-    local n=e.type
-    local t=e.locatorName
-    local a=e.dataSetName
-    mvars.gim_identifierTable[n]=mvars.gim_identifierTable[n]or{}
-    local e=mvars.gim_identifierTable[n]e[StrCode32(t)]=e[StrCode32(t)]or{}
-    local e=e[StrCode32(t)]e[Fox.PathFileNameCode32(a)]=o
+  for identifier,params in pairs(identifierTable)do
+    local typeName=params.type
+    local locatorName=params.locatorName
+    local dataSetName=params.dataSetName
+    mvars.gim_identifierTable[typeName]=mvars.gim_identifierTable[typeName]or{}
+    local gimmickIdentifierTypes=mvars.gim_identifierTable[typeName]
+    gimmickIdentifierTypes[StrCode32(locatorName)]=gimmickIdentifierTypes[StrCode32(locatorName)]or{}
+    local locatorParams=gimmickIdentifierTypes[StrCode32(locatorName)]
+    locatorParams[Fox.PathFileNameCode32(dataSetName)]=identifier
   end
 end
 function this.SetUpBreakConnectTable(e)
@@ -556,12 +560,12 @@ function this.BreakGimmick(gameId,n,t,i)
   this.SetHeroicAndOrgPoint(gimmickId,i)
 end
 function this.GetGimmickID(gameId,n,i)
-  local isTable=IsTypeTable(gameId)
+  local typeIndex=GetTypeIndex(gameId)
   local gim_identifierTable=mvars.gim_identifierTable
   if not gim_identifierTable then
     return
   end
-  local e=gim_identifierTable[isTable]
+  local e=gim_identifierTable[typeIndex]
   if not e then
     return
   end
@@ -743,8 +747,8 @@ function this.InitQuest()
   mvars.gim_questMarkCount=0
   mvars.gim_questMarkTotalCount=0
 end
-function this.OnAllocateQuest(e)
-  if e==nil then
+function this.OnAllocateQuest(questTable)
+  if questTable==nil then
     return
   end
   if mvars.gim_isQuestSetup==false then
@@ -817,9 +821,9 @@ function this.OnActivateQuest(questTable)
     mvars.gim_isQuestSetup=true
   end
 end
-function this.OnDeactivateQuest(n)
+function this.OnDeactivateQuest(questTable)
   if mvars.gim_isQuestSetup==true then
-    local clearType=this.CheckQuestAllTarget(n.questType,nil,true)
+    local clearType=this.CheckQuestAllTarget(questTable.questType,nil,true)
     TppQuest.ClearWithSave(clearType)
     this.SetQuestInvisibleGimmick(0,true,true)
   end
@@ -829,19 +833,20 @@ function this.OnTerminateQuest(questTable)
     this.InitQuest()
   end
 end
-function this.CheckQuestAllTarget(questType,a,l)
+--NMC: gimmickIdentifier = gameId, or collectionUniqueId or
+function this.CheckQuestAllTarget(questType,gimmickIdentifier,targetPracticeTimeOut)
   local clearType=TppDefine.QUEST_CLEAR_TYPE.NONE
-  local r=l or false
-  local l=false
+  local targetPracticeTimeOut=targetPracticeTimeOut or false
+  local isPracticeTarget=false
   local currentQuestName=TppQuest.GetCurrentQuestName()
   if TppQuest.IsEnd(currentQuestName)then
     return clearType
   end
-  if r==false then
+  if targetPracticeTimeOut==false then
     if questType==TppDefine.QUEST_TYPE.DEVELOP_RECOVERED then
       for n,e in pairs(mvars.gim_questTargetList)do
         if e.idType=="Develop"then
-          if a==TppCollection.GetUniqueIdByLocatorName(e.developId)then
+          if gimmickIdentifier==TppCollection.GetUniqueIdByLocatorName(e.developId)then
             e.messageId="Recovered"
           end
         end
@@ -849,21 +854,21 @@ function this.CheckQuestAllTarget(questType,a,l)
     elseif questType==TppDefine.QUEST_TYPE.SHOOTING_PRACTIVE then
       for n,e in pairs(mvars.gim_questTargetList)do
         local locatorStrCode32=StrCode32(e.locatorName)
-        if a==locatorStrCode32 then
+        if gimmickIdentifier==locatorStrCode32 then
           e.messageId="Break"
-          l=true
+          isPracticeTarget=true
           mvars.gim_questMarkCount=mvars.gim_questMarkCount+1
           break
         end
       end
     elseif questType==TppDefine.QUEST_TYPE.GIMMICK_RECOVERED then
-      if Tpp.IsFultonContainer(a)then
+      if Tpp.IsFultonContainer(gimmickIdentifier)then
         for i,n in pairs(mvars.gim_questTargetList)do
           if n.idType=="Gimmick"then
             local i,e=this.GetGameObjectId(n.gimmickId)
             if e==NULL_ID then
             else
-              if a==e then
+              if gimmickIdentifier==e then
                 n.messageId="Recovered"
               end
             end
@@ -887,8 +892,8 @@ function this.CheckQuestAllTarget(questType,a,l)
       end
     end
   elseif questType==TppDefine.QUEST_TYPE.SHOOTING_PRACTIVE then
-    if l==true then
-      local n={}
+    if isPracticeTarget==true then
+      --ORPHAN local unk1={}
       local n=true
       for i,e in pairs(mvars.gim_questTargetList)do
         if e.setIndex==mvars.gim_questMarkSetIndex then
@@ -909,7 +914,7 @@ function this.CheckQuestAllTarget(questType,a,l)
         clearType=TppDefine.QUEST_CLEAR_TYPE.UPDATE
       end
     else
-      if r==true then
+      if targetPracticeTimeOut==true then
         if mvars.gim_isquestMarkStart==true then
           clearType=TppDefine.QUEST_CLEAR_TYPE.SHOOTING_RETRY
         end

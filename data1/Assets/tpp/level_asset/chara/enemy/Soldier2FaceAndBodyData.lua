@@ -294,10 +294,10 @@ this.bodyFova={
   {"/Assets/tpp/fova/chara/wss/wss0_main0_v00.fv2","/Assets/tpp/pack/fova/chara/wss/wss0_main0_v00.fpk"},--105,195,,
   {"/Assets/tpp/fova/chara/wss/wss3_main0_v00.fv2","/Assets/tpp/pack/fova/chara/wss/wss3_main0_v00.fpk"},--106,196,,
   --prisoners
-  {"/Assets/tpp/fova/chara/prs/prs2_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs2_main0_v01.fpk"},--107,200,,
-  {"/Assets/tpp/fova/chara/prs/prs5_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs5_main0_v01.fpk"},--108,201,,
-  {"/Assets/tpp/fova/chara/prs/prs3_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs3_main0_v01.fpk"},--109,202,,
-  {"/Assets/tpp/fova/chara/prs/prs6_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs6_main0_v01.fpk"},--110,203,,
+  {"/Assets/tpp/fova/chara/prs/prs2_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs2_main0_v01.fpk"},--107,200,,afgh hostage male
+  {"/Assets/tpp/fova/chara/prs/prs5_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs5_main0_v01.fpk"},--108,201,,mafr hostage male
+  {"/Assets/tpp/fova/chara/prs/prs3_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs3_main0_v01.fpk"},--109,202,,afgh hostage female
+  {"/Assets/tpp/fova/chara/prs/prs6_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs6_main0_v01.fpk"},--110,203,,mafr hostage female
   --children
   {"/Assets/tpp/fova/chara/chd/chd2_v00.fv2","/Assets/tpp/pack/fova/chara/chd/chd2_main0_v00.fpk"},--111,205,,Q20913/outland_q20913
   {"/Assets/tpp/fova/chara/chd/chd2_v01.fv2","/Assets/tpp/pack/fova/chara/chd/chd2_main0_v00.fpk"},--112,206,,Q20914/lab_q20914
@@ -423,8 +423,8 @@ this.bodyFova={
   {"/Assets/tpp/fova/chara/oce/oce0_main0_v01.fv2","/Assets/tpp/pack/fova/chara/oce/oce0_main0_v00.fpk"},--217,371,,glasses
   {"/Assets/tpp/fova/chara/oce/oce0_main0_v02.fv2","/Assets/tpp/pack/fova/chara/oce/oce0_main0_v00.fpk"},--218,372,,??
   --prisoners
-  {"/Assets/tpp/fova/chara/prs/prs7_main0_v00.fv2","/Assets/tpp/pack/fova/chara/prs/prs7_main0_v00.fpk"},--219,373,,Q99080_01,not in questPackList.bodyIdList??
-  {"/Assets/tpp/fova/chara/prs/prs7_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs7_main0_v01.fpk"},--220,374,,Q99080_02,cliffTown_q99080
+  {"/Assets/tpp/fova/chara/prs/prs7_main0_v00.fv2","/Assets/tpp/pack/fova/chara/prs/prs7_main0_v00.fpk"},--219,373,,Q99080_01,dd suit, unused
+  {"/Assets/tpp/fova/chara/prs/prs7_main0_v01.fv2","/Assets/tpp/pack/fova/chara/prs/prs7_main0_v01.fpk"},--220,374,,Q99080_02,dd suit tiger stripe, used for kojima
   --skullface
   {"/Assets/tpp/fova/chara/wsp/wsp_def.fv2","/Assets/tpp/pack/fova/chara/wsp/wsp0_main0_v00.fpk"},--221,375,,
   {"/Assets/tpp/fova/chara/wsp/wsp_dam.fv2","/Assets/tpp/pack/fova/chara/wsp/wsp0_main0_v00.fpk"},--222,376,,
@@ -995,9 +995,10 @@ this.faceDefinition={
   {688, 0, 0, 0,44,no,no,no, 0, 0, 0,"ui_face_687", 1,  0,  0,  0,0},--tex Hideo TODO: find hideo ui texture name
   --{689, 0, 0, 0,45,no,no,no, 0, 0, 0,"ui_face_687", 1,  0,  0,  0,0},--tex not-a-snail dude? same as 623 but all-in one I guess.
   --<
-  --tex slots for run-time face modding, see InfMenuCommands.ApplyFaceFova >
+  --tex slots for run-time face modding, see InfEneFova.ApplyFaceFova >
   {690, 0, 0, 0, 0,no,no,no, 0, 0, 0,""           , 1,  0,  0,  0,0},
   {691, 0, 0, 0, 1,no,no,no, 0, 0, 0,""           , 1,  0,  0,  0,0},
+  --{faceId,unk1,gender,unk2,faceFova,faceDecoFova,hairFova,hairDecoFova,unk3,unk4,unk5,uiTextureName,unk6,unk7,unk8,unk9,unk10},--notes
 --<
 }
 
@@ -1335,7 +1336,7 @@ this.modBodyFova={
 
 --tex>
 this.highestVanillaFaceId=687--tex the highest faceid unmodded for sanity checking on fob
-this.MAX_FACEID=671--tex added. faceIds are non contigious, but it's still nice to have a bounds check. SYNC: if you're going to dynamically add to this table
+--OFF this.MAX_FACEID=688--tex added. faceIds are non contigious, but it's still nice to have a bounds check. SYNC: if you're going to dynamically add to this table
 
 local fovaTypes={
   "faceFova",
@@ -1347,10 +1348,10 @@ local genders={
   MALE=0,
   FEMALE=1,
 }
-local InfModelRegistry=InfModelRegistry
+--local InfModelRegistry=InfModelRegistry
+local InfModelRegistry=InfLog.InfModelRegistry--tex WORKAROUND require not beingable to be assigned to global weirdness
 if InfModelRegistry then  
-  InfMessageLog.AddDebug(InfMessageLog.debug,"InfModelRegistry Setup")
-
+  --InfLog.Add("InfModelRegistry Setup")
   for i,fovaTypeName in ipairs(fovaTypes) do
     InfModelRegistry[fovaTypeName]={}
   end
@@ -1358,7 +1359,9 @@ if InfModelRegistry then
   for i,moduleName in ipairs(InfModelRegistry.headFovaModNames)do
     if type(moduleName)=="string"then
       local module=_G[moduleName]
-      if module then
+      if not module then
+        InfLog.Add("InfModelRegistry could not find lua module "..moduleName)
+      else
         for i,fovaTypeName in ipairs(fovaTypes) do
           local localFova=this[fovaTypeName]
           local moduleFova=module[fovaTypeName]
@@ -1368,7 +1371,7 @@ if InfModelRegistry then
               if type(fovaInfo)=="table" then
                 localFova[fovaIndex]=fovaInfo                
                 if InfModelRegistry[fovaTypeName][fovaName] then
-                  InfMessageLog.AddMessage(InfMessageLog.debug,"Conflict module:"..fovaTypeName.."."..fovaName)
+                  InfLog.Add("Conflict module:"..fovaTypeName.."."..fovaName)
                 end   
                 InfModelRegistry[fovaTypeName][fovaName]=fovaIndex-1
               end

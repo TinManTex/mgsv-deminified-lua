@@ -1,8 +1,8 @@
 local this={}
-local T=Fox.StrCode32
-local O=Tpp.IsTypeTable
-local t=Tpp.IsTypeString
-local S=Tpp.IsTypeNumber
+local StrCode32=Fox.StrCode32
+local IsTypeTable=Tpp.IsTypeTable
+local IsTypeString=Tpp.IsTypeString
+local IsTypeNumber=Tpp.IsTypeNumber
 local ENEMY_HELI_NAME="EnemyHeli"
 this.TipsExceptTime={[TppDefine.TIPS.CQC_INTERROGATION]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.HOLD_UP_INTERROGATION]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.FULTON_CLASS_FUNCTION_STOP]={isOnceThisGame=true,isAlways=false},[TppDefine.TIPS.HORSE_HIDEACTION]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.ACTION_MAKENOISE]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.WEAPON_RANGE]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.RADIO_ESPIONAGE]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.COMOF_STANCE]={isOnceThisGame=false,isAlways=true},[TppDefine.TIPS.BINO_MARKING]={isOnceThisGame=false,isAlways=true}}
 this.ControlExceptTime={[TppDefine.CONTROL_GUIDE.DRIVE_COMMON_VEHICLE]={isOnceThisGame=true,isAlways=false},[TppDefine.CONTROL_GUIDE.DRIVE_WALKER_GEAR]={isOnceThisGame=true,isAlways=false},[TppDefine.CONTROL_GUIDE.RIDE_HORSE]={isOnceThisGame=true,isAlways=false},[TppDefine.CONTROL_GUIDE.SNIPER_RIFLE]={isOnceThisGame=true,isAlways=false},[TppDefine.CONTROL_GUIDE.ATTACK_VEHICLE_SHOOT]={isOnceThisGame=true,isAlways=false},[TppDefine.CONTROL_GUIDE.ATTACK_VEHICLE_CAMERA]={isOnceThisGame=true,isAlways=false}}
@@ -54,7 +54,7 @@ this.DISPLAY_TIME={DEFAULT=15,LONG=9,LONGER=11}
 this.TipsGuideRadioList={[TppDefine.TIPS.DAY_NIGHT_SHIFT]="f1000_rtrg0160",[TppDefine.TIPS.COMOF_NIGHT]="f1000_rtrg2980",[TppDefine.TIPS.RAIN]="f1000_rtrg0180",[TppDefine.TIPS.FOG]="f1000_rtrg0190",[TppDefine.TIPS.SAND_STORM]="f1000_rtrg0210",[TppDefine.TIPS.CRACK_CLIMB]="f1000_rtrg4470",[TppDefine.TIPS.PHANTOM_CIGAR_TOILET]="f1000_rtrg4480",[TppDefine.TIPS.PHANTOM_CIGAR_TRASH]="f1000_rtrg4480",[TppDefine.TIPS.BULLET_REFILL]="f1000_rtrg4490",[TppDefine.TIPS.DEV_DOCUMENT]="f1000_rtrg4080",[TppDefine.TIPS.TRASH]="f1000_rtrg4500",[TppDefine.TIPS.TOILET]="f1000_rtrg4510",[TppDefine.TIPS.DIAMOND]="f1000_rtrg0560",[TppDefine.TIPS.SAVE_ANIMAL]="f1000_rtrg0615",[TppDefine.TIPS.ELECTRICITY]="f1000_rtrg4530",[TppDefine.TIPS.FULTON_CONTAINER]="f1000_rtrg0570",[TppDefine.TIPS.MATERIAL]="f1000_rtrg0580",[TppDefine.TIPS.PLANT]="f1000_rtrg4090",[TppDefine.TIPS.BULLET_PENETRATE]="f1000_rtrg3640",[TppDefine.TIPS.BULLET_PENETRATE_FAIL]="f1000_rtrg3650",[TppDefine.TIPS.ANIMAL_CAGE]={"f1000_rtrg0615","f1000_rtrg0625"}}
 this.IntelRadioSetting={type_translate="f1000_esrg1110",type_antenna="f1000_esrg1110",type_eleGenerator="f1000_esrg2200",type_switchboard="f1000_esrg2200",type_searchradar="f1000_esrg1180",type_redSensor="f1000_esrg2140",type_burglar_alarm="f1000_esrg2450",type_gunMount="f1000_esrg1120",type_mortar="f1000_esrg0040",type_antiAirGun="f1000_esrg0990",type_searchlight="f1000_esrg0950",type_trash="f1000_esrg1070",type_drumcan="f1000_esrg1000",type_toilet="f1000_esrg2210",type_shower="f1000_esrg2460",type_camera="f1000_esrg2150",type_gun_camera="f1000_esrg2160",type_uav="f1000_esrg2170",type_light_vehicle="f1000_esrg1010",type_truck="f1000_esrg1020",type_armored_vehicle="f1000_esrg1030",type_tank="f1000_esrg1040",type_walkergear="f1000_esrg0070",type_walkergear_used="f1000_esrg0060",type_enemy_soviet="f1000_esrg0420",type_enemy_cfa="f1000_esrg0730",type_enemy_coyote="f1000_esrg0740",type_enemy_security="f1000_esrg0460",type_enemy_xof="f1000_esrg2410",type_garbillinae="f1000_esrg0150",type_hamiechinus="f1000_esrg0160",type_ochotona_rufescens="f1000_esrg0170",type_raven="f1000_esrg0080",type_hornbill="f1000_esrg0100",type_ciconia_nigra="f1000_esrg0110",type_jehuty="f1000_esrg0120",type_gyps_fulvus="f1000_esrg0130",type_torgos_tracheliotos="",type_polemaetus_bellicosus="f1000_esrg0140",type_goat="f1000_esrg0190",type_sheep="f1000_esrg0180",type_nubian="f1000_esrg0200",type_bore="f1000_esrg0210",type_donkey="f1000_esrg0220",type_zebra="f1000_esrg0230",type_okapi="f1000_esrg0240",type_wolf="f1000_esrg0250",type_lycaon="f1000_esrg0260",type_jackal="f1000_esrg0270",type_anubis="f1000_esrg0280",type_ursus_arctos="f1000_esrg0290",type_kashmiri_ursus_arctos="f1000_esrg0290"}
 this.IntelTypeTipsMatchTable={type_translate="COMMUNICATOR",type_antenna="COMMUNICATOR",type_searchradar="RADAR",type_eleGenerator="ELECTRICITY",type_switchboard="ELECTRICITY"}
-this.RadioTipsMatchTable={[T"f1000_esrg2190"]="COMMUNICATOR",[T"f1000_esrg2440"]="RADAR",[T"f1000_esrg2200"]="ELECTRICITY",[T"f1000_oprg1600"]="LOG",[T"f1000_oprg1320"]="HOLD_UP",[T"f1000_oprg1610"]="SUPPORT_HELI",[T"f1000_oprg1460"]="BUDDY_HORSE",[T"f2000_rtrg1410"]="BUDDY_DOG",[T"f1000_rtrg4570"]="BUDDY_COMMAND",[T"f1000_rtrg4590"]="BUDDY_QUIET",[T"f1000_rtrg4560"]="TACTICAL_BUDDY",[T"f2000_rtrg0010"]="FREE",[T"f1000_rtrg4550"]="ACTIVE_SONAR",[T"f1000_oprg1470"]="BUDDY_WALKER",[T(TppRadio.COMMON_RADIO_LIST[TppDefine.COMMON_RADIO.SUPPRESSOR_BROKEN])]="SUPPRESSOR"}
+this.RadioTipsMatchTable={[StrCode32"f1000_esrg2190"]="COMMUNICATOR",[StrCode32"f1000_esrg2440"]="RADAR",[StrCode32"f1000_esrg2200"]="ELECTRICITY",[StrCode32"f1000_oprg1600"]="LOG",[StrCode32"f1000_oprg1320"]="HOLD_UP",[StrCode32"f1000_oprg1610"]="SUPPORT_HELI",[StrCode32"f1000_oprg1460"]="BUDDY_HORSE",[StrCode32"f2000_rtrg1410"]="BUDDY_DOG",[StrCode32"f1000_rtrg4570"]="BUDDY_COMMAND",[StrCode32"f1000_rtrg4590"]="BUDDY_QUIET",[StrCode32"f1000_rtrg4560"]="TACTICAL_BUDDY",[StrCode32"f2000_rtrg0010"]="FREE",[StrCode32"f1000_rtrg4550"]="ACTIVE_SONAR",[StrCode32"f1000_oprg1470"]="BUDDY_WALKER",[StrCode32(TppRadio.COMMON_RADIO_LIST[TppDefine.COMMON_RADIO.SUPPRESSOR_BROKEN])]="SUPPRESSOR"}
 this.ControlGuideRadioList={[TppDefine.CONTROL_GUIDE.PIPE_UP]="f1000_rtrg4630"}
 this.PlantRadioMatchTable={[TppCollection.TYPE_HERB_G_CRESCENT]="f1000_rtrg5010",[TppCollection.TYPE_HERB_A_PEACH]="f1000_rtrg5012",[TppCollection.TYPE_HERB_DIGITALIS_P]="f1000_rtrg5013",[TppCollection.TYPE_HERB_DIGITALIS_R]="f1000_rtrg5013",[TppCollection.TYPE_HERB_B_CARROT]="f1000_rtrg5016",[TppCollection.TYPE_HERB_WORM_WOOD]="f1000_rtrg5014",[TppCollection.TYPE_HERB_TARRAGON]="f1000_rtrg5015",[TppCollection.TYPE_HERB_HAOMA]="f1000_rtrg5011"}
 function this.Messages()
@@ -355,25 +355,26 @@ function this.OnPickUpCollection(playerId,resourceId,resourceType,langId)
     this.DispGuide("MATERIAL",this.DISPLAY_OPTION.TIPS)
   end
 end
-local _=function(T)
-  local e={TppEquip.EQP_WP_10101,TppEquip.EQP_WP_10102,TppEquip.EQP_WP_10103,TppEquip.EQP_WP_10104,TppEquip.EQP_WP_10105,TppEquip.EQP_WP_10107,TppEquip.EQP_WP_10116,TppEquip.EQP_WP_10125,TppEquip.EQP_WP_10134,TppEquip.EQP_WP_10136,TppEquip.EQP_WP_10214,TppEquip.EQP_WP_10216,TppEquip.EQP_WP_60013,TppEquip.EQP_WP_60015,TppEquip.EQP_WP_60016,TppEquip.EQP_WP_60114,TppEquip.EQP_WP_60115,TppEquip.EQP_WP_60116,TppEquip.EQP_WP_60117,TppEquip.EQP_WP_60325,TppEquip.EQP_WP_60326,TppEquip.EQP_WP_60327}
-  for n,e in pairs(e)do
-    if e==T then
+local UnkFunc1IsSomeEquipId=function(findEquipId)
+  local unk1SomeEuipIds={TppEquip.EQP_WP_10101,TppEquip.EQP_WP_10102,TppEquip.EQP_WP_10103,TppEquip.EQP_WP_10104,TppEquip.EQP_WP_10105,TppEquip.EQP_WP_10107,TppEquip.EQP_WP_10116,TppEquip.EQP_WP_10125,TppEquip.EQP_WP_10134,TppEquip.EQP_WP_10136,TppEquip.EQP_WP_10214,TppEquip.EQP_WP_10216,TppEquip.EQP_WP_60013,TppEquip.EQP_WP_60015,TppEquip.EQP_WP_60016,TppEquip.EQP_WP_60114,TppEquip.EQP_WP_60115,TppEquip.EQP_WP_60116,TppEquip.EQP_WP_60117,TppEquip.EQP_WP_60325,TppEquip.EQP_WP_60326,TppEquip.EQP_WP_60327}
+  for i,equipId in pairs(unk1SomeEuipIds)do
+    if equipId==findEquipId then
       return true
     end
   end
 end
-function this.OnPlayerHoldWeapon(i,E,n,T)
-  if T==1 then
+--msg output PlayerHoldWeapon arg0: 687, arg1: 1, arg2: 1, arg3: 0, 
+function this.OnPlayerHoldWeapon(equipId,equipType,unk3HasGunLight,unk4IsSheild)
+  if unk4IsSheild==1 then
     this.DispGuide("SHIELD",this.DISPLAY_OPTION.CONTROL)
   end
-  if E==TppEquip.EQP_TYPE_Sniper then
+  if equipType==TppEquip.EQP_TYPE_Sniper then
     this.DispGuide("SNIPER_RIFLE",this.DISPLAY_OPTION.TIPS_CONTROL)
   end
-  if _(i)then
+  if UnkFunc1IsSomeEquipId(equipId)then
     this.DispGuide("TRANQUILIZER",this.DISPLAY_OPTION.TIPS)
   end
-  if n==1 then
+  if unk3HasGunLight==1 then
     this.DispGuide("GUN_LIGHT",this.DISPLAY_OPTION.TIPS)
   end
 end
@@ -540,17 +541,17 @@ function this.OnBulletGuardArmor(n,i,n,T)
     end
   end
 end
-function this.OnMarking(i,i,n,E)
-  if E~=T"Player"then
+function this.OnMarking(instanceName,makerType,gameObjectId,identificationCode)
+  if identificationCode~=StrCode32"Player"then
     return
   end
-  if Tpp.IsSecurityCamera(n)then
-    if Tpp.IsGunCamera(n)then
+  if Tpp.IsSecurityCamera(gameObjectId)then
+    if Tpp.IsGunCamera(gameObjectId)then
       this.PlayTutorialRadioOnly"f1000_rtrg4610"
       else
       this.PlayTutorialRadioOnly"f1000_rtrg4600"
       end
-  elseif Tpp.IsUAV(n)then
+  elseif Tpp.IsUAV(gameObjectId)then
     this.PlayTutorialRadioOnly"f1000_rtrg4620"
     end
 end
@@ -573,7 +574,7 @@ function this._UnregisterIntelRadioAfterPlayed(E)
     return
   end
   for n,e in pairs(this.IntelRadioSetting)do
-    if T(e)==E then
+    if StrCode32(e)==E then
       local e={}
       e[n]="Invalid"
       TppRadio.ChangeIntelRadio(e)
@@ -618,14 +619,14 @@ function this.SetIgnoredControlGuideInMission(n,T,E)
   end
 end
 function this.SetIgnoredGuideInMission(T,n,E)
-  if not S(T)or not t(n)then
+  if not IsTypeNumber(T)or not IsTypeString(n)then
     return
   end
   this.SetIgnoredTipsGuideInMission(T,n,E)
   this.SetIgnoredControlGuideInMission(T,n,E)
 end
 function this.SetNoGuideMission(T,n)
-  if not S(T)then
+  if not IsTypeNumber(T)then
     return
   end
   if n then
@@ -669,7 +670,7 @@ function this.PlayRadio(e,n)
   if n then
     T=n
   end
-  if O(e)then
+  if IsTypeTable(e)then
     local n={}
     for T,e in pairs(e)do
       if not TppRadio.IsPlayed(e)then

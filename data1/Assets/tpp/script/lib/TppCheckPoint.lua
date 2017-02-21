@@ -4,10 +4,11 @@ local StrCode32=Fox.StrCode32
 local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeFunc=Tpp.IsTypeTable
 local IsTypeString=Tpp.IsTypeString
-local n=GameObject.GetGameObjectId
-local n=GameObject.NULL_ID
-local n=GameObject.SendCommand
-local n=Tpp.DEBUG_StrCode32ToString
+--ORPHANS
+--local GetGameObjectId=GameObject.GetGameObjectId
+--local NULL_ID=GameObject.NULL_ID
+--local SendCommand=GameObject.SendCommand
+--local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
 local IsHelicopter=Tpp.IsHelicopter
 local IsNotAlert=Tpp.IsNotAlert
 local zero=0
@@ -57,19 +58,20 @@ end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.Enable(n)
-  this._SetEnable(n,true)
+function this.Enable(enableInfo)
+  this._SetEnable(enableInfo,true)
 end
-function this.Disable(n)
-  this._SetEnable(n,false)
+function this.Disable(enableInfo)
+  this._SetEnable(enableInfo,false)
 end
 function this.Reset()
   gvars.mis_checkPoint=zero
 end
-function this.RegisterCheckPointList(n)
-  local n=n or{}
-  for t,n in pairs(n)do
-    this._RegisterCheckPoint(n)
+--missionTable.sequence.checkPointList
+function this.RegisterCheckPointList(checkPointList)
+  local checkPointList=checkPointList or{}
+  for i,checkPointName in pairs(checkPointList)do
+    this._RegisterCheckPoint(checkPointName)
   end
   if IsTypeFunc(mvars.mis_baseList)then
     for t,n in pairs(mvars.mis_baseList)do
@@ -132,15 +134,15 @@ function this.FindNearestCheckPoint(checkPoint)
     return closest
   end
 end
-function this.IsEnable(e)
-  local n
-  if IsTypeString(e)then
-    n=StrCode32(e)
+function this.IsEnable(checkPointName)
+  local checkPointStr32
+  if IsTypeString(checkPointName)then
+    checkPointStr32=StrCode32(checkPointName)
   else
-    n=e
+    checkPointStr32=checkPointName
   end
   for e=0,TppDefine.CHECK_POINT_MAX-1 do
-    if svars.chk_checkPointName[e]==n then
+    if svars.chk_checkPointName[e]==checkPointStr32 then
       return svars.chk_checkPointEnable[e]
     end
   end
@@ -226,40 +228,40 @@ function this.DebugUpdate()
     end
   end
 end
-function this._SetEnable(n,o)
-  if not n then
+function this._SetEnable(enableInfo,enable)
+  if not enableInfo then
     return
   end
-  if IsTypeFunc(n)then
-    if n.baseName then
-      if IsTypeFunc(n.baseName)then
-        for t,n in pairs(n.baseName)do
-          this._SetEnable({baseName=n},o)
+  if IsTypeFunc(enableInfo)then
+    if enableInfo.baseName then
+      if IsTypeFunc(enableInfo.baseName)then
+        for i,baseName in pairs(enableInfo.baseName)do
+          this._SetEnable({baseName=baseName},enable)
         end
       else
-        if this._DoesBaseListInclude(n.baseName)then
-          for t,checkPointName in pairs(mvars.loc_locationCommonCheckPointList[n.baseName])do
-            this._SetEnable({checkPointName=checkPointName},o)
+        if this._DoesBaseListInclude(enableInfo.baseName)then
+          for t,checkPointName in pairs(mvars.loc_locationCommonCheckPointList[enableInfo.baseName])do
+            this._SetEnable({checkPointName=checkPointName},enable)
           end
         end
       end
     end
-    if n.checkPointName then
-      if IsTypeFunc(n.checkPointName)then
-        for t,checkPointName in pairs(n.checkPointName)do
-          this._SetEnable({checkPointName=checkPointName},o)
+    if enableInfo.checkPointName then
+      if IsTypeFunc(enableInfo.checkPointName)then
+        for t,checkPointName in pairs(enableInfo.checkPointName)do
+          this._SetEnable({checkPointName=checkPointName},enable)
         end
       else
         local checkpointNameStr32
-        if IsTypeString(n.checkPointName)then
-          checkpointNameStr32=StrCode32(n.checkPointName)
+        if IsTypeString(enableInfo.checkPointName)then
+          checkpointNameStr32=StrCode32(enableInfo.checkPointName)
         else
-          checkpointNameStr32=n.checkPointName
+          checkpointNameStr32=enableInfo.checkPointName
         end
         if checkpointNameStr32 and checkpointNameStr32~=0 then
           for n=0,TppDefine.CHECK_POINT_MAX-1 do
             if svars.chk_checkPointName[n]==checkpointNameStr32 then
-              svars.chk_checkPointEnable[n]=o
+              svars.chk_checkPointEnable[n]=enable
               return
             end
           end
@@ -268,18 +270,18 @@ function this._SetEnable(n,o)
     end
   end
 end
-function this._RegisterCheckPoint(n)
-  if not n then
+function this._RegisterCheckPoint(checkPointName)
+  if not checkPointName then
     return
   end
-  table.insert(mvars.mis_checkPointList,n)
-  local o
-  if IsTypeString(n)then
-    o=StrCode32(n)
+  table.insert(mvars.mis_checkPointList,checkPointName)
+  local checkPointStr32
+  if IsTypeString(checkPointName)then
+    checkPointStr32=StrCode32(checkPointName)
   else
-    o=n
+    checkPointStr32=checkPointName
   end
-  if this._DoesCheckPointListInclude(o)then
+  if this._DoesCheckPointListInclude(checkPointStr32)then
     return
   end
   if IsTypeFunc(svars.chk_checkPointName)then
@@ -290,16 +292,16 @@ function this._RegisterCheckPoint(n)
         break
       end
     end
-    svars.chk_checkPointName[e]=o
+    svars.chk_checkPointName[e]=checkPointStr32
     svars.chk_checkPointEnable[e]=true
   end
 end
-function this._DoesBaseListInclude(n)
+function this._DoesBaseListInclude(baseName)
   if mvars.mis_baseList==nil then
     return
   end
-  for t,e in pairs(mvars.mis_baseList)do
-    if e==n then
+  for i,baseName in pairs(mvars.mis_baseList)do
+    if baseName==baseName then
       return true
     end
   end
