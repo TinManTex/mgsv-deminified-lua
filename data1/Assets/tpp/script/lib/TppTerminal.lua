@@ -254,6 +254,14 @@ this.RESOURCE_INFORMATION_TABLE={
   [TppCollection.TYPE_POSTER_MOE_V]={resourceName="Poster1005",count=1},
   [TppCollection.TYPE_POSTER_MOE_H]={resourceName="Poster1006",count=1}
 }
+--DEBUGNOW TODO scaling in this.AddPickedUpResourceToTempBuffer (the resource add function) and TppPlayer.OnPickUpCollection (the display) would probably be better if you want runtime adjust
+--for collectionType,info in pairs(this.RESOURCE_INFORMATION_TABLE)do
+--  if string.find(info.resourceName, "Poster") then 
+--  else
+--    info.count=info.count*10
+--  end
+--end
+--
 this.BLUE_PRINT_LOCATOR_TABLE={col_develop_Revolver_Shotgun=MBMConst.DESIGN_2002,col_develop_Highprecision_SMG=MBMConst.DESIGN_2006,col_develop_HighprecisionAR=MBMConst.DESIGN_2007,col_develop_HighprecisionAR_s10033_0000=MBMConst.DESIGN_2007,col_develop_BullpupAR=MBMConst.DESIGN_2008,col_develop_LongtubeShotgun=MBMConst.DESIGN_2009,col_develop_RevolverGrenade0001=MBMConst.DESIGN_2011,col_develop_RevolverGrenade0002=MBMConst.DESIGN_2011,col_develop_RevolverGrenade0003=MBMConst.DESIGN_2011,col_develop_RevolverGrenade0004=MBMConst.DESIGN_2011,col_develop_Semiauto_SR=MBMConst.DESIGN_2013,col_develop_Semiauto_SR_s10070_0000=MBMConst.DESIGN_2013,col_develop_Antimaterial=MBMConst.DESIGN_2015,col_develop_EuropeSMG0001=MBMConst.DESIGN_2016,col_develop_EuropeSMG0002=MBMConst.DESIGN_2016,col_develop_EuropeSMG0003=MBMConst.DESIGN_2016,col_develop_EuropeSMG0004=MBMConst.DESIGN_2016,col_develop_Stungrenade=MBMConst.DESIGN_2019,col_develop_Stungun=MBMConst.DESIGN_2020,col_develop_Infraredsensor=MBMConst.DESIGN_2021,col_develop_Theftprotection=MBMConst.DESIGN_2022,col_develop_Emergencyrescue=MBMConst.DESIGN_3001,col_develop_FLamethrower=MBMConst.DESIGN_2026,col_develop_Shield=MBMConst.DESIGN_2025,col_develop_Shield0000=MBMConst.DESIGN_2025,col_develop_Shield0001=MBMConst.DESIGN_2025,col_develop_Shield0002=MBMConst.DESIGN_2025,col_develop_GunCamera=MBMConst.DESIGN_2023,col_develop_UAV=MBMConst.DESIGN_2024,col_develop_q60115=MBMConst.DESIGN_2027}
 this.BLUE_PRINT_LANG_ID={[MBMConst.DESIGN_2002]="key_bprint_2002",[MBMConst.DESIGN_2006]="key_bprint_2006",[MBMConst.DESIGN_2007]="key_bprint_2007",[MBMConst.DESIGN_2008]="key_bprint_2008",[MBMConst.DESIGN_2009]="key_bprint_2009",[MBMConst.DESIGN_2011]="key_bprint_2011",[MBMConst.DESIGN_2013]="key_bprint_2013",[MBMConst.DESIGN_2015]="key_bprint_2015",[MBMConst.DESIGN_2016]="key_bprint_2016",[MBMConst.DESIGN_2019]="key_bprint_2019",[MBMConst.DESIGN_2020]="key_bprint_2020",[MBMConst.DESIGN_2021]="key_bprint_2021",[MBMConst.DESIGN_2022]="key_bprint_2022",[MBMConst.DESIGN_2023]="key_bprint_2023",[MBMConst.DESIGN_2024]="key_bprint_2024",[MBMConst.DESIGN_2025]="key_bprint_2025",[MBMConst.DESIGN_2026]="key_bprint_2026",[MBMConst.DESIGN_2027]="key_bprint_2027",[MBMConst.DESIGN_3001]="key_item_3001"}
 this.EMBLEM_LOCATOR_TABLE={["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0000"]="front8",["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0001"]="front10",["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0002"]="front15",["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0003"]="front16",["ly003_cl04_collct0000|cl04pl0_uq_0040_collct|col_emblem_quiet"]="front9",col_develop_MTBS_30150_0000="front11",col_develop_MTBS_30250_0000="front7"}
@@ -877,75 +885,96 @@ function this.Messages()
   local messages
   if cpIntelTrapTable and next(cpIntelTrapTable)then
     messages={}
-    for t,sender in pairs(cpIntelTrapTable)do
-      local msg={msg="Enter",sender=sender,func=function(n,n)
-        this.OnEnterCpIntelTrap(t)
-        if TppSequence.IsMissionPrepareFinished()then
-          this.ShowLocationAndBaseTelop()
-        end
-      end,
-      option={isExecMissionPrepare=true}
+    for cpName,sender in pairs(cpIntelTrapTable)do
+      local msg={
+        msg="Enter",
+        sender=sender,
+        func=function(n,n)
+          this.OnEnterCpIntelTrap(cpName)
+          if TppSequence.IsMissionPrepareFinished()then
+            this.ShowLocationAndBaseTelop()
+          end
+        end,
+        option={isExecMissionPrepare=true}
       }
       table.insert(messages,msg)
-      local msg={msg="Exit",sender=sender,func=function(n,n)
-        this.OnExitCpIntelTrap(t)
-      end,
-      option={isExecMissionPrepare=true}
+      local msg={
+        msg="Exit",
+        sender=sender,
+        func=function(n,n)
+          this.OnExitCpIntelTrap(cpName)
+        end,
+        option={isExecMissionPrepare=true}
       }
       table.insert(messages,msg)
     end
-    table.insert(messages,{msg="Enter",sender="trap_intel_afgh_waterway_cp",func=function(t,t)
-      this.SetBaseTelopName"afgh_waterWay_cp"
-      if TppSequence.IsMissionPrepareFinished()then
-        this.ShowLocationAndBaseTelop()
-      end
-    end,
-    option={isExecMissionPrepare=true}})
-    table.insert(messages,{msg="Exit",sender="trap_intel_afgh_waterway_cp",func=function(t,t)
-      this.ClearBaseTelopName()
-    end,
-    option={isExecMissionPrepare=true}})
-    table.insert(messages,{msg="Enter",sender="trap_intel_afgh_ruins_cp",func=function(t,t)
-      this.SetBaseTelopName"afgh_ruins_cp"
-      if TppSequence.IsMissionPrepareFinished()then
-        this.ShowLocationAndBaseTelop()
-      end
-    end,
-    option={isExecMissionPrepare=true}})
-    table.insert(messages,{msg="Exit",sender="trap_intel_afgh_ruins_cp",func=function(t,t)
-      this.ClearBaseTelopName()
-    end,
-    option={isExecMissionPrepare=true}})
+    table.insert(messages,
+      {msg="Enter",
+        sender="trap_intel_afgh_waterway_cp",
+        func=function(t,t)
+          this.SetBaseTelopName"afgh_waterWay_cp"
+          if TppSequence.IsMissionPrepareFinished()then
+            this.ShowLocationAndBaseTelop()
+          end
+        end,
+        option={isExecMissionPrepare=true}})
+    table.insert(messages,
+      {msg="Exit",
+        sender="trap_intel_afgh_waterway_cp",
+        func=function(t,t)
+          this.ClearBaseTelopName()
+        end,
+        option={isExecMissionPrepare=true}})
+    table.insert(messages,
+      {msg="Enter",
+        sender="trap_intel_afgh_ruins_cp",
+        func=function(t,t)
+          this.SetBaseTelopName"afgh_ruins_cp"
+          if TppSequence.IsMissionPrepareFinished()then
+            this.ShowLocationAndBaseTelop()
+          end
+        end,
+        option={isExecMissionPrepare=true}})
+    table.insert(messages,
+      {msg="Exit",
+        sender="trap_intel_afgh_ruins_cp",
+        func=function(t,t)
+          this.ClearBaseTelopName()
+        end,
+        option={isExecMissionPrepare=true}})
   end
   return Tpp.StrCode32Table{
     GameObject={
-      {msg="Fulton",func=function(n,a,r,t)
-        if not TppMission.IsFOBMission(vars.missionCode)then
-          this.OnFultonMessage(n,a,r,t)
-        end
-      end,
-      option={isExecMissionClear=true,isExecDemoPlaying=true}
+      {msg="Fulton",
+        func=function(gameId,a,r,stafforResourceId)
+          if not TppMission.IsFOBMission(vars.missionCode)then
+            this.OnFultonMessage(gameId,a,r,stafforResourceId)
+          end
+        end,
+        option={isExecMissionClear=true,isExecDemoPlaying=true}
       },
-      {msg="FultonInfo",func=function(a,n,t)
-        if not TppMission.IsFOBMission(vars.missionCode)then
-          this.OnFultonInfoMessage(a,n,t)
-        end
-      end,
-      option={isExecMissionClear=true,isExecDemoPlaying=true}
+      {msg="FultonInfo",
+        func=function(a,playerIndex,t)
+          if not TppMission.IsFOBMission(vars.missionCode)then
+            this.OnFultonInfoMessage(a,playerIndex,t)
+          end
+        end,
+        option={isExecMissionClear=true,isExecDemoPlaying=true}
       },
       {msg="FultonFailedEnd",func=this.OnFultonFailedEnd},
       {msg="HeliDoorClosed",func=this.OnRecoverByHelicopter,option={isExecDemoPlaying=true}},
       {msg="Returned",func=this.OnRecoverByHelicopter,option={isExecDemoPlaying=true}}
     },
     MotherBaseManagement={
-      {msg="AssignedStaff",func=function(e,n)
-        if(e==MBMConst.SECTION_SEPARATION)and(n>0)then
-          gvars.trm_doneIsolateByManual=true
-          if(TppMission.IsFreeMission(vars.missionCode)or TppMission.IsHelicopterSpace(vars.missionCode))and TppRadio.IsRadioPlayable()then
-            TppFreeHeliRadio._PlayRadio(TppFreeHeliRadio.PANDEMIC_RADIO.ON_ISOLATE_STAFF)
+      {msg="AssignedStaff",
+        func=function(section,amount)
+          if(section==MBMConst.SECTION_SEPARATION)and(amount>0)then
+            gvars.trm_doneIsolateByManual=true
+            if(TppMission.IsFreeMission(vars.missionCode)or TppMission.IsHelicopterSpace(vars.missionCode))and TppRadio.IsRadioPlayable()then
+              TppFreeHeliRadio._PlayRadio(TppFreeHeliRadio.PANDEMIC_RADIO.ON_ISOLATE_STAFF)
+            end
           end
-        end
-      end}
+        end}
     },
     Weather={
       {msg="WeatherForecast",func=this.TerminalVoiceWeatherForecast},
@@ -1146,16 +1175,16 @@ function this.DoFuncByFultonTypeSwitch(gameId,RENAMEanimalId,n,staffOrResourceId
     end
   end
 end
-function this.OnFulton(someGameId,a,o,staffOrResourceId,someBool,possiblyNotHelicopter,playerIndex,i)--RENAME:
-  if possiblyNotHelicopter then
+function this.OnFulton(gameId,a,o,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex,i)
+  if RENpossiblyNotHelicopter then
     mvars.trm_needHeliSoundOnAddStaffsFromTempBuffer=true
-end
-TppEnemy.SetRecovered(someGameId)
-TppEnemy.ExecuteOnRecoveredCallback(someGameId,a,o,staffOrResourceId,someBool,possiblyNotHelicopter,playerIndex)
-if Tpp.IsLocalPlayer(playerIndex)then
-  TppEnemy._OnFulton(someGameId,a,o,staffOrResourceId)
-end
-this.DoFuncByFultonTypeSwitch(someGameId,a,o,staffOrResourceId,someBool,playerIndex,i,this.OnFultonSoldier,this.OnFultonVolgin,this.OnFultonHostage,this.OnFultonVehicle,this.OnFultonContainer,this.OnFultonGimmickCommon,this.OnFultonBuddy,this.OnFultonEnemyWalkerGear,this.OnFultonAnimal,this.OnFultonBossQuiet,this.OnFultonParasiteSquad)
+  end
+  TppEnemy.SetRecovered(gameId)
+  TppEnemy.ExecuteOnRecoveredCallback(gameId,a,o,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex)
+  if Tpp.IsLocalPlayer(playerIndex)then
+    TppEnemy._OnFulton(gameId,a,o,staffOrResourceId)
+  end
+  this.DoFuncByFultonTypeSwitch(gameId,a,o,staffOrResourceId,RENsomeBool,playerIndex,i,this.OnFultonSoldier,this.OnFultonVolgin,this.OnFultonHostage,this.OnFultonVehicle,this.OnFultonContainer,this.OnFultonGimmickCommon,this.OnFultonBuddy,this.OnFultonEnemyWalkerGear,this.OnFultonAnimal,this.OnFultonBossQuiet,this.OnFultonParasiteSquad)
 end
 function this.IncrementFultonCount()
   svars.trm_missionFultonCount=svars.trm_missionFultonCount+1
@@ -1252,7 +1281,8 @@ function this.OnFultonHostage(gameId,n,n,staffId,recoveredByHeli,fultonedPlayer)
   end
   this.AddTempStaffFulton{staffId=staff,gameObjectId=gameId,tempStaffStatus=tempStaffStatus,fultonedPlayer=fultonedPlayer}
 end
-function this.OnFultonVehicle(gameId,a,a,resourceId,a,playerIndex)
+function this.OnFultonVehicle(vehicleId,a,a,resourceId,a,playerIndex)
+  InfMain.OnFultonVehicle(vehicleId)--tex
   if mvars.trm_isSkipAddResourceToTempBuffer then
     return
   end
@@ -1415,8 +1445,8 @@ function this.OnFultonParasiteSquad(gameId,n,n,n)
   end
 end
 function this._OnFultonParasiteSquad(resourceIdList)
-  local n,t=resourceIdList[1],resourceIdList[2]
-  this.AddTempResource(n,t)
+  local resourceId,count=resourceIdList[1],resourceIdList[2]
+  this.AddTempResource(resourceId,count)
   TppHero.SetAndAnnounceHeroicOgrePoint(TppHero.FULTON_PARASITE)
 end
 function this.IsAnimalDog(dataBaseId)
@@ -1792,8 +1822,8 @@ function this.TerminalVoiceOnSunRise()
 end
 function this.TerminalVoiceOnSupportFireIncoming()
   this.PlayTerminalVoice"VOICE_SUPPORT_FIRE_INCOMING"end
-function this.SetBaseTelopName(e)
-  mvars.trm_baseTelopCpName=e
+function this.SetBaseTelopName(baseName)
+  mvars.trm_baseTelopCpName=baseName
 end
 function this.ClearBaseTelopName()
   mvars.trm_baseTelopCpName=nil
@@ -1806,18 +1836,18 @@ function this.ShowLocationAndBaseTelop()
     return
   end
   TppUiCommand.RegistInfoTypingText("location",1)
-  local e=this.GetLocationAndBaseTelop()
-  if e then
-    TppUiCommand.RegistInfoTypingText("cpname",2,e)
+  local cpName=this.GetLocationAndBaseTelop()
+  if cpName then
+    TppUiCommand.RegistInfoTypingText("cpname",2,cpName)
   end
   TppUiCommand.ShowInfoTypingText()
 end
 function this.ShowLocationAndBaseTelopForStartFreePlay()
   TppUiCommand.RegistInfoTypingText("gametime",1)
   TppUiCommand.RegistInfoTypingText("location",2)
-  local e=this.GetLocationAndBaseTelop()
-  if e then
-    TppUiCommand.RegistInfoTypingText("cpname",3,e)
+  local cpName=this.GetLocationAndBaseTelop()
+  if cpName then
+    TppUiCommand.RegistInfoTypingText("cpname",3,cpName)
   end
   TppUiCommand.ShowInfoTypingText()
 end
@@ -1829,27 +1859,27 @@ function this.ShowLocationAndBaseTelopForContinue()
     TppUiCommand.RegistInfoTypingText("mission",2)
     TppUiCommand.RegistInfoTypingText("gametime",3)
     TppUiCommand.RegistInfoTypingText("location",4)
-    local e=this.GetLocationAndBaseTelop()
-    if e then
-      TppUiCommand.RegistInfoTypingText("cpname",5,e)
+    local cpName=this.GetLocationAndBaseTelop()
+    if cpName then
+      TppUiCommand.RegistInfoTypingText("cpname",5,cpName)
     end
     TppUiCommand.ShowInfoTypingText()
   end
 end
-function this.OnEnterCpIntelTrap(e)
-  mvars.trm_currentIntelCpName=e
-  TppUiCommand.ActivateSpySearchForCP{cpName=e}
+function this.OnEnterCpIntelTrap(cpName)
+  mvars.trm_currentIntelCpName=cpName
+  TppUiCommand.ActivateSpySearchForCP{cpName=cpName}
   TppUiCommand.DeactivateSpySearchForField()
-  TppFreeHeliRadio.OnEnterCpIntelTrap(e)
+  TppFreeHeliRadio.OnEnterCpIntelTrap(cpName)
   if Player.OnEnterBase~=nil then
     Player.OnEnterBase()
   end
 end
-function this.OnExitCpIntelTrap(e)
+function this.OnExitCpIntelTrap(cpName)
   mvars.trm_currentIntelCpName=nil
   TppUiCommand.DeactivateSpySearchForCP()
   TppUiCommand.ActivateSpySearchForField()
-  TppFreeHeliRadio.OnExitCpIntelTrap(e)
+  TppFreeHeliRadio.OnExitCpIntelTrap(cpName)
   TppRevenge.ClearLastRevengeMineBaseName()
   if Player.OnExitBase~=nil then
     Player.OnExitBase()
@@ -2031,20 +2061,35 @@ function this.OnEstablishMissionClear()
     TppMotherBaseManagement.EnableStaffInitLangKikongo()
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON then
-    local t={MBMConst.DEPLOY_MISSION_ID_SEQ_1001,MBMConst.DEPLOY_MISSION_ID_SEQ_1002,MBMConst.DEPLOY_MISSION_ID_SEQ_1003,MBMConst.DEPLOY_MISSION_ID_SEQ_1004,MBMConst.DEPLOY_MISSION_ID_SEQ_1005,MBMConst.DEPLOY_MISSION_ID_SEQ_1006,MBMConst.DEPLOY_MISSION_ID_SEQ_1007}
-    this.OpenDeployMission(t)
+    local postFindSecretWeaponDeployMissions={
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1001,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1002,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1003,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1004,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1005,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1006,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1007
+    }
+    this.OpenDeployMission(postFindSecretWeaponDeployMissions)
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_RESCUE_HUEY then
-    local t={MBMConst.DEPLOY_MISSION_ID_SEQ_1008,MBMConst.DEPLOY_MISSION_ID_SEQ_1009,MBMConst.DEPLOY_MISSION_ID_SEQ_1010,MBMConst.DEPLOY_MISSION_ID_SEQ_1011}
-    this.OpenDeployMission(t)
+    local postRescueHueyDeployMissions={
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1008,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1009,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1010,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1011
+    }
+    this.OpenDeployMission(postRescueHueyDeployMissions)
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_TAKE_OUT_THE_CONVOY then
-    local t={MBMConst.DEPLOY_MISSION_ID_SEQ_1012}
-    this.OpenDeployMission(t)
+    local deployMissions={MBMConst.DEPLOY_MISSION_ID_SEQ_1012}
+    this.OpenDeployMission(deployMissions)
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_DEATH_FACTORY then
-    local t={MBMConst.DEPLOY_MISSION_ID_SEQ_1013,MBMConst.DEPLOY_MISSION_ID_SEQ_1014}
-    this.OpenDeployMission(t)
+    local deployMissions={
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1013,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1014}
+    this.OpenDeployMission(deployMissions)
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA then
     if not gvars.trm_doneUpdatePandemicLimit then
@@ -2053,8 +2098,15 @@ function this.OnEstablishMissionClear()
     end
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
-    local t={MBMConst.DEPLOY_MISSION_ID_SEQ_1015,MBMConst.DEPLOY_MISSION_ID_SEQ_1016,MBMConst.DEPLOY_MISSION_ID_SEQ_1017,MBMConst.DEPLOY_MISSION_ID_SEQ_1018,MBMConst.DEPLOY_MISSION_ID_SEQ_1019,MBMConst.DEPLOY_MISSION_ID_SEQ_1020}
-    this.OpenDeployMission(t)
+    local postOkbMissions={
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1015,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1016,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1017,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1018,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1019,
+      MBMConst.DEPLOY_MISSION_ID_SEQ_1020
+    }
+    this.OpenDeployMission(postOkbMissions)
   end
   if currentStorySequence>=TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
     TppServerManager.StartFobPickup()

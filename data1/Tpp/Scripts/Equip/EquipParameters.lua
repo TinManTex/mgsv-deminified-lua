@@ -1,3 +1,4 @@
+--EquipParameters.lua
 this={}
 TppEquip.ReloadEquipParameterTables2{
   gunBasic={
@@ -685,6 +686,8 @@ TppEquip.ReloadEquipParameterTables2{
   },
   magazine={
     0,
+--NMC:
+--  {TppEquip.EQP_AM_<GunId?>,<mag size>,<max ammo>,TppEquip.BL_<ammo id>},
     {TppEquip.EQP_AM_10001,7,63,TppEquip.BL_Hg114Auto},
     {TppEquip.EQP_AM_10003,10,126,TppEquip.BL_Hg114Auto},
     {TppEquip.EQP_AM_10015,10,126,TppEquip.BL_Hg9x19mm},

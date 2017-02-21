@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+--start.lua
 --local splash=SplashScreen.Create("startstart","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_fox_logo_clp_nmp.ftex",640,640)--tex
 --SplashScreen.Show(splash,.2,1,.2)--tex
 

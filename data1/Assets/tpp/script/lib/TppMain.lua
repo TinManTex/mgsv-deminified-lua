@@ -237,7 +237,7 @@ function this.OnAllocate(missionTable)--NMC: via mission_main.lua, is called in 
       end
     end
     --if(vars.missionCode==11043)or(vars.missionCode==11044)then--tex ORIG: changed to issubs check, more robust even without my mod
-    if TppMission.IsActualSubsistenceMission() then--DEBUGNOWor Ivars.disableBuddies:Is(1) then--tex disablebuddy, was just IsSubsistenceMission
+    if TppMission.IsActualSubsistenceMission() then--DEBUGNOW or Ivars.disableBuddies:Is(1) then--tex disablebuddy, was just IsSubsistenceMission
       TppBuddyService.SetDisableAllBuddy()
     end
     if TppGameSequence.GetGameTitleName()=="TPP"then
@@ -321,6 +321,7 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
     end
   end
   TppLandingZone.OverwriteBuddyVehiclePosForALZ()
+  --InfMain.OverwriteBuddyPosForMb()--tex no go
   if missionTable.enemy then
     if IsTypeTable(missionTable.enemy.vehicleSettings)then
       TppEnemy.SetUpVehicles()
@@ -403,7 +404,7 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
     TppEnemy.SetOccasionalChatList()
     TppEneFova.ApplyUniqueSetting()
     if missionTable.enemy.SetUpEnemy and IsTypeFunc(missionTable.enemy.SetUpEnemy)then
-      missionTable.enemy.SetUpEnemy()
+      missionTable.enemy.SetUpEnemy()      
     end
     if TppMission.IsMissionStart()then
       TppEnemy.RestoreOnMissionStart2()
@@ -461,6 +462,7 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
   end
   TppDemo.UpdateNuclearAbolitionFlag()
   TppQuest.AcquireKeyItemOnMissionStart()
+  InfMain.OnInitializeBottom(missionTable)--tex
   --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Oninitialize end")--DEBUG
   --SplashScreen.Show(SplashScreen.Create("dbeonin","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5005_l_alp.ftex",1280,640),0,0.1,0)--tex eagle--tex ghetto as 'does it run?' indicator
 end
@@ -469,7 +471,7 @@ function this.SetUpdateFunction(missionTable)
   numUpdate=0
   onUpdateList={}
   numOnUpdate=0
-  --ORPHANL RENAMEsomeupdatetable2={}
+  --ORPHAN: RENAMEsomeupdatetable2={}
   --ORPHAN: RENAMEsomeupdate2=0
   updateList={
     TppMission.Update,
@@ -584,7 +586,7 @@ end
 local function LoadingPositionFromHeliSpace(nextIsFreeMission,isFreeMission)
   local isGroundStart=false--tex WORKAROUND
   if HasHeliRoute() then
-    --TppPlayer.SetStartStatusRideOnHelicopter()--tex DEBUGNOW broken out for clarity>
+    --TppPlayer.SetStartStatusRideOnHelicopter()--tex <broken out for clarity-v-
     TppPlayer.SetStartStatus(TppDefine.INITIAL_PLAYER_STATE.RIDEON_HELICOPTER)
     TppPlayer.ResetInitialPosition()
     TppPlayer.ResetMissionStartPosition()--^

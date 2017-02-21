@@ -55,7 +55,7 @@ end
 function this.GetTimeOfDayIncludeMidNight()
   if WeatherManager.IsNight()then
     local currentTime=this.GetTime"number"
-  if(currentTime<this.TIME_AT_MIDNIGHT)then
+    if(currentTime<this.TIME_AT_MIDNIGHT)then
       return"night"
     else
       return"midnight"

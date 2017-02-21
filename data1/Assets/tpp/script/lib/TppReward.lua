@@ -81,9 +81,11 @@ function this.ShowAllReward()
     this.ShowReward(r)
   end
   if TppUiCommand.GetBonusPopupRegist"animal">0 then
-    TppUiCommand.ShowBonusPopupRegist"animal"end
+    TppUiCommand.ShowBonusPopupRegist"animal"
+    end
   if TppUiCommand.GetBonusPopupRegist"staff">0 then
-    TppUiCommand.ShowBonusPopupRegist"staff"end
+    TppUiCommand.ShowBonusPopupRegist"staff"
+    end
   local e=TppRadio.DoEventOnRewardEndRadio()
   if next(e)then
     TppUiCommand.SetBonusPopupAfterRadio(e[1])

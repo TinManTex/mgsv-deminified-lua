@@ -1,3 +1,4 @@
+--EquipParameterTables.lua
 this={}
 TppEquip.ReloadEquipParameterTables{
   BlastParameter={
@@ -54,6 +55,8 @@ TppEquip.ReloadEquipParameterTables{
   },
   SupportWeaponParameter={
     0,
+--NMC
+-- {TppEquip.<EquipId>,<ammo count>,?,?,?},   
     {TppEquip.SWP_Grenade,6,3,0,1},
     {TppEquip.SWP_Grenade_G01,6,3,0,2},
     {TppEquip.SWP_Grenade_G02,8,3,0,3},

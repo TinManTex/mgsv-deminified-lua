@@ -367,43 +367,44 @@ end
 function this.EnableMissionSubGoal(e)
   TppUiCommand.SetCurrentMissionSubGoalNo(e)
 end
-function this.EnableSpySearch(e)
-  if not IsTypeTable(e)then
+--objectiveDefine.spySearch
+function this.EnableSpySearch(spySearch)
+  if not IsTypeTable(spySearch)then
     return
   end
-  local n,i
-  if Tpp.IsTypeString(e.gameObjectName)then
-    i=e.gameObjectName
-    n=GetGameObjectId(i)
-  elseif Tpp.IsTypeNumber(e.gameObjectId)then
-    n=e.gameObjectId
+  local gameId,objectName
+  if Tpp.IsTypeString(spySearch.gameObjectName)then
+    objectName=spySearch.gameObjectName
+    gameId=GetGameObjectId(objectName)
+  elseif Tpp.IsTypeNumber(spySearch.gameObjectId)then
+    gameId=spySearch.gameObjectId
   else
     return
   end
-  if n==NULL_ID then
+  if gameId==NULL_ID then
     return
   end
-  e.gameObjectId=n
-  TppUiCommand.ActivateSpySearchForGameObject(e)
+  spySearch.gameObjectId=gameId
+  TppUiCommand.ActivateSpySearchForGameObject(spySearch)
 end
-function this.DisableSpySearch(e)
-  if not IsTypeTable(e)then
+function this.DisableSpySearch(spySearch)
+  if not IsTypeTable(spySearch)then
     return
   end
-  local n,i
-  if Tpp.IsTypeString(e.gameObjectName)then
-    i=e.gameObjectName
-    n=GetGameObjectId(i)
-  elseif Tpp.IsTypeNumber(e.gameObjectId)then
-    n=e.gameObjectId
+  local gameId,objectName
+  if Tpp.IsTypeString(spySearch.gameObjectName)then
+    objectName=spySearch.gameObjectName
+    gameId=GetGameObjectId(objectName)
+  elseif Tpp.IsTypeNumber(spySearch.gameObjectId)then
+    gameId=spySearch.gameObjectId
   else
     return
   end
-  if n==NULL_ID then
+  if gameId==NULL_ID then
     return
   end
-  e.gameObjectId=n
-  TppUiCommand.DeactivateSpySearchForGameObject(e)
+  spySearch.gameObjectId=gameId
+  TppUiCommand.DeactivateSpySearchForGameObject(spySearch)
 end
 function this.StartMissionTelop(e,n,i)
   TppSoundDaemon.SetMute"Telop"
@@ -413,30 +414,30 @@ function this.StartMissionTelop(e,n,i)
   TppUiCommand.CallMissionStartTelop(n,i)
   TppSound.PostJingleOnMissionStartTelop()
 end
-function this.GetMaxMissionTask(e)
-  local e=TppResult.MISSION_TASK_LIST[e]
-  if e then
-    return#e
+function this.GetMaxMissionTask(missionCode)
+  local missionTaskList=TppResult.MISSION_TASK_LIST[missionCode]
+  if missionTaskList then
+    return#missionTaskList
   end
 end
-function this.EnableMissionTask(a,t)
-  if t==nil then
-    t=true
+function this.EnableMissionTask(taskInfo,isComplete)
+  if isComplete==nil then
+    isComplete=true
   end
-  if not IsTypeTable(a)then
+  if not IsTypeTable(taskInfo)then
     return
   end
   local n={}
-  for i,e in pairs(a)do
+  for i,e in pairs(taskInfo)do
     n[i]=e
   end
-  local i=n.taskNo
-  if not i then
+  local taskNo=n.taskNo
+  if not taskNo then
     return
   end
   if n.isHide==nil then
     if n.isFirstHide then
-      if not TppStory.IsMissionCleard(vars.missionCode)and(not this.IsTaskLastCompleted(i))then
+      if not TppStory.IsMissionCleard(vars.missionCode)and(not this.IsTaskLastCompleted(taskNo))then
         n.isHide=true
       else
         n.isHide=false
@@ -447,26 +448,26 @@ function this.EnableMissionTask(a,t)
   end
   if n.isComplete then
     n.isHide=false
-    local n=vars.missionCode
-    local o=this.GetTaskCompletedNumber(n)
-    this.SetTaskLastCompleted(i,true)
-    local a=this.GetTaskCompletedNumber(n)
-    local i=this.GetMaxMissionTask(n)
-    if i==nil then
+    local missionCode=vars.missionCode
+    local taskWasCompletedNumber=this.GetTaskCompletedNumber(missionCode)
+    this.SetTaskLastCompleted(taskNo,true)
+    local taskCompletedNumber=this.GetTaskCompletedNumber(missionCode)
+    local maxMissionTask=this.GetMaxMissionTask(missionCode)
+    if maxMissionTask==nil then
       return
     end
-    if t then
-      if a>o then
-        this.ShowAnnounceLog("task_complete",a,i)
+    if isComplete then
+      if taskCompletedNumber>taskWasCompletedNumber then
+        this.ShowAnnounceLog("task_complete",taskCompletedNumber,maxMissionTask)
       end
     end
     TppMission.SetPlayRecordClearInfo()--RETAILPATCH 1070>
     TppChallengeTask.RequestUpdate"MISSION_TASK"--<
-    if this.IsAllTaskCompleted(n)then
-      TppEmblem.AcquireOnAllMissionTaskComleted(n)
+    if this.IsAllTaskCompleted(missionCode)then
+      TppEmblem.AcquireOnAllMissionTaskComleted(missionCode)
     end
   end
-  if this.IsTaskLastCompleted(i)then
+  if this.IsTaskLastCompleted(taskNo)then
     n.isLastCompleted=true
   else
     n.isLastCompleted=false
@@ -501,14 +502,14 @@ function this._GetLastCompletedFlagIndex(n,e)
   end
   return n*TppDefine.MAX_MISSION_TASK_COUNT+e
 end
-function this.GetTaskCompletedNumber(e)
-  local n=TppDefine.MISSION_ENUM[tostring(e)]
-  if not n then
+function this.GetTaskCompletedNumber(missionCode)
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(missionCode)]
+  if not missionEnum then
     return 0
   end
   local e=0
   for i=0,TppDefine.MAX_MISSION_TASK_COUNT-1 do
-    local n=n*TppDefine.MAX_MISSION_TASK_COUNT+i
+    local n=missionEnum*TppDefine.MAX_MISSION_TASK_COUNT+i
     if gvars.ui_isTaskLastComleted[n]then
       e=e+1
     end
@@ -517,11 +518,11 @@ function this.GetTaskCompletedNumber(e)
 end
 function this.IsAllTaskCompleted(n)
   local i=this.GetTaskCompletedNumber(n)
-  local e=this.GetMaxMissionTask(n)
-  if e==nil then
+  local numMissionTasks=this.GetMaxMissionTask(n)
+  if numMissionTasks==nil then
     return false
   end
-  if i>=e then
+  if i>=numMissionTasks then
     return true
   end
   return false

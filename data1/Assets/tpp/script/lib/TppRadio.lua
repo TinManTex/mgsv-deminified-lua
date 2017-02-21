@@ -1,3 +1,4 @@
+--TppRadio.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local TimerStart=GkEventTimerManager.Start
@@ -62,7 +63,8 @@ this.COMMON_RADIO_LIST={
   [TppDefine.COMMON_RADIO.HELI_DAMAGE_FROM_PLAYER]="f1000_rtrg0080",
   [TppDefine.COMMON_RADIO.DISABLE_TRANSLATE_RUSSIAN]="f1000_rtrg1050",
   [TppDefine.COMMON_RADIO.DISABLE_TRANSLATE_AFRIKANS]="f1000_rtrg4520"}
-this.COMMON_RADIO_DELAY_LIST={[TppDefine.COMMON_RADIO.ENEMY_RECOVERED]="long",
+this.COMMON_RADIO_DELAY_LIST={
+  [TppDefine.COMMON_RADIO.ENEMY_RECOVERED]="long",
   [TppDefine.COMMON_RADIO.HOSTAGE_RECOVERED]="long",
   [TppDefine.COMMON_RADIO.RECOMMEND_CURE]="mid",
   [TppDefine.COMMON_RADIO.SUPPRESSOR_BROKEN]="mid",
@@ -82,7 +84,8 @@ function this.Messages()
       {msg="Finish",sender="debugRadioStartTimer",func=this._PlayDebugStart}
     },
     UI={{msg="GameOverOpen",func=this.PlayGameOverRadio,option={isExecGameOver=true}}},
-    Terminal={{msg="MbDvcActSelectNonActiveMenu",func=this.PlaySelectBuddy}}}
+    Terminal={{msg="MbDvcActSelectNonActiveMenu",func=this.PlaySelectBuddy}}
+    }
 end
 this.SFXList={RadioStart="Play_sfx_s_codec_NPC_begin",RadioEnd="Play_sfx_s_codec_NPC_end"}
 this.PRESET_DELAY_TIME={short=.5,mid=1.5,long=3}
@@ -117,26 +120,26 @@ function this.Play(radioGroups,playInfo)
   end
   this.PlayCommon(radioGroups,radioType,isQue,isOverwriteProtectionForSamePrio,preDelayTime,noiseType,priority,isPlayDebug)
 end
-function this.SetOptionalRadio(e)
-  if not IsString(e)then
+function this.SetOptionalRadio(radioName)
+  if not IsString(radioName)then
     return
   end
-  TppRadioCommand.RegisterRadioGroupSetOverwrite(e)
+  TppRadioCommand.RegisterRadioGroupSetOverwrite(radioName)
 end
-function this.SetTutorialOptionalRadio(e)
-  if not IsString(e)then
+function this.SetTutorialOptionalRadio(radioName)
+  if not IsString(radioName)then
     return
   end
   if TppRadioCommand.RegisterTutorialRadioGroupSet then
-    TppRadioCommand.RegisterTutorialRadioGroupSet(e)
+    TppRadioCommand.RegisterTutorialRadioGroupSet(radioName)
   end
 end
-function this.SetOverwriteByPhaseOptionalRadio(e)
-  if not IsString(e)then
+function this.SetOverwriteByPhaseOptionalRadio(radioName)
+  if not IsString(radioName)then
     return
   end
   if TppRadioCommand.RegisterOverwriteByPhaseRadioGroupSet then
-    TppRadioCommand.RegisterOverwriteByPhaseRadioGroupSet(e)
+    TppRadioCommand.RegisterOverwriteByPhaseRadioGroupSet(radioName)
   end
 end
 function this.UnsetTutorialOptionalRadio()
@@ -149,16 +152,16 @@ function this.UnsetOverwriteByPhaseOptionalRadio()
     TppRadioCommand.UnregisterOverwriteByPhaseRadioGroupSet()
   end
 end
-function this.ChangeIntelRadio(e)
-  if not IsTable(e)then
+function this.ChangeIntelRadio(radioTable)
+  if not IsTable(radioTable)then
     return
   end
-  TppRadioCommand.RegisterEspionageRadioTable(e)
+  TppRadioCommand.RegisterEspionageRadioTable(radioTable)
 end
-function this.RequestBlackTelephoneRadio(a)
-  local a,i=this.GetRadioNameAndRadioIDs(a)
+function this.RequestBlackTelephoneRadio(radioName)
+  local radioName,radioGroups=this.GetRadioNameAndRadioIDs(radioName)
   SubtitlesCommand.SetIsEnabledUiPrioStrong(true)
-  this.playingBlackTelInfo={radioGroups=i,radioName=a,[StrCode32(a)]=true}
+  this.playingBlackTelInfo={radioGroups=radioGroups,radioName=radioName,[StrCode32(radioName)]=true}
 end
 function this.SetBlackTelephoneDisplaySetting(e)
   if not e then
@@ -187,19 +190,19 @@ function this.DoEventOnRewardEndRadio()
   end
   return e
 end
-function this.SaveRewardEndRadioList(e)
-  mvars.rad_rewardEndRadionList=e
+function this.SaveRewardEndRadioList(rewardEndRadionList)
+  mvars.rad_rewardEndRadionList=rewardEndRadionList
 end
-function this.IsPlayed(a)
-  local a,n=this.GetRadioNameAndRadioIDs(a)
+function this.IsPlayed(radio)
+  local radioName,radioGroup=this.GetRadioNameAndRadioIDs(radio)
   local n
   if n then
-    local e=this.DEBUG_GetRadioIndex(a)
+    local e=this.DEBUG_GetRadioIndex(radioName)
     if e then
       return svars.rad_debugPlayedFlag[e]
     end
   else
-    return TppRadioCommand.IsRadioGroupMarkAsRead(a)
+    return TppRadioCommand.IsRadioGroupMarkAsRead(radioName)
   end
 end
 function this.SetPlayedLocalFlag(e)
@@ -226,7 +229,8 @@ function this.IsRadioPlayable()
   return e
 end
 function this.Stop()
-  TppRadioCommand.StopDirect()SubtitlesCommand.StopAll()
+  TppRadioCommand.StopDirect()
+  SubtitlesCommand.StopAll()
 end
 function this.UnregisterRadioGroupSet()
   TppRadioCommand.UnregisterRadioGroupSetFromList()
@@ -283,9 +287,9 @@ function this.PlayCommon(radioGroups,u_radioType,isQue,isOverwriteProtectionForS
     TppRadioCommand.PlayDirectGroupTable{tableName=tableName,groupName=groupName,preDelayTime=preDelayTime,noiseType=noiseType,isOverwriteProtectionForSamePrio=isOverwriteProtectionForSamePrio}
   end
 end
-function this.PlayDebug(a,n)
-  local a,i=this.GetRadioNameAndRadioIDs(a)
-  if(a==nil or mvars.rad_debugRadioLineTable[a]==nil)then
+function this.PlayDebug(radio,delay)
+  local radioName,radioGroup=this.GetRadioNameAndRadioIDs(radio)
+  if(radioName==nil or mvars.rad_debugRadioLineTable[radioName]==nil)then
     return
   end
   if(GkEventTimerManager.IsTimerActive"debugRadioTimer"==true)then
@@ -294,53 +298,54 @@ function this.PlayDebug(a,n)
   if(GkEventTimerManager.IsTimerActive"debugRadioStartTimer"==true)then
     return
   end
-  mvars.rad_debugRadioGroupList=i
+  mvars.rad_debugRadioGroupList=radioGroup
   mvars.rad_debugRadioGroupCount=1
-  if n then
-    TimerStart("debugRadioStartTimer",n)
+  if delay then
+    TimerStart("debugRadioStartTimer",delay)
   else
     this._PlayDebugStart()
   end
 end
-function this.PlayCommonRadio(r,o)
-  if not IsNumber(r)then
+function this.PlayCommonRadio(commonRadioId,notIfPlayed)
+  if not IsNumber(commonRadioId)then
     return
   end
-  local n=this.GetPlayCommonTargetRadio(r)
-  local r=this.GetCommonRadioDelay(r)or"short"local r={delayTime=r}
-  if IsString(n)or IsTable(n)then
-    if o then
-      if this.IsPlayed(n)then
+  local radioGroups=this.GetPlayCommonTargetRadio(commonRadioId)
+  local delayTime=this.GetCommonRadioDelay(commonRadioId)or"short"
+  local playInfo={delayTime=delayTime}
+  if IsString(radioGroups)or IsTable(radioGroups)then
+    if notIfPlayed then
+      if this.IsPlayed(radioGroups)then
         return
       end
     end
-    this.Play(n,r)
-  elseif n==nil then
+    this.Play(radioGroups,playInfo)
+  elseif radioGroups==nil then
   end
 end
-function this.GetPlayCommonTargetRadio(e)
-  local e=mvars.rad_commonRadioTable[e]
-  local a=e
-  if IsFunc(e)then
-    a=e()
+function this.GetPlayCommonTargetRadio(commonRadioId)
+  local commonRadio=mvars.rad_commonRadioTable[commonRadioId]
+  local commonRadioName=commonRadio
+  if IsFunc(commonRadio)then
+    commonRadioName=commonRadio()
   end
-  return a
+  return commonRadioName
 end
-function this.GetCommonRadioDelay(e)
-  return mvars.rad_commonRadioDelayTable[e]
+function this.GetCommonRadioDelay(radioName)
+  return mvars.rad_commonRadioDelayTable[radioName]
 end
-function this.CheckRadioGroupIsCommonRadio(n,a)
-  local e=this.GetPlayCommonTargetRadio(TppDefine.COMMON_RADIO.CALL_SUPPROT_BUDDY)
-  if not e then
+function this.CheckRadioGroupIsCommonRadio(radioNameStrCode,a)
+  local commonRadioName=this.GetPlayCommonTargetRadio(TppDefine.COMMON_RADIO.CALL_SUPPROT_BUDDY)
+  if not commonRadioName then
     return
   end
-  local a
-  if Tpp.IsTypeTable(e)then
-    a=Fox.StrCode32(e[1])
+  local commonRadioNameStrCode
+  if Tpp.IsTypeTable(commonRadioName)then
+    commonRadioNameStrCode=Fox.StrCode32(commonRadioName[1])
   else
-    a=Fox.StrCode32(e)
+    commonRadioNameStrCode=Fox.StrCode32(commonRadioName)
   end
-  if n==a then
+  if radioNameStrCode==commonRadioNameStrCode then
     return true
   else
     return false
@@ -363,8 +368,8 @@ function this.DeclareSVars()
     nil
   }
 end
-function this.OnAllocate(n)
-  mvars.rad_subScripts=n
+function this.OnAllocate(subScripts)
+  mvars.rad_subScripts=subScripts
   mvars.rad_radioList={}
   mvars.rad_debugRadioLineTable={}
   mvars.rad_optionalRadioList={}
@@ -381,38 +386,38 @@ function this.OnAllocate(n)
   for e,a in pairs(this.COMMON_RADIO_DELAY_LIST)do
     mvars.rad_commonRadioDelayTable[e]=a
   end
-  local n=n.radio
-  if not n then
+  local radio=subScripts.radio
+  if not radio then
     return
   end
-  local i=n.gameOverRadioTable
-  if i then
-    for e,a in pairs(i)do
+  local gameOverRadioTable=radio.gameOverRadioTable
+  if gameOverRadioTable then
+    for e,a in pairs(gameOverRadioTable)do
       mvars.rad_gameOverRadioTable[e]=a
     end
   end
-  local i=n.debugRadioLineTable
-  if i then
-    for a,e in pairs(i)do
+  local debugRadioLineTable=radio.debugRadioLineTable
+  if debugRadioLineTable then
+    for a,e in pairs(debugRadioLineTable)do
       mvars.rad_debugRadioLineTable[a]=e
     end
   end
-  if IsTable(n.radioList)then
-    this.RegisterRadioList(n.radioList)
+  if IsTable(radio.radioList)then
+    this.RegisterRadioList(radio.radioList)
   end
-  if IsTable(n.optionalRadioList)then
-    this.RegisterOptionalRadioList(n.optionalRadioList)
+  if IsTable(radio.optionalRadioList)then
+    this.RegisterOptionalRadioList(radio.optionalRadioList)
   end
-  if IsTable(n.intelRadioList)then
-    this.RegisterIntelRadioList(n.intelRadioList)
+  if IsTable(radio.intelRadioList)then
+    this.RegisterIntelRadioList(radio.intelRadioList)
   end
-  if n.USE_COMMON_RESULT_RADIO then
+  if radio.USE_COMMON_RESULT_RADIO then
     mvars.rad_useCommonResultRadio=true
   end
-  local i=n.blackTelephoneDisplaySetting
-  if IsTable(i)then
+  local blackTelephoneDisplaySetting=radio.blackTelephoneDisplaySetting
+  if IsTable(blackTelephoneDisplaySetting)then
     mvars.rad_blackTelephoneDisplaySetting={}
-    for n,e in pairs(i)do
+    for n,e in pairs(blackTelephoneDisplaySetting)do
       if not IsTable(e.Japanese)then
       end
       if not IsTable(e.English)then
@@ -424,9 +429,9 @@ function this.OnAllocate(n)
       end
     end
   end
-  local a=n.commonRadioTable
-  if a then
-    this.OverwriteCommonRadioTable(a)
+  local commonRadioTable=radio.commonRadioTable
+  if commonRadioTable then
+    this.OverwriteCommonRadioTable(commonRadioTable)
   end
 end
 function this.Init()
@@ -444,12 +449,12 @@ function this.Init()
     this.EnableCommonOptionalRadio(true)
   end
 end
-function this.OnReload(a)
+function this.OnReload(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
-  this.OnAllocate(a)
-  local a=_G.TppRadio.playingBlackTelInfo
-  if a then
-    this.playingBlackTelInfo=a
+  this.OnAllocate(missionTable)
+  local playingBlackTelInfo=_G.TppRadio.playingBlackTelInfo
+  if playingBlackTelInfo then
+    this.playingBlackTelInfo=playingBlackTelInfo
   end
 end
 function this.CommonMakeRadioList(e)
@@ -458,18 +463,19 @@ function this.CommonMakeRadioList(e)
   for r,e in pairs(e)do
     if type(r)=="number"then
       local r
-      local o
+      local playOnce
       if IsTable(e)then
         if not IsString(e[1])then
         else
-          r=e[1]o=e.playOnce
+          r=e[1]
+          playOnce=e.playOnce
         end
       elseif IsString(e)then
         r=e
-        o=false
+        playOnce=false
       end
       t[StrCode32(r)]=r
-      d[r]=o
+      d[r]=playOnce
     end
   end
   return t,d
@@ -500,17 +506,17 @@ function this.AddDebugRadioLineTable(e)
     mvars.rad_debugRadioLineTable[e]=a
   end
 end
-function this.RegisterOptionalRadioList(a)
-  for a,e in pairs(a)do
+function this.RegisterOptionalRadioList(radioList)
+  for a,e in pairs(radioList)do
     mvars.rad_optionalRadioList[a]=e
   end
-  mvars.rad_optionalRadioInvList,mvars.rad_optionalRadioPlayOnceList=this.CommonMakeRadioList(a)
+  mvars.rad_optionalRadioInvList,mvars.rad_optionalRadioPlayOnceList=this.CommonMakeRadioList(radioList)
 end
-function this.RegisterIntelRadioList(e)
-  if next(e)==nil then
+function this.RegisterIntelRadioList(radioList)
+  if next(radioList)==nil then
     return
   end
-  for a,e in pairs(e)do
+  for a,e in pairs(radioList)do
     mvars.rad_intelRadioList[a]=e
   end
 end
@@ -528,44 +534,53 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this.PlayGameOverRadio()
-  local a
-  local n
+  local radioGroup
+  local mis_gameOverRadio
   if svars.mis_gameOverRadio>0 and TppDefine.GAME_OVER_RADIO.MAX then
-    n=svars.mis_gameOverRadio
+    mis_gameOverRadio=svars.mis_gameOverRadio
   end
-  if n==nil then
-    n=TppDefine.GAME_OVER_RADIO.OTHERS
+  if mis_gameOverRadio==nil then
+    mis_gameOverRadio=TppDefine.GAME_OVER_RADIO.OTHERS
   end
-  a=mvars.rad_gameOverRadioTable[n]
-  if a==nil then
-    a=mvars.rad_gameOverRadioTable[TppDefine.GAME_OVER_RADIO.OTHERS]
+  radioGroup=mvars.rad_gameOverRadioTable[mis_gameOverRadio]
+  if radioGroup==nil then
+    radioGroup=mvars.rad_gameOverRadioTable[TppDefine.GAME_OVER_RADIO.OTHERS]
   end
   SubtitlesCommand.SetIsEnabledUiPrioStrong(true)
-  this.Play(a,{noiseType="none"})
+  this.Play(radioGroup,{noiseType="none"})
 end
-local i={[TppDefine.MISSION_CLEAR_RANK.S]=TppDefine.COMMON_RADIO.RESULT_RANK_S,[TppDefine.MISSION_CLEAR_RANK.A]=TppDefine.COMMON_RADIO.RESULT_RANK_A,[TppDefine.MISSION_CLEAR_RANK.B]=TppDefine.COMMON_RADIO.RESULT_RANK_B,[TppDefine.MISSION_CLEAR_RANK.C]=TppDefine.COMMON_RADIO.RESULT_RANK_C,[TppDefine.MISSION_CLEAR_RANK.D]=TppDefine.COMMON_RADIO.RESULT_RANK_D,[TppDefine.MISSION_CLEAR_RANK.E]=TppDefine.COMMON_RADIO.RESULT_RANK_E,[TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED]=TppDefine.COMMON_RADIO.RESULT_RANK_NOT_DEFINED}
+local missionClearRadioTable={
+  [TppDefine.MISSION_CLEAR_RANK.S]=TppDefine.COMMON_RADIO.RESULT_RANK_S,
+  [TppDefine.MISSION_CLEAR_RANK.A]=TppDefine.COMMON_RADIO.RESULT_RANK_A,
+  [TppDefine.MISSION_CLEAR_RANK.B]=TppDefine.COMMON_RADIO.RESULT_RANK_B,
+  [TppDefine.MISSION_CLEAR_RANK.C]=TppDefine.COMMON_RADIO.RESULT_RANK_C,
+  [TppDefine.MISSION_CLEAR_RANK.D]=TppDefine.COMMON_RADIO.RESULT_RANK_D,
+  [TppDefine.MISSION_CLEAR_RANK.E]=TppDefine.COMMON_RADIO.RESULT_RANK_E,
+  [TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED]=TppDefine.COMMON_RADIO.RESULT_RANK_NOT_DEFINED
+}
 function this.PlayResultRadio()
-  local a=i[svars.bestRank]
-  if not a then
+  local commonRadioId=missionClearRadioTable[svars.bestRank]
+  if not commonRadioId then
     return
   end
   if svars.bestRank==TppDefine.MISSION_CLEAR_RANK.S then
     if svars.bestScoreKill>0 then
-      a=i[TppDefine.MISSION_CLEAR_RANK.B]
+      commonRadioId=missionClearRadioTable[TppDefine.MISSION_CLEAR_RANK.B]
     end
   end
-  this.PlayCommonRadio(a)
+  this.PlayCommonRadio(commonRadioId)
 end
-function this.DEBUG_PlayIntelRadio(a)do
-  return
-end
-local a=mvars.rad_radioInvList[a]
-if a==nil then
-  return
-end
-if mvars.rad_debugRadioLineTable[a]then
-  this.Play(a)
-end
+function this.DEBUG_PlayIntelRadio(a)
+  do
+    return
+  end
+  local a=mvars.rad_radioInvList[a]
+  if a==nil then
+    return
+  end
+  if mvars.rad_debugRadioLineTable[a]then
+    this.Play(a)
+  end
 end
 function this.DEBUG_GetRadioIndex(n)
   if next(mvars.rad_radioList)==nil then
@@ -587,11 +602,11 @@ function this.OnFinishBlackTelephoneRadio(a)
     TppMission.ExecuteSystemCallback"OnFinishBlackTelephoneRadio"
   end
 end
-function this.GetRadioNameAndRadioIDs(e)
-  if type(e)=="string"then
-    return e,{e}
+function this.GetRadioNameAndRadioIDs(radioName)
+  if type(radioName)=="string"then
+    return radioName,{radioName}
   else
-    return e[1],e
+    return radioName[1],radioName
   end
 end
 function this._PlayDebugStart()
@@ -600,35 +615,36 @@ function this._PlayDebugContinue()
   do
     return
   end
-  local a=mvars
-  if(a.rad_debugRadioGroupLine<=#a.rad_debugRadioLineTable[a.rad_debugRadioGroupList[a.rad_debugRadioGroupCount]])then
-    local i=a.rad_debugRadioLineTable[a.rad_debugRadioGroupList[a.rad_debugRadioGroupCount]][a.rad_debugRadioGroupLine]
+  local mvars=mvars
+  if(mvars.rad_debugRadioGroupLine<=#mvars.rad_debugRadioLineTable[mvars.rad_debugRadioGroupList[mvars.rad_debugRadioGroupCount]])then
+    local i=mvars.rad_debugRadioLineTable[mvars.rad_debugRadioGroupList[mvars.rad_debugRadioGroupCount]][mvars.rad_debugRadioGroupLine]
     local n=math.ceil(string.len(i)*.333333333333333)*.2
     n=math.max(n,.8)
     this._PlayDebugLine(i,n)
     local e=.2
     TimerStart("debugRadioTimer",n+e)
-    if a.rad_debugRadioGroupLine==1 then
+    if mvars.rad_debugRadioGroupLine==1 then
       if WaveControl then
         local e="Z:/tpp/release/sound/ld_prepro_voice/"..(TppMission.GetMissionName().."/")
-        local a=a.rad_debugRadioGroupList[a.rad_debugRadioGroupCount]..".wav"
+        local a=mvars.rad_debugRadioGroupList[mvars.rad_debugRadioGroupCount]..".wav"
         local e=e..a
         if Asset~=nil and Asset.Exists(e)then
           WaveControl.PlayWaveFile(e)
         end
       end
     end
-    a.rad_debugRadioGroupLine=a.rad_debugRadioGroupLine+1
-  elseif a.rad_debugRadioGroupCount<#a.rad_debugRadioGroupList then
-    a.rad_debugRadioGroupCount=a.rad_debugRadioGroupCount+1
-    a.rad_debugRadioGroupLine=1
+    mvars.rad_debugRadioGroupLine=mvars.rad_debugRadioGroupLine+1
+  elseif mvars.rad_debugRadioGroupCount<#mvars.rad_debugRadioGroupList then
+    mvars.rad_debugRadioGroupCount=mvars.rad_debugRadioGroupCount+1
+    mvars.rad_debugRadioGroupLine=1
     this._PlayDebugContinue()
   else
     if SoundCommand then
       SoundCommand.PostEvent(this.SFXList.RadioEnd)
     end
-    local i=a.rad_debugRadioGroupList[1]a.rad_debugRadioGroupList=nil
-    a.rad_debugRadioGroupCount=1
+    local i=mvars.rad_debugRadioGroupList[1]
+    mvars.rad_debugRadioGroupList=nil
+    mvars.rad_debugRadioGroupCount=1
     local e=this.DEBUG_GetRadioIndex(i)
     if e then
       svars.rad_debugPlayedFlag[e]=true
@@ -636,25 +652,25 @@ function this._PlayDebugContinue()
     local strLogText="sender:Radio messageId:Finish arg0:"..i
     TppSequence.OnMessage(StrCode32"Radio",StrCode32"Finish",StrCode32(i),nil,nil,nil,strLogText)
     TppMission.OnMessage(StrCode32"Radio",StrCode32"Finish",StrCode32(i),nil,nil,nil,strLogText)
-    for r,o in pairs(a.rad_subScripts)do
-      if a.rad_subScripts[r]._messageExecTable then
-        Tpp.DoMessage(a.rad_subScripts[r]._messageExecTable,TppMission.CheckMessageOption,StrCode32"Radio",StrCode32"Finish",StrCode32(i),nil,nil,nil,strLogText)
+    for r,o in pairs(mvars.rad_subScripts)do
+      if mvars.rad_subScripts[r]._messageExecTable then
+        Tpp.DoMessage(mvars.rad_subScripts[r]._messageExecTable,TppMission.CheckMessageOption,StrCode32"Radio",StrCode32"Finish",StrCode32(i),nil,nil,nil,strLogText)
       end
     end
     TppFreeHeliRadio.OnMessage(StrCode32"Radio",StrCode32"Finish",StrCode32(i),nil,nil,nil,strLogText)
   end
 end
-function this._PlayDebugLine(e,a)
-  SubtitlesCommand.DisplayText(e,"Default",a*1e3)
+function this._PlayDebugLine(text,delay)
+  SubtitlesCommand.DisplayText(text,"Default",delay*1e3)
 end
-function this.PlaySelectBuddy(a)
+function this.PlaySelectBuddy(strCodeMbdvcSelection)
   if TppBuddyService.CheckBuddyCommonFlag(BuddyCommonFlag.BUDDY_FORCE_HOSPITALIZE)then
-    if(a==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_SCOUT)or a==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_ATTACK))or a==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_DISMISS)then
+    if(strCodeMbdvcSelection==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_SCOUT)or strCodeMbdvcSelection==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_ATTACK))or strCodeMbdvcSelection==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_DISMISS)then
       this.PlayCommonRadio(TppDefine.COMMON_RADIO.CALL_BUDDY_QUIET_WHILE_FORCE_HOSPITALIZE)
     end
   end
 end
-function this.SetGameOverRadio(a,e)
-  mvars.rad_gameOverRadioTable[a]=e
+function this.SetGameOverRadio(gameOverRadioId,radioName)
+  mvars.rad_gameOverRadioTable[gameOverRadioId]=radioName
 end
 return this

@@ -299,13 +299,13 @@ function this._OnSearchTarget(gameId,t,s)
         end
         this.Enable(mvars.mar_searchTargetList[gameId].gameObjectName,0,"moving","map_and_world_only_icon",0,isImportant,true)
       else
-        local e={}
+        local objectives={}
         if IsTypeTable(mvars.mar_searchTargetList[gameId].objectives)then
-          e=mvars.mar_searchTargetList[gameId].objectives
+          objectives=mvars.mar_searchTargetList[gameId].objectives
         else
-          table.insert(e,mvars.mar_searchTargetList[gameId].objectives)
+          table.insert(objectives,mvars.mar_searchTargetList[gameId].objectives)
         end
-        TppMission.UpdateObjective{objectives=e}
+        TppMission.UpdateObjective{objectives=objectives}
       end
       if mvars.mar_searchTargetList[gameId].func then
         mvars.mar_searchTargetList[gameId].func(t,gameId,s)

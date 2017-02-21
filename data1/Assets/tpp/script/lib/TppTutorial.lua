@@ -382,23 +382,23 @@ function this.OnPlayerUseBoosterScope()
 end
 function this.OnEquipItem(e,e)
 end
-function this.OnEquipHudClosed(n,E,T)
+function this.OnEquipHudClosed(n,weapons,T)
   if T==TppEquip.EQP_TYPE_Throwing then
     this.DispGuide("THROW_EQUIP",this.DISPLAY_OPTION.TIPS)
   elseif T==TppEquip.EQP_TYPE_Placed then
-    local T=TppEquip.GetSupportWeaponTypeId(E)
+    local T=TppEquip.GetSupportWeaponTypeId(weapons)
     if T==TppEquip.SWP_TYPE_CaptureCage then
       this.DispGuide("ANIMAL_CAGE",this.DISPLAY_OPTION.TIPS)
     end
   else
-    local n
-    local _
-    local i
-    local T
-    local p
-    local S
-    n,_,i,T,p,S=TppEquip.GetAmmoInfo(E)
-    if n~=0 and T~=0 then
+    local ammoId
+    local ammoInWeapon
+    local defaultAmmo
+    local altAmmoId
+    local altAmmoInWeapon
+    local altDefaultAmmo
+    ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weapons)
+    if ammoId~=0 and altAmmoId~=0 then
       this.DispGuide("UNDER_BARREL",this.DISPLAY_OPTION.TIPS_CONTROL)
     end
   end
@@ -554,10 +554,10 @@ function this.OnMarking(i,i,n,E)
     this.PlayTutorialRadioOnly"f1000_rtrg4620"
     end
 end
-function this.OnFultonRecovered(T)
-  local n=GameObject.GetTypeIndex(T)
-  if n==TppGameObject.GAME_OBJECT_TYPE_VEHICLE then
-    if T~=GameObject.CreateGameObjectId("TppVehicle2",0)then
+function this.OnFultonRecovered(gameId)
+  local typeIndex=GameObject.GetTypeIndex(gameId)
+  if typeIndex==TppGameObject.GAME_OBJECT_TYPE_VEHICLE then
+    if gameId~=GameObject.CreateGameObjectId("TppVehicle2",0)then
       this.PlayTutorialRadioOnly("f1000_rtrg4540",{delayTime="long"})
     end
   end

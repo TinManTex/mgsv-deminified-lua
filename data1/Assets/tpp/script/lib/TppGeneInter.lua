@@ -26,16 +26,16 @@ function this.EnableMarker(markerName,a,langId)
   end
   TppUI.ShowAnnounceLog"updateMap"
   end
-function this.EnableMarkerGimmick(e)
-  if e==nil then
+function this.EnableMarkerGimmick(gimmickName)
+  if gimmickName==nil then
     return
   end
-  if Tpp.IsTypeTable(e)then
-    for n,e in ipairs(e)do
-      TppGimmick.EnableMarkerGimmick(e)
+  if Tpp.IsTypeTable(gimmickName)then
+    for n,gimmickName in ipairs(gimmickName)do
+      TppGimmick.EnableMarkerGimmick(gimmickName)
     end
   else
-    TppGimmick.EnableMarkerGimmick(e)
+    TppGimmick.EnableMarkerGimmick(gimmickName)
   end
   TppUI.ShowAnnounceLog"updateMap"
 end
