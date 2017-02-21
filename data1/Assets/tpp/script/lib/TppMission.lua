@@ -214,11 +214,13 @@ end
 function this.RegistDiscoveryGameOver()
   mvars.mis_isExecuteGameOverOnDiscoveryNotice=true
 end
+--tex NOTE GOTCHA these should now only be used for mission sequence scripts, otherwise just use the gvar directly
+--this is to work around mission timers/setup not triggering on start-on foot because of heli traps not triggering
 function this.IsStartFromHelispace()
-  return gvars.mis_isStartFromHelispace
+  return gvars.mis_isStartFromHelispace and Ivars.mis_isGroundStart:Is(0)--tex WORKAROUND added ivar
 end
 function this.IsStartFromFreePlay()
-  return gvars.mis_isStartFromFreePlay
+  return gvars.mis_isStartFromFreePlay or Ivars.mis_isGroundStart:Is(1)--tex WORKAROUND added ivar
 end
 function this.AcceptMission(missionCode)
   if this.IsEmergencyMission(missionCode)then
@@ -326,48 +328,48 @@ function this.SetHelicopterMissionStartPosition(set,x,y,z)
     mvars.mis_helicopterMissionStartPosition=nil
   end
 end
-function this.StartEmergencyMissionTimer(n)
-  if not IsTypeTable(n)then
+function this.StartEmergencyMissionTimer(timerInfo)
+  if not IsTypeTable(timerInfo)then
     return
   end
-  local openTimer=n.openTimer
+  local openTimer=timerInfo.openTimer
   if not IsTypeTable(openTimer)then
     return
   end
-  local n=n.closeTimer
-  if not IsTypeTable(n)then
+  local closeTimer=timerInfo.closeTimer
+  if not IsTypeTable(closeTimer)then
     return
   end
-  local s,t,a=openTimer.name,openTimer.timeSecFromHeli,openTimer.timeSecFromLand
-  local o,r,i=n.name,n.timeSecFromHeli,n.timeSecFromLand
-  local n
-  n=this._StartEmergencyMissionTimer(s,t,a)
-  if n then
+  local openTimerName,openTimerHeli,openTimerLand=openTimer.name,openTimer.timeSecFromHeli,openTimer.timeSecFromLand
+  local closeTimerName,closeTimerHeli,closeTimerLand=closeTimer.name,closeTimer.timeSecFromHeli,closeTimer.timeSecFromLand
+  local timerTime
+  timerTime=this._StartEmergencyMissionTimer(openTimerName,openTimerHeli,openTimerLand)
+  if timerTime then
   else
     return
   end
-  n=this._StartEmergencyMissionTimer(o,r,i)
-  if n then
+  timerTime=this._StartEmergencyMissionTimer(closeTimerName,closeTimerHeli,closeTimerLand)
+  if timerTime then
   else
     return
   end
 end
-function this._StartEmergencyMissionTimer(i,n,s)
-  if not IsTypeString(i)then
+function this._StartEmergencyMissionTimer(timerName,timeFromHeli,timeFromLand)
+  if not IsTypeString(timerName)then
     return
   end
-  if not IsTypeNumber(n)then
+  if not IsTypeNumber(timeFromHeli)then
     return
   end
-  if not IsTypeNumber(s)then
+  if not IsTypeNumber(timeFromLand)then
     return
   end
-  if this.IsStartFromHelispace()then
-    StartTimer(i,n)
-    return n
+  if gvars.mis_isStartFromHelispace then--tex was this.IsStartFromHelispace()
+    StartTimer(timerName,timeFromHeli)
+    return timeFromHeli
   else
-    StartTimer(i,s)
-    return s
+    StartTimer(timerName,timeFromLand)
+    return timeFromLand
   end
 end
 function this.Reload(loadInfo)
@@ -428,14 +430,14 @@ function this.RestartMission(loadInfo)
     TppUI.FadeOut(TppUI.FADE_SPEED.FADE_NORMALSPEED,"RestartMissionFadeOutFinish",nil,{setMute=true,exceptGameStatus={AnnounceLog="INVALID_LOG"}})
   end
 end
-function this.ExecuteRestartMission(i)
+function this.ExecuteRestartMission(isReturnToMission)
   this.SafeStopSettingOnMissionReload()
   TppQuest.OnMissionGameEnd()
   TppPlayer.ResetInitialPosition()
   TppMain.ReservePlayerLoadingPosition(TppDefine.MISSION_LOAD_TYPE.MISSION_RESTART)
   this.VarResetOnNewMission()
   local missionCallbackReturn
-  if i then
+  if isReturnToMission then
     missionCallbackReturn=this.ExecuteOnReturnToMissionCallback()
     if(vars.missionCode==30050)then
       this.ResetMBFreeStartPositionToCommand()
@@ -453,7 +455,7 @@ function this.ExecuteRestartMission(i)
     TppSave.VarSaveConfig()
   end
   local currentMissionCode=nil
-  if i then
+  if isReturnToMission then
     this.ClearFobMode()
     currentMissionCode=vars.missionCode
   end
@@ -585,7 +587,10 @@ function this.ExecuteContinueFromCheckPoint(RENpopupId,a,RENdoMissionCallback)
     DoLoad()
   end
 end
-function this.IncrementRetryCount()PlayRecord.RegistPlayRecord"MISSION_RETRY"Tpp.IncrementPlayData"totalRetryCount"TppSequence.IncrementContinueCount()
+function this.IncrementRetryCount()
+PlayRecord.RegistPlayRecord"MISSION_RETRY"
+Tpp.IncrementPlayData"totalRetryCount"
+TppSequence.IncrementContinueCount()
 end
 function this.ExecuteOnReturnToMissionCallback()
   local OnReturnToMission
@@ -604,10 +609,11 @@ function this.ExecuteOnReturnToMissionCallback()
   return OnReturnToMission
 end
 function this.AbortMission(abortInfo)
+  InfMain.AbortMissionTop(abortInfo)--tex
   local isNoFade
   local isNoSave
   local isInterrupt
-  local i
+  local isTitleMode
   local isExecMissionClear
   local emergencyMissionId
   local nextMissionId
@@ -615,9 +621,9 @@ function this.AbortMission(abortInfo)
   local nextClusterId
   local nextMissionStartRoute
   local isAlreadyGameOver
-  local o,a,t=0,0,TppUI.FADE_SPEED.FADE_NORMALSPEED
-  local O
-  local M
+  local delayTime,fadeDelayTime,fadeSpeed=0,0,TppUI.FADE_SPEED.FADE_NORMALSPEED
+  local presentationFunction
+  local playRadio
   if IsTypeTable(abortInfo)then
     isNoFade=abortInfo.isNoFade
     emergencyMissionId=abortInfo.emergencyMissionId
@@ -630,17 +636,17 @@ function this.AbortMission(abortInfo)
     isInterrupt=abortInfo.isInterrupt
     isAlreadyGameOver=abortInfo.isAlreadyGameOver
     if abortInfo.delayTime then
-      o=abortInfo.delayTime
+      delayTime=abortInfo.delayTime
     end
     if abortInfo.fadeDelayTime then
-      a=abortInfo.fadeDelayTime
+      fadeDelayTime=abortInfo.fadeDelayTime
     end
     if abortInfo.fadeSpeed then
-      t=abortInfo.fadeSpeed
+      fadeSpeed=abortInfo.fadeSpeed
     end
-    O=abortInfo.presentationFunction
-    i=abortInfo.isTitleMode
-    M=abortInfo.playRadio
+    presentationFunction=abortInfo.presentationFunction
+    isTitleMode=abortInfo.isTitleMode
+    playRadio=abortInfo.playRadio
   end
   if not this.CheckMissionState(isExecMissionClear,true)then
     return
@@ -648,20 +654,20 @@ function this.AbortMission(abortInfo)
   if mvars.mis_isAborting then
     return
   end
-  if o then
-    mvars.mis_missionAbortDelayTime=o
+  if delayTime then
+    mvars.mis_missionAbortDelayTime=delayTime
   end
-  if a then
-    mvars.mis_missionAbortFadeDelayTime=a
+  if fadeDelayTime then
+    mvars.mis_missionAbortFadeDelayTime=fadeDelayTime
   end
-  if t then
-    mvars.mis_missionAbortFadeSpeed=t
+  if fadeSpeed then
+    mvars.mis_missionAbortFadeSpeed=fadeSpeed
   end
-  mvars.mis_abortPresentationFunction=O
-  if i then
-    mvars.mis_abortIsTitleMode=i
+  mvars.mis_abortPresentationFunction=presentationFunction
+  if isTitleMode then
+    mvars.mis_abortIsTitleMode=isTitleMode
   end
-  mvars.mis_abortWithPlayRadio=M
+  mvars.mis_abortWithPlayRadio=playRadio
   mvars.mis_emergencyMissionCode=emergencyMissionId
   mvars.mis_nextMissionCodeForAbort=nextMissionId
   mvars.mis_nextLayoutCodeForAbort=nextLayoutCode
@@ -699,7 +705,8 @@ function this.VarSaveForMissionAbort()
     end
   end
   if not mvars.mis_nextMissionCodeForAbort then
-    Tpp.DEBUG_Fatal"Not defined next missionId!!"this.RestartMission()
+    Tpp.DEBUG_Fatal"Not defined next missionId!!"
+    this.RestartMission()
     return
   end
   this.SafeStopSettingOnMissionReload()
@@ -876,8 +883,8 @@ function this.ReturnToTitle()
   if gvars.str_storySequence<TppDefine.STORY_SEQUENCE.CLEARD_ESCAPE_THE_HOSPITAL then
     this.AbortMission{nextMissionId=10010,isNoSave=true,isTitleMode=true}
   else
-    local n,i=this.GetCurrentLocationHeliMissionAndLocationCode()
-    this.AbortMission{nextMissionId=n,isNoSave=true,isTitleMode=true}
+    local nextMissionId,locationCode=this.GetCurrentLocationHeliMissionAndLocationCode()
+    this.AbortMission{nextMissionId=nextMissionId,isNoSave=true,isTitleMode=true}
   end
 end
 function this.GameOverReturnToTitle()
@@ -1031,17 +1038,17 @@ function this.MissionGameEnd(sequence)
   this.FadeOutOnMissionGameEnd(fadeDelayTime,fadeSpeed,"MissionGameEndFadeOutFinish")
   PlayRecord.RegistPlayRecord"MISSION_CLEAR"
 end
-function this.FadeOutOnMissionGameEnd(n,i,s)
-  if n==0 then
-    this._FadeOutOnMissionGameEnd(i,s)
+function this.FadeOutOnMissionGameEnd(fadeDelay,fadeSpeed,fadeId)
+  if fadeDelay==0 then
+    this._FadeOutOnMissionGameEnd(fadeSpeed,fadeId)
   else
-    mvars.mis_missionGameEndFadeSpeed=i
-    mvars.mis_missionGameEndFadeId=s
-    StartTimer("Timer_FadeOutOnMissionGameEndStart",n)
+    mvars.mis_missionGameEndFadeSpeed=fadeSpeed
+    mvars.mis_missionGameEndFadeId=fadeId
+    StartTimer("Timer_FadeOutOnMissionGameEndStart",fadeDelay)
   end
 end
-function this._FadeOutOnMissionGameEnd(n,e)
-  TppUI.FadeOut(n,e,nil,{exceptGameStatus={AnnounceLog="SUSPEND_LOG"}})
+function this._FadeOutOnMissionGameEnd(faseSpeed,fadeId)
+  TppUI.FadeOut(faseSpeed,fadeId,nil,{exceptGameStatus={AnnounceLog="SUSPEND_LOG"}})
 end
 function this.CheckGameOverDemo(e)
   if e>TppDefine.GAME_OVER_TYPE.GAME_OVER_DEMO_MASK then
@@ -1053,15 +1060,15 @@ function this.CheckGameOverDemo(e)
     return false
   end
 end
-function this.ShowGameOverMenu(i)
-  local n
-  if IsTypeTable(i)then
-    if type(i.delayTime)=="number"then
-      n=i.delayTime
+function this.ShowGameOverMenu(params)
+  local delayTime
+  if IsTypeTable(params)then
+    if type(params.delayTime)=="number"then
+      delayTime=params.delayTime
     end
   end
-  if n and n>0 then
-    StartTimer("Timer_GameOverPresentation",n)
+  if delayTime and delayTime>0 then
+    StartTimer("Timer_GameOverPresentation",delayTime)
   else
     this.ExecuteShowGameOverMenu()
   end
@@ -1207,6 +1214,7 @@ function this.MissionFinalize(options)
   end
 end
 function this.ExecuteMissionFinalize()
+  InfMain.ExecuteMissionFinalizeTop()--tex
   local nextLocationName=TppPackList.GetLocationNameFormMissionCode(gvars.mis_nextMissionCodeForMissionClear)
   if nextLocationName then
     mvars.mis_nextLocationCode=TppDefine.LOCATION_ID[nextLocationName]
@@ -1723,7 +1731,7 @@ function this.Messages()
       {msg="EndReloginSync",func=function()--RETAILPATCH 1090>
         if this.IsHelicopterSpace(vars.missionCode)then
           TppVarInit.InitializeOnlineChallengeTaskVarsForNewMission()
-        end
+      end
       end},--<
     },
     Radio={{msg="Finish",func=this.OnFinishUpdateObjectiveRadio}},
@@ -2321,9 +2329,10 @@ function this.OutsideOfHotZoneCount()
     this.ReserveMissionClearOnOutOfHotZone()
   end
 end
-local function u()
+local function StopOutsideHotzoneTimer()
   if IsTimerActive"Timer_OutsideOfHotZoneCount"then
-    StopTimer"Timer_OutsideOfHotZoneCount"end
+    StopTimer"Timer_OutsideOfHotZoneCount"
+  end
 end
 function this.CheckMissionClearOnRideOnFultonContainer()
   if this.systemCallbacks.CheckMissionClearOnRideOnFultonContainer then
@@ -2516,18 +2525,18 @@ function this.SeizeReliefVehicleOnForceGoToMb()
   end
   GameObject.SendCommand(vehicleId,{id="Seize",options={"Fulton","CheckFultonType","DirectAccount"}})
 end
-function this.EvaluateReliefVehicleSeizable(e)
-  if((e~=TppDefine.MISSION_CLEAR_TYPE.FREE_PLAY_ORDER_BOX_DEMO and e~=TppDefine.MISSION_CLEAR_TYPE.QUEST_BOSS_QUIET_BATTLE_END)and e~=TppDefine.MISSION_CLEAR_TYPE.QUEST_LOST_QUIET_END)and e~=TppDefine.MISSION_CLEAR_TYPE.QUEST_INTRO_RESCUE_EMERICH_END then
+function this.EvaluateReliefVehicleSeizable(missionClearType)
+  if((missionClearType~=TppDefine.MISSION_CLEAR_TYPE.FREE_PLAY_ORDER_BOX_DEMO and missionClearType~=TppDefine.MISSION_CLEAR_TYPE.QUEST_BOSS_QUIET_BATTLE_END)and missionClearType~=TppDefine.MISSION_CLEAR_TYPE.QUEST_LOST_QUIET_END)and missionClearType~=TppDefine.MISSION_CLEAR_TYPE.QUEST_INTRO_RESCUE_EMERICH_END then
     return true
   end
   return false
 end
-function this.EvaluateVehicleCarryOption(i)
-  local n={}
-  if this.EvaluateReliefVehicleSeizable(i)then
-    table.insert(n,"Abandon")
+function this.EvaluateVehicleCarryOption(missionClearType)
+  local options={}
+  if this.EvaluateReliefVehicleSeizable(missionClearType)then
+    table.insert(options,"Abandon")
   end
-  return n
+  return options
 end
 function this.ExecuteVehicleSaveCarryOnAbort()
   if mvars.mis_abortByRestartFromHelicopter then
@@ -2536,19 +2545,19 @@ function this.ExecuteVehicleSaveCarryOnAbort()
   Vehicle.SaveCarry()
 end
 function this.ExecuteVehicleSaveCarryOnClear()
-  local n=vars.locationCode
-  if n~=TppDefine.LOCATION_ID.AFGH and n~=TppDefine.LOCATION_ID.MAFR then
+  local locationCode=vars.locationCode
+  if locationCode~=TppDefine.LOCATION_ID.AFGH and locationCode~=TppDefine.LOCATION_ID.MAFR then
     return
   end
-  local s=this.GetMissionClearType()
-  local t=this.EvaluateVehicleCarryOption(s)
+  local missionClearType=this.GetMissionClearType()
+  local options=this.EvaluateVehicleCarryOption(missionClearType)
   local initialPos=nil
   local rotY=nil
-  if s==TppDefine.MISSION_CLEAR_TYPE.FREE_PLAY_ORDER_BOX_DEMO then
+  if missionClearType==TppDefine.MISSION_CLEAR_TYPE.FREE_PLAY_ORDER_BOX_DEMO then
     if mvars.mis_orderBoxList then
       if gvars.mis_orderBoxName~=0 then
-        local s=this.FindOrderBoxName(gvars.mis_orderBoxName)
-        local boxLocPos,bosLocRot=this.GetOrderBoxLocator(s)
+        local orderBoxName=this.FindOrderBoxName(gvars.mis_orderBoxName)
+        local boxLocPos,bosLocRot=this.GetOrderBoxLocator(orderBoxName)
         if boxLocPos then
           local adjustPos=Vector3(0,-.75,1.98)
           local vBoxLocPos=Vector3(boxLocPos[1],boxLocPos[2],boxLocPos[3])
@@ -2559,7 +2568,7 @@ function this.ExecuteVehicleSaveCarryOnClear()
       end
     end
   end
-  Vehicle.SaveCarry{options=t,initialPosition=initialPos,initialRotY=rotY}
+  Vehicle.SaveCarry{options=options,initialPosition=initialPos,initialRotY=rotY}
 end
 function this.EstablishedMissionAbort()
   this.SeizeReliefVehicleOnAbort()
@@ -2584,14 +2593,14 @@ function this.EstablishedMissionAbort()
   end
 end
 function this.FadeOutOnMissionAbort()
-  local e
+  local exceptGameStatus
   if mvars.mis_abortWithSave then
     TppHero.MissionAbort()
-    e={AnnounceLog="SUSPEND_LOG"}
+    exceptGameStatus={AnnounceLog="SUSPEND_LOG"}
   else
-    e={AnnounceLog="INVALID_LOG"}
+    exceptGameStatus={AnnounceLog="INVALID_LOG"}
   end
-  TppUI.FadeOut(mvars.mis_missionAbortFadeSpeed,"AbortMissionFadeOutFinish",nil,{setMute=true,exceptGameStatus=e})
+  TppUI.FadeOut(mvars.mis_missionAbortFadeSpeed,"AbortMissionFadeOutFinish",nil,{setMute=true,exceptGameStatus=exceptGameStatus})
 end
 function this.OnEndFadeOutMissionAbort()
   this.VarSaveForMissionAbort()
@@ -2599,40 +2608,40 @@ function this.OnEndFadeOutMissionAbort()
 end
 function this.EstablishedGameOver()
   TppMusicManager.StopJingleEvent()
-  local n={}
-  local i=TppStory.GetCurrentStorySequence()
-  for e=i,TppDefine.STORY_SEQUENCE.STORY_START,-1 do
-    local e=TppDefine.CONTINUE_TIPS_TABLE[e]
-    if e then
-      for i,e in ipairs(e)do
-        table.insert(n,e)
+  local tipNames={}
+  local currentStorySequence=TppStory.GetCurrentStorySequence()
+  for i=currentStorySequence,TppDefine.STORY_SEQUENCE.STORY_START,-1 do
+    local tipsForStorySeq=TppDefine.CONTINUE_TIPS_TABLE[i]
+    if tipsForStorySeq then
+      for j,tipName in ipairs(tipsForStorySeq)do
+        table.insert(tipNames,tipName)
       end
     end
   end
-  if#n>0 then
-    local e=gvars.continueTipsCount
-    if(e>#n)then
-      e=1
+  if#tipNames>0 then
+    local continueTipsCount=gvars.continueTipsCount
+    if(continueTipsCount>#tipNames)then
+      continueTipsCount=1
       gvars.continueTipsCount=1
     end
-    local n=n[e]
-    local e
-    if n then
-      e=TppDefine.TIPS[n]
+    local tipName=tipNames[continueTipsCount]
+    local tipId
+    if tipName then
+      tipId=TppDefine.TIPS[tipName]
     end
-    if Tpp.IsTypeNumber(e)then
-      TppUiCommand.SeekLoadingTips(tostring(e))
+    if Tpp.IsTypeNumber(tipId)then
+      TppUiCommand.SeekLoadingTips(tostring(tipId))
       gvars.continueTipsCount=gvars.continueTipsCount+1
     end
   end
-  local n
+  local OnGameOver
   if this.systemCallbacks.OnGameOver then
-    n=this.systemCallbacks.OnGameOver()
+    OnGameOver=this.systemCallbacks.OnGameOver()
   end
   if not mvars.mis_isGameOverReasonSuicide then
     svars.dialogPlayerDeadCount=svars.dialogPlayerDeadCount+1
   end
-  if not n then
+  if not OnGameOver then
     if this.CheckGameOverDemo(TppDefine.GAME_OVER_TYPE.PLAYER_FALL_DEAD)then
       TppPlayer.PlayFallDeadCamera()
       this.ShowGameOverMenu{delayTime=TppPlayer.PLAYER_FALL_DEAD_DELAY_TIME}
@@ -2644,7 +2653,7 @@ end
 function this.UpdateAtCanMissionClear(n,o)
   if not n then
     mvars.mis_lastOutSideOfHotZoneButAlert=nil
-    u()
+    StopOutsideHotzoneTimer()
     return
   end
   local isNotAlert=IsNotAlert()
@@ -2652,7 +2661,7 @@ function this.UpdateAtCanMissionClear(n,o)
   local notHelicopter=not IsHelicopter(vars.playerVehicleGameObjectId)
   if o then
     if isPlayerStatusNormal and notHelicopter then
-      u()
+      StopOutsideHotzoneTimer()
       this.ReserveMissionClearOnOutOfHotZone()
     end
   else
@@ -2664,7 +2673,7 @@ function this.UpdateAtCanMissionClear(n,o)
       if not isNotAlert then
         mvars.mis_lastOutSideOfHotZoneButAlert=true
       end
-      u()
+      StopOutsideHotzoneTimer()
     end
   end
 end
@@ -2711,7 +2720,7 @@ function this.AbortMissionByMenu()
     TppSoundDaemon.PostEvent"env_wormhole_out"
     this.ReserveGameOver(TppDefine.GAME_OVER_TYPE.FOB_ABORT,TppDefine.GAME_OVER_RADIO.OUT_OF_MISSION_AREA)
   else
-    if gvars.mis_isStartFromHelispace or Ivars.mis_isGroundStart:Is(1) then--tex added mis_isGroundStart
+    if gvars.mis_isStartFromHelispace then
       this.AbortForRideOnHelicopter()
     elseif gvars.mis_isStartFromFreePlay then
       this.AbortForOutOfMissionArea()
@@ -2720,13 +2729,13 @@ function this.AbortMissionByMenu()
     end
   end
 end
-function this.AbortForOutOfMissionArea(r)
+function this.AbortForOutOfMissionArea(abortInfo)
   local isNoSave=true
   local presentationFunction
   local fadeDelayTime,fadeSpeed
   local playRadio
-  if IsTypeTable(r)then
-    if r.isNoSave then
+  if IsTypeTable(abortInfo)then
+    if abortInfo.isNoSave then
       isNoSave=true
     else
       isNoSave=false
@@ -2744,16 +2753,16 @@ function this.AbortForOutOfMissionArea(r)
     this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
   end
 end
-function this.AbortForRideOnHelicopter(t)
+function this.AbortForRideOnHelicopter(abortInfo)
   local isNoSave=true
   local isAlreadyGameOver=false
-  if IsTypeTable(t)then
-    if t.isNoSave then
+  if IsTypeTable(abortInfo)then
+    if abortInfo.isNoSave then
       isNoSave=true
     else
       isNoSave=false
     end
-    if t.isAlreadyGameOver then
+    if abortInfo.isAlreadyGameOver then
       isAlreadyGameOver=true
     end
   end
@@ -2771,13 +2780,13 @@ function this.AbortForRideOnHelicopter(t)
     this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_HELI,isNoSave=isNoSave,isAlreadyGameOver=isAlreadyGameOver}
   end
 end
-function this.AbortForRideFultonContainer(n)
+function this.AbortForRideFultonContainer(abortInfo)
   this.AbortForRideOnHelicopter{isNoSave=false}
 end
 function this.GameOverAbortMission()
   if gvars.mis_isStartFromHelispace then
     this.GameOverAbortForRideOnHelicopter()
-  elseif gvars.mis_isStartFromFreePlay or Ivars.mis_isGroundStart:Is(1) then--tex added mis_isGroundStart
+  elseif gvars.mis_isStartFromFreePlay then
     this.GameOverAbortForOutOfMissionArea()
   else
     this.GameOverAbortForRideOnHelicopter()
@@ -2903,18 +2912,18 @@ function this._SetMissionOrderBoxPosition(boxName)
     return true
   end
 end
-function this.FindOrderBoxName(n)
-  for i,e in pairs(mvars.mis_orderBoxList)do
-    if StrCode32(e)==n then
-      return e
+function this.FindOrderBoxName(orderBoxNameStr32)
+  for i,orderBoxName in pairs(mvars.mis_orderBoxList)do
+    if StrCode32(orderBoxName)==orderBoxNameStr32 then
+      return orderBoxName
     end
   end
 end
-function this.GetOrderBoxLocator(e)
-  if not IsTypeString(e)then
+function this.GetOrderBoxLocator(orderBoxName)
+  if not IsTypeString(orderBoxName)then
     return
   end
-  return Tpp.GetLocator("OrderBoxIdentifier",e)
+  return Tpp.GetLocator("OrderBoxIdentifier",orderBoxName)
 end
 function this.GetOrderBoxLocatorByTransform(orderBoxName)
   if not IsTypeString(orderBoxName)then
@@ -3221,7 +3230,8 @@ function this._ShowObjective(objectiveDefine,RENAMEbool)
     TppUI.EnableMissionSubGoal(objectiveDefine.subGoalId)
     if objectiveDefine.subGoalId>0 then
       if not objectiveDefine.announceLog then
-        objectiveDefine.announceLog="updateMissionInfo"end
+        objectiveDefine.announceLog="updateMissionInfo"
+      end
     end
   end
   if objectiveDefine.showEnemyRoutePoints then
@@ -3395,10 +3405,10 @@ function this.VarSaveOnUpdateCheckPoint(saveBusy)
     this.CreateMbSaveCoroutine()
   end
 end
-function this.SafeStopSettingOnMissionReload(n)
-  local e
-  if n and n.setMute then
-    e=n.setMute
+function this.SafeStopSettingOnMissionReload(parms)
+  local setMute
+  if parms and parms.setMute then
+    setMute=parms.setMute
   end
   mvars.mis_missionStateIsNotInGame=true
   gvars.canExceptionHandling=false
@@ -3414,8 +3424,8 @@ function this.SafeStopSettingOnMissionReload(n)
   if Tpp.IsHorse(vars.playerVehicleGameObjectId)then
     GameObject.SendCommand(vars.playerVehicleGameObjectId,{id="HorseForceStop"})
   end
-  if e then
-    TppSoundDaemon.SetMute(e)
+  if setMute then
+    TppSoundDaemon.SetMute(setMute)
   else
     TppSound.SetMuteOnLoading()
   end
@@ -3606,8 +3616,8 @@ function this.CanStart()
     return Mission.CanStart()
   end
 end
-function this.SetNextMissionCodeForMissionClear(e)
-  gvars.mis_nextMissionCodeForMissionClear=e
+function this.SetNextMissionCodeForMissionClear(missionCode)
+  gvars.mis_nextMissionCodeForMissionClear=missionCode
 end
 function this.GetNextMissionCodeForMissionClear()
   return gvars.mis_nextMissionCodeForMissionClear

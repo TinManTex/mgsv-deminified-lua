@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- Tpp.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local type=type
@@ -90,7 +91,7 @@ this.requires={
   "/Assets/tpp/script/lib/InfMenuDefs.lua",
   "/Assets/tpp/script/lib/InfMenu.lua",
   "/Assets/tpp/script/lib/InfEneFova.lua",
-  --OFF "/Assets/tpp/script/lib/InfEquip.lua",
+  "/Assets/tpp/script/lib/InfEquip.lua",
   --OFF "/Assets/tpp/script/lib/InfSplash.lua",
   "/Assets/tpp/script/lib/InfVehicle.lua",
   "/Assets/tpp/script/lib/InfRevenge.lua",
@@ -101,6 +102,7 @@ this.requires={
   "/Assets/tpp/script/lib/InfEnemyPhase.lua",
   "/Assets/tpp/script/lib/InfHelicopter.lua",
   "/Assets/tpp/script/lib/InfNPC.lua",
+  "/Assets/tpp/script/lib/InfNPCOcelot.lua",
   "/Assets/tpp/script/lib/InfNPCHeli.lua",
   "/Assets/tpp/script/lib/InfWalkerGear.lua",
   "/Assets/tpp/script/lib/InfInterrogation.lua",
@@ -108,6 +110,7 @@ this.requires={
   "/Assets/tpp/script/lib/InfInspect.lua",
   "/Assets/tpp/script/lib/InfFova.lua",
   "/Assets/tpp/script/lib/InfLZ.lua",
+  "/Assets/tpp/script/lib/InfGameEvent.lua",
   "/Assets/tpp/script/lib/InfHooks.lua",--<
 }
 function this.IsTypeFunc(e)
@@ -148,22 +151,22 @@ end
 function this.IsQARelease()
   return(Fox.GetDebugLevel()==Fox.DEBUG_LEVEL_QA_RELEASE)
 end
-function this.SplitString(e,l)
-  local t={}
+function this.SplitString(string,deliminator)
+  local spltStringTable={}
   local n
-  local e=e
+  local splitString=string
   while true do
-    n=string.find(e,l)
+    n=string.find(splitString,deliminator)
     if(n==nil)then
-      table.insert(t,e)
+      table.insert(spltStringTable,splitString)
       break
     else
-      local l=string.sub(e,0,n-1)
-      table.insert(t,l)
-      e=string.sub(e,n+1)
+      local l=string.sub(splitString,0,n-1)
+      table.insert(spltStringTable,l)
+      splitString=string.sub(splitString,n+1)
     end
   end
-  return t
+  return spltStringTable
 end
 function this.StrCode32Table(table)
   local strCode32Table={}
@@ -180,18 +183,18 @@ function this.StrCode32Table(table)
   end
   return strCode32Table
 end
-function this.ApendArray(e,n)
-  for t,n in pairs(n)do
-    e[#e+1]=n
+function this.ApendArray(destTable,sourceTable)
+  for k,v in pairs(sourceTable)do
+    destTable[#destTable+1]=v
   end
 end
 function this.MergeTable(table1,table2,n)
   local mergedTable=table1
-  for e,l in pairs(table2)do
-    if table1[e]==nil then
-      mergedTable[e]=l
+  for k,v in pairs(table2)do
+    if table1[k]==nil then
+      mergedTable[k]=v
     else
-      mergedTable[e]=l
+      mergedTable[k]=v
     end
   end
   return mergedTable
@@ -226,75 +229,75 @@ function this.BfsPairs(r)
 end
 this._DEBUG_svars={}
 this._DEBUG_gvars={}
---IN: messages table from various lua .Messages() func
-function this.MakeMessageExecTable(messages)
-  if messages==nil then
+--IN: messages (str32)table from various module .Messages() func
+function this.MakeMessageExecTable(messagesS32)
+  if messagesS32==nil then
     return
   end
-  if next(messages)==nil then
+  if next(messagesS32)==nil then
     return
   end
-  local n={}
+  local messageExecTable={}
   local s32_msg=StrCode32"msg"
   local s32_func=StrCode32"func"
   local s32_sender=StrCode32"sender"
   local s32_option=StrCode32"option"
-  for e,l in pairs(messages)do
-    n[e]=n[e]or{}
-    for l,r in pairs(l)do
-      local l,s,d,o=l,nil,nil,nil
-      if IsTypeFunc(r)then
-        d=r
-      elseif IsTypeTable(r)and IsTypeFunc(r[s32_func])then
-        l=StrCode32(r[s32_msg])
-        local n={}
-        if(type(r[s32_sender])=="string")or(type(r[s32_sender])=="number")then
-          n[1]=r[s32_sender]
-        elseif IsTypeTable(r[s32_sender])then
-          n=r[s32_sender]
+  for objectName,objectMessages in pairs(messagesS32)do
+    messageExecTable[objectName]=messageExecTable[objectName]or{}
+    for i,messageInfo in pairs(objectMessages)do
+      local messageNameS32,senderIds,objectMessageGenFunc,options=i,nil,nil,nil
+      if IsTypeFunc(messageInfo)then
+        objectMessageGenFunc=messageInfo
+      elseif IsTypeTable(messageInfo)and IsTypeFunc(messageInfo[s32_func])then
+        messageNameS32=StrCode32(messageInfo[s32_msg])
+        local messageSenders={}
+        if(type(messageInfo[s32_sender])=="string")or(type(messageInfo[s32_sender])=="number")then
+          messageSenders[1]=messageInfo[s32_sender]
+        elseif IsTypeTable(messageInfo[s32_sender])then
+          messageSenders=messageInfo[s32_sender]
         end
-        s={}
-        for l,n in pairs(n)do
-          if type(n)=="string"then
-            if e==StrCode32"GameObject"then
-              s[l]=GetGameObjectId(n)
-              if msgSndr==NULL_ID then--RETAILBUG not defined
+        senderIds={}
+        for k,senderId in pairs(messageSenders)do--NMC could probably be changed to ipairs
+          if type(senderId)=="string"then
+            if objectName==StrCode32"GameObject"then
+              senderIds[k]=GetGameObjectId(senderId)
+              if msgSndr==NULL_ID then--RETAILBUG not defined, moot, no executing code
               end
             else
-              s[l]=StrCode32(n)
+              senderIds[k]=StrCode32(senderId)
             end
-          elseif type(n)=="number"then
-            s[l]=n
-          end
+        elseif type(senderId)=="number"then
+          senderIds[k]=senderId
         end
-        d=r[s32_func]
-        o=r[s32_option]
+        end
+        objectMessageGenFunc=messageInfo[s32_func]
+        options=messageInfo[s32_option]
       end
-      if d then
-        n[e][l]=n[e][l]or{}
-        if next(s)~=nil then
-          for r,t in pairs(s)do
-            n[e][l].sender=n[e][l].sender or{}
-            n[e][l].senderOption=n[e][l].senderOption or{}
-            if n[e][l].sender[t]then
+      if objectMessageGenFunc then
+        messageExecTable[objectName][messageNameS32]=messageExecTable[objectName][messageNameS32]or{}
+        if next(senderIds)~=nil then
+          for k,senderId in pairs(senderIds)do
+            messageExecTable[objectName][messageNameS32].sender=messageExecTable[objectName][messageNameS32].sender or{}
+            messageExecTable[objectName][messageNameS32].senderOption=messageExecTable[objectName][messageNameS32].senderOption or{}
+            if messageExecTable[objectName][messageNameS32].sender[senderId]then
             end
-            n[e][l].sender[t]=d
-            if o and IsTypeTable(o)then
-              n[e][l].senderOption[t]=o
+            messageExecTable[objectName][messageNameS32].sender[senderId]=objectMessageGenFunc
+            if options and IsTypeTable(options)then
+              messageExecTable[objectName][messageNameS32].senderOption[senderId]=options
             end
           end
         else
-          if n[e][l].func then
+          if messageExecTable[objectName][messageNameS32].func then
           end
-          n[e][l].func=d
-          if o and IsTypeTable(o)then
-            n[e][l].option=o
+          messageExecTable[objectName][messageNameS32].func=objectMessageGenFunc
+          if options and IsTypeTable(options)then
+            messageExecTable[objectName][messageNameS32].option=options
           end
         end
       end
     end
   end
-  return n
+  return messageExecTable
 end
 function this.DoMessage(messageExecTable,CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   if not messageExecTable then
@@ -308,8 +311,8 @@ function this.DoMessage(messageExecTable,CheckMessageOption,sender,messageId,arg
   if not messageIdRecievers then
     return
   end
-  local t=true
-  this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText,t)
+  local RENsomebool=true
+  this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText,RENsomebool)
 end
 function this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText)
   if messageIdRecievers.func then
@@ -408,25 +411,25 @@ function this.SetGameStatus(status)
       end
     end
     for uiName,statusType in pairs(TppDefine.UI_STATUS_TYPE_ALL)do
-      local t=target[uiName]
+      local status=target[uiName]
       local unsetUiSetting=mvars.ui_unsetUiSetting
       if (Ivars.disableHeadMarkers:Is(1) and uiName=="HeadMarker") or (Ivars.disableWorldMarkers:Is(1) and uiName=="WorldMarker")then--tex> bit of a kludge implementation, but lua doesnt support continue in for loops--TODO more testing
-        t=nil
+        status=nil
         unsetUiSetting=nil
       end--<
       if IsTypeTable(unsetUiSetting)and unsetUiSetting[uiName]then
         TppUiStatusManager.UnsetStatus(uiName,unsetUiSetting[uiName])
       else
-        if t then
+        if status then
           TppUiStatusManager.ClearStatus(uiName)
         end
       end
     end
   else
     for uiName,statusType in pairs(TppDefine.UI_STATUS_TYPE_ALL)do
-      local e=target[uiName]
-      if e then
-        TppUiStatusManager.SetStatus(uiName,e)
+      local status=target[uiName]
+      if status then
+        TppUiStatusManager.SetStatus(uiName,status)
       else
         TppUiStatusManager.ClearStatus(uiName)
       end
@@ -438,6 +441,9 @@ function this.SetGameStatus(status)
       end
     end
   end
+  if Ivars.debugMode:Is()>0 then--tex> TODO: this doesn't seem to catch all cases of announcelog being disabled, during Load on return from MB for example
+    TppUiStatusManager.ClearStatus("AnnounceLog")
+  end--<
 end
 function this.GetAllDisableGameStatusTable()
   local statusTable={}
@@ -464,8 +470,8 @@ local function IsGameObjectType(gameObject,checkType)
   if gameObject==NULL_ID then
     return
   end
-  local e=GetTypeIndex(gameObject)
-  if e==checkType then
+  local typeIndex=GetTypeIndex(gameObject)
+  if typeIndex==checkType then
     return true
   else
     return false
@@ -587,12 +593,12 @@ end
 function this.IsUAV(e)
   return IsGameObjectType(e,GAME_OBJECT_TYPE_UAV)
 end
-function this.IncrementPlayData(e)
-  if gvars[e]==nil then
+function this.IncrementPlayData(gvarName)
+  if gvars[gvarName]==nil then
     return
   end
-  if gvars[e]<TppDefine.MAX_32BIT_UINT then
-    gvars[e]=gvars[e]+1
+  if gvars[gvarName]<TppDefine.MAX_32BIT_UINT then
+    gvars[gvarName]=gvars[gvarName]+1
   end
 end
 function this.IsNotAlert()
@@ -610,8 +616,8 @@ function this.IsPlayerStatusNormal()
     return false
   end
 end
-function this.AreaToIndices(e)
-  local l,t,n,r=e[1],e[2],e[3],e[4]
+function this.AreaToIndices(area)
+  local l,t,n,r=area[1],area[2],area[3],area[4]
   local e={}
   for n=l,n do
     for t=t,r do
@@ -737,75 +743,79 @@ function this.GetFormatedStorageSizePopupParam(t)
   local n=math.ceil(n)
   return n,e,2
 end
-function this.PatchDlcCheckCoroutine(p1,p2,p3,p4)--RETAILPATCH 1070 reworked
+--RETAILPATCH 1070 reworked>
+function this.PatchDlcCheckCoroutine(p1,p2,p3,p4)
   if p4==nil then
     p4=PatchDlc.PATCH_DLC_TYPE_MGO_DATA
-end
-local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=true,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=true}
-if not n[p4]then
-  Fox.Hungup"Invalid dlc type."return false
-end
-local function RENf1(e)
-end
-local function RENf2()
-  if TppUiCommand.IsShowPopup()then
-    TppUiCommand.ErasePopup()
-    while TppUiCommand.IsShowPopup()do
-      RENf1"waiting popup closed..."
+  end
+  local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=true,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=true}
+  if not n[p4]then
+    Fox.Hungup"Invalid dlc type."
+    return false
+  end
+  local function RENf1(e)
+  end
+  local function RENf2()
+    if TppUiCommand.IsShowPopup()then
+      TppUiCommand.ErasePopup()
+      while TppUiCommand.IsShowPopup()do
+        RENf1"waiting popup closed..."
+        coroutine.yield()
+      end
+    end
+  end
+  local function RENf3()
+    while TppSave.IsSaving()do
+      RENf1"waiting saving end..."
       coroutine.yield()
     end
   end
-end
-local function RENf3()
-  while TppSave.IsSaving()do
-    RENf1"waiting saving end..."
-    coroutine.yield()
+  RENf3()
+  PatchDlc.StartCheckingPatchDlc(p4)
+  if PatchDlc.IsCheckingPatchDlc()then
+    if not p3 then
+      RENf2()
+      local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=5100,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=5150}
+      local e=n[p4]
+      TppUiCommand.SetPopupType"POPUP_TYPE_NO_BUTTON_NO_EFFECT"
+      TppUiCommand.ShowErrorPopup(e)
+    end
+    while PatchDlc.IsCheckingPatchDlc()do
+      RENf1"waiting checking PatchDlc end..."
+      coroutine.yield()
+      TppUI.ShowAccessIconContinue()
+    end
+  end
+  RENf2()
+  if PatchDlc.DoesExistPatchDlc(p4)then
+    if p1 then
+      p1()
+    end
+    return true
+  else
+    if p2 then
+      p2()
+    end
+    return false
   end
 end
-RENf3()
-PatchDlc.StartCheckingPatchDlc(p4)
-if PatchDlc.IsCheckingPatchDlc()then
-  if not p3 then
-    RENf2()
-    local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=5100,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=5150}
-    local e=n[p4]
-    TppUiCommand.SetPopupType"POPUP_TYPE_NO_BUTTON_NO_EFFECT"
-    TppUiCommand.ShowErrorPopup(e)
-  end
-  while PatchDlc.IsCheckingPatchDlc()do
-    RENf1"waiting checking PatchDlc end..."
-    coroutine.yield()
-    TppUI.ShowAccessIconContinue()
-  end
-end
-RENf2()
-if PatchDlc.DoesExistPatchDlc(p4)then
-  if p1 then
-    p1()
-  end
-  return true
-else
-  if p2 then
-    p2()
-  end
-  return false
-end
-end
-function this.IsPatchDlcValidPlatform(n)--RETAILPATCH 1070
+--RETAILPATCH 1070>
+function this.IsPatchDlcValidPlatform(n)
   local e={
     [PatchDlc.PATCH_DLC_TYPE_MGO_DATA]={Xbox360=true,PS3=true,PS4=true},--RETAILPATCH 1090 X360 added
     [PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]={Xbox360=true,PS3=true,PS4=true}
   }
-local e=e[n]
-if not e then
-  Fox.Hungup"Invalid dlc type."return false
-end
-local n=Fox.GetPlatformName()
-if e[n]then
-  return true
-else
-  return false
-end
+  local e=e[n]
+  if not e then
+    Fox.Hungup"Invalid dlc type."
+    return false
+  end
+  local n=Fox.GetPlatformName()
+  if e[n]then
+    return true
+  else
+    return false
+  end
 end--<
 function this.ClearDidCancelPatchDlcDownloadRequest()
   if(vars.didCancelPatchDlcDownloadRequest==1)then
@@ -815,11 +825,13 @@ function this.ClearDidCancelPatchDlcDownloadRequest()
   end
 end
 function this.DEBUG_DunmpBlockArea(t,l,n)
-  local e="       "for n=1,n do
+  local e="       "
+  for n=1,n do
     e=e..string.format("%02d,",n)
   end
   for l=1,l do
-    local e=""for n=1,n do
+    local e=""
+    for n=1,n do
       e=e..string.format("%02d,",t[l][n])
     end
   end

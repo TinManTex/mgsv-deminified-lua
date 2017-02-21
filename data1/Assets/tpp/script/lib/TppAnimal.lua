@@ -243,16 +243,16 @@ function this.OnTerminateQuest(e)
     mvars.ani_isQuestSetup=false
   end
 end
-function this.CheckQuestAllTarget(d,a,n,t)
+function this.CheckQuestAllTarget(d,a,n,animalId)
   if not Tpp.IsAnimal(n)then
     return
   end
-  local n=TppDefine.QUEST_CLEAR_TYPE.NONE
-  local i=this.GetDataBaseIdFromAnimalId(t)
-  local t=t
-  local e=TppQuest.GetCurrentQuestName()
-  if TppQuest.IsEnd(e)then
-    return n
+  local questClearType=TppDefine.QUEST_CLEAR_TYPE.NONE
+  local databaseId=this.GetDataBaseIdFromAnimalId(animalId)
+  local t=animalId
+  local currentQuestName=TppQuest.GetCurrentQuestName()
+  if TppQuest.IsEnd(currentQuestName)then
+    return questClearType
   end
   for n,e in pairs(mvars.ani_questTargetList)do
     if e.idType=="animalId"then
@@ -260,7 +260,7 @@ function this.CheckQuestAllTarget(d,a,n,t)
         e.messageId=a or"None"
         end
     elseif e.idType=="databaseId"then
-      if n==i then
+      if n==databaseId then
         e.messageId=a or"None"
         end
     end
@@ -287,13 +287,13 @@ function this.CheckQuestAllTarget(d,a,n,t)
   if e>0 then
     if d==TppDefine.QUEST_TYPE.ANIMAL_RECOVERED then
       if i>=e then
-        n=TppDefine.QUEST_CLEAR_TYPE.CLEAR
+        questClearType=TppDefine.QUEST_CLEAR_TYPE.CLEAR
       elseif a>0 or t>0 then
-        n=TppDefine.QUEST_CLEAR_TYPE.FAILURE
+        questClearType=TppDefine.QUEST_CLEAR_TYPE.FAILURE
       end
     end
   end
-  return n
+  return questClearType
 end
 function this.IsQuestTarget(e)
   if mvars.ani_isQuestSetup==false then

@@ -110,7 +110,8 @@ if GrDaemon then
     if deviceName=="directx9"then
       GrTools.LoadShaderPack"shaders/win32/TppShaders_win32.fsop"
       if enableWindowsDX11Texture then
-        dofile"shaders/win32/TppShadersNoLnm_win32.lua"else
+        dofile"shaders/win32/TppShadersNoLnm_win32.lua"
+      else
         dofile"shaders/win32/TppShaders_win32.lua"
       end
     end
@@ -571,8 +572,10 @@ yield()
 if Script.LoadLibrary then
   local tppOrMgoPath
   if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-    tppOrMgoPath="/Assets/mgo/"else
-    tppOrMgoPath="/Assets/tpp/"end
+    tppOrMgoPath="/Assets/mgo/"
+  else
+    tppOrMgoPath="/Assets/tpp/"
+  end
   local e
   if TppSystemUtility.GetCurrentGameMode()=="MGO"then
     e="/Assets/mgo/level_asset/weapon/ParameterTables/EquipIdTable.lua"
@@ -690,7 +693,8 @@ end
 if Game.DEBUG_AddScript then
   local e=io.open("Tpp/tmp/release_test_script.lua","r")
   if e then
-    local t=e:read"*a"local e=Application.GetInstance()
+    local t=e:read"*a"
+    local e=Application.GetInstance()
     local e=e:GetMainGame()
     e:DEBUG_AddScript(t)
     Script.LoadLibrary"/Assets/tpp/editor_scripts/tpp_editor_menu2.lua"
@@ -726,5 +730,7 @@ TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil,{setMute=true})
 TppVarInit.InitializeOnStartTitle()
 TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
+
 --local splash=SplashScreen.Create("startend","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_kjp_logo_clp_nmp.ftex",640,640)--tex
+
 --SplashScreen.Show(splash,.2,1,.2)--tex

@@ -106,9 +106,9 @@ missionPackTable[10036]=function(p)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_LV)
   TppPackList.AddDefaultMissionAreaPack(p)
   do
-    local s="sol_vip_0000"
-    local s={{type="enemy",name=s,faceId=600,bodyId=TppEnemyBodyId.svs0_unq_v010}}
-    TppEneFova.AddUniqueSettingPackage(s)
+    local name="sol_vip_0000"
+    local settings={{type="enemy",name=name,faceId=600,bodyId=TppEnemyBodyId.svs0_unq_v010}}
+    TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
 missionPackTable[10040]=function(p)
@@ -121,12 +121,12 @@ missionPackTable[10040]=function(p)
     local a="sol_s10040_0000"
     local p="sol_s10040_0001"
     local s="sol_s10040_0002"
-    local s={
+    local settings={
       {type="enemy",name=a,faceId=603,bodyId=TppEnemyBodyId.svs0_unq_v040},
       {type="enemy",name=p,faceId=604,bodyId=TppEnemyBodyId.svs0_unq_v050},
       {type="enemy",name=s,faceId=605,bodyId=TppEnemyBodyId.svs0_unq_v060}
     }
-    TppEneFova.AddUniqueSettingPackage(s)
+    TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
 missionPackTable[10041]=function(p)
@@ -139,12 +139,12 @@ missionPackTable[10041]=function(p)
     local a="sol_vip_field"
     local s="sol_vip_village"
     local p="sol_vip_enemyBase"
-    local s={
+    local settings={
       {type="enemy",name=a,faceId=637,bodyId=268},
       {type="enemy",name=s,faceId=638,bodyId=269},
       {type="enemy",name=p,faceId=639,bodyId=270}
     }
-    TppEneFova.AddUniqueSettingPackage(s)
+    TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
 missionPackTable[10043]=function(p)
@@ -180,11 +180,11 @@ missionPackTable[10052]=function(p)
   do
     local s="hos_target_0000"
     local p="sol_s10052_transportVehicle_0000"
-    local s={
+    local settings={
       {type="hostage",name=s,faceId=607,bodyId=200},
       {type="enemy",name=p,faceId=608,bodyId=263}
     }
-    TppEneFova.AddUniqueSettingPackage(s)
+    TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
 missionPackTable[10054]=function(p)
@@ -204,11 +204,11 @@ missionPackTable[10054]=function(p)
   do
     local p="hos_s10054_0002"
     local s="hos_s10054_0004"
-    local s={
+    local settings={
       {type="hostage",name=p,faceId="female",bodyId=113},
       {type="hostage",name=s,faceId="female",bodyId=113}
     }
-    TppEneFova.AddUniqueSettingPackage(s)
+    TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
 missionPackTable[10070]=function(p)
@@ -676,7 +676,7 @@ missionPackTable[30010]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30010/f30010.fpk"
   end
 
-  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex
+  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
     local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
     if bodyInfo and bodyInfo.missionPackPath then
@@ -696,7 +696,7 @@ missionPackTable[30020]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ORDER_BOX)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30020/f30020.fpk"
 
-  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex
+  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
     local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
     if bodyInfo and bodyInfo.missionPackPath then

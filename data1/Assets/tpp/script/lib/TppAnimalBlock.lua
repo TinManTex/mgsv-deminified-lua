@@ -108,10 +108,10 @@ function this._UpdateActiveAnimalBlock(a,o)
     TppScriptBlock.DeactivateScriptBlockState(blockId)
   end
 end
-function this._GetAnimalBlockAreaName(areaSetting,maxAreaNum,areaId,n,a)
-  local o=areaSetting
-  for t=1,maxAreaNum do
-    local t=areaSetting[t]
+function this._GetAnimalBlockAreaName(areaSettings,maxAreaNum,areaId,n,a)
+  --ORPHAN local o=areaSettings
+  for i=1,maxAreaNum do
+    local t=areaSettings[i]
     local e=t[areaId]
     if CheckBlockArea(e,n,a)then
       for a,e in ipairs(t.defines)do
@@ -429,10 +429,10 @@ function this.OnReload()
   l_numAnimals=numAnimals
   this._MakeMessageExecTable()
 end
-function this.OnAllocate(a)
+function this.OnAllocate(missionTable)
   local blockId=GetCurrentScriptBlockId()
   TppScriptBlock.InitScriptBlockState(blockId)
-  mvars.animalBlockScript=a
+  mvars.animalBlockScript=missionTable
   local t,a=Tpp.GetCurrentStageSmallBlockIndex()
   this._UpdateActiveAnimalBlock(t,a)
   function mvars.animalBlockScript.OnMessage(e,e,e,e,e,e,e)

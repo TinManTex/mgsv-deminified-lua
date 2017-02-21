@@ -626,12 +626,12 @@ function this._AcquireDlcItemStaff(n,t)
   end
   return true
 end
-function this._AcquirePrivilegeStaff(uniqueStaffType,n)
+function this._AcquirePrivilegeStaff(uniqueStaffType,category)
   local staffId=TppDefine.UNIQUE_STAFF_TYPE_ID[uniqueStaffType]
   if not staffId then
     return
   end
-  return this._AddUniqueVolunteerStaff(staffId,n)
+  return this._AddUniqueVolunteerStaff(staffId,category)
 end
 function this.AcquirePrivilegeInTitleScreen()
   this.AcquireGzPrivilegeKeyItem()
@@ -822,7 +822,7 @@ function this.ShowNoticeFobSneaked(announceLogType)
   TppUI.ShowEmergencyAnnounceLog(true)
   TppUiCommand.ShowMissionIcon("urgent_time",6,TppUI.ANNOUNCE_LOG_TYPE[announceLogType])
 end
-function this.OnAllocate(e)
+function this.OnAllocate(missionTable)
   mvars.trm_fultonInfo={}
 end
 function this.Init(missionTable)
@@ -863,14 +863,19 @@ end
 function this.MakeMessage()
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
-function this.OnReload(t)
-  this.Init(t)
+function this.OnReload(missionTable)
+  this.Init(missionTable)
   this.MakeMessage()
 end
 function this.OnMissionGameStart(e)
   if not mvars.trm_currentIntelCpName then
-    TppUiCommand.DeactivateSpySearchForCP()
-    TppUiCommand.ActivateSpySearchForField()
+    if Ivars.disableSpySearch:Is(1) then--tex added bypass
+      TppUiCommand.DeactivateSpySearchForCP()
+      TppUiCommand.DeactivateSpySearchForField()
+    else
+      TppUiCommand.DeactivateSpySearchForCP()
+      TppUiCommand.ActivateSpySearchForField()
+    end
   end
 end
 function this.DeclareSVars()
@@ -946,17 +951,17 @@ function this.Messages()
   return Tpp.StrCode32Table{
     GameObject={
       {msg="Fulton",
-        func=function(gameId,a,r,stafforResourceId)
+        func=function(gameId,gimmickInstance,gimmickDataSet,stafforResourceId)
           if not TppMission.IsFOBMission(vars.missionCode)then
-            this.OnFultonMessage(gameId,a,r,stafforResourceId)
+            this.OnFultonMessage(gameId,gimmickInstance,gimmickDataSet,stafforResourceId)
           end
         end,
         option={isExecMissionClear=true,isExecDemoPlaying=true}
       },
       {msg="FultonInfo",
-        func=function(a,playerIndex,t)
+        func=function(gameId,playerIndex,arg3)
           if not TppMission.IsFOBMission(vars.missionCode)then
-            this.OnFultonInfoMessage(a,playerIndex,t)
+            this.OnFultonInfoMessage(gameId,playerIndex,arg3)
           end
         end,
         option={isExecMissionClear=true,isExecDemoPlaying=true}
@@ -1004,22 +1009,22 @@ end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.OnFultonMessage(gameId,t,a,stafforResourceId)
+function this.OnFultonMessage(gameId,gimmickInstance,gimmickDataSet,stafforResourceId)
   mvars.trm_fultonInfo=mvars.trm_fultonInfo or{}
-  mvars.trm_fultonInfo[gameId]={gameId,t,a,stafforResourceId}
+  mvars.trm_fultonInfo[gameId]={gameId,gimmickInstance,gimmickDataSet,stafforResourceId}
 end
-function this.OnFultonInfoMessage(n,playerIndex,r)
+function this.OnFultonInfoMessage(gameId,playerIndex,arg3)
   mvars.trm_fultonInfo=mvars.trm_fultonInfo or{}
-  local fultonInfo=mvars.trm_fultonInfo[n]
+  local fultonInfo=mvars.trm_fultonInfo[gameId]
   if fultonInfo then
-    this.OnFulton(fultonInfo[1],fultonInfo[2],fultonInfo[3],fultonInfo[4],nil,nil,playerIndex,r)
-    mvars.trm_fultonInfo[n]=nil
+    this.OnFulton(fultonInfo[1],fultonInfo[2],fultonInfo[3],fultonInfo[4],nil,nil,playerIndex,arg3)
+    mvars.trm_fultonInfo[gameId]=nil
   end
   mvars.trm_fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo or{}
-  local fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo[n]
+  local fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo[gameId]
   if fultonFaileEndInfo then
     this._OnFultonFailedEnd(fultonFaileEndInfo[1],fultonFaileEndInfo[2],fultonFaileEndInfo[3],fultonFaileEndInfo[4],playerIndex)
-    mvars.trm_fultonFaileEndInfo[n]=nil
+    mvars.trm_fultonFaileEndInfo[gameId]=nil
   end
 end
 function this.SetUp()
@@ -1386,7 +1391,8 @@ function this.OnFultonAnimal(gameId,animalId)
   elseif(databastId==MBMConst.ANIMAL_220)then
     gvars.trm_recoveredOkapiCount=gvars.trm_recoveredOkapiCount+1
   end
-  PlayRecord.RegistPlayRecord"ANIMAL_RESCUE"this.AddTempDataBaseAnimal(databastId,tostring(mvars.animalBlockAreaName))
+  PlayRecord.RegistPlayRecord"ANIMAL_RESCUE"
+  this.AddTempDataBaseAnimal(databastId,tostring(mvars.animalBlockAreaName))
 end
 function this.GetRecoveredAfghGoatCount()
   return gvars.trm_recoveredAfghGoatCount
@@ -1828,7 +1834,8 @@ function this.TerminalVoiceOnSunRise()
   TppTutorial.DispGuide_DayAndNight()
 end
 function this.TerminalVoiceOnSupportFireIncoming()
-  this.PlayTerminalVoice"VOICE_SUPPORT_FIRE_INCOMING"end
+  this.PlayTerminalVoice"VOICE_SUPPORT_FIRE_INCOMING"
+end
 function this.SetBaseTelopName(baseName)
   mvars.trm_baseTelopCpName=baseName
 end
@@ -1875,8 +1882,13 @@ function this.ShowLocationAndBaseTelopForContinue()
 end
 function this.OnEnterCpIntelTrap(cpName)
   mvars.trm_currentIntelCpName=cpName
-  TppUiCommand.ActivateSpySearchForCP{cpName=cpName}
-  TppUiCommand.DeactivateSpySearchForField()
+  if Ivars.disableSpySearch:Is(1) then--tex added bypass
+    TppUiCommand.DeactivateSpySearchForCP()
+    TppUiCommand.DeactivateSpySearchForField()
+  else--<
+    TppUiCommand.ActivateSpySearchForCP{cpName=cpName}
+    TppUiCommand.DeactivateSpySearchForField()
+  end
   TppFreeHeliRadio.OnEnterCpIntelTrap(cpName)
   if Player.OnEnterBase~=nil then
     Player.OnEnterBase()
@@ -1884,8 +1896,13 @@ function this.OnEnterCpIntelTrap(cpName)
 end
 function this.OnExitCpIntelTrap(cpName)
   mvars.trm_currentIntelCpName=nil
-  TppUiCommand.DeactivateSpySearchForCP()
-  TppUiCommand.ActivateSpySearchForField()
+  if Ivars.disableSpySearch:Is(1) then--tex added bypass
+    TppUiCommand.DeactivateSpySearchForCP()
+    TppUiCommand.DeactivateSpySearchForField()
+  else--<
+    TppUiCommand.DeactivateSpySearchForCP()
+    TppUiCommand.ActivateSpySearchForField()
+  end
   TppFreeHeliRadio.OnExitCpIntelTrap(cpName)
   TppRevenge.ClearLastRevengeMineBaseName()
   if Player.OnExitBase~=nil then
@@ -1899,49 +1916,56 @@ function this.IsReleaseMedicalSection()
     return false
   end
 end
-this.SectionOpenCondition={Combat=function()
-  if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON)and(TppStory.GetClearedMissionCount{10041,10044,10052,10054}>=2)then
-    return true
-  else
-    return false
-  end
-end,BaseDev=function()
-  if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE)and(TppStory.GetClearedMissionCount{10033,10036,10043}>=2)then
-    return true
-  else
-    return false
-  end
-end,Spy=function()
-  if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON)then
-    return true
-  else
-    return false
-  end
-end,Medical=this.IsReleaseMedicalSection,Security=function()
-  if this.IsCleardRetakeThePlatform()then
-    return true
-  else
-    return false
-  end
-end,Hospital=function()
-  if this.IsReleaseMedicalSection()then
-    return TppMotherBaseManagement.IsBuiltMbMedicalClusterSpecialPlatform()
-  else
-    return false
-  end
-end,Prison=function()
-  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE then
-    return true
-  else
-    return false
-  end
-end,Separation=function()
-  if gvars.trm_isPushRewardSeparationPlatform and(not this.CheckPandemicEventFinish())then
-    return true
-  else
-    return false
-  end
-end}
+this.SectionOpenCondition={
+  Combat=function()
+    if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON)and(TppStory.GetClearedMissionCount{10041,10044,10052,10054}>=2)then
+      return true
+    else
+      return false
+    end
+  end,
+  BaseDev=function()
+    if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE)and(TppStory.GetClearedMissionCount{10033,10036,10043}>=2)then
+      return true
+    else
+      return false
+    end
+  end,
+  Spy=function()
+    if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON)then
+      return true
+    else
+      return false
+    end
+  end,
+  Medical=this.IsReleaseMedicalSection,Security=function()
+    if this.IsCleardRetakeThePlatform()then
+      return true
+    else
+      return false
+    end
+  end,
+  Hospital=function()
+    if this.IsReleaseMedicalSection()then
+      return TppMotherBaseManagement.IsBuiltMbMedicalClusterSpecialPlatform()
+    else
+      return false
+    end
+  end,
+  Prison=function()
+    if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE then
+      return true
+    else
+      return false
+    end
+  end,
+  Separation=function()
+    if gvars.trm_isPushRewardSeparationPlatform and(not this.CheckPandemicEventFinish())then
+      return true
+    else
+      return false
+    end
+  end}
 function this.IsReleaseSection(t)
   local e=this.SectionOpenCondition[t]
   if e then
@@ -2134,17 +2158,17 @@ function this.AddUniqueVolunteerStaff(missionId)
     end
   end
 end
-function this._AddUniqueVolunteerStaff(uniqueTypeId,t)
+function this._AddUniqueVolunteerStaff(uniqueTypeId,category)
   if TppMotherBaseManagement.IsExistStaff{uniqueTypeId=uniqueTypeId}then
     return
   end
   local specialContract=false
-  if t~=nil then
+  if category~=nil then
     specialContract=true
   end
   local staffId=TppMotherBaseManagement.GenerateStaffParameter{staffType="Unique",uniqueTypeId=uniqueTypeId}
   TppMotherBaseManagement.DirectAddStaff{staffId=staffId,section="Wait",isNew=true,specialContract=specialContract}
-  TppUiCommand.ShowBonusPopupStaff(staffId,t)
+  TppUiCommand.ShowBonusPopupStaff(staffId,category)
   return true
 end
 function this.ForceStartBuildPlatform(category,clusterGrade)

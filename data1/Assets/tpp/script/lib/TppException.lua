@@ -391,7 +391,8 @@ function this.Update()
       else
         if not n then
           n=true
-          Mission.SwitchApplication"mgo"end
+          Mission.SwitchApplication"mgo"
+          end
       end
     end
     return
@@ -462,10 +463,10 @@ function this.ShowPopup(popupType)
   this.currentErrorPopupLangId=langId
   return true
 end
-function this.OnAllocate(n)
+function this.OnAllocate(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
-function this.OnReload(n)
+function this.OnReload(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.Messages()

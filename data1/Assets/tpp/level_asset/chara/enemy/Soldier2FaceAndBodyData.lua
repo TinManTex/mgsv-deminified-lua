@@ -1,3 +1,4 @@
+--Soldier2FaceAndBodyData.lua
 local faceFile={
   {"/Assets/tpp/fova/common_source/chara/cm_head/face/cm_m0_h0_v000_eye0.fv2","/Assets/tpp/pack/fova/common_source/chara/cm_head/face/cm_m0_h0_v000_eye0.fpk"},--0
   {"/Assets/tpp/fova/common_source/chara/cm_head/face/cm_m0_h0_v001_eye0.fv2","/Assets/tpp/pack/fova/common_source/chara/cm_head/face/cm_m0_h0_v001_eye0.fpk"},
@@ -183,7 +184,7 @@ local bodyFile={--NMC: see also bodyFova table
   {"/Assets/tpp/fova/chara/svs/svs0_mcg_v02_b.fv2","/Assets/tpp/pack/fova/chara/svs/svs0_main0_v00.fpk"},
   {"/Assets/tpp/fova/chara/svs/svs0_snp_v00_b.fv2","/Assets/tpp/pack/fova/chara/svs/svs0_main0_v00.fpk"},
   {"/Assets/tpp/fova/chara/svs/svs0_rdo_v00_b.fv2","/Assets/tpp/pack/fova/chara/svs/svs0_main0_v00.fpk"},
-  {"/Assets/tpp/fova/chara/svs/sva0_v00_a.fv2","/Assets/tpp/pack/fova/chara/svs/sva0_main0_v00.fpk"},
+  {"/Assets/tpp/fova/chara/svs/sva0_v00_a.fv2","/Assets/tpp/pack/fova/chara/svs/sva0_main0_v00.fpk"},--soviet armor
   {"/Assets/tpp/fova/chara/pfs/pfs0_rfl_v00_a.fv2","/Assets/tpp/pack/fova/chara/pfs/pfs0_main0_v00.fpk"},
   {"/Assets/tpp/fova/chara/pfs/pfs0_rfl_v01_a.fv2","/Assets/tpp/pack/fova/chara/pfs/pfs0_main0_v00.fpk"},
   {"/Assets/tpp/fova/chara/pfs/pfs0_mcg_v00_a.fv2","/Assets/tpp/pack/fova/chara/pfs/pfs0_main0_v00.fpk"},

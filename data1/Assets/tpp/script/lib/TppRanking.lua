@@ -1,6 +1,8 @@
 --RETAILPATCH 1070 bunch of stuff
 local this={}
+--NMC indexed by RANKING_ENUM
 this.IS_ONCE={false,true,true,true,true,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false}
+--NMC indexed by RANKING_ENUM
 this.UPDATE_ORDER={true,false,false,false,false,true,true,true,false,false,true,true,true,true,true,true,true,true,true,true}
 this.ANNOUNCE_LOG_TYPE={NONE=0,TIME=1,DISTANCE=2,NUMBER=3}
 this.SHOW_ANNOUNCE_LOG={this.ANNOUNCE_LOG_TYPE.NONE,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.DISTANCE,this.ANNOUNCE_LOG_TYPE.NONE,this.ANNOUNCE_LOG_TYPE.DISTANCE,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.NONE,this.ANNOUNCE_LOG_TYPE.NONE,this.ANNOUNCE_LOG_TYPE.NONE,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME,this.ANNOUNCE_LOG_TYPE.TIME}
@@ -26,90 +28,113 @@ this.OPEN_CONDITION={
   TppQuest.ShootingPracticeOpenCondition.Spy,
   TppQuest.ShootingPracticeOpenCondition.Combat
 }
-local n={[30010]=true,[30020]=true,[30050]=true}
-this.EXCLUDE_MISSION_LIST={false,n,n,n,n,false,false,false,n,n,false,false,false,false,false,false,false,false,false,false}
-function this.GetScore(e)
-  local e="rnk_"..e
-  local e=gvars[e]
-  if e==nil then
+local freeRoamMissions={[30010]=true,[30020]=true,[30050]=true}
+--NMC: indexed by TppDefine.RANKING_ENUM
+this.EXCLUDE_MISSION_LIST={
+  false,--"TotalTacticalTakeDownCount",
+  freeRoamMissions,--"XPersonMarkingTime",
+  freeRoamMissions,--"FirstHeadShotTime",
+  freeRoamMissions,--"FirstHeadShotTimeTranq",
+  freeRoamMissions,--"FirstCommandPostAnnihilateTime",
+  false,--"CboxGlidingDistance",
+  false,--"MechaNeutralizeCount",
+  false,--"LongestBirdShotDistance",
+  freeRoamMissions,--"XPersonPerfectStealthCQCNeutralizeTime",
+  freeRoamMissions,--"XRocketArmNeutralizeTime",
+  false,--"FobSneakingGoalCount",
+  false,--"FobDefenceSucceedCount",
+  false,--"NuclearDisposeCount",
+  false,--"mtbs_q42010",
+  false,--"mtbs_q42020",
+  false,--"mtbs_q42030",
+  false,--"mtbs_q42040",
+  false,--"mtbs_q42050",
+  false,--"mtbs_q42060",
+  false,--"mtbs_q42070"
+}
+function this.GetScore(rankingCategory)
+  local rankGvarName="rnk_"..rankingCategory
+  local score=gvars[rankGvarName]
+  if score==nil then
     return
   end
-  return e
+  return score
 end
-function this.IncrementScore(a)
-  local n=this.GetScore(a)
-  if n then
-    this.UpdateScore(a,n+1)
+function this.IncrementScore(rankingCategory)
+  local currentScore=this.GetScore(rankingCategory)
+  if currentScore then
+    this.UpdateScore(rankingCategory,currentScore+1)
   end
 end
-function this.UpdateScore(a,t)
-  local n=TppDefine.RANKING_ENUM[a]
-  if not n then
+function this.UpdateScore(rankingCategory,score)
+  local rankingCategoryEnum=TppDefine.RANKING_ENUM[rankingCategory]
+  if not rankingCategoryEnum then
     return
   end
-  if not Tpp.IsTypeNumber(t)then
+  if not Tpp.IsTypeNumber(score)then
     return
   end
-  if not gvars.rnk_isOpen[n]then
+  if not gvars.rnk_isOpen[rankingCategoryEnum]then
     return
   end
-  local o=this.CheckExcludeMission(n,vars.missionCode)
-  if o then
+  local excludeMission=this.CheckExcludeMission(rankingCategoryEnum,vars.missionCode)
+  if excludeMission then
     return
   end
-  local o="rnk_"..a
-  if gvars[o]==nil then
+  local rankGvarName="rnk_"..rankingCategory
+  if gvars[rankGvarName]==nil then
     return
   end
-  local r=this.IS_ONCE[n]
-  if(svars.rnk_isUpdated[n]==false)or(r==false)then
-    svars.rnk_isUpdated[n]=true
-    local r=this.UPDATE_ORDER[n]
-    local a
-    if r then
-      if gvars[o]<t then
-        a=true
+  local isOnce=this.IS_ONCE[rankingCategoryEnum]
+  if(svars.rnk_isUpdated[rankingCategoryEnum]==false)or(isOnce==false)then
+    svars.rnk_isUpdated[rankingCategoryEnum]=true
+    local updateOrder=this.UPDATE_ORDER[rankingCategoryEnum]
+    local updateScore
+    if updateOrder then
+      if gvars[rankGvarName]<score then
+        updateScore=true
       else
-        a=false
+        updateScore=false
       end
     else
-      if gvars[o]>t then
-        a=true
+      if gvars[rankGvarName]>score then
+        updateScore=true
       else
-        a=false
+        updateScore=false
       end
     end
-    if a then
-      this.ShowUpdateScoreAnnounceLog(n,t)
-      gvars[o]=t
+    if updateScore then
+      this.ShowUpdateScoreAnnounceLog(rankingCategoryEnum,score)
+      gvars[rankGvarName]=score
     end
   else
-    if r then
+    if isOnce then
     end
   end
 end
-function this.ShowUpdateScoreAnnounceLog(t,a)
-  local n=this.SHOW_ANNOUNCE_LOG[t]
-  if n==this.ANNOUNCE_LOG_TYPE.NONE then
+function this.ShowUpdateScoreAnnounceLog(rankingCategoryEnum,score)
+  local announceLogType=this.SHOW_ANNOUNCE_LOG[rankingCategoryEnum]
+  if announceLogType==this.ANNOUNCE_LOG_TYPE.NONE then
     return
   end
-  this._ShowCommonUpdateScoreAnnounceLog(t)
-  if n==this.ANNOUNCE_LOG_TYPE.TIME then
-    this._ShowScoreTimeAnnounceLog(a)
+  this._ShowCommonUpdateScoreAnnounceLog(rankingCategoryEnum)
+  if announceLogType==this.ANNOUNCE_LOG_TYPE.TIME then
+    this._ShowScoreTimeAnnounceLog(score)
   end
-  if n==this.ANNOUNCE_LOG_TYPE.DISTANCE then
-    this._ShowScoreDistanceAnnounceLog(a)
+  if announceLogType==this.ANNOUNCE_LOG_TYPE.DISTANCE then
+    this._ShowScoreDistanceAnnounceLog(score)
   end
-  if n==this.ANNOUNCE_LOG_TYPE.NUMBER then
-    this._ShowScoreNumberAnnounceLog(a)
+  if announceLogType==this.ANNOUNCE_LOG_TYPE.NUMBER then
+    this._ShowScoreNumberAnnounceLog(score)
   end
 end
 function this.GetRankingLangId(e)
   return string.format("ranking_name_%02d",e)
 end
 function this._ShowCommonUpdateScoreAnnounceLog(n)
-  TppUI.ShowAnnounceLog"trial_update"local e=this.GetRankingLangId(n)
-  TppUiCommand.AnnounceLogViewLangId(e)
+  TppUI.ShowAnnounceLog"trial_update"
+  local rankingLangId=this.GetRankingLangId(n)
+  TppUiCommand.AnnounceLogViewLangId(rankingLangId)
 end
 function this._ShowScoreTimeAnnounceLog(n)
   local e=math.floor(n/6e4)
@@ -126,65 +151,67 @@ function this._ShowScoreNumberAnnounceLog(e)
   TppUiCommand.AnnounceLogViewLangId("announce_trial_num",e)
 end
 function this.UpdateOpenRanking()
-  for k,v in pairs(this.OPEN_CONDITION)do
-    local rnk_isOpen=gvars.rnk_isOpen[k]
-    local n=false
-    if v==true then
-      n=true
-    elseif Tpp.IsTypeNumber(v)then
-      n=TppStory.IsMissionCleard(v)
-    elseif Tpp.IsTypeFunc(v)then
-      n=v()
+  for key,value in pairs(this.OPEN_CONDITION)do
+    local rnk_isOpen=gvars.rnk_isOpen[key]
+    local isOpen=false
+    if value==true then
+      isOpen=true
+    elseif Tpp.IsTypeNumber(value)then
+      isOpen=TppStory.IsMissionCleard(value)
+    elseif Tpp.IsTypeFunc(value)then
+      isOpen=value()
     end
-    if(((k==11)or(k==12))or(k==13))and(not rnk_isOpen)then
-      if n then
-        TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.RANKING,arg1=k}
+    if(((key==11)or(key==12))or(key==13))and(not rnk_isOpen)then
+      if isOpen then
+        TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.RANKING,arg1=key}
       end
     end
-    gvars.rnk_isOpen[k]=n
+    gvars.rnk_isOpen[key]=isOpen
   end
 end
-function this.RegistMissionClearRankingResult(a,n,t)
-  local e
+function this.RegistMissionClearRankingResult(a,missionCode,t)
+  local missionBoardId
   if a then
-    e=RecordRanking.GetMissionLimitBordId(n)
+    missionBoardId=RecordRanking.GetMissionLimitBordId(missionCode)
   else
-    e=RecordRanking.GetMissionBordId(n)
+    missionBoardId=RecordRanking.GetMissionBordId(missionCode)
   end
-  if e==RankingBordId.NONE then
+  if missionBoardId==RankingBordId.NONE then
     return
   end
-  mvars.rnk_missionClearRankingResult={e,t}
+  mvars.rnk_missionClearRankingResult={missionBoardId,t}
 end
 function this.SendCurrentRankingScore()
   if RecordRanking.IsRankingBusy()then
     return
   end
-  local n={}
-  for a=1,(TppDefine.RANKING_MAX-1)do
-    if svars.rnk_isUpdated[a]then
-      local t=TppDefine.RANKING_ENUM[a]
-      local e=this.GetScore(t)
-      table.insert(n,{a,e})
+  local rankingTable={}
+  for rankingCategory=1,(TppDefine.RANKING_MAX-1)do
+    if svars.rnk_isUpdated[rankingCategory]then
+      --RETAILBUG: WTF, RANKING_ENUM takes string ranking category, but above is just an enum (but not ranking enum since ENUM indexes from 0
+      local rankingCategoryEnum=TppDefine.RANKING_ENUM[rankingCategory]
+      local currentScore=this.GetScore(rankingCategoryEnum)
+      table.insert(rankingTable,{rankingCategory,currentScore})
     end
   end
   if mvars.rnk_missionClearRankingResult then
-    table.insert(n,mvars.rnk_missionClearRankingResult)
+    table.insert(rankingTable,mvars.rnk_missionClearRankingResult)
   end
-  RecordRanking.RegistRanking(n)
+  RecordRanking.RegistRanking(rankingTable)
 end
-function this.CheckExcludeMission(a,n)
-  local e=this.EXCLUDE_MISSION_LIST[a]
-  if e then
-    return e[n]
+--CALLER: UpdateScore
+function this.CheckExcludeMission(rankingCategoryEnum,missionCode)
+  local excludeMissions=this.EXCLUDE_MISSION_LIST[rankingCategoryEnum]
+  if excludeMissions then
+    return excludeMissions[missionCode]
   end
   return false
 end
-function this.UpdateScoreTime(n)
-  this.UpdateScore(n,svars.scoreTime)
+function this.UpdateScoreTime(rankingCategory)
+  this.UpdateScore(rankingCategory,svars.scoreTime)
 end
-function this.UpdateShootingPracticeClearTime(n,a)
-  this.UpdateScore(n,a)
+function this.UpdateShootingPracticeClearTime(rankingCategory,scoreTime)
+  this.UpdateScore(rankingCategory,scoreTime)
 end
 function this.Messages()
   return Tpp.StrCode32Table{
@@ -200,41 +227,41 @@ function this.Init(missionTable)
 end
 local n={2250,2260,2270,2280,2290,2300,2310,2320,2330,2340}
 function this.CheckPlayRecordChallengeTask()
-  local e=TppTerminal.IsEqualOrMoreTotalFultonCount
-  local r={e,e,e,e,e,e,e,e,e,TppResult.IsEqualOrMoreCboxGlidingDistance}
+  local IsEqualOrMoreTotalFultonCount=TppTerminal.IsEqualOrMoreTotalFultonCount
+  local r={IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,TppResult.IsEqualOrMoreCboxGlidingDistance}
   local o={100,200,300,400,500,600,700,800,900,150}
   local t={true,2250,2260,2270,2280,2290,2300,2310,2320,true}
   local e={}
-  for n,a in ipairs(n)do
-    local o,t,n=r[n],o[n],t[n]
-    local t=o(t)
-    if n==true then
-      table.insert(e,{taskId=a,isVisible=true,isCompleted=t})
+  for n,taskId in ipairs(n)do
+    local o,t,completedTaskIdForVisible=r[n],o[n],t[n]
+    local isCompleted=o(t)
+    if completedTaskIdForVisible==true then
+      table.insert(e,{taskId=taskId,isVisible=true,isCompleted=isCompleted})
     else
-      table.insert(e,{taskId=a,completedTaskIdForVisible=n,isCompleted=t})
+      table.insert(e,{taskId=taskId,completedTaskIdForVisible=completedTaskIdForVisible,isCompleted=isCompleted})
     end
   end
   return e
 end
-function this.OnReload(n)
-  this.Init(n)
+function this.OnReload(missionTable)
+  this.Init(missionTable)
 end
-function this.OnMessage(r,t,n,o,a,i,s)
-  Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,r,t,n,o,a,i,s)
+function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
+  Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.OnNeutralize(n,n,e,n)
-  if e==NeutralizeType.HOLDUP then
+function this.OnNeutralize(gameId,sourceId,neutralizeType,neutralizeCause)
+  if neutralizeType==NeutralizeType.HOLDUP then
     PlayRecord.RegistPlayRecord"PLAYER_HOLDUP"
   end
 end
-function this.OnHeadShot(a,a,n,e)
-  if not Tpp.IsPlayer(n)then
+function this.OnHeadShot(gameId,attackId,attackerObjectId,flag)
+  if not Tpp.IsPlayer(attackerObjectId)then
     return
   end
-  if bit.band(e,HeadshotMessageFlag.IS_JUST_UNCONSCIOUS)~=HeadshotMessageFlag.IS_JUST_UNCONSCIOUS then
+  if bit.band(flag,HeadshotMessageFlag.IS_JUST_UNCONSCIOUS)~=HeadshotMessageFlag.IS_JUST_UNCONSCIOUS then
     return
   end
-  if bit.band(e,HeadshotMessageFlag.IS_TRANQ_HANDGUN)==HeadshotMessageFlag.IS_TRANQ_HANDGUN then
+  if bit.band(flag,HeadshotMessageFlag.IS_TRANQ_HANDGUN)==HeadshotMessageFlag.IS_TRANQ_HANDGUN then
     PlayRecord.RegistPlayRecord"PLAYER_HEADSHOT_STUN"
   else
     PlayRecord.RegistPlayRecord"PLAYER_HEADSHOT"

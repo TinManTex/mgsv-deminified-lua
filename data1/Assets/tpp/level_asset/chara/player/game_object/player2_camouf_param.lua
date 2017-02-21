@@ -1,4 +1,4 @@
---player2_comout_param.lua
+--player2_comouf_param.lua
 --RETAILPATCH 1090 various additions
 this={}
 Player.InitCamoufTable{

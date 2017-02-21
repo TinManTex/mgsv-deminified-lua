@@ -37,24 +37,27 @@ function this.OnAllocate(missionTable)
   end
 end
 function this.DEBUG_Init()
-  mvars.debug.showTrapStatus=false;(nil).AddDebugMenu("LuaSystem","TRP.trapStatus","bool",mvars.debug,"showTrapStatus")
-  mvars.debug.trapStatusScroll=0;(nil).AddDebugMenu("LuaSystem","TRP.trapScroll","int32",mvars.debug,"trapStatusScroll")
+  mvars.debug.showTrapStatus=false
+  ;(nil).AddDebugMenu("LuaSystem","TRP.trapStatus","bool",mvars.debug,"showTrapStatus")
+  mvars.debug.trapStatusScroll=0
+  ;(nil).AddDebugMenu("LuaSystem","TRP.trapScroll","int32",mvars.debug,"trapStatusScroll")
 end
 function this.DebugUpdate()
-  local a=mvars
-  local e=a.debug
-  local t=(nil).Print
-  local r=(nil).NewContext()
-  if a.debug.showTrapStatus and a.trp_variableTrapList then
-    t(r,{.5,.5,1},"LuaSystem TRP.trapStatus")
+  local mvars=mvars
+  local debug=mvars.debug
+  local print=(nil).Print
+  local context=(nil).NewContext()
+  if mvars.debug.showTrapStatus and mvars.trp_variableTrapList then
+    print(context,{.5,.5,1},"LuaSystem TRP.trapStatus")
     local e=1
-    if a.debug.trapStatusScroll>1 then
-      e=a.debug.trapStatusScroll
+    if mvars.debug.trapStatusScroll>1 then
+      e=mvars.debug.trapStatusScroll
     end
-    for a,n in ipairs(a.trp_variableTrapList)do
+    for a,n in ipairs(mvars.trp_variableTrapList)do
       if a>=e then
         local e=n.name
-        local a=svars.trp_variableTrapEnable[a]t(r,{.5,.5,1},"trapName = "..(tostring(e)..(", status = "..tostring(a))))
+        local a=svars.trp_variableTrapEnable[a]
+        print(context,{.5,.5,1},"trapName = "..(tostring(e)..(", status = "..tostring(a))))
       end
     end
   end
@@ -100,9 +103,11 @@ end
 function this.DeclareSVars()
   return{{name="trp_variableTrapEnable",arraySize=trapListMax,type=TppScriptVars.TYPE_BOOL,value=true,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},nil}
 end
-function this.Enable(e)this.ChangeTrapState(e,true)
+function this.Enable(e)
+  this.ChangeTrapState(e,true)
 end
-function this.Disable(e)this.ChangeTrapState(e,false)
+function this.Disable(e)
+  this.ChangeTrapState(e,false)
 end
 function this.ChangeTrapState(e,t)
   local r=mvars.trp_variableTrapTable[e]
@@ -129,7 +134,8 @@ function this.ChangeNormalTrapState(a,t)
     return true
   end
 end
-function this.ChangeTriggerTrapState(e,a)Geo.GeoLuaEnableTriggerTrap(e,a)
+function this.ChangeTriggerTrapState(e,a)
+  Geo.GeoLuaEnableTriggerTrap(e,a)
   return true
 end
 return this

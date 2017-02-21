@@ -308,8 +308,10 @@ end
 function this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(i,o)
   local n
   if o then
-    n="outpost_neutralize"else
-    n="guradpost_neutralize"end
+    n="outpost_neutralize"
+  else
+    n="guradpost_neutralize"
+  end
   this.SetAndAnnounceHeroicOgrePoint(i,nil,n)
 end
 function this.SetAndAnnounceHeroicOgrePointForQuestClear(n)
@@ -342,17 +344,17 @@ function this.OnBreakPlaced(o,n,t,i)
     this.SetAndAnnounceHeroicOgrePoint(this.BREAK_MINE,nil,"disposal_mine")
   end
 end
-function this.OnPickUpPlaced(i,o,t,n)
+function this.OnPickUpPlaced(playerId,equipId,itemIndex,isPlayers)
   if vars.missionCode==50050 then
     return
   end
-  if not Tpp.IsLocalPlayer(i)then
+  if not Tpp.IsLocalPlayer(playerId)then
     return
   end
-  if n==1 then
+  if isPlayers==1 then
     return
   end
-  if TppPlayer.IsMine(o)then
+  if TppPlayer.IsMine(equipId)then
     Tpp.IncrementPlayData"totalMineRemoveCount"
     this.SetAndAnnounceHeroicOgrePoint(this.PICK_UP_MINE,nil,"disposal_mine")
   end
@@ -394,11 +396,11 @@ function this.Messages()
         end
         if(phase==TppGameObject.PHASE_ALERT)and Tpp.IsCommandPost(cpId)then
           if not Ivars.phaseUpdate:Is(1) then --and Ivars.minPhase:Is()>TppGameObject.PHASE_CAUTION) then--tex added check to filter out phasemod from heroicpoint TODO, cant get this to work right with specfic setting, so disable outright if phasemod
-          this.SetAndAnnounceHeroicOgrePoint(this.STARTED_COMBAT)
+            this.SetAndAnnounceHeroicOgrePoint(this.STARTED_COMBAT)
           end
         end
       end},
-      {msg="Dead",func=function(gameId,attackerId,arg2,deadMessageFlag)
+      {msg="Dead",func=function(gameId,attackerId,playerPhase,deadMessageFlag)
         if attackerId and Tpp.IsLocalPlayer(attackerId)then
           if Tpp.IsHostage(gameId)then
             if SendCommand(gameId,{id="IsDD"})and(not TppMission.IsFOBMission(vars.missionCode))then
@@ -422,16 +424,16 @@ function this.Messages()
             else--RETAILPATCH 1070>
               if(band(deadMessageFlag,DeadMessageFlag.NOT_DAMAGE_DEAD)==0)and(band(deadMessageFlag,DeadMessageFlag.INDIRECTLY_TARGET)==0)then
                 Tpp.IncrementPlayData"totalKillCount"
-              end
+            end
             end--<
-          
+
             local soldierType=TppEnemy.GetSoldierType(gameId)
             if(SendCommand(gameId,{id="IsDD"})) and not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
               if(deadMessageFlag~=nil)and(band(deadMessageFlag,DeadMessageFlag.FIRE)~=0)then
                 this.SetAndAnnounceHeroicOgrePoint(this.FIRE_KILL_DD_SOLDIER,"mbstaff_died")
-              else
-                this.SetAndAnnounceHeroicOgrePoint(this.KILL_DD_SOLDIER,"mbstaff_died")
-              end
+            else
+              this.SetAndAnnounceHeroicOgrePoint(this.KILL_DD_SOLDIER,"mbstaff_died")
+            end
             else
               if(soldierType~=EnemyType.TYPE_CHILD)then
                 local checkDeadFlag=DeadMessageFlag.FIRE
@@ -443,7 +445,7 @@ function this.Messages()
                 if(deadMessageFlag~=nil)and(band(deadMessageFlag,checkDeadFlag)~=0)then
                   if not isFobSneak then
                     if not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
-                    this.SetAndAnnounceHeroicOgrePoint(this.FIRE_KILL_SOLDIER)
+                      this.SetAndAnnounceHeroicOgrePoint(this.FIRE_KILL_SOLDIER)
                     end
                   else
                     if band(stateFlag,StateFlag.ZOMBIE)~=StateFlag.ZOMBIE then--RETAILPATCH 1070 check added
@@ -453,7 +455,7 @@ function this.Messages()
                 else
                   if not isFobSneak then
                     if (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
-                    this.SetAndAnnounceHeroicOgrePoint(this.KILL_SOLDIER)
+                      this.SetAndAnnounceHeroicOgrePoint(this.KILL_SOLDIER)
                     end
                   else
                     if band(stateFlag,StateFlag.ZOMBIE)~=StateFlag.ZOMBIE then--RETAILPATCH 1070 check added
@@ -493,7 +495,7 @@ function this.Messages()
           end
         end
       end},
-      {msg="Dying",func=function(soldierId,i)
+      {msg="Dying",func=function(soldierId,arg2)
         if Tpp.IsSoldier(soldierId)then
           if not SendCommand(soldierId,{id="IsDD"}) and not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
             this.SetAndAnnounceHeroicOgrePoint(this.DYING_SOLDIER)
@@ -518,13 +520,13 @@ function this.Messages()
           this.OnHelicopterLostControl(gameId,attackerId)
         end
       end},
-      {msg="CommandPostAnnihilated",func=function(n,o,i)
+      {msg="CommandPostAnnihilated",func=function(cpId,o,i)
         local o=false
         if mvars.ene_cpList then
-          local e=mvars.ene_cpList[n]o=TppTrophy.DOMINATION_TARGET_CP_NAME_LIST[e]
+          local e=mvars.ene_cpList[cpId]o=TppTrophy.DOMINATION_TARGET_CP_NAME_LIST[e]
         end
         if i==0 then
-          if TppEnemy.IsBaseCp(n)then
+          if TppEnemy.IsBaseCp(cpId)then
             if o then
               PlayRecord.RegistPlayRecord"BASE_SUPPRESSION"
               this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(this.ON_ANNIHILATE_BASE,true)
@@ -532,9 +534,9 @@ function this.Messages()
               Tpp.IncrementPlayData"totalAnnihilateBaseCount"
               TppChallengeTask.RequestUpdate"ENEMY_BASE"--RETAILPATCH 1070
               TppUI.UpdateOnlineChallengeTask{detectType=32,diff=1}--RETAILPATCH 1090
-              end
-            TppEmblem.AcquireOnCommandPostAnnihilated(n)
-          elseif TppEnemy.IsOuterBaseCp(n)then
+            end
+            TppEmblem.AcquireOnCommandPostAnnihilated(cpId)
+          elseif TppEnemy.IsOuterBaseCp(cpId)then
             if o then
               this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(this.ON_ANNIHILATE_OUTER_BASE,false)
               TppChallengeTask.RequestUpdate"ENEMY_BASE"--RETAILPATCH 1070
@@ -542,13 +544,13 @@ function this.Messages()
               TppTrophy.Unlock(18)
               TppUI.UpdateOnlineChallengeTask{detectType=33,diff=1}--RETAILPATCH 1090
             end
-            TppEmblem.AcquireOnCommandPostAnnihilated(n)
+            TppEmblem.AcquireOnCommandPostAnnihilated(cpId)
           end
         end
         if TppCommandPost2.SetCpDominated then
           local locationName=TppLocation.GetLocationName()
           if locationName=="afgh"or locationName=="mafr"then
-            local cpName=mvars.ene_cpList[n]
+            local cpName=mvars.ene_cpList[cpId]
             local i=TppCommandPost2.SetCpDominated{cpName=cpName,type=locationName}
             local dominatedCpCount=TppCommandPost2.GetDominatedCpCount{type=locationName}
             local targetDominatedCpCount=TppTrophy.DOMINATION_TARGET_CP_COUNT[locationName]
@@ -576,7 +578,7 @@ end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
-function this.OnReload(n)
+function this.OnReload(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
@@ -603,10 +605,10 @@ function this.UpdateHero()
   end
   if(not n)and gvars.isHero then
     TppUI.ShowAnnounceLog"get_hero"
-    end
+  end
   if n and(not gvars.isHero)then
     TppUI.ShowAnnounceLog"lost_hero"
-    end
+  end
   if gvars.isHero then
     TppTrophy.Unlock(46,3e4)
     local e={"word80","word81","word82","word83","word84","word85","word86","word88","word89","front40","front41"}

@@ -576,75 +576,90 @@ function this.CalcBaseScore()
   return baseScore,clearRank
 end
 local a=1/1e3
-local t=60
-local n=(t*60)*5
-local i=(t*60)*.25
-local o=(t*60)*1
-local c=(t*60)*4
-local u=(t*60)*.5
+local minute=60
+local max=(minute*60)*5
+local s10054Max=(minute*60)*.25
+local s10130Max=(minute*60)*1
+local s10140Max=(minute*60)*4
+local s10040Max=(minute*60)*.5
 function this.CalcTimeScore(baseScore,clearRank)
   if not mvars.res_missionScoreTable then
     return
   end
   local svars=svars
   local rankEnum=TppDefine.MISSION_CLEAR_RANK_LIST[clearRank]
-  local sRankScoreTime=mvars.res_missionScoreTable.baseTime[rankEnum]
-  local a=sRankScoreTime-(svars.bestScoreTime*a)
+  local clearRankScoreTime=mvars.res_missionScoreTable.baseTime[rankEnum]
+  local a=clearRankScoreTime-(svars.bestScoreTime*a)
   if a<0 then
     a=0
   end
-  local t=a*t
+  local timeScore=a*minute
   local missionName=TppMission.GetMissionName()
   if clearRank>TppDefine.MISSION_CLEAR_RANK.S then
     if missionName=="s10040"then
-      if t>u then
-        t=u
+      if timeScore>s10040Max then
+        timeScore=s10040Max
       end
     elseif missionName=="s10054"or missionName=="s11054"then
-      if t>i then
-        t=i
+      if timeScore>s10054Max then
+        timeScore=s10054Max
       end
     elseif missionName=="s10130"or missionName=="s11130"then
-      if t>o then
-        t=o
+      if timeScore>s10130Max then
+        timeScore=s10130Max
       end
     elseif missionName=="s10140"or missionName=="s11140"then
-      if t>c then
-        t=c
+      if timeScore>s10140Max then
+        timeScore=s10140Max
       end
     else
-      if t>n then
-        t=n
+      if timeScore>max then
+        timeScore=max
       end
     end
   end
   if this.IsUsedChickCap()then
-    t=0
+    timeScore=0
     baseScore=0
   end
-  svars.bestScoreTimeScore=t+baseScore
+  svars.bestScoreTimeScore=timeScore+baseScore
 end
-this.calcScoreTable={bestScoreAlertScore={"alertCount","bestScoreAlert"},bestScoreHostageScore={"hostageCount","bestScoreHostage"},bestScoreTakeHitCountScore={"takeHitCount","takeHitCount"},bestScoreTacticalActionPointScore={"tacticalActionPoint","tacticalActionPoint","tacticalTakeDownPoint"},bestScoreMarkingCountScore={"markingCount",vars="playerMarkingCountInMission"},bestScoreInterrogateScore={"interrogateCount","interrogateCount"},bestScoreHeadShotBonusScore={"headShotCount","headshotCount2"},bestScoreNeutralizeBonusScore={"neutralizeCount","neutralizeCount"}}
-this.bonusScoreTable={bestScoreNoReflexScore={"reflexCount","noReflexBonus",nil},bestScoreAlertScore={"alertCount","noAlertBonus",true},bestScoreKillScore={"bestScoreKill","noKillBonus",nil},bestScoreNoRetryScore={"retryCount","noRetryBonus",true},bestScorePerfectStealthNoKillBonusScore={{"alertCount","bestScoreKill","reflexCount"},"perfectStealthNoKillBonus",true}}
+this.calcScoreTable={
+  bestScoreAlertScore={"alertCount","bestScoreAlert"},
+  bestScoreHostageScore={"hostageCount","bestScoreHostage"},
+  bestScoreTakeHitCountScore={"takeHitCount","takeHitCount"},
+  bestScoreTacticalActionPointScore={"tacticalActionPoint","tacticalActionPoint","tacticalTakeDownPoint"},
+  bestScoreMarkingCountScore={"markingCount",vars="playerMarkingCountInMission"},
+  bestScoreInterrogateScore={"interrogateCount","interrogateCount"},
+  bestScoreHeadShotBonusScore={"headShotCount","headshotCount2"},
+  bestScoreNeutralizeBonusScore={"neutralizeCount","neutralizeCount"}
+}
+this.bonusScoreTable={
+  bestScoreNoReflexScore={"reflexCount","noReflexBonus",nil},
+  bestScoreAlertScore={"alertCount","noAlertBonus",true},
+  bestScoreKillScore={"bestScoreKill","noKillBonus",nil},
+  bestScoreNoRetryScore={"retryCount","noRetryBonus",true},
+  bestScorePerfectStealthNoKillBonusScore={{"alertCount","bestScoreKill","reflexCount"},"perfectStealthNoKillBonus",true}
+}
 this.eachScoreLimit={bestScoreHeadShotBonusScore=100,bestScoreNeutralizeBonusScore=100,bestScoreMarkingCountScore=100,bestScoreInterrogateScore=100}--RETAILPATCH 1070
 function this.CalcEachScore()
   local svars=svars
-  for n,a in pairs(this.calcScoreTable)do
+  for bestScoreCategory,varNames in pairs(this.calcScoreTable)do
     local s
-    if a.vars then
-      s=vars[a.vars]
+    if varNames.vars then
+      s=vars[varNames.vars]
     else
-      s=svars[a[2]]
+      s=svars[varNames[2]]
     end
-    svars[n]=this.CalcScore(s,mvars.res_scoreTable[a[1]],mvars.res_missionScoreTable[a[3]],this.eachScoreLimit[n])--RETAILPATCH 1070 eachScoreLimit added
+    svars[bestScoreCategory]=this.CalcScore(s,mvars.res_scoreTable[varNames[1]],mvars.res_missionScoreTable[varNames[3]],this.eachScoreLimit[bestScoreCategory])--RETAILPATCH 1070 eachScoreLimit added
   end
   if not this.IsUsedChickCap()then
-    for n,e in pairs(this.bonusScoreTable)do
+    for bestScoreCategory,varNames in pairs(this.bonusScoreTable)do
       local a
-      if IsTypeTable(e[1])then
-        a=e[1]
+      if IsTypeTable(varNames[1])then
+        a=varNames[1]
       else
-        a={e[1]}
+        a={varNames[1]}
       end
       local s=true
       for a,e in ipairs(a)do
@@ -653,12 +668,12 @@ function this.CalcEachScore()
           break
         end
       end
-      local a=1
-      if e[3]then
-        a=mvars.res_bonusMissionClearTimeRatio
+      local bonusMissionClearTimeRatio=1
+      if varNames[3]then
+        bonusMissionClearTimeRatio=mvars.res_bonusMissionClearTimeRatio
       end
       if s and(not isUsedChickCap)then--RETAILBUG: TODO:
-        svars[n]=mvars.res_scoreTable[e[2]]*a
+        svars[bestScoreCategory]=mvars.res_scoreTable[varNames[2]]*bonusMissionClearTimeRatio
       end
     end
     svars.bestScoreHitRatioBonusScore=this.CalcHitRatioBonusScore(vars.shootHitCountInMission,vars.playerShootCountInMission,vars.shootHitCountEliminatedInMission,svars.shootNeutralizeCount,mvars.res_hitRatioBonusParam.hitRatioBaseScoreUnit,mvars.res_hitRatioBonusParam.numOfBulletsPerNeutralizeCount,mvars.res_hitRatioBonusParam.exponetHitRatio,mvars.res_hitRatioBonusParam.limitHitRatioBonus,mvars.res_hitRatioBonusParam.perfectBonusBase)
@@ -693,26 +708,26 @@ function this.CalcScore(p1,RENscoreTable,RENmissionScoreTable,scoreLimit)--RETAI
   end
   return score
 end
-function this.CalcHitRatioBonusScore(o,t,r,a,l,u,c,s,n)
-  local t=t-r
-  if t<=0 then
+function this.CalcHitRatioBonusScore(shootHitCountInMission,playerShootCountInMission,shootHitCountEliminatedInMission,shootNeutralizeCount,hitRatioBaseScoreUnit,numOfBulletsPerNeutralizeCount,exponetHitRatio,limitHitRatioBonus,perfectBonusBase)
+  local hitRatio=playerShootCountInMission-shootHitCountEliminatedInMission
+  if hitRatio<=0 then
     return 0
   end
-  local r=t
-  local i=o/r
-  if a<1 then
-    a=.5
+  local _hitRatio=hitRatio
+  local i=shootHitCountInMission/_hitRatio
+  if shootNeutralizeCount<1 then
+    shootNeutralizeCount=.5
   end
-  local t=(((l*2)*r)/(a*u))*(i^c)
-  local t=(l+t)*o
-  if t>(a*s)then
-    t=a*s
+  local t=(((hitRatioBaseScoreUnit*2)*_hitRatio)/(shootNeutralizeCount*numOfBulletsPerNeutralizeCount))*(i^exponetHitRatio)
+  local t=(hitRatioBaseScoreUnit+t)*shootHitCountInMission
+  if t>(shootNeutralizeCount*limitHitRatioBonus)then
+    t=shootNeutralizeCount*limitHitRatioBonus
   end
   local s
   if i>=1 then
-    s=(((n/2)*a)/10)*(a/r)
-    if s>n then
-      s=n
+    s=(((perfectBonusBase/2)*shootNeutralizeCount)/10)*(shootNeutralizeCount/_hitRatio)
+    if s>perfectBonusBase then
+      s=perfectBonusBase
     end
     t=t+s
   end
@@ -721,49 +736,51 @@ function this.CalcHitRatioBonusScore(o,t,r,a,l,u,c,s,n)
 end
 this.playScoreList={"bestScoreTimeScore","bestScoreTakeHitCountScore","bestScoreTacticalActionPointScore","bestScoreHeadShotBonusScore","bestScoreHitRatioBonusScore","bestScoreNeutralizeBonusScore","bestScoreMarkingCountScore","bestScoreInterrogateScore","bestScoreHostageScore"}
 this.bounusScoreList={"bestScoreBounusScore","bestScoreBounusScore2","bestScoreNoRetryScore","bestScoreKillScore","bestScoreNoReflexScore","bestScoreAlertScore","bestScorePerfectStealthNoKillBonusScore","bestScoreNoTraceBonusScore"}
-local n=999999
-local r=-999999
+local maxScore=999999
+local minScore=-999999
 function this.CalcTotalScore()
-  local t=0
-  local a=0
-  for a,e in pairs(this.playScoreList)do
-    local a=svars[e]t=t+svars[e]
+  local totalScore=0
+  local totalBonusScore=0
+  for i,bestScoreSvarName in pairs(this.playScoreList)do
+    local a=svars[bestScoreSvarName]
+    totalScore=totalScore+svars[bestScoreSvarName]
   end
-  for s,e in pairs(this.bounusScoreList)do
-    local s=svars[e]t=t+svars[e]a=a+svars[e]
+  for i,bonusScoreSvarName in pairs(this.bounusScoreList)do
+    local s=svars[bonusScoreSvarName]totalScore=totalScore+svars[bonusScoreSvarName]
+    totalBonusScore=totalBonusScore+svars[bonusScoreSvarName]
   end
-  if t>=n then
-    t=n
-  elseif t<=r then
-    t=r
+  if totalScore>=maxScore then
+    totalScore=maxScore
+  elseif totalScore<=minScore then
+    totalScore=minScore
   end
   if this.IsUsedChickCap()then
-    t=0
-    a=0
+    totalScore=0
+    totalBonusScore=0
   end
-  svars.bestScore=t
-  if a>=n then
-    a=n
-  elseif a<=0 then
-    a=0
+  svars.bestScore=totalScore
+  if totalBonusScore>=maxScore then
+    totalBonusScore=maxScore
+  elseif totalBonusScore<=0 then
+    totalBonusScore=0
   end
-  local s=TppDefine.MISSION_ENUM[tostring(vars.missionCode)]
-  if s then
-    local e=this.IsUsedRankLimitedItem()
-    if e then
-      if t>gvars.rnk_missionBestScoreUsedLimitEquip[s]then
-        gvars.rnk_missionBestScoreUsedLimitEquip[s]=t
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(vars.missionCode)]
+  if missionEnum then
+    local isUsedRankLimitedItem=this.IsUsedRankLimitedItem()
+    if isUsedRankLimitedItem then
+      if totalScore>gvars.rnk_missionBestScoreUsedLimitEquip[missionEnum]then
+        gvars.rnk_missionBestScoreUsedLimitEquip[missionEnum]=totalScore
       end
     else
-      if t>gvars.rnk_missionBestScore[s]then
-        gvars.rnk_missionBestScore[s]=t
+      if totalScore>gvars.rnk_missionBestScore[missionEnum]then
+        gvars.rnk_missionBestScore[missionEnum]=totalScore
       end
     end
     if not(((vars.missionCode==10043)or(vars.missionCode==11043))and mvars.res_noMissionClearRank)then
-      TppRanking.RegistMissionClearRankingResult(e,vars.missionCode,t)
+      TppRanking.RegistMissionClearRankingResult(isUsedRankLimitedItem,vars.missionCode,totalScore)
     end
   end
-  return a
+  return totalBonusScore
 end
 function this.DecideMissionClearRank()
   local bestRank
@@ -1023,21 +1040,36 @@ function this.DecidePlayStyle()
   return this.DecideNeutralizePlayStyle()
 end
 function this.DEBUG_Init()
-  mvars.debug.showHitRatio=false;(nil).AddDebugMenu("LuaMission","RES.hitRatio","bool",mvars.debug,"showHitRatio")
-  mvars.debug.showMissionClearHistory=false;(nil).AddDebugMenu("LuaMission","RES.clearHistory","bool",mvars.debug,"showMissionClearHistory")
-  mvars.debug.showMissionScoreTable=false;(nil).AddDebugMenu("LuaMission","RES.scoreTable","bool",mvars.debug,"showMissionScoreTable")
-  mvars.debug.showPlayData=false;(nil).AddDebugMenu("LuaMission","RES.showPlayData","bool",mvars.debug,"showPlayData")
-  mvars.debug.showPlayStyleHistory=false;(nil).AddDebugMenu("LuaMission","showPlayStyleHistory","bool",mvars.debug,"showPlayStyleHistory")
-  mvars.debug.showPlayDataNeutralizeCount=false;(nil).AddDebugMenu("LuaMission","showPlayDataNeutralizeCount","bool",mvars.debug,"showPlayDataNeutralizeCount")
-  mvars.debug.doForceSetPlayStyle=false;(nil).AddDebugMenu("LuaMission","doForceSetStyle","bool",mvars.debug,"doForceSetPlayStyle")
-  mvars.debug.playStyleHistory=0;(nil).AddDebugMenu("LuaMission","styleHistory","int32",mvars.debug,"playStyleHistory")
-  mvars.debug.playStyleIsPerfectStealth=false;(nil).AddDebugMenu("LuaMission","styleIsPerfectStealth","bool",mvars.debug,"playStyleIsPerfectStealth")
-  mvars.debug.playStyleIsStealth=false;(nil).AddDebugMenu("LuaMission","styleIsStealth","bool",mvars.debug,"playStyleIsStealth")
-  mvars.debug.playStyleHeadShotCount=0;(nil).AddDebugMenu("LuaMission","styleHeadShotCount","int32",mvars.debug,"playStyleHeadShotCount")
-  mvars.debug.playStyleSaveIndex=-1;(nil).AddDebugMenu("LuaMission","styleSaveIndex","int32",mvars.debug,"playStyleSaveIndex")
-  mvars.debug.playStyleNeutralizeCount=0;(nil).AddDebugMenu("LuaMission","styleNeutralizeCount","int32",mvars.debug,"playStyleNeutralizeCount")
-  mvars.debug.addNewPlayStyleHistory=false;(nil).AddDebugMenu("LuaMission","addNewPlayStyleHistory","bool",mvars.debug,"addNewPlayStyleHistory")
-  mvars.debug.beforeMaxPlayRecord=false;(nil).AddDebugMenu("LuaMission","beforeMaxPlayRecord","bool",mvars.debug,"beforeMaxPlayRecord")
+  mvars.debug.showHitRatio=false;
+  (nil).AddDebugMenu("LuaMission","RES.hitRatio","bool",mvars.debug,"showHitRatio")
+  mvars.debug.showMissionClearHistory=false;
+  (nil).AddDebugMenu("LuaMission","RES.clearHistory","bool",mvars.debug,"showMissionClearHistory")
+  mvars.debug.showMissionScoreTable=false;
+  (nil).AddDebugMenu("LuaMission","RES.scoreTable","bool",mvars.debug,"showMissionScoreTable")
+  mvars.debug.showPlayData=false;
+  (nil).AddDebugMenu("LuaMission","RES.showPlayData","bool",mvars.debug,"showPlayData")
+  mvars.debug.showPlayStyleHistory=false;
+  (nil).AddDebugMenu("LuaMission","showPlayStyleHistory","bool",mvars.debug,"showPlayStyleHistory")
+  mvars.debug.showPlayDataNeutralizeCount=false;
+  (nil).AddDebugMenu("LuaMission","showPlayDataNeutralizeCount","bool",mvars.debug,"showPlayDataNeutralizeCount")
+  mvars.debug.doForceSetPlayStyle=false;
+  (nil).AddDebugMenu("LuaMission","doForceSetStyle","bool",mvars.debug,"doForceSetPlayStyle")
+  mvars.debug.playStyleHistory=0;
+  (nil).AddDebugMenu("LuaMission","styleHistory","int32",mvars.debug,"playStyleHistory")
+  mvars.debug.playStyleIsPerfectStealth=false;
+  (nil).AddDebugMenu("LuaMission","styleIsPerfectStealth","bool",mvars.debug,"playStyleIsPerfectStealth")
+  mvars.debug.playStyleIsStealth=false;
+  (nil).AddDebugMenu("LuaMission","styleIsStealth","bool",mvars.debug,"playStyleIsStealth")
+  mvars.debug.playStyleHeadShotCount=0;
+  (nil).AddDebugMenu("LuaMission","styleHeadShotCount","int32",mvars.debug,"playStyleHeadShotCount")
+  mvars.debug.playStyleSaveIndex=-1;
+  (nil).AddDebugMenu("LuaMission","styleSaveIndex","int32",mvars.debug,"playStyleSaveIndex")
+  mvars.debug.playStyleNeutralizeCount=0;
+  (nil).AddDebugMenu("LuaMission","styleNeutralizeCount","int32",mvars.debug,"playStyleNeutralizeCount")
+  mvars.debug.addNewPlayStyleHistory=false;
+  (nil).AddDebugMenu("LuaMission","addNewPlayStyleHistory","bool",mvars.debug,"addNewPlayStyleHistory")
+  mvars.debug.beforeMaxPlayRecord=false;
+  (nil).AddDebugMenu("LuaMission","beforeMaxPlayRecord","bool",mvars.debug,"beforeMaxPlayRecord")
 end
 this.DEBUG_NEUTRALIZE_TYPE_TEXT={" HOLDUP","    CQC","NO_KILL","  KNIFE","HANDGUN","SUBMGUN","SHOTGUN","ASSAULT","MCH_GUN"," SNIPER","MISSILE","GRENADE","   MINE","  QUIET","  D_DOG","D_HORSE","D_WLKER","VEHICLE","SP_HELI"," ASSIST"}
 function this.DebugUpdate()
@@ -1050,9 +1082,18 @@ function this.DebugUpdate()
     local a=0
     if e>0 then
       a=vars.shootHitCountInMission/e
-    end(nil).Print(t,{.5,.5,1},"LuaMission RES.hitRatio");(nil).Print(t,"vars.playerShootCountInMission = "..tostring(vars.playerShootCountInMission));(nil).Print(t,"vars.shootHitCountInMission = "..tostring(vars.shootHitCountInMission));(nil).Print(t,"vars.shootHitCountEliminatedInMission = "..tostring(vars.shootHitCountEliminatedInMission));(nil).Print(t,"valid shoot count = "..tostring(e));(nil).Print(t,"hitRatio = "..tostring(a));(nil).Print(t,"svars.headshotCount2 = "..tostring(s.headshotCount2));(nil).Print(t,"svars.neutralizeCount = "..tostring(s.neutralizeCount));(nil).Print(t,"svars.shootNeutralizeCount = "..tostring(s.shootNeutralizeCount))
+    end(nil).Print(t,{.5,.5,1},"LuaMission RES.hitRatio");
+    (nil).Print(t,"vars.playerShootCountInMission = "..tostring(vars.playerShootCountInMission));
+    (nil).Print(t,"vars.shootHitCountInMission = "..tostring(vars.shootHitCountInMission));
+    (nil).Print(t,"vars.shootHitCountEliminatedInMission = "..tostring(vars.shootHitCountEliminatedInMission));
+    (nil).Print(t,"valid shoot count = "..tostring(e));
+    (nil).Print(t,"hitRatio = "..tostring(a));
+    (nil).Print(t,"svars.headshotCount2 = "..tostring(s.headshotCount2));
+    (nil).Print(t,"svars.neutralizeCount = "..tostring(s.neutralizeCount));
+    (nil).Print(t,"svars.shootNeutralizeCount = "..tostring(s.shootNeutralizeCount))
   end
-  if a.debug.showMissionClearHistory then(nil).Print(t,{.5,.5,1},"LuaMission RES.clearHistory");(nil).Print(t,"historySize = "..tostring(gvars.res_missionClearHistorySize))
+  if a.debug.showMissionClearHistory then(nil).Print(t,{.5,.5,1},"LuaMission RES.clearHistory");
+    (nil).Print(t,"historySize = "..tostring(gvars.res_missionClearHistorySize))
     local a={}
     local s,e=0,1
     local r=gvars.res_missionClearHistorySize-1
@@ -1063,28 +1104,61 @@ function this.DebugUpdate()
     for e=1,e do(nil).Print(t,a[e])
     end
   end
-  if a.debug.showMissionScoreTable and a.res_missionScoreTable then(nil).Print(t,{.5,.5,1},"LuaMission RES.scoreTable");(nil).Print(t,"baseTime")
+  if a.debug.showMissionScoreTable and a.res_missionScoreTable then(nil).Print(t,{.5,.5,1},"LuaMission RES.scoreTable");
+    (nil).Print(t,"baseTime")
     for s,e in ipairs(TppDefine.MISSION_CLEAR_RANK_LIST)do
-      local a=a.res_missionScoreTable.baseTime[e];(nil).Print(t,"rank = "..(tostring(e)..(": baseTime = "..(tostring(a).."[s]."))))
+      local a=a.res_missionScoreTable.baseTime[e];
+      (nil).Print(t,"rank = "..(tostring(e)..(": baseTime = "..(tostring(a).."[s]."))))
     end
     if a.res_missionScoreTable.tacticalTakeDownPoint then(nil).Print(t,"tacticalTakeDownPoint : countLimit = "..tostring(a.res_missionScoreTable.tacticalTakeDownPoint.countLimit))
     else(nil).Print(t,"cannot find tacticalTakeDown param")
     end
   end
-  if a.debug.showPlayData then(nil).Print(t,{.5,.5,1},"LuaMission RES.showPlayData");(nil).Print(t,"gvars.totalMissionClearCount = "..tostring(gvars.totalMissionClearCount));(nil).Print(t,"gvars.totalPerfectStealthMissionClearCount = "..tostring(gvars.totalPerfectStealthMissionClearCount));(nil).Print(t,"gvars.totalStealthMissionClearCount = "..tostring(gvars.totalStealthMissionClearCount));(nil).Print(t,"gvars.totalRetryCount = "..tostring(gvars.totalRetryCount));(nil).Print(t,"gvars.totalNeutralizeCount = "..tostring(gvars.totalNeutralizeCount));(nil).Print(t,"gvars.totalKillCount = "..tostring(gvars.totalKillCount));(nil).Print(t,"gvars.totalHelicopterDestoryCount = "..tostring(gvars.totalHelicopterDestoryCount));(nil).Print(t,"gvars.totalBreakVehicleCount = "..tostring(gvars.totalBreakVehicleCount));(nil).Print(t,"gvars.totalBreakPlacedGimmickCount = "..tostring(gvars.totalBreakPlacedGimmickCount));(nil).Print(t,"gvars.totalBreakBurglarAlarmCount = "..tostring(gvars.totalBreakBurglarAlarmCount));(nil).Print(t,"gvars.totalWalkerGearDestoryCount = "..tostring(gvars.totalWalkerGearDestoryCount));(nil).Print(t,"gvars.totalMineRemoveCount = "..tostring(gvars.totalMineRemoveCount));(nil).Print(t,"gvars.totalAnnihilateOutPostCount = "..tostring(gvars.totalAnnihilateOutPostCount));(nil).Print(t,"gvars.totalAnnihilateBaseCount = "..tostring(gvars.totalAnnihilateBaseCount));(nil).Print(t,"gvars.totalInterrogateCount = "..tostring(gvars.totalInterrogateCount));(nil).Print(t,"gvars.totalRescueCount = "..tostring(gvars.totalRescueCount));(nil).Print(t,"vars.totalMarkingCount = "..tostring(vars.totalMarkingCount))
+  if a.debug.showPlayData then
+    (nil).Print(t,{.5,.5,1},"LuaMission RES.showPlayData");
+    (nil).Print(t,"gvars.totalMissionClearCount = "..tostring(gvars.totalMissionClearCount));
+    (nil).Print(t,"gvars.totalPerfectStealthMissionClearCount = "..tostring(gvars.totalPerfectStealthMissionClearCount));
+    (nil).Print(t,"gvars.totalStealthMissionClearCount = "..tostring(gvars.totalStealthMissionClearCount));
+    (nil).Print(t,"gvars.totalRetryCount = "..tostring(gvars.totalRetryCount));
+    (nil).Print(t,"gvars.totalNeutralizeCount = "..tostring(gvars.totalNeutralizeCount));
+    (nil).Print(t,"gvars.totalKillCount = "..tostring(gvars.totalKillCount));
+    (nil).Print(t,"gvars.totalHelicopterDestoryCount = "..tostring(gvars.totalHelicopterDestoryCount));
+    (nil).Print(t,"gvars.totalBreakVehicleCount = "..tostring(gvars.totalBreakVehicleCount));
+    (nil).Print(t,"gvars.totalBreakPlacedGimmickCount = "..tostring(gvars.totalBreakPlacedGimmickCount));
+    (nil).Print(t,"gvars.totalBreakBurglarAlarmCount = "..tostring(gvars.totalBreakBurglarAlarmCount));
+    (nil).Print(t,"gvars.totalWalkerGearDestoryCount = "..tostring(gvars.totalWalkerGearDestoryCount));
+    (nil).Print(t,"gvars.totalMineRemoveCount = "..tostring(gvars.totalMineRemoveCount));
+    (nil).Print(t,"gvars.totalAnnihilateOutPostCount = "..tostring(gvars.totalAnnihilateOutPostCount));
+    (nil).Print(t,"gvars.totalAnnihilateBaseCount = "..tostring(gvars.totalAnnihilateBaseCount));
+    (nil).Print(t,"gvars.totalInterrogateCount = "..tostring(gvars.totalInterrogateCount));
+    (nil).Print(t,"gvars.totalRescueCount = "..tostring(gvars.totalRescueCount));
+    (nil).Print(t,"vars.totalMarkingCount = "..tostring(vars.totalMarkingCount))
   end
-  if a.debug.showPlayStyleHistory then(nil).Print(t,{.5,.5,1},"LuaMission RES.showPlayStyleHistory");(nil).Print(t,{.5,1,.5},"gvars.res_neutralizeHistorySize = "..tostring(gvars.res_neutralizeHistorySize));(nil).Print(t,{.5,1,.5}," history = 0         | history = 1          | history = 2        ");(nil).Print(t,{.5,1,.5},"isPerfectStealth");(nil).Print(t,"( "..(tostring(gvars.res_isPerfectStealth[0])..(" ) | ( "..(tostring(gvars.res_isPerfectStealth[1])..(" ) | ( "..(tostring(gvars.res_isPerfectStealth[2]).." )"))))));(nil).Print(t,{.5,1,.5},"isStealth");(nil).Print(t,"( "..(tostring(gvars.res_isStealth[0])..(" ) | ( "..(tostring(gvars.res_isStealth[1])..(" ) | ( "..(tostring(gvars.res_isStealth[2]).." )"))))));(nil).Print(t,{.5,1,.5},"Head shot count");(nil).Print(t,string.format("( %07d ) | ( %07d ) | ( %07d )",gvars.res_headShotCount[0],gvars.res_headShotCount[1],gvars.res_headShotCount[2]));(nil).Print(t,{.5,1,.5},"( historyIndex, neutralizeType, count )")
+  if a.debug.showPlayStyleHistory then(nil).Print(t,{.5,.5,1},"LuaMission RES.showPlayStyleHistory");
+    (nil).Print(t,{.5,1,.5},"gvars.res_neutralizeHistorySize = "..tostring(gvars.res_neutralizeHistorySize));
+    (nil).Print(t,{.5,1,.5}," history = 0         | history = 1          | history = 2        ");
+    (nil).Print(t,{.5,1,.5},"isPerfectStealth");
+    (nil).Print(t,"( "..(tostring(gvars.res_isPerfectStealth[0])..(" ) | ( "..(tostring(gvars.res_isPerfectStealth[1])..(" ) | ( "..(tostring(gvars.res_isPerfectStealth[2]).." )"))))));
+    (nil).Print(t,{.5,1,.5},"isStealth");
+    (nil).Print(t,"( "..(tostring(gvars.res_isStealth[0])..(" ) | ( "..(tostring(gvars.res_isStealth[1])..(" ) | ( "..(tostring(gvars.res_isStealth[2]).." )"))))));
+    (nil).Print(t,{.5,1,.5},"Head shot count");
+    (nil).Print(t,string.format("( %07d ) | ( %07d ) | ( %07d )",gvars.res_headShotCount[0],gvars.res_headShotCount[1],gvars.res_headShotCount[2]));
+    (nil).Print(t,{.5,1,.5},"( historyIndex, neutralizeType, count )")
     for s=0,TppDefine.PLAYSTYLE_SAVE_INDEX_MAX-1 do
-      local a=""local n=this.DEBUG_NEUTRALIZE_TYPE_TEXT[s+1]
+      local a=""
+      local n=this.DEBUG_NEUTRALIZE_TYPE_TEXT[s+1]
       for e=0,TppDefine.PLAYSTYLE_HISTORY_MAX do
         local e=string.format("( %02d, %s, %03d ) | ",e,n,gvars.res_neutralizeCount[e*TppDefine.PLAYSTYLE_SAVE_INDEX_MAX+s])a=a..e
       end(nil).Print(t,a)
     end
   end
-  if a.debug.showPlayDataNeutralizeCount then(nil).Print(t,{.5,.5,1},"LuaMission RES.showPlayDataNeutralizeCount");(nil).Print(t,{.5,1,.5},"( neutralizeType, count )")
+  if a.debug.showPlayDataNeutralizeCount then
+    (nil).Print(t,{.5,.5,1},"LuaMission RES.showPlayDataNeutralizeCount");
+    (nil).Print(t,{.5,1,.5},"( neutralizeType, count )")
     for a=0,TppDefine.PLAYSTYLE_SAVE_INDEX_MAX-1 do
       local e=this.DEBUG_NEUTRALIZE_TYPE_TEXT[a+1]
-      local e=string.format("( %s, %016d ) | ",e,gvars.res_neutralizeCountForPlayData[a]);(nil).Print(t,e)
+      local e=string.format("( %s, %016d ) | ",e,gvars.res_neutralizeCountForPlayData[a]);
+      (nil).Print(t,e)
     end
   end
   if a.debug.doForceSetPlayStyle then
@@ -1296,35 +1370,36 @@ function this.GetPlayStyleSaveIndex(n,r,a,t)
     end
   end
 end
-function this.OnNeutralize(r,n,a,t)
-  local t=this.GetPlayStyleSaveIndex(r,n,a,t)
-  if not t then
+function this.OnNeutralize(gameId,sourceId,neutralizeType,neutralizeCause)
+  local playStyleSaveIndex=this.GetPlayStyleSaveIndex(gameId,sourceId,neutralizeType,neutralizeCause)
+  if not playStyleSaveIndex then
     return
   end
-  this.IncrementPlayDataNeutralizeCount(t)
+  this.IncrementPlayDataNeutralizeCount(playStyleSaveIndex)
   if mvars.res_noResult then
     return
   end
   if svars.neutralizeCount<MAX_32BIT_UINT then
     svars.neutralizeCount=svars.neutralizeCount+1
   end
-  local e=gvars.res_neutralizeCount[t]
-  if e>=255 then
+  local neutralizeCount=gvars.res_neutralizeCount[playStyleSaveIndex]
+  if neutralizeCount>=255 then
     return
   end
-  gvars.res_neutralizeCount[t]=e+1
+  gvars.res_neutralizeCount[playStyleSaveIndex]=neutralizeCount+1
 end
 function this.IncrementPlayDataNeutralizeCount(e)
-  Tpp.IncrementPlayData"totalNeutralizeCount"if gvars.res_neutralizeCountForPlayData[e]<MAX_32BIT_UINT then
+  Tpp.IncrementPlayData"totalNeutralizeCount"
+  if gvars.res_neutralizeCountForPlayData[e]<MAX_32BIT_UINT then
     gvars.res_neutralizeCountForPlayData[e]=gvars.res_neutralizeCountForPlayData[e]+1
   end
 end
-function this.OnHeadShot(a,a,e,t)
-  if not Tpp.IsPlayer(e)then
+function this.OnHeadShot(gameObjectId,attackId,attackerObjectId,flag)
+  if not Tpp.IsPlayer(attackerObjectId)then
     return
   end
-  local e=this.IsCountUpHeadShot(t)--RETAILPATCH 1070 stuff shifted into function
-  if e then
+  local isCountUpHeadShot=this.IsCountUpHeadShot(flag)--RETAILPATCH 1070 stuff shifted into function
+  if isCountUpHeadShot then
     Tpp.IncrementPlayData"totalheadShotCount"
     TppChallengeTask.RequestUpdate"PLAY_RECORD"--RETAILPATCH 1070
     TppUI.UpdateOnlineChallengeTask{detectType=29,diff=1}--RETAILPATCH 1090
@@ -1332,7 +1407,7 @@ function this.OnHeadShot(a,a,e,t)
   if mvars.res_noResult then
     return
   end
-  if e then
+  if isCountUpHeadShot then
     if svars.headshotCount2<MAX_32BIT_UINT then
       svars.headshotCount2=svars.headshotCount2+1
       TppUiCommand.CallCountAnnounce("playdata_playing_headshot",svars.headshotCount2,false)

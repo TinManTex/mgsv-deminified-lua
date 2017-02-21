@@ -82,10 +82,10 @@ function this.ShowAllReward()
   end
   if TppUiCommand.GetBonusPopupRegist"animal">0 then
     TppUiCommand.ShowBonusPopupRegist"animal"
-    end
+  end
   if TppUiCommand.GetBonusPopupRegist"staff">0 then
     TppUiCommand.ShowBonusPopupRegist"staff"
-    end
+  end
   local e=TppRadio.DoEventOnRewardEndRadio()
   if next(e)then
     TppUiCommand.SetBonusPopupAfterRadio(e[1])
@@ -110,50 +110,50 @@ function this.IsStacked()
   end
   return false
 end
-function this.ShowReward(r)
-  local a=this.GVARS_NAME[r].stackSizeName
-  local t=this.GVARS_NAME[r].langEnumName
-  local i=this.GVARS_NAME[r].paramName
-  if not a then
+function this.ShowReward(category)
+  local stackSizeName=this.GVARS_NAME[category].stackSizeName
+  local langEnumName=this.GVARS_NAME[category].langEnumName
+  local paramName=this.GVARS_NAME[category].paramName
+  if not stackSizeName then
     return
   end
-  local n=gvars[a]
-  if n<=0 then
+  local stackSize=gvars[stackSizeName]
+  if stackSize<=0 then
     return
   end
-  local o=gvars[t]
-  for a=0,(n-1)do
-    local n,t,i=this.GetParameters(i,a)
-    this.ShowBonusPopup(r,n,o[a],t,i)
+  local rewardGvar=gvars[langEnumName]
+  for i=0,(stackSize-1)do
+    local rewardType,rewardArg1,rewardArg2=this.GetParameters(paramName,i)
+    this.ShowBonusPopup(category,rewardType,rewardGvar[i],rewardArg1,rewardArg2)
   end
-  gvars[a]=0
+  gvars[stackSizeName]=0
 end
-function this.ShowBonusPopup(i,r,t,o,d)
-  local a=this.LANG_ENUM[i][t]
-  if not a then
+function this.ShowBonusPopup(category,rewardType,bonusId,o,d)
+  local langEnum=this.LANG_ENUM[category][bonusId]
+  if not langEnum then
     return
   end
-  local n=this.REWARD_FIRST_LANG[r]
-  if r==this.TYPE.COMMON then
-    TppUiCommand.ShowBonusPopupCommon(a)
-    this.ShowBonusPopupCategory(r,a,t)
-    if i==TppScriptVars.CATEGORY_MB_MANAGEMENT then
-      local e=this.RADIO_GROUP_NAME[t]
-      if e then
-        TppUiCommand.SetBonusPopupRadio(a,e)
+  local rewardFirstLangId=this.REWARD_FIRST_LANG[rewardType]
+  if rewardType==this.TYPE.COMMON then
+    TppUiCommand.ShowBonusPopupCommon(langEnum)
+    this.ShowBonusPopupCategory(rewardType,langEnum,bonusId)
+    if category==TppScriptVars.CATEGORY_MB_MANAGEMENT then
+      local radioGroupName=this.RADIO_GROUP_NAME[bonusId]
+      if radioGroupName then
+        TppUiCommand.SetBonusPopupRadio(langEnum,radioGroupName)
       end
     end
-  elseif r==this.TYPE.CASSET_TAPE then
+  elseif rewardType==this.TYPE.CASSET_TAPE then
     TppUiCommand.ShowBonusPopupItemTape(o)
-  elseif r==this.TYPE.EMBLEM then
+  elseif rewardType==this.TYPE.EMBLEM then
     TppUiCommand.ShowBonusPopupEmblem(o,d)
-  elseif r==this.TYPE.RANKING then
-    local a=TppRanking.GetRankingLangId(o)
-    TppUiCommand.ShowBonusPopupCommon(n,a)
-    this.ShowBonusPopupCategory(r,n,t)
-  elseif n then
-    TppUiCommand.ShowBonusPopupCommon(n,a)
-    this.ShowBonusPopupCategory(r,n,t)
+  elseif rewardType==this.TYPE.RANKING then
+    local rankingLangId=TppRanking.GetRankingLangId(o)
+    TppUiCommand.ShowBonusPopupCommon(rewardFirstLangId,rankingLangId)
+    this.ShowBonusPopupCategory(rewardType,rewardFirstLangId,bonusId)
+  elseif rewardFirstLangId then
+    TppUiCommand.ShowBonusPopupCommon(rewardFirstLangId,langEnum)
+    this.ShowBonusPopupCategory(rewardType,rewardFirstLangId,bonusId)
   end
 end
 function this.SetParameters(r,a,o,i,t)
@@ -162,58 +162,70 @@ function this.SetParameters(r,a,o,i,t)
   gvars[r][e]=i
   gvars[r][a]=t
 end
-function this.GetParameters(r,a)
-  local a,e,n=this.GetParameterOffsets(a)
-  local a=gvars[r][a]
-  local e=gvars[r][e]
-  local r=gvars[r][n]
-  return a,e,r
+function this.GetParameters(paramName,a)
+  local typeOffset,arg1Offset,arg2Offset=this.GetParameterOffsets(a)
+  local type=gvars[paramName][typeOffset]
+  local arg1=gvars[paramName][arg1Offset]
+  local arg2=gvars[paramName][arg2Offset]
+  return type,arg1,arg2
 end
 function this.GetParameterOffsets(e)
-  local e=e*TppDefine.REWARD_PARAM.MAX
-  local r=e+TppDefine.REWARD_PARAM.TYPE
-  local a=e+TppDefine.REWARD_PARAM.ARG1
-  local e=e+TppDefine.REWARD_PARAM.ARG2
-  return r,a,e
+  local max=e*TppDefine.REWARD_PARAM.MAX
+  local typeOffset=max+TppDefine.REWARD_PARAM.TYPE
+  local arg1Offset=max+TppDefine.REWARD_PARAM.ARG1
+  local arg2Offset=max+TppDefine.REWARD_PARAM.ARG2
+  return typeOffset,arg1Offset,arg2Offset
 end
-function this.ShowBonusPopupCategory(r,a,n)
-  if r==this.TYPE.COMMON then
-    this.ShowBonusPopupCategoryCommon(a,n)
-  elseif r==this.TYPE.CASSET_TAPE then
-  elseif r==this.TYPE.KEY_ITEM then
+function this.ShowBonusPopupCategory(rewardType,a,bonusId)
+  if rewardType==this.TYPE.COMMON then
+    this.ShowBonusPopupCategoryCommon(a,bonusId)
+  elseif rewardType==this.TYPE.CASSET_TAPE then
+  elseif rewardType==this.TYPE.KEY_ITEM then
     TppUiCommand.SetBonusPopupCategory(a,"keyitem")
-  elseif r==this.TYPE.BLUE_PRINT then
+  elseif rewardType==this.TYPE.BLUE_PRINT then
     TppUiCommand.SetBonusPopupCategory(a,"devfile")
-  elseif r==this.TYPE.EMBLEM then
-  elseif r==this.TYPE.ANIMAL then
-  elseif r==this.TYPE.RANKING then
+  elseif rewardType==this.TYPE.EMBLEM then
+  elseif rewardType==this.TYPE.ANIMAL then
+  elseif rewardType==this.TYPE.RANKING then
     TppUiCommand.SetBonusPopupCategory(a,"trial")
   end
 end
-function this.GetBonusPopupCategory(e)
-  if e<4 then
-    return"keyitem"elseif e<18 then
-    return"motherbase"elseif e<25 then
-    return"develop"elseif e<32 then
-    return"custom"elseif e<37 then
-    return"callmenu"elseif e==37 then
-  elseif e==38 then
-    return"devfile"elseif e==39 then
-    return"keyitem"elseif e<43 then
-  elseif e==43 then
-  elseif e==44 then
-    return"trial"elseif e==45 then
-  elseif e<48 then
-    return"motherbase"elseif e<55 then
-    return"keyitem"elseif e==55 then
-    return"develop"elseif e<58 then
-    return"keyitem"end
+function this.GetBonusPopupCategory(bonusId)
+  if bonusId<4 then
+    return"keyitem"
+  elseif bonusId<18 then
+    return"motherbase"
+  elseif bonusId<25 then
+    return"develop"
+  elseif bonusId<32 then
+    return"custom"
+  elseif bonusId<37 then
+    return"callmenu"
+  elseif bonusId==37 then
+  elseif bonusId==38 then
+    return"devfile"
+  elseif bonusId==39 then
+    return"keyitem"
+  elseif bonusId<43 then
+  elseif bonusId==43 then
+  elseif bonusId==44 then
+    return"trial"
+  elseif bonusId==45 then
+  elseif bonusId<48 then
+    return"motherbase"
+  elseif bonusId<55 then
+    return"keyitem"
+  elseif bonusId==55 then
+    return"develop"
+  elseif bonusId<58 then
+    return"keyitem"
+  end
   return nil
 end
-function this.ShowBonusPopupCategoryCommon(r,a)
-  local e=this.GetBonusPopupCategory(a)
-  if e~=nil then
-    TppUiCommand.SetBonusPopupCategory(r,e)
+function this.ShowBonusPopupCategoryCommon(r,bonusId)
+  local bonusCategory=this.GetBonusPopupCategory(bonusId)
+  if bonusCategory~=nil then
+    TppUiCommand.SetBonusPopupCategory(r,bonusCategory)
   end
 end
 return this

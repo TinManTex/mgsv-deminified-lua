@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppClock.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local t=(1/60)/60
@@ -154,7 +155,7 @@ function this.ParseTimeString(timeString,timeType)
     return nil
   end
 end
-function this.OnAllocate(n)
+function this.OnAllocate(missionTable)
   if TppCommand.Weather.UnregisterAllClockMessages then
     TppCommand.Weather.UnregisterAllClockMessages()
   end

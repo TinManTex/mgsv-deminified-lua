@@ -19,8 +19,8 @@ local breakableList={
   savannah_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/mafr/block_large/savannah/mafr_savannah_gimmick.fox2"},
   swamp_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/mafr/block_large/swamp/mafr_swamp_gimmick.fox2"}
 }
-local afghanistanLZObject={}
-afghanistanLZObject.ConnectLandingZoneTable={
+local afghanistanLZTable={}
+afghanistanLZTable.ConnectLandingZoneTable={
   cliffTown_aacr001={aprLandingZoneName={"lz_cliffTown_I0000|lz_cliffTown_I_0000"},drpLandingZoneName={"lz_drp_cliffTown_I0000|rt_drp_cliffTown_I0000"}},
   commFacility_aacr001={aprLandingZoneName={"lz_commFacility_I0000|lz_commFacility_I_0000"},drpLandingZoneName={"lz_drp_commFacility_I0000|rt_drp_commFacility_I_0000"}},
   enemyBase_aacr001={aprLandingZoneName={"lz_enemyBase_I0000|lz_enemyBase_I_0000"},drpLandingZoneName={"lz_drp_enemyBase_I0000|rt_drp_enemyBase_I_0000"}},
@@ -32,7 +32,7 @@ afghanistanLZObject.ConnectLandingZoneTable={
   sovietBase_aacr001={aprLandingZoneName={"lz_sovietBase_E0000|lz_sovietBase_E_0000"},drpLandingZoneName={"lz_drp_sovietBase_E0000|rt_drp_sovietBase_E_0000"}},
   tent_aacr001={aprLandingZoneName={"lz_tent_I0000|lz_tent_I_0000"},drpLandingZoneName={"lz_drp_tent_I0000|rt_drp_tent_I_0000"}}
 }
-afghanistanLZObject.MissionLandingZoneTable={
+afghanistanLZTable.MissionLandingZoneTable={
   {aprLandingZoneName="lz_bridge_S0000|lz_bridge_S_0000",drpLandingZoneName="lz_drp_bridge_S0000|rt_drp_bridge_S_0000",missionList={10040}},
   {aprLandingZoneName="lz_citadelSouth_S0000|lz_citadelSouth_S_0000",drpLandingZoneName="lz_drp_citadelSouth_S0000|rt_drp_citadelSouth_S_0000",missionList={10045}},
   {aprLandingZoneName="lz_cliffTown_N0000|lz_cliffTown_N_0000",drpLandingZoneName="lz_drp_cliffTown_N0000|rt_drp_clifftown_N_0000",missionList={10044}},
@@ -67,8 +67,8 @@ afghanistanLZObject.MissionLandingZoneTable={
   {aprLandingZoneName="lz_waterway_I0000|lz_waterway_I_0000",drpLandingZoneName="lz_drp_waterway_I0000|rt_drp_waterway_I_0000",missionList={10050}},
 }
 
-local middleAfricaLZObject={}
-middleAfricaLZObject.ConnectLandingZoneTable={
+local middleAfricaLZTable={}
+middleAfricaLZTable.ConnectLandingZoneTable={
   banana_aacr001={aprLandingZoneName={"lz_banana_I0000|lz_banana_I_0000"},drpLandingZoneName={"lz_drp_banana_I0000|rt_drp_banana_I_0000"}},
   diamond_aacr001={aprLandingZoneName={"lz_diamond_I0000|lz_diamond_I_0000"},drpLandingZoneName={"lz_drp_diamond_I0000|rt_drp_diamond_I_0000"}},
   flowStation_aacr001={aprLandingZoneName={"lz_flowStation_I0000|lz_flowStation_I_0000"},drpLandingZoneName={"lz_drp_flowStation_I0000|rt_drp_flowStation_I_0000"}},
@@ -77,7 +77,7 @@ middleAfricaLZObject.ConnectLandingZoneTable={
   savannah_aacr001={aprLandingZoneName={"lz_savannah_I0000|lz_savannah_I_0000"},drpLandingZoneName={"lz_drp_savannah_I0000|rt_drp_savannah_I_0000"}},
   swamp_aacr001={aprLandingZoneName={"lz_swamp_I0000|lz_swamp_I_0000"},drpLandingZoneName={"lz_drp_swamp_I0000|rt_drp_swamp_I_0000"}}
 }
-middleAfricaLZObject.MissionLandingZoneTable={
+middleAfricaLZTable.MissionLandingZoneTable={
   {aprLandingZoneName="lz_bananaSouth_N0000|lz_bananaSouth_N",drpLandingZoneName="lz_drp_bananaSouth_N0000|rt_drp_bananaSouth_N_0000",missionList={10211}},
   {aprLandingZoneName="lz_diamond_N0000|lz_diamond_N_0000",drpLandingZoneName="lz_drp_diamond_N0000|rt_drp_diamond_N_0000",missionList={10100}},
   {aprLandingZoneName="lz_diamondSouth_S0000|lz_diamondSouth_S_0000",drpLandingZoneName="lz_drp_diamondSouth_S0000|lz_drp_diamondSouth_S_0000",missionList={10195}},
@@ -109,10 +109,40 @@ middleAfricaLZObject.MissionLandingZoneTable={
   {aprLandingZoneName="lz_swampEast_N0000|lz_swampEast_N_0000",drpLandingZoneName="lz_drp_swampEast_N0000|lz_drp_swampEast_N_0000",missionList={10082,10086,10091,10211}}
 }
 
+--tex> drp to apr
+this.assaultLzs={
+  afgh={},
+  mafr={},
+}
+this.missionLzs={
+  afgh={},
+  mafr={},
+}
+
+local locInfo={
+  {location="afgh",connectTable=afghanistanLZTable.ConnectLandingZoneTable,missionTable=afghanistanLZTable.MissionLandingZoneTable},
+  {location="mafr",connectTable=middleAfricaLZTable.ConnectLandingZoneTable,missionTable=middleAfricaLZTable.MissionLandingZoneTable},
+}
+
+for i=1,#locInfo do
+  local locationInfo=locInfo[i]
+  local lzTable=this.assaultLzs[locationInfo.location]
+  for aaName,lzInfo in pairs(locationInfo.connectTable) do
+    lzTable[lzInfo.drpLandingZoneName[1]]=lzInfo.aprLandingZoneName[1]
+  end
+
+  local lzTable=this.missionLzs[locationInfo.location]
+  for j=1,#locationInfo.missionTable do
+    local lzInfo=locationInfo.missionTable[j]
+    lzTable[lzInfo.drpLandingZoneName]=lzInfo.aprLandingZoneName
+  end
+end
+--<
+
 function this.OnInitialize()
   local connectLZTable={}
-  Tpp.MergeTable(connectLZTable,afghanistanLZObject.ConnectLandingZoneTable)
-  Tpp.MergeTable(connectLZTable,middleAfricaLZObject.ConnectLandingZoneTable)
+  Tpp.MergeTable(connectLZTable,afghanistanLZTable.ConnectLandingZoneTable)
+  Tpp.MergeTable(connectLZTable,middleAfricaLZTable.ConnectLandingZoneTable)
   TppGimmick.SetUpConnectLandingZoneTable(connectLZTable)
   mvars.ldz_assaultDropLandingZoneTable={}
   local drpLandingZones={}
@@ -135,46 +165,46 @@ function this.OnMissionCanStart()
     local missionNumber,missionTypeCodeName=TppMission.ParseMissionName(TppMission.GetMissionName())
     if missionTypeCodeName=="heli"or missionTypeCodeName=="free"then
       TppUiCommand.ClearAllDisabledLandPoints()
-      this.DisableLandingZoneForMission(afghanistanLZObject.MissionLandingZoneTable,missionTypeCodeName)
-      this.DisableLandingZoneForMission(middleAfricaLZObject.MissionLandingZoneTable,missionTypeCodeName)
+      this.DisableLandingZoneForMission(afghanistanLZTable.MissionLandingZoneTable,missionTypeCodeName)
+      this.DisableLandingZoneForMission(middleAfricaLZTable.MissionLandingZoneTable,missionTypeCodeName)
     end
-    this._OnMissionCanStart(afghanistanLZObject,missionNumber,missionTypeCodeName)
-    this._OnMissionCanStart(middleAfricaLZObject,missionNumber,missionTypeCodeName)
+    this._OnMissionCanStart(afghanistanLZTable,missionNumber,missionTypeCodeName)
+    this._OnMissionCanStart(middleAfricaLZTable,missionNumber,missionTypeCodeName)
     if TppQuest.IsActive"waterway_q99010"then--PATCHUP:
-      this.DisableLandingZone(afghanistanLZObject.ConnectLandingZoneTable.sovietBase_aacr001,"heli")
-      this.DisableLandingZone(afghanistanLZObject.ConnectLandingZoneTable.powerPlant_aacr001,"heli")
+      this.DisableLandingZone(afghanistanLZTable.ConnectLandingZoneTable.sovietBase_aacr001,"heli")
+      this.DisableLandingZone(afghanistanLZTable.ConnectLandingZoneTable.powerPlant_aacr001,"heli")
     end
   end
 end
 function this.DisableLandingZoneForMission(missionLZTable,missionTypeCodeName)
   local lzType
-  local disableFunc
+  local DisableFunc
   if missionTypeCodeName=="heli"then
     lzType="drpLandingZoneName"
-    disableFunc=TppUiCommand.AddDisabledLandPoint
+    DisableFunc=TppUiCommand.AddDisabledLandPoint
   else
     lzType="aprLandingZoneName"
-    disableFunc=this.GroundDisableLandingZone
+    DisableFunc=this.GroundDisableLandingZone
   end
-  for n,missionLZ in ipairs(missionLZTable)do
+  for n,lzInfo in ipairs(missionLZTable)do
     local doDisable=true
-    if not missionLZ.missionList then
+    if not lzInfo.missionList then
       doDisable=true
     else
-      for n,missionName in ipairs(missionLZ.missionList)do
-        if TppStory.IsMissionOpen(missionName)then
+      for n,missionCode in ipairs(lzInfo.missionList)do
+        if TppStory.IsMissionOpen(missionCode)then
           doDisable=false
         end
       end
     end
     if doDisable then
-      disableFunc(missionLZ[lzType])
+      DisableFunc(lzInfo[lzType])
     end
   end
 end
 function this._OnMissionCanStart(lzTable,missionNumber,missionTypeCodeName)
   for aacr,lzs in pairs(lzTable.ConnectLandingZoneTable)do
-    if not this.IsBrokenGimmick(aacr) or Ivars.noCentralLzs:Is(1) then--tex
+    if not this.IsBrokenGimmick(aacr) then
       this.DisableLandingZone(lzTable.ConnectLandingZoneTable[aacr],missionTypeCodeName)
     end
     this.RegisterAssaultDropLandingZone(lzs.drpLandingZoneName)
@@ -182,18 +212,18 @@ function this._OnMissionCanStart(lzTable,missionNumber,missionTypeCodeName)
 end
 function this.DisableLandingZone(connectLZTableForAacr,missionTypeCodeName)
   local lzType
-  local disableFunc
+  local DisableFunc
   if missionTypeCodeName=="heli"then
     lzType="drpLandingZoneName"
-    disableFunc=TppUiCommand.AddDisabledLandPoint
+    DisableFunc=TppUiCommand.AddDisabledLandPoint
   else
     lzType="aprLandingZoneName"
-    disableFunc=this.GroundDisableLandingZone
+    DisableFunc=this.GroundDisableLandingZone
   end
   local lzs=connectLZTableForAacr[lzType]
   if lzs then
     for n,lz in pairs(lzs)do
-      disableFunc(lz)
+      DisableFunc(lz)
     end
   end
 end

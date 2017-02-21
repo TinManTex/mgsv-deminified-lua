@@ -17,11 +17,11 @@ end
 function this.UnsetNoSupportHelicopter()
   mvars.hel_isExistSupportHelicopter=true
 end
-function this.ForceCallToLandingZone(a)
-  if not IsTypeTable(a)then
+function this.ForceCallToLandingZone(_lzName)
+  if not IsTypeTable(_lzName)then
     return
   end
-  local landingZoneName=a.landingZoneName
+  local landingZoneName=_lzName.landingZoneName
   if not IsTypeString(landingZoneName)then
     return
   end
@@ -37,11 +37,11 @@ function this.ForceCallToLandingZone(a)
     return
   end
 end
-function this.CallToLandingZone(a)
-  if not IsTypeTable(a)then
+function this.CallToLandingZone(_lzName)
+  if not IsTypeTable(_lzName)then
     return
   end
-  local landingZoneName=a.landingZoneName
+  local landingZoneName=_lzName.landingZoneName
   if not IsTypeString(landingZoneName)then
     return
   end
@@ -56,11 +56,11 @@ function this.CallToLandingZone(a)
     return
   end
 end
-function this.SetEnableLandingZone(a)
-  if not IsTypeTable(a)then
+function this.SetEnableLandingZone(_lzName)
+  if not IsTypeTable(_lzName)then
     return
   end
-  local landingZoneName=a.landingZoneName
+  local landingZoneName=_lzName.landingZoneName
   if not IsTypeString(landingZoneName)then
     return
   end
@@ -74,29 +74,29 @@ function this.SetEnableLandingZone(a)
     return
   end
 end
-function this.SetDisableLandingZone(landingZoneName)
-  if not IsTypeTable(landingZoneName)then
+function this.SetDisableLandingZone(_lzName)
+  if not IsTypeTable(_lzName)then
     return
   end
-  local t=landingZoneName.landingZoneName
-  if not IsTypeString(t)then
+  local landingZoneName=_lzName.landingZoneName
+  if not IsTypeString(landingZoneName)then
     return
   end
   if not mvars.hel_isExistSupportHelicopter then
     return
   end
-  local e=this.GetSupportHeliGameObjectId()
-  if e~=NULL_ID then
-    GameObject.SendCommand(e,{id="DisableLandingZone",name=t})
+  local heliId=this.GetSupportHeliGameObjectId()
+  if heliId~=NULL_ID then
+    GameObject.SendCommand(heliId,{id="DisableLandingZone",name=landingZoneName})
   else
     return
   end
 end
-function this.GetLandingZoneExists(a)
-  if not IsTypeTable(a)then
+function this.GetLandingZoneExists(lzName)
+  if not IsTypeTable(lzName)then
     return
   end
-  local landingZoneName=a.landingZoneName
+  local landingZoneName=lzName.landingZoneName
   if not IsTypeString(landingZoneName)then
     return
   end
@@ -144,17 +144,17 @@ function this.ClearPassengerTable()
   mvars.hel_heliPassengerTable=nil
   mvars.hel_heliPassengerList=nil
 end
-function this.IsInHelicopter(n)
+function this.IsInHelicopter(passengerId)
   if not IsTypeTable(mvars.hel_heliPassengerTable)then
     return
   end
-  local e
-  if Tpp.IsTypeString(n)then
-    e=GetGameObjectId(n)
+  local gameId
+  if Tpp.IsTypeString(passengerId)then
+    gameId=GetGameObjectId(passengerId)
   else
-    e=n
+    gameId=passengerId
   end
-  return mvars.hel_heliPassengerTable[e]
+  return mvars.hel_heliPassengerTable[gameId]
 end
 function this.ForcePullOut()
   GameObject.SendCommand({type="TppHeli2",index=0},{id="PullOut",forced=true})
@@ -210,14 +210,14 @@ function this.SetDefaultTakeOffTime()
   GameObject.SendCommand(e,{id="SetTakeOffWaitTime",time=5})
 end
 function this.SetNoTakeOffTime()
-  local e=this.GetSupportHeliGameObjectId()
-  if(e==nil)then
+  local heliId=this.GetSupportHeliGameObjectId()
+  if(heliId==nil)then
     return
   end
-  if e==NULL_ID then
+  if heliId==NULL_ID then
     return
   end
-  GameObject.SendCommand(e,{id="SetTakeOffWaitTime",time=0})
+  GameObject.SendCommand(heliId,{id="SetTakeOffWaitTime",time=0})
 end
 function this.SetRouteToHelicopterOnStartMission()
   local heliId=this.GetSupportHeliGameObjectId()

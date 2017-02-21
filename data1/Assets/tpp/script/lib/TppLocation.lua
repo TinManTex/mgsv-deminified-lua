@@ -124,30 +124,30 @@ function this.RegistBaseAssetTable(onActiveTable,onActiveSmallBlockTable)
     for name,info in pairs(onActiveSmallBlockTable)do
       local activeArea=info.activeArea
       if activeArea then
-        local e=Tpp.AreaToIndices(activeArea)
-        StageBlock.AddSmallBlockIndexForMessage(e)
+        local indices=Tpp.AreaToIndices(activeArea)
+        StageBlock.AddSmallBlockIndexForMessage(indices)
       end
       if not info.OnActive then
       end
     end
   end
 end
-function this.RegistMissionAssetInitializeTable(n,e)
-  if n then
+function this.RegistMissionAssetInitializeTable(baseOnActiveTable,onActiveSmallBlockTable)
+  if baseOnActiveTable then
     mvars.loc_missionAssetOnActive={}
-    for n,e in pairs(n)do
-      mvars.loc_missionAssetOnActive[Fox.StrCode32(n)]=e
+    for cpName,cpOnActiveFunction in pairs(baseOnActiveTable)do
+      mvars.loc_missionAssetOnActive[Fox.StrCode32(cpName)]=cpOnActiveFunction
     end
   end
-  if e then
-    mvars.loc_missionAssetOnActiveSmallBlock=e
-    for e,n in pairs(e)do
-      local e=n.activeArea
-      if e then
-        local e=Tpp.AreaToIndices(e)
-        StageBlock.AddSmallBlockIndexForMessage(e)
+  if onActiveSmallBlockTable then
+    mvars.loc_missionAssetOnActiveSmallBlock=onActiveSmallBlockTable
+    for cpName,onActiveInfo in pairs(onActiveSmallBlockTable)do
+      local activeArea=onActiveInfo.activeArea
+      if activeArea then
+        local areaIndices=Tpp.AreaToIndices(activeArea)
+        StageBlock.AddSmallBlockIndexForMessage(areaIndices)
       end
-      if not n.OnActive then
+      if not onActiveInfo.OnActive then
       end
     end
   end
@@ -160,9 +160,9 @@ function this.ActivateBlock()
   if noLoadTable[vars.locationCode]then
     return
   end
-  local n=StageBlock.GetLoadedLargeBlocks(0)
-  for t,n in pairs(n)do
-    this.OnActiveLargeBlock(n,StageBlock.ACTIVE)
+  local loadedLargeBlocks=StageBlock.GetLoadedLargeBlocks(0)
+  for t,blockName in pairs(loadedLargeBlocks)do
+    this.OnActiveLargeBlock(blockName,StageBlock.ACTIVE)
   end
   local a=4
   local t,n=StageBlock.GetCurrentMinimumSmallBlockIndex()
@@ -183,52 +183,58 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this.Messages()
-  return Tpp.StrCode32Table{Block={{msg="OnChangeLargeBlockState",func=this.OnActiveLargeBlock,option={isExecDemoPlaying=true,isExecMissionPrepare=true}},{msg="OnChangeSmallBlockState",func=this.OnActiveSmallBlock,option={isExecDemoPlaying=true,isExecMissionPrepare=true}}},nil}
+  return Tpp.StrCode32Table{
+    Block={
+      {msg="OnChangeLargeBlockState",func=this.OnActiveLargeBlock,option={isExecDemoPlaying=true,isExecMissionPrepare=true}},
+      {msg="OnChangeSmallBlockState",func=this.OnActiveSmallBlock,option={isExecDemoPlaying=true,isExecMissionPrepare=true}},
+    },
+    nil
+  }
 end
-function this.OnActiveLargeBlock(n,e)
-  if e==StageBlock.INACTIVE then
+function this.OnActiveLargeBlock(blockName,blockStatus)
+  if blockStatus==StageBlock.INACTIVE then
     return
   end
   if TppSequence.IsEndSaving()==false then
     return
   end
-  local e=mvars.loc_locationBaseAssetOnActive
-  if e then
-    local e=e[n]
-    if e then
-      e()
+  local locationBaseAssetOnActive=mvars.loc_locationBaseAssetOnActive
+  if locationBaseAssetOnActive then
+    local OnActive=locationBaseAssetOnActive[blockName]
+    if OnActive then
+      OnActive()
     end
   end
-  local e=mvars.loc_missionAssetOnActive
-  if e then
-    local e=e[n]
-    if e then
-      e()
+  local missionAssetOnActive=mvars.loc_missionAssetOnActive
+  if missionAssetOnActive then
+    local OnActive=missionAssetOnActive[blockName]
+    if OnActive then
+      OnActive()
     end
   end
 end
-function this.OnActiveSmallBlock(t,n,status)
-  if status==StageBlock.INACTIVE then
+function this.OnActiveSmallBlock(t,n,blockStatus)
+  if blockStatus==StageBlock.INACTIVE then
     return
   end
-  local e=mvars.loc_locationBaseOnActiveSmallBlock
-  if e then
-    for a,e in pairs(e)do
-      local e,a=e.activeArea,e.OnActive
-      if e then
-        if Tpp.CheckBlockArea(e,t,n)then
-          a()
+  local locationBaseOnActiveSmallBlock=mvars.loc_locationBaseOnActiveSmallBlock
+  if locationBaseOnActiveSmallBlock then
+    for blockName,blockInfo in pairs(locationBaseOnActiveSmallBlock)do
+      local activeInfo,OnActive=blockInfo.activeArea,blockInfo.OnActive
+      if activeInfo then
+        if Tpp.CheckBlockArea(activeInfo,t,n)then
+          OnActive()
         end
       end
     end
   end
-  local e=mvars.loc_missionAssetOnActiveSmallBlock
-  if e then
-    for a,e in pairs(e)do
-      local e,a=e.activeArea,e.OnActive
-      if e then
-        if Tpp.CheckBlockArea(e,t,n)then
-          a()
+  local missionAssetOnActiveSmallBlock=mvars.loc_missionAssetOnActiveSmallBlock
+  if missionAssetOnActiveSmallBlock then
+    for blockName,blockInfo in pairs(missionAssetOnActiveSmallBlock)do
+      local activeInfo,OnActive=blockInfo.activeArea,blockInfo.OnActive
+      if activeInfo then
+        if Tpp.CheckBlockArea(activeInfo,t,n)then
+          OnActive()
         end
       end
     end
