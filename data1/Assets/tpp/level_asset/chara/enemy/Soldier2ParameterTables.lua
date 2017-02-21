@@ -1,4 +1,6 @@
-this={}
+-- Soldier2ParameterTables.lua
+
+local this={}
 TppSoldier2.ReloadSoldier2ParameterTables{
   sightFormParameter={
     contactSightForm={distance=2,verticalAngle=160,horizontalAngle=130},

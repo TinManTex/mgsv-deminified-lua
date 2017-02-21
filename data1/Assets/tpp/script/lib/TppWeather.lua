@@ -1,3 +1,5 @@
+-- DOBUILD: 0
+-- TppWeather.lua
 local this={}
 local minuteInSeconds=60
 local hourInSeconds=60*60
@@ -38,6 +40,34 @@ local extraWeatherProbabilitiesTable={
   MTBS_HELI={{TppDefine.WEATHER.RAINY,100}},
   AFGH_NO_SANDSTORM={}
 }
+--tex>
+local altExtraWeatherProbabilitiesTable={
+  AFGH={
+    {TppDefine.WEATHER.SANDSTORM,80},
+    {TppDefine.WEATHER.RAINY,10},
+    {TppDefine.WEATHER.FOGGY,10},
+  },
+  MAFR={
+    {TppDefine.WEATHER.RAINY,70},
+    {TppDefine.WEATHER.FOGGY,20},
+    {TppDefine.WEATHER.SANDSTORM,10},    
+  },
+  MTBS={
+    {TppDefine.WEATHER.RAINY,50},
+    {TppDefine.WEATHER.FOGGY,50},
+  },
+  AFGH_HELI={},
+  MAFR_HELI={
+    {TppDefine.WEATHER.RAINY,60},
+    {TppDefine.WEATHER.FOGGY,40},
+  },
+  MTBS_HELI={
+    {TppDefine.WEATHER.RAINY,70},
+    {TppDefine.WEATHER.SANDSTORM,30},
+  },
+  AFGH_NO_SANDSTORM={}
+}
+--<
 local sandStormOrFoggy={[TppDefine.WEATHER.SANDSTORM]=true,[TppDefine.WEATHER.FOGGY]=true}
 local userIdScript="Script"
 local userIdWeather="WeatherSystem"
@@ -89,28 +119,41 @@ function this.SetDefaultWeatherProbabilities()
   local weatherProbabilities
   local extraWeatherProbabilities
   local isHeliSpace=TppMission.IsHelicopterSpace(vars.missionCode)
-  if TppLocation.IsAfghan()then
-    weatherProbabilities=weatherProbabilitiesTable.AFGH
-    if isHeliSpace then
-      extraWeatherProbabilities=extraWeatherProbabilitiesTable.AFGH_HELI
-    else
-      extraWeatherProbabilities=extraWeatherProbabilitiesTable.AFGH
-    end
-  elseif TppLocation.IsMiddleAfrica()then
-    weatherProbabilities=weatherProbabilitiesTable.MAFR
-    if isHeliSpace then
-      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MAFR_HELI
-    else
-      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MAFR
-    end
-  elseif TppLocation.IsMotherBase()then
-    weatherProbabilities=weatherProbabilitiesTable.MTBS
-    if isHeliSpace then
-      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MTBS_HELI
-    else
-      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MTBS
-    end
+
+  --tex reworked>
+  local locationName=InfMain.GetLocationName()--tex use TppLocation.GetLocationName() if modding this independantly from Infinite Heaven
+  locationName=string.upper(locationName)
+  local heliSuffix=""
+  if isHeliSpace then
+    heliSuffix="_HELI"
   end
+
+  weatherProbabilities=weatherProbabilitiesTable[locationName]
+  extraWeatherProbabilities=extraWeatherProbabilitiesTable[locationName..heliSuffix]
+  --<
+  -- ORIG
+  --  if TppLocation.IsAfghan()then
+  --    weatherProbabilities=weatherProbabilitiesTable.AFGH
+  --    if isHeliSpace then
+  --      extraWeatherProbabilities=extraWeatherProbabilitiesTable.AFGH_HELI
+  --    else
+  --      extraWeatherProbabilities=extraWeatherProbabilitiesTable.AFGH
+  --    end
+  --  elseif TppLocation.IsMiddleAfrica()then
+  --    weatherProbabilities=weatherProbabilitiesTable.MAFR
+  --    if isHeliSpace then
+  --      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MAFR_HELI
+  --    else
+  --      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MAFR
+  --    end
+  --  elseif TppLocation.IsMotherBase()then
+  --    weatherProbabilities=weatherProbabilitiesTable.MTBS
+  --    if isHeliSpace then
+  --      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MTBS_HELI
+  --    else
+  --      extraWeatherProbabilities=extraWeatherProbabilitiesTable.MTBS
+  --    end
+  --  end
   if weatherProbabilities then
     WeatherManager.SetNewWeatherProbabilities("default",weatherProbabilities)
   end

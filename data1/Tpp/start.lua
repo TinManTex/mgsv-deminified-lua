@@ -194,9 +194,9 @@ SoundCoreDaemon.SetInterferenceRTPCName("obstruction_rtpc","occlusion_rtpc")
 SoundCoreDaemon.SetDopplerRTPCName"doppler"
 SoundCoreDaemon.SetRearParameter("rear_rtpc",5)
 if TppSoundDaemon then
-  local e=TppSoundDaemon{}
+  local tppSoundDaemon=TppSoundDaemon{}
   if TppSoundEditorDaemon then
-    local e=TppSoundEditorDaemon{}
+    local tppSoundEditorDaemon=TppSoundEditorDaemon{}
   end
 end
 TppRadioCommand.CreateSoundControl()
@@ -576,14 +576,14 @@ if Script.LoadLibrary then
   else
     tppOrMgoPath="/Assets/tpp/"
   end
-  local e
+  local filePath
   if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-    e="/Assets/mgo/level_asset/weapon/ParameterTables/EquipIdTable.lua"
+    filePath="/Assets/mgo/level_asset/weapon/ParameterTables/EquipIdTable.lua"
   else
-    e="Tpp/Scripts/Equip/EquipIdTable.lua"
+    filePath="Tpp/Scripts/Equip/EquipIdTable.lua"
   end
-  Script.LoadLibraryAsync(e)
-  while Script.IsLoadingLibrary(e)do
+  Script.LoadLibraryAsync(filePath)
+  while Script.IsLoadingLibrary(filePath)do
     yield()
   end
   local e=tppOrMgoPath.."level_asset/weapon/ParameterTables/parts/EquipParameters.lua"
@@ -732,5 +732,4 @@ TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
 
 --local splash=SplashScreen.Create("startend","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_kjp_logo_clp_nmp.ftex",640,640)--tex
-
 --SplashScreen.Show(splash,.2,1,.2)--tex

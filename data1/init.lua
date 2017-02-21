@@ -369,41 +369,41 @@ if EnvironmentDaemon then
     local e=WindManager{}
   end
 end
-local e=Fox.GetPlatformName()
+local platform=Fox.GetPlatformName()
 if GrDaemon then
-  if e=="Windows"then
-    local e=""
+  if platform=="Windows"then
+    local deviceName=""
     if GrTools then
-      e=GrTools.GetDeviceName()
+      deviceName=GrTools.GetDeviceName()
     end
-    if e=="directx11"then
+    if deviceName=="directx11"then
       FoxGameFrame.SetGameFrameWaitType"VirtualVsyncDx11"
     else
       FoxGameFrame.SetGameFrameWaitType"VirtualVsync"
     end
   end
-  if e=="Xbox360"then
+  if platform=="Xbox360"then
     FoxGameFrame.SetGameFrameWaitType"ExternalVsyncOffset"
   end
-  if e=="PS3"then
+  if platform=="PS3"then
     FoxGameFrame.SetGameFrameWaitType"ExternalWait"
   end
-  if e=="XboxOne"then
+  if platform=="XboxOne"then
     FoxGameFrame.SetGameFrameWaitType"ExternalWait"
   end
-  if e=="PS4"then
+  if platform=="PS4"then
     FoxGameFrame.SetGameFrameWaitType"VirtualVsyncDx11"
   end
 end
 if PerformanceViewer then
-  local e=PerformanceViewer{name="PerformanceViewer"}
-  e:Invisible()
-  mainScene:AddActor(e)
+  local PerformanceViewer=PerformanceViewer{name="PerformanceViewer"}
+  PerformanceViewer:Invisible()
+  mainScene:AddActor(PerformanceViewer)
 end
 if MemoryViewer then
-  local e=MemoryViewer{name="MemoryViewer"}
-  e:Invisible()
-  mainScene:AddActor(e)
+  local memoryViewer=MemoryViewer{name="MemoryViewer"}
+  memoryViewer:Invisible()
+  mainScene:AddActor(memoryViewer)
 end
 if MiniPerfView then
   MiniPerfView.SetEnable(true)
@@ -412,7 +412,7 @@ if BlockSizeView then
   BlockSizeView.SetEnable(true)
 end
 if SyncEditor then
-  if e=="Windows"then
+  if platform=="Windows"then
     SyncEditor{name="syncEditor",scene="MainScene"}
   end
 end
@@ -425,7 +425,7 @@ end
 if Editor then
   Fox.SetActMode"EDIT"
 end
-if e=="Windows"then
+if platform=="Windows"then
   if GrxLightCapture then
     GrxLightCapture():InitInstance()
   end

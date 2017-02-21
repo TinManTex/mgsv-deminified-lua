@@ -240,7 +240,8 @@ function this.OnMissionCanStart()
       if not this._IsCheckSVarsSearchTargetName(targetGameObjectName)then
         for e=0,TppDefine.SEARCH_TARGET_COUNT-1 do
           if svars.mar_searchTargetName[e]==0 then
-            svars.mar_searchTargetName[e]=StrCode32(targetGameObjectName)break
+            svars.mar_searchTargetName[e]=StrCode32(targetGameObjectName)
+            break
           end
         end
       end

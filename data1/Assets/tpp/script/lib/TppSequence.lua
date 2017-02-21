@@ -7,7 +7,7 @@ local canStartTimespan=180
 local StrCode32=Fox.StrCode32
 local IsFunc=Tpp.IsTypeFunc
 local IsTable=Tpp.IsTypeTable
-local StartTimer=GkEventTimerManager.Start
+local TimerStart=GkEventTimerManager.Start
 local SVarsIsSynchronized=TppScriptVars.SVarsIsSynchronized
 this.MISSION_PREPARE_STATE=Tpp.Enum{"START","WAIT_INITALIZE","WAIT_TEXTURE_LOADING","END_TEXTURE_LOADING","WAIT_SAVING_FILE","END_SAVING_FILE","FINISH"}
 local function s(sequenceIndex)
@@ -156,7 +156,7 @@ baseSequences.Seq_Mission_Prepare={
         {msg="EndFadeIn",sender="FadeInOnGameStart",func=function()end,
           option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="StartMissionTelopFadeIn",func=function()
-          StartTimer("Timer_HelicopterMoveStart",s)
+          TimerStart("Timer_HelicopterMoveStart",s)
         end,
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="StartMissionTelopFadeOut",func=function()
@@ -166,7 +166,7 @@ baseSequences.Seq_Mission_Prepare={
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="PushEndLoadingTips",func=function()
           mvars.seq_nowWaitingPushEndLoadingTips=nil
-          StartTimer("Timer_WaitStartingGame",1)
+          TimerStart("Timer_WaitStartingGame",1)
         end,
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}}},
       Timer={
@@ -211,7 +211,7 @@ baseSequences.Seq_Mission_Prepare={
       if mvars.seq_isHelicopterStart then
         if mvars.seq_noMissionTelopOnHelicopter then
           baseSequences.Seq_Mission_Prepare.HelicopterMoveStart()
-          StartTimer("Timer_FadeInStartOnNoTelopHelicopter",noTelopFadeinTime)
+          TimerStart("Timer_FadeInStartOnNoTelopHelicopter",noTelopFadeinTime)
         else
           TppSoundDaemon.ResetMute"Loading"
           mvars.seq_nowWaitingStartMissionTelopFadeOut=true
@@ -313,14 +313,14 @@ baseSequences.Seq_Mission_Prepare={
       TppMain.OnMissionCanStart()
       if TppUiCommand.IsEndLoadingTips()then
         TppUI.FinishLoadingTips()
-        StartTimer("Timer_WaitStartingGame",waitStartTime)
+        TimerStart("Timer_WaitStartingGame",waitStartTime)
       else
         if gvars.waitLoadingTipsEnd then
           mvars.seq_nowWaitingPushEndLoadingTips=true
           TppUiCommand.PermitEndLoadingTips()
         else
           TppUI.FinishLoadingTips()
-          StartTimer("Timer_WaitStartingGame",waitStartTime)
+          TimerStart("Timer_WaitStartingGame",waitStartTime)
         end
       end
     end

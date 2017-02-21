@@ -12,8 +12,8 @@ local SVarsIsSynchronized=TppScriptVars.SVarsIsSynchronized
 local RegistPlayRecord=PlayRecord.RegistPlayRecord
 local bnot=bit.bnot
 local band,bor,bxor=bit.band,bit.bor,bit.bxor
-local StartTimer=GkEventTimerManager.Start
-local StopTimer=GkEventTimerManager.Stop
+local TimerStart=GkEventTimerManager.Start
+local TimerStop=GkEventTimerManager.Stop
 local IsTimerActive=GkEventTimerManager.IsTimerActive
 local IsHelicopter=Tpp.IsHelicopter
 local IsNotAlert=Tpp.IsNotAlert
@@ -365,10 +365,10 @@ function this._StartEmergencyMissionTimer(timerName,timeFromHeli,timeFromLand)
     return
   end
   if gvars.mis_isStartFromHelispace then--tex was this.IsStartFromHelispace()
-    StartTimer(timerName,timeFromHeli)
+    TimerStart(timerName,timeFromHeli)
     return timeFromHeli
   else
-    StartTimer(timerName,timeFromLand)
+    TimerStart(timerName,timeFromLand)
     return timeFromLand
   end
 end
@@ -794,8 +794,8 @@ function this.VarSaveForMissionAbort()
     end
     gvars.hosface_groupNumber=(math.random(0,65535)*65536)+math.random(1,65535)
     TppPlayer.SavePlayerCurrentWeapons()
-    local n=TppPlayer.RestoreWeaponsFromUsingTemp()
-    if not n then
+    local restored=TppPlayer.RestoreWeaponsFromUsingTemp()
+    if not restored then
       TppPlayer.SavePlayerCurrentAmmoCount()
     end
     TppPlayer.SavePlayerCurrentItems()
@@ -1044,7 +1044,7 @@ function this.FadeOutOnMissionGameEnd(fadeDelay,fadeSpeed,fadeId)
   else
     mvars.mis_missionGameEndFadeSpeed=fadeSpeed
     mvars.mis_missionGameEndFadeId=fadeId
-    StartTimer("Timer_FadeOutOnMissionGameEndStart",fadeDelay)
+    TimerStart("Timer_FadeOutOnMissionGameEndStart",fadeDelay)
   end
 end
 function this._FadeOutOnMissionGameEnd(faseSpeed,fadeId)
@@ -1068,7 +1068,7 @@ function this.ShowGameOverMenu(params)
     end
   end
   if delayTime and delayTime>0 then
-    StartTimer("Timer_GameOverPresentation",delayTime)
+    TimerStart("Timer_GameOverPresentation",delayTime)
   else
     this.ExecuteShowGameOverMenu()
   end
@@ -1614,7 +1614,7 @@ function this.Messages()
         end
       end,option={isExecMissionPrepare=true,isExecDemoPlaying=true}},
       {msg="RideHelicopter",func=function()
-        StartTimer("Timer_PlayCommonRadioOnRideHelicopter",1)
+        TimerStart("Timer_PlayCommonRadioOnRideHelicopter",1)
       end},
       {msg="OnInjury",func=function()
         TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.RECOMMEND_CURE)
@@ -1661,7 +1661,7 @@ function this.Messages()
       end,option={isExecMissionClear=true,isExecMissionPrepare=true}},
       {msg="EndFadeOut",sender="AbortMissionFadeOutFinish",func=function()
         if mvars.mis_missionAbortDelayTime>0 then
-          StartTimer("Timer_MissionAbort",mvars.mis_missionAbortDelayTime)
+          TimerStart("Timer_MissionAbort",mvars.mis_missionAbortDelayTime)
         else
           this.OnEndFadeOutMissionAbort()
         end
@@ -1804,7 +1804,7 @@ function this.Messages()
           TppSound.PostJingleOnDecendingLandingZoneWithOutCanMissionClear()
         end
       end},
-      {msg="StartedPullingOut",func=function()StartTimer("Timer_RemoveUserMarker",1)end},
+      {msg="StartedPullingOut",func=function()TimerStart("Timer_RemoveUserMarker",1)end},
       {msg="LostControl",func=function(gameId,state,attackerId)
         local gameObjectType=GameObject.GetTypeIndex(gameId)
         if gameObjectType~=TppGameObject.GAME_OBJECT_TYPE_HELI2 then
@@ -2232,9 +2232,9 @@ function this.IgnoreAlertOutOfMissionAreaForBossQuiet(e)
   end
 end
 function this.EnableAlertOutOfMissionArea()
-  local e=false
+  local ignoreAlert=false
   if mvars.mis_ignoreAlertOfMissionArea==true then
-    e=true
+    ignoreAlert=true
   end
   if svars.mis_canMissionClear then
     return
@@ -2246,7 +2246,7 @@ function this.EnableAlertOutOfMissionArea()
     mvars.mis_enableAlertOutOfMissionArea=true
     TppUI.ShowAnnounceLog"closeOutOfMissionArea"
     TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.OUTSIDE_MISSION_AREA)
-    if not e then
+    if not ignoreAlert then
       TppTerminal.PlayTerminalVoice("VOICE_WARN_MISSION_AREA",true,1)
       TppOutOfMissionRangeEffect.Enable(3)
     end
@@ -2270,8 +2270,8 @@ function this.ExitHotZone()
 end
 function this.PlayCommonRadioOnInsideOfHotZone()
   if svars.mis_canMissionClear then
-    local e=not IsHelicopter(vars.playerVehicleGameObjectId)
-    if e then
+    local notInHeli=not IsHelicopter(vars.playerVehicleGameObjectId)
+    if notInHeli then
       TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.RETURN_HOTZONE)
     end
   end
@@ -2331,7 +2331,7 @@ function this.OutsideOfHotZoneCount()
 end
 local function StopOutsideHotzoneTimer()
   if IsTimerActive"Timer_OutsideOfHotZoneCount"then
-    StopTimer"Timer_OutsideOfHotZoneCount"
+    TimerStop"Timer_OutsideOfHotZoneCount"
   end
 end
 function this.CheckMissionClearOnRideOnFultonContainer()
@@ -2397,11 +2397,11 @@ function this.Update()
     end
     if isAlertOutOfMissionArea then
       if not IsTimerActive(Timer_outsideOfInnerZone)then
-        StartTimer(Timer_outsideOfInnerZone,outSideOfInnerZoneTime)
+        TimerStart(Timer_outsideOfInnerZone,outSideOfInnerZoneTime)
       end
     else
       if IsTimerActive(Timer_outsideOfInnerZone)then
-        StopTimer(Timer_outsideOfInnerZone)
+        TimerStop(Timer_outsideOfInnerZone)
       end
     end
   end
@@ -2586,7 +2586,7 @@ function this.EstablishedMissionAbort()
     if mvars.mis_missionAbortFadeDelayTime==0 then
       this.FadeOutOnMissionAbort()
     else
-      StartTimer("Timer_StartMissionAbortFadeOut",mvars.mis_missionAbortFadeDelayTime)
+      TimerStart("Timer_StartMissionAbortFadeOut",mvars.mis_missionAbortFadeDelayTime)
     end
   else
     this.ExecuteMissionAbort()
@@ -2667,7 +2667,7 @@ function this.UpdateAtCanMissionClear(n,o)
   else
     if(isNotAlert and isPlayerStatusNormal)and notHelicopter then
       if not IsTimerActive"Timer_OutsideOfHotZoneCount"then
-        StartTimer("Timer_OutsideOfHotZoneCount",RENsomenumber)
+        TimerStart("Timer_OutsideOfHotZoneCount",RENsomenumber)
       end
     else
       if not isNotAlert then
@@ -3023,9 +3023,9 @@ function this.OnMissionGameEndFadeOutFinish()
     this.systemCallbacks.OnMissionGameEndFadeOutFinish()
   end
   if(mvars.mis_missionGameEndDelayTime>.1)then
-    StartTimer("Timer_MissionGameEndStart",mvars.mis_missionGameEndDelayTime)
+    TimerStart("Timer_MissionGameEndStart",mvars.mis_missionGameEndDelayTime)
   else
-    StartTimer("Timer_MissionGameEndStart",.1)
+    TimerStart("Timer_MissionGameEndStart",.1)
   end
 end
 function this.OnMissionGameEndFadeOutFinish2nd()
@@ -3117,7 +3117,7 @@ function this.OnMissionGameEndFadeOutFinish2nd()
     TppSave.EraseAllGameDataSaveRequest()--RETAILPATCH: 1060
     TppSave.VarSave()
   end
-  StartTimer("Timer_MissionGameEndStart2nd",.1)
+  TimerStart("Timer_MissionGameEndStart2nd",.1)
 end
 function this.SetMissionObjectives(objectiveDefine,ojectiveTree,objectiveEnum)
   mvars.mis_missionObjectiveDefine=objectiveDefine
@@ -3718,7 +3718,7 @@ end
 function this.StartHelicopterDoorOpenTimer()
   local time=mvars.mis_helicopterDoorOpenTimerTimeSec
   GameObject.SendCommand({type="TppHeli2",index=0},{id="SetSendDoorOpenManually",enabled=true})
-  StartTimer("Timer_MissionStartHeliDoorOpen",time)
+  TimerStart("Timer_MissionStartHeliDoorOpen",time)
 end
 function this.GetObjectiveRadioOption(n)
   local e={}

@@ -161,17 +161,17 @@ function this.ActivateBlock()
     return
   end
   local loadedLargeBlocks=StageBlock.GetLoadedLargeBlocks(0)
-  for t,blockName in pairs(loadedLargeBlocks)do
-    this.OnActiveLargeBlock(blockName,StageBlock.ACTIVE)
+  for i,blockNameStr32 in pairs(loadedLargeBlocks)do
+    this.OnActiveLargeBlock(blockNameStr32,StageBlock.ACTIVE)
   end
-  local a=4
-  local t,n=StageBlock.GetCurrentMinimumSmallBlockIndex()
-  if not((t==0)and(n==0))then
-    local o=t+a
-    local a=n+a
-    for t=t,o do
-      for n=n,a do
-        this.OnActiveSmallBlock(t,n,StageBlock.ACTIVE)
+  local blockSize=4
+  local x,y=StageBlock.GetCurrentMinimumSmallBlockIndex()
+  if not((x==0)and(y==0))then
+    local maxX=x+blockSize
+    local maxY=y+blockSize
+    for blockIndexX=x,maxX do
+      for blockIndexY=y,maxY do
+        this.OnActiveSmallBlock(blockIndexX,blockIndexY,StageBlock.ACTIVE)
       end
     end
   end
@@ -191,7 +191,7 @@ function this.Messages()
     nil
   }
 end
-function this.OnActiveLargeBlock(blockName,blockStatus)
+function this.OnActiveLargeBlock(blockNameStr32,blockStatus)
   if blockStatus==StageBlock.INACTIVE then
     return
   end
@@ -200,29 +200,29 @@ function this.OnActiveLargeBlock(blockName,blockStatus)
   end
   local locationBaseAssetOnActive=mvars.loc_locationBaseAssetOnActive
   if locationBaseAssetOnActive then
-    local OnActive=locationBaseAssetOnActive[blockName]
+    local OnActive=locationBaseAssetOnActive[blockNameStr32]
     if OnActive then
       OnActive()
     end
   end
   local missionAssetOnActive=mvars.loc_missionAssetOnActive
   if missionAssetOnActive then
-    local OnActive=missionAssetOnActive[blockName]
+    local OnActive=missionAssetOnActive[blockNameStr32]
     if OnActive then
       OnActive()
     end
   end
 end
-function this.OnActiveSmallBlock(t,n,blockStatus)
+function this.OnActiveSmallBlock(blockIndexX,blockIndexY,blockStatus)
   if blockStatus==StageBlock.INACTIVE then
     return
   end
   local locationBaseOnActiveSmallBlock=mvars.loc_locationBaseOnActiveSmallBlock
   if locationBaseOnActiveSmallBlock then
     for blockName,blockInfo in pairs(locationBaseOnActiveSmallBlock)do
-      local activeInfo,OnActive=blockInfo.activeArea,blockInfo.OnActive
-      if activeInfo then
-        if Tpp.CheckBlockArea(activeInfo,t,n)then
+      local activeAreaExtents,OnActive=blockInfo.activeArea,blockInfo.OnActive
+      if activeAreaExtents then
+        if Tpp.CheckBlockArea(activeAreaExtents,blockIndexX,blockIndexY)then
           OnActive()
         end
       end
@@ -231,9 +231,9 @@ function this.OnActiveSmallBlock(t,n,blockStatus)
   local missionAssetOnActiveSmallBlock=mvars.loc_missionAssetOnActiveSmallBlock
   if missionAssetOnActiveSmallBlock then
     for blockName,blockInfo in pairs(missionAssetOnActiveSmallBlock)do
-      local activeInfo,OnActive=blockInfo.activeArea,blockInfo.OnActive
-      if activeInfo then
-        if Tpp.CheckBlockArea(activeInfo,t,n)then
+      local activeAreaExtents,OnActive=blockInfo.activeArea,blockInfo.OnActive
+      if activeAreaExtents then
+        if Tpp.CheckBlockArea(activeAreaExtents,blockIndexX,blockIndexY)then
           OnActive()
         end
       end

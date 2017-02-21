@@ -173,7 +173,7 @@ this.SAVE_FILE_INFO={
   [TppScriptVars.CATEGORY_PERSONAL]={version=100,slot=this.SAVE_SLOT.PERSONAL}
 }
 if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-  this.SAVE_FILE_INFO[TppScriptVars.CATEGORY_MGO]={version=102,slot=this.SAVE_SLOT.MGO}
+  this.SAVE_FILE_INFO[TppScriptVars.CATEGORY_MGO]={version=102,slot=this.SAVE_SLOT.MGO}--NMC this overrides CATEGORY_MISSION_RESTARTABLE
 end
 this.PROGRAM_SAVE_FILE_VERSION=TppScriptVars.GetProgramVersionTable()
 this.VARS_GROUP_GAME_DATA_ON_START_MISSION=bor(TppScriptVars.GROUP_BIT_GVARS,TppScriptVars.GROUP_BIT_VARS)
@@ -393,6 +393,7 @@ this.MISSION_COMMON_PACK={
   DD_SOLDIER_BTRDRS="/Assets/tpp/pack/mission2/common/mis_com_dd_soldier_btdrs.fpk",
   DD_SOLDIER_ARMOR="/Assets/tpp/pack/mission2/common/mis_com_dd_soldier_armor.fpk",
   FOB_HOSTAGE="/Assets/tpp/pack/mission2/common/mis_com_fob_hostage.fpk",
+  DD_SOLDIER_SWIM_SUIT="/Assets/tpp/pack/mission2/common/mis_com_dd_soldier_swim_suit.fpk",--RETAIL: 1.10
   AFGH_DECOY="/Assets/tpp/pack/collectible/decoy/decoy_svs.fpk",
   MAFR_DECOY="/Assets/tpp/pack/collectible/decoy/decoy_pf.fpk",
   MTBS_DECOY="/Assets/tpp/pack/collectible/decoy/decoy_fob.fpk",

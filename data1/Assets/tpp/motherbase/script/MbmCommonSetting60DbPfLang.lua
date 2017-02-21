@@ -261,5 +261,10 @@ TppMotherBaseManagement.RegisterStaffInitLangParam{keyBirthplace=TppMotherBaseMa
 TppMotherBaseManagement.RegisterStaffInitLangParam{keyBirthplace=TppMotherBaseManagementConst.BIRTHPLACE_NONE,keyRace=TppMotherBaseManagementConst.RACE_BLOWN,lang=TppMotherBaseManagementConst.LANG_ZHO,lang1Rate=3,lang2Rate=2,lang3Rate=1}
 TppMotherBaseManagement.RegisterStaffInitLangParam{keyBirthplace=TppMotherBaseManagementConst.BIRTHPLACE_NONE,keyRace=TppMotherBaseManagementConst.RACE_BLOWN,lang=TppMotherBaseManagementConst.LANG_JPN,lang1Rate=2,lang2Rate=1,lang3Rate=1}
 TppMotherBaseManagement.RegisterStaffInitLangParam{keyBirthplace=TppMotherBaseManagementConst.BIRTHPLACE_NONE,keyRace=TppMotherBaseManagementConst.RACE_BLOWN,lang=TppMotherBaseManagementConst.LANG_ARA,lang1Rate=8,lang2Rate=5,lang3Rate=2}
-TppSupportRequest.RegisterSupportAttackGmpCostTable{strike={0,1e3,9e3,23e3,43e3,51e3,73e3,99e3},smoke={0,1e3,5e3,14e3,25e3,41e3,61e3,85e3},sleepGas={0,1e3,9e3,19e3,33e3,51e3,73e3,99e3},chaff={0,1e3,5e3,14e3,25e3,41e3,61e3,85e3},weather=33e3}
+TppSupportRequest.RegisterSupportAttackGmpCostTable{
+  strike={0,1000,9000,23000,43000,51000,73000,99000},
+  smoke={0,1000,5000,14000,25000,41000,61000,85000},
+  sleepGas={0,1000,9000,19000,33000,51000,73000,99000},
+  chaff={0,1000,5000,14000,25000,41000,61000,85000},
+  weather=33000}
 return this

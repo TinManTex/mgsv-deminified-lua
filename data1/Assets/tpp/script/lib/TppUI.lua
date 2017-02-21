@@ -742,17 +742,17 @@ function this.HideTextureLogo()
   TppUiCommand.HideTextureLogo()
 end
 function this.ShowCallSupportBuddyAnnounceLog()
-  local n=this.BUDDY_LANG_ID[mvars.ui_callSupportBuddyType]
-  if n then
-    local i=TppSupportRequest.GetCallBuddyGmpCost(mvars.ui_callSupportBuddyType)
-    this.ShowAnnounceLog("callSupportBuddyReceived",n)
-    TppTerminal.UpdateGMP{gmp=-i,gmpCostType=TppDefine.GMP_COST_TYPE.BUDDY}
-    svars.supportGmpCost=svars.supportGmpCost+i
+  local langId=this.BUDDY_LANG_ID[mvars.ui_callSupportBuddyType]
+  if langId then
+    local gmp=TppSupportRequest.GetCallBuddyGmpCost(mvars.ui_callSupportBuddyType)
+    this.ShowAnnounceLog("callSupportBuddyReceived",langId)
+    TppTerminal.UpdateGMP{gmp=-gmp,gmpCostType=TppDefine.GMP_COST_TYPE.BUDDY}
+    svars.supportGmpCost=svars.supportGmpCost+gmp
     mvars.ui_callSupportBuddyType=nil
   end
 end
-function this.SetSupportCallBuddyType(e)
-  mvars.ui_callSupportBuddyType=e
+function this.SetSupportCallBuddyType(buddyType)
+  mvars.ui_callSupportBuddyType=buddyType
 end
 function this.StartLoadingTips()
   TppUiCommand.StartLoadingTipsCommon()
@@ -888,12 +888,12 @@ end
 function this.LoadAndWaitUiDefaultBlock()
   TppUiCommand.LoadUiDefaultBlock()
   local e=0
-  local n,i=0,25
-  local e=false
-  e=not TppUiCommand.IsTppUiReady()
-  while e and(n<i)do
-    e=not TppUiCommand.IsTppUiReady()
-    n=n+Time.GetFrameTime()
+  local frameTime,maxFrameTime=0,25
+  local notReady=false
+  notReady=not TppUiCommand.IsTppUiReady()
+  while notReady and(frameTime<maxFrameTime)do
+    notReady=not TppUiCommand.IsTppUiReady()
+    frameTime=frameTime+Time.GetFrameTime()
     coroutine.yield()
   end
 end
@@ -1038,7 +1038,8 @@ function this.Init()
   if hasUi then
     TppUiCommand.RegisterSideOpsListFunction("TppQuest","GetSideOpsListTable")
   end
-  TppUiCommand.SetMBMapArrowIcon(false)GameConfig.ApplyAllConfig()
+  TppUiCommand.SetMBMapArrowIcon(false)
+  GameConfig.ApplyAllConfig()
   TppUiCommand.EraseDisplayTimer()
   TppUiCommand.ResetCpNameBaseLangId()
   if TppUiCommand.RegistCpNameBaseLangId and mvars.loc_locationBaseTelop then

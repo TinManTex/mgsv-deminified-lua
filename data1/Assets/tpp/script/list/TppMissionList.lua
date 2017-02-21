@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppMissionList.lua
 local this={}
 local locationPackTable={}
 locationPackTable[TppDefine.LOCATION_ID.INIT]={"/Assets/tpptest/pack/location/empty/empty.fpk"}
@@ -348,12 +349,12 @@ missionPackTable[10100]=function(p)
     local p="hos_diamond_0003"
     local a="hos_diamond_0004"
     local s={
-    {type="enemy",name=o,faceId=616,bodyId=251},
-    {type="hostage",name=t,faceId=INVALID_FOVA_VALUE,bodyId=130},
-    {type="hostage",name=i,faceId=INVALID_FOVA_VALUE,bodyId=131},
-    {type="hostage",name=e,faceId=INVALID_FOVA_VALUE,bodyId=132},
-    {type="hostage",name=p,faceId=INVALID_FOVA_VALUE,bodyId=133},
-    {type="hostage",name=a,faceId=INVALID_FOVA_VALUE,bodyId=134}
+      {type="enemy",name=o,faceId=616,bodyId=251},
+      {type="hostage",name=t,faceId=INVALID_FOVA_VALUE,bodyId=130},
+      {type="hostage",name=i,faceId=INVALID_FOVA_VALUE,bodyId=131},
+      {type="hostage",name=e,faceId=INVALID_FOVA_VALUE,bodyId=132},
+      {type="hostage",name=p,faceId=INVALID_FOVA_VALUE,bodyId=133},
+      {type="hostage",name=a,faceId=INVALID_FOVA_VALUE,bodyId=134}
     }
     TppEneFova.AddUniqueSettingPackage(s)
   end
@@ -392,8 +393,8 @@ missionPackTable[10195]=function(p)
     local s="sol_dealer"
     local p="sol_vip"
     local s={
-    {type="enemy",name=s,faceId=614,bodyId=250},
-    {type="enemy",name=p,faceId=615,bodyId=256}}
+      {type="enemy",name=s,faceId=614,bodyId=250},
+      {type="enemy",name=p,faceId=615,bodyId=256}}
     TppEneFova.AddUniqueSettingPackage(s)
   end
 end
@@ -676,9 +677,12 @@ missionPackTable[30010]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30010/f30010.fpk"
   end
 
-  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
+  if Ivars.enableParasiteEvent:Is()>0 then
+    TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/online/o50050/o50055_parasite_metal.fpk"
+  end
+  --TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
-    local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
+    local bodyInfo=InfEneFova.GetFemaleWildCardBodyInfo()
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
@@ -696,9 +700,12 @@ missionPackTable[30020]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ORDER_BOX)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30020/f30020.fpk"
 
-  TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
+  if Ivars.enableParasiteEvent:Is()>0 then
+    TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/online/o50050/o50055_parasite_metal.fpk"
+  end
+  --TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex DEBUGNOW
   if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionCode) then--tex>
-    local bodyInfo=InfEneFova.GetCurrentWildCardBodyInfo(true)--tex female
+    local bodyInfo=InfEneFova.GetFemaleWildCardBodyInfo()
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
@@ -711,7 +718,6 @@ missionPackTable[30020]=function(missionCode)
   end--<
 end
 missionPackTable[30050]=function(missionCode)
-
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MTBS_MISSION_AREA)
@@ -719,22 +725,17 @@ missionPackTable[30050]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WALKERGEAR)--tex
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/mis_com_mafr_hostage.fpk"--tex DEBUGNOW
 
-  if Ivars.mbEnemyHeli:Is(1) or Ivars.npcHeliUpdate:Is"UTH_AND_HP48" then--tex>
-    TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_afgh.fpk"
-    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
-    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
-  end--<
   if Ivars.mbEnableOcelot:Is(1) and Ivars.mbWarGamesProfile:Is(0) then--tex>
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30050/f30050_ocelot.fpk"
   end--<
 
   --tex IsDDBodyEquip add mission packs>
   if InfMain.IsDDBodyEquip(missionCode) then
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo()
+    local bodyInfo=InfEneFova.GetMaleDDBodyInfo()
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo(true)--tex female
+    local bodyInfo=InfEneFova.GetFemaleDDBodyInfo()
     if bodyInfo and bodyInfo.missionPackPath then
       TppPackList.AddMissionPack(bodyInfo.missionPackPath)
     end
@@ -788,6 +789,12 @@ missionPackTable[30050]=function(missionCode)
     end
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostageUnique",hostageType="Paz"}
+  
+  if Ivars.mbEnemyHeli:Is(1) or Ivars.npcHeliUpdate:Is"UTH_AND_HP48" then--tex>
+    TppPackList.AddMissionPack"/Assets/tpp/pack/soldier/reinforce/reinforce_heli_afgh.fpk"
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk"
+    TppPackList.AddMissionPack"/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk"
+  end--<
 end
 missionPackTable[30150]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
@@ -896,7 +903,11 @@ missionPackTable[65415]={"/Assets/tpp/pack/show/tgs_2014/s65415/s65415_area.fpk"
 missionPackTable[65416]={"/Assets/tpp/pack/show/tgs_2014/s65416/s65416_area.fpk"}
 missionPackTable[50050]=function(missionCode)
   local ddSuit=TppEnemy.GetDDSuit()
-  if ddSuit==TppEnemy.FOB_DD_SUIT_SNEAKING then
+  --RETAILPATCH 1.10>
+  if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
+    TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SWIM_SUIT)
+    --<
+  elseif ddSuit==TppEnemy.FOB_DD_SUIT_SNEAKING then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SNEAKING)
   elseif ddSuit==TppEnemy.FOB_DD_SUIT_BTRDRS then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_BTRDRS)

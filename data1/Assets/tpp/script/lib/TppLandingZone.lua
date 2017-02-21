@@ -109,6 +109,7 @@ middleAfricaLZTable.MissionLandingZoneTable={
   {aprLandingZoneName="lz_swampEast_N0000|lz_swampEast_N_0000",drpLandingZoneName="lz_drp_swampEast_N0000|lz_drp_swampEast_N_0000",missionList={10082,10086,10091,10211}}
 }
 
+--TABLESETUP
 --tex> drp to apr
 this.assaultLzs={
   afgh={},

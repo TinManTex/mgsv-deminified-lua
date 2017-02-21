@@ -1006,31 +1006,31 @@ function this.GetDemoTime(demoName)
   end
   return time
 end
-function this.UpdatePackList(t)
-  if not t then
+function this.UpdatePackList(demoName)
+  if not demoName then
     return
   end
-  local l={}
-  l[t]={}
+  local packList={}
+  packList[demoName]={}
   local n=false
-  if this.demoBlockList[t]then
-    Tpp.ApendArray(l[t],this.demoBlockList[t])
-    local e=this.demoOptions[t]
-    if e and e.loadBuddyBlock then
-      table.insert(l[t],buddyFpk)
+  if this.demoBlockList[demoName]then
+    Tpp.ApendArray(packList[demoName],this.demoBlockList[demoName])
+    local demoOptions=this.demoOptions[demoName]
+    if demoOptions and demoOptions.loadBuddyBlock then
+      table.insert(packList[demoName],buddyFpk)
     end
-  elseif TppQuestList.questPackList[t]then
+  elseif TppQuestList.questPackList[demoName]then
     n=true
-    Tpp.ApendArray(l[t],TppQuestList.questPackList[t])
+    Tpp.ApendArray(packList[demoName],TppQuestList.questPackList[demoName])
   end
-  if n or t=="Empty"then
-    Tpp.ApendArray(l[t],this.GetPackListForStorySequence())
+  if n or demoName=="Empty"then
+    Tpp.ApendArray(packList[demoName],this.GetPackListForStorySequence())
   end
   if mvars.f30050demo_fovaPackList then
-    Tpp.ApendArray(l[t],mvars.f30050demo_fovaPackList)
+    Tpp.ApendArray(packList[demoName],mvars.f30050demo_fovaPackList)
   end
-  if#l[t]~=0 then
-    TppQuest.RegisterQuestPackList(l,"demo_block")
+  if#packList[demoName]~=0 then
+    TppQuest.RegisterQuestPackList(packList,"demo_block")
   end
 end
 function this.RegisterFovaPack(e)
@@ -1079,26 +1079,26 @@ function this.ShowMissionRewardAfterDemo()
   TppMission.ShowMissionReward()
   mvars.f30050_showMissionRewardAfterDemo=true
 end
-function this.GetSoldierListInDemo(l)
-  local t={}
-  local e=this.demoOptions[l]
-  if e then
-    if e.forceMaleLocator then
-      Tpp.ApendArray(t,e.forceMaleLocator)
+function this.GetSoldierListInDemo(demoName)
+  local soldierList={}
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions then
+    if demoOptions.forceMaleLocator then
+      Tpp.ApendArray(soldierList,demoOptions.forceMaleLocator)
     end
-    if e.demoSoldierLocator then
-      Tpp.ApendArray(t,e.demoSoldierLocator)
+    if demoOptions.demoSoldierLocator then
+      Tpp.ApendArray(soldierList,demoOptions.demoSoldierLocator)
     end
   end
-  return t
+  return soldierList
 end
-function this.GetForceMaleSoldierList(l)
-  local t={}
-  local e=this.demoOptions[l]
-  if e and e.forceMaleLocator then
-    t=e.forceMaleLocator
+function this.GetForceMaleSoldierList(demoName)
+  local forceMaleLocator={}
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions and demoOptions.forceMaleLocator then
+    forceMaleLocator=demoOptions.forceMaleLocator
   end
-  return t
+  return forceMaleLocator
 end
 function this.SetupEnemy(t)
   local l=this.GetDemoPlayCluster(t)
@@ -1106,10 +1106,10 @@ function this.SetupEnemy(t)
   local e=this.GetSoldierListInDemo(t)
   mtbs_enemy.SetSoldierForDemo(l,e)
 end
-function this.IsBalaclava(t,l)
-  local e=this.demoOptions[t]
-  if e and e.forceBalaclavaLocator then
-    for t,e in ipairs(e.forceBalaclavaLocator)do
+function this.IsBalaclava(demoName,l)
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions and demoOptions.forceBalaclavaLocator then
+    for t,e in ipairs(demoOptions.forceBalaclavaLocator)do
       if e==l then
         return true
       end
@@ -1117,32 +1117,32 @@ function this.IsBalaclava(t,l)
   end
   return false
 end
-function this.NeedLoadBuddyBlock(t)
-  local e=this.demoOptions[t]
-  if e and e.loadBuddyBlock then
-    if e.forceEnableBuddyType then
+function this.NeedLoadBuddyBlock(demoName)
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions and demoOptions.loadBuddyBlock then
+    if demoOptions.forceEnableBuddyType then
       return true
     end
-    if e.disableBuddyType~=vars.buddyType and vars.buddyType==BuddyType.DOG then
+    if demoOptions.disableBuddyType~=vars.buddyType and vars.buddyType==BuddyType.DOG then
       return true
     end
   end
   return false
 end
-function this.SetupBuddy(t)
-  if this.NeedLoadBuddyBlock(t)then
-    local e=this.demoOptions[t]
-    if e and e.forceEnableBuddyType then
-      vars.buddyType=e.forceEnableBuddyType
+function this.SetupBuddy(demoName)
+  if this.NeedLoadBuddyBlock(demoName)then
+    local demoOptions=this.demoOptions[demoName]
+    if demoOptions and demoOptions.forceEnableBuddyType then
+      vars.buddyType=demoOptions.forceEnableBuddyType
     end
     TppBuddy2BlockController.Load()
     TppBuddy2BlockController.ReserveCallBuddy(vars.buddyType,BuddyInitStatus.RIDE,Vector3(0,0,0),0)
   end
 end
-function this.IsShowReward(t)
-  local e=this.demoOptions[t]
-  if e then
-    return e.isShowReward
+function this.IsShowReward(demoName)
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions then
+    return demoOptions.isShowReward
   end
   return false
 end
