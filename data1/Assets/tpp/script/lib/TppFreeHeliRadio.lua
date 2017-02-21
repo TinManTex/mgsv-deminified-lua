@@ -9,7 +9,23 @@ this.DAY_TO_NIGHT=string.format("%d:00:00",this.NIGHT_TIME)
 this.NIGHT_TO_DAY=string.format("%d:00:00",this.DAY_TIME)
 this.isPlayBreefing=false
 this.ON_ENTER_RESULT={START_PANDEMIC_TUTORIAL=1}
-this.PANDEMIC_RADIO={START="f2000_rtrg9000",START_FREE={"f2000_rtrg9005"},START_CONTINED_IN_HELI={"f2000_rtrg9010","f2000_rtrg9020","f2000_rtrg9030","f2000_rtrg9040"},OPEN_TERMINAL="f2000_rtrg9060",OPEN_TERMINAL_SELECT="f2000_rtrg9080",PANDEMIC_FACILITY="f2000_rtrg9100",ON_ISOLATE_STAFF="f2000_rtrg9110",NO_ISOLATED_YET="f2000_rtrg9150",ISOLATE_FAILED="f2000_rtrg9170",ISOLATE_FAILED_HINT="f2000_rtrg9190",ISOLATE_SUCCEED_A_FEW="f2000_rtrg9220",ISOLATE_SUCCEED_HINT="f2000_rtrg9200",ISOLATE_SUCCEED_MANY="f2000_rtrg9240",FINISH="f2000_rtrg9250",FINISH_ADD="f2000_rtrg9260"}
+this.PANDEMIC_RADIO={
+  START="f2000_rtrg9000",
+  START_FREE={"f2000_rtrg9005"},
+  START_CONTINED_IN_HELI={"f2000_rtrg9010","f2000_rtrg9020","f2000_rtrg9030","f2000_rtrg9040"},
+  OPEN_TERMINAL="f2000_rtrg9060",
+  OPEN_TERMINAL_SELECT="f2000_rtrg9080",
+  PANDEMIC_FACILITY="f2000_rtrg9100",
+  ON_ISOLATE_STAFF="f2000_rtrg9110",
+  NO_ISOLATED_YET="f2000_rtrg9150",
+  ISOLATE_FAILED="f2000_rtrg9170",
+  ISOLATE_FAILED_HINT="f2000_rtrg9190",
+  ISOLATE_SUCCEED_A_FEW="f2000_rtrg9220",
+  ISOLATE_SUCCEED_HINT="f2000_rtrg9200",
+  ISOLATE_SUCCEED_MANY="f2000_rtrg9240",
+  FINISH="f2000_rtrg9250",
+  FINISH_ADD="f2000_rtrg9260"
+}
 function this.DeclareSVars()
   return{{name="freeRadio_isPlayed",type=TppScriptVars.TYPE_BOOL,value=false,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},nil}
 end
@@ -37,14 +53,17 @@ function this.Messages()
     GameObject={
       {msg="PlayerGetAway",func=function(n)
         if Tpp.IsHostage(n)then
-          this._UnregisterOptionRadio"f2000_oprg0105"end
+          this._UnregisterOptionRadio"f2000_oprg0105"
+        end
       end},
       {msg="PlayerGetNear",func=function(n)
         if Tpp.IsHostage(n)then
-          this._RegisterOptionRadio"f2000_oprg0105"end
+          this._RegisterOptionRadio"f2000_oprg0105"
+        end
       end},
       {msg="Unconscious",func=function(i)
-        local n="f2000_oprg0210"if(Tpp.IsSoldier(i)and(not mvars.FreeHeliRadio_addOptionRadioCount[n]))and(not TppStory.IsMissionCleard(10040))then
+        local n="f2000_oprg0210"
+        if(Tpp.IsSoldier(i)and(not mvars.FreeHeliRadio_addOptionRadioCount[n]))and(not TppStory.IsMissionCleard(10040))then
           this._RegisterOptionRadio(n)
         end
       end},
@@ -56,9 +75,9 @@ function this.Messages()
             local n=SendCommand(i,{id="GetStateFlag"})
             if(band(n,StateFlag.DYING_LIFE)~=0)and(math.random(1,2)<2)then
               this._PlayRadio"f2000_rtrg0070"
-              else
+            else
               this._PlayRadio"f2000_rtrg0050"
-              end
+            end
           end
         end
       end}
@@ -73,7 +92,8 @@ function this.Messages()
         this.UnregistNvgOptionRadio()
       end},
       {msg="ChangeWeathre",func=function(i)
-        local n="f2000_oprg0185"if i==TppDefine.WEATHER.SANDSTORM then
+        local n="f2000_oprg0185"
+        if i==TppDefine.WEATHER.SANDSTORM then
           this._RegisterOptionRadio(n)
         else
           this._UnregisterOptionRadio(n)
@@ -115,16 +135,20 @@ function this.OnEnter()
   TppCassette.OnEnterFreeHeliPlay()
   local n={}
   if TppMotherBaseManagement.GetStaffCount()<=10 then
-    this._RegisterOptionRadio"f2000_oprg0020"end
+    this._RegisterOptionRadio"f2000_oprg0020"
+  end
   if TppMotherBaseManagement.GetDevelopedEquipCount()<=5 then
-    this._RegisterOptionRadio"f2000_oprg0030"end
+    this._RegisterOptionRadio"f2000_oprg0030"
+  end
   if not TppStory.IsMissionCleard(10040)then
-    this._RegisterOptionRadio"f2000_oprg0220"end
+    this._RegisterOptionRadio"f2000_oprg0220"
+  end
   if not this._IsTimeOfDay()then
     this.RegistNvgOptionRadio()
   end
   if vars.weather==TppDefine.WEATHER.SANDSTORM then
-    this._RegisterOptionRadio"f2000_oprg0185"end
+    this._RegisterOptionRadio"f2000_oprg0185"
+  end
   local n=this.TryPandemicStart()
   if TppTerminal.CheckPandemicEventFinish()then
     TppTerminal.FinishPandemicEvent()
@@ -185,19 +209,32 @@ function this.UnregistAnimalOptionalRadio()
     mvars.FreeHeliRadio_animalRadioGroup=nil
   end
 end
-function this.OnEnterCpIntelTrap(n)
+function this.OnEnterCpIntelTrap(cpName)
   if not mvars.FreeHeliRadio_addOptionRadioCount then
     return
   end
-  this._RegisterOptionRadio"f2000_oprg0115"this._RegisterOptionRadio"f2000_oprg0125"this._RegisterOptionRadio"f2000_oprg0130"this._RegisterOptionRadio"f2000_oprg0165"this._RegisterOptionRadio"f2000_oprg0175"if TppClock.GetTimeOfDay()=="night"then
-    this._RegisterOptionRadio"f2000_oprg0165"else
-    this._RegisterOptionRadio"f2000_oprg0155"end
+  this._RegisterOptionRadio"f2000_oprg0115"
+  this._RegisterOptionRadio"f2000_oprg0125"
+  this._RegisterOptionRadio"f2000_oprg0130"
+  this._RegisterOptionRadio"f2000_oprg0165"
+  this._RegisterOptionRadio"f2000_oprg0175"
+  if TppClock.GetTimeOfDay()=="night"then
+    this._RegisterOptionRadio"f2000_oprg0165"
+  else
+    this._RegisterOptionRadio"f2000_oprg0155"
+  end
 end
 function this.OnExitCpIntelTrap(n)
   if not mvars.FreeHeliRadio_addOptionRadioCount then
     return
   end
-  this._UnregisterOptionRadio"f2000_oprg0115"this._UnregisterOptionRadio"f2000_oprg0125"this._UnregisterOptionRadio"f2000_oprg0130"this._UnregisterOptionRadio"f2000_oprg0175"this._UnregisterOptionRadio"f2000_oprg0165"this._UnregisterOptionRadio"f2000_oprg0155"end
+  this._UnregisterOptionRadio"f2000_oprg0115"
+  this._UnregisterOptionRadio"f2000_oprg0125"
+  this._UnregisterOptionRadio"f2000_oprg0130"
+  this._UnregisterOptionRadio"f2000_oprg0175"
+  this._UnregisterOptionRadio"f2000_oprg0165"
+  this._UnregisterOptionRadio"f2000_oprg0155"
+end
 function this.TryPandemicStart()
   local n=false
   if not TppTerminal.IsNeedPlayPandemicTutorialRadio()then
@@ -211,7 +248,8 @@ function this.TryPandemicStart()
   if TppMotherBaseManagement.IsPandemicEventMode()then
     if not TppRadio.IsPlayed"f2000_rtrg9010"then
       if i then
-        this._PlayRadio(this.PANDEMIC_RADIO.START_CONTINED_IN_HELI)n=true
+        this._PlayRadio(this.PANDEMIC_RADIO.START_CONTINED_IN_HELI)
+        n=true
       end
     end
   end
@@ -279,6 +317,7 @@ function this._IsRegistOptionRadio(e)
   return mvars.FreeHeliRadio_addOptionRadioCount[e]
 end
 function this._IsTimeOfDay()
-  local n=TppClock.GetTime"time"return(n>=this.DAY_TIME)and(n<=this.NIGHT_TIME)
+  local time=TppClock.GetTime"time"
+  return(time>=this.DAY_TIME)and(time<=this.NIGHT_TIME)
 end
 return this

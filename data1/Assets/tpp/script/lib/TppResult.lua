@@ -62,71 +62,72 @@ for a,missionCode in ipairs(this.HARD_MISSION_LIST)do
   end
 end
 this.NO_SPECIAL_BONUS={[10030]=true,[10115]=true,[10240]=true}
-function this.AcquireSpecialBonus(t)
-  if not IsTypeTable(t)then
+function this.AcquireSpecialBonus(bonusInfo)
+  if not IsTypeTable(bonusInfo)then
     return
   end
-  if t.first then
+  if bonusInfo.first then
     if mvars.res_isExistFirstSpecialBonus then
-      this._AcquireSpecialBonus(t.first,"bestScoreBounus","bestScoreBounusScore",mvars.res_firstSpecialBonusMaxCount,this.COMMON_SCORE_PARAM.firstSpecialBonus,"isCompleteFirstBonus",mvars.res_firstBonusMissionTask,mvars.res_firstSpecialBonusPointList,"isAcquiredFirstBonusInPointList")
+      this._AcquireSpecialBonus(bonusInfo.first,"bestScoreBounus","bestScoreBounusScore",mvars.res_firstSpecialBonusMaxCount,this.COMMON_SCORE_PARAM.firstSpecialBonus,"isCompleteFirstBonus",mvars.res_firstBonusMissionTask,mvars.res_firstSpecialBonusPointList,"isAcquiredFirstBonusInPointList")
     end
   end
-  if t.second then
+  if bonusInfo.second then
     if mvars.res_isExistSecondSpecialBonus then
-      this._AcquireSpecialBonus(t.second,"bestScoreBounus2","bestScoreBounusScore2",mvars.res_secondSpecialBonusMaxCount,this.COMMON_SCORE_PARAM.secondSpecialBonus,"isCompleteSecondBonus",mvars.res_secondBonusMissionTask,mvars.res_secondSpecialBonusPointList,"isAcquiredSecondBonusInPointList")
+      this._AcquireSpecialBonus(bonusInfo.second,"bestScoreBounus2","bestScoreBounusScore2",mvars.res_secondSpecialBonusMaxCount,this.COMMON_SCORE_PARAM.secondSpecialBonus,"isCompleteSecondBonus",mvars.res_secondBonusMissionTask,mvars.res_secondSpecialBonusPointList,"isAcquiredSecondBonusInPointList")
     end
   end
 end
-function this._AcquireSpecialBonus(t,a,o,s,c,u,i,n,l)
-  local r=t.isComplete
-  if t.isComplete then
-    r=true
-    if(not n)and(not s)then
-      svars[o]=c
+function this._AcquireSpecialBonus(taskInfo,bestScoreBonusType,bestScoreBonusScoreType,bonusMaxCount,commonScoreParam,isCompleteBonusType,bonusTask,bonusPointList,isAquiredBonusInPointListType)
+  local isCompleted=taskInfo.isComplete
+  if taskInfo.isComplete then
+    isCompleted=true
+    if(not bonusPointList)and(not bonusMaxCount)then
+      svars[bestScoreBonusScoreType]=commonScoreParam
     end
   end
-  if t.count then
-    if not s then
+  if taskInfo.count then
+    if not bonusMaxCount then
       return
     end
-    if svars[a]<t.count then
-      if t.count<=s then
-        svars[a]=t.count
+    if svars[bestScoreBonusType]<taskInfo.count then
+      if taskInfo.count<=bonusMaxCount then
+        svars[bestScoreBonusType]=taskInfo.count
       else
-        svars[a]=s
+        svars[bestScoreBonusType]=bonusMaxCount
       end
-      svars[o]=(svars[a]/s)*c
-      if svars[a]==s then
-        r=true
+      svars[bestScoreBonusScoreType]=(svars[bestScoreBonusType]/bonusMaxCount)*commonScoreParam
+      if svars[bestScoreBonusType]==bonusMaxCount then
+        isCompleted=true
       end
     end
   end
-  if t.pointIndex then
-    if not n then
+  if taskInfo.pointIndex then
+    if not bonusPointList then
       return
     end
-    local t=t.pointIndex
+    local t=taskInfo.pointIndex
     if not Tpp.IsTypeNumber(t)then
       return
     end
     if t<1 then
       return
     end
-    if t>#n then
+    if t>#bonusPointList then
       return
     end
-    svars[l][t]=true
-    local e,t=this.CalcPoinListBonusScore(n,l)svars[a]=e
-    svars[o]=t
-    if svars[a]==#n then
-      r=true
+    svars[isAquiredBonusInPointListType][t]=true
+    local e,t=this.CalcPoinListBonusScore(bonusPointList,isAquiredBonusInPointListType)
+    svars[bestScoreBonusType]=e
+    svars[bestScoreBonusScoreType]=t
+    if svars[bestScoreBonusType]==#bonusPointList then
+      isCompleted=true
     end
   end
-  if r then
-    this._CompleteBonus(u,i)
+  if isCompleted then
+    this._CompleteBonus(isCompleteBonusType,bonusTask)
   else
-    i.isHide=false
-    TppUI.EnableMissionTask(i)
+    bonusTask.isHide=false
+    TppUI.EnableMissionTask(bonusTask)
   end
 end
 function this.CalcPoinListBonusScore(a,s)
@@ -151,25 +152,25 @@ function this.SetSpecialBonusMaxCount(e)
     mvars.res_secondSpecialBonusMaxCount=e.second.maxCount
   end
 end
-function this._CompleteBonus(a,e)
+function this._CompleteBonus(isCompleteSvar,bonusTask)
   local t=true
-  if svars[a]then
+  if svars[isCompleteSvar]then
     t=false
   end
-  svars[a]=true
-  if e then
-    e.isComplete=true
-    TppUI.EnableMissionTask(e,t)
+  svars[isCompleteSvar]=true
+  if bonusTask then
+    bonusTask.isComplete=true
+    TppUI.EnableMissionTask(bonusTask,t)
   end
 end
 function this.RegistNoMissionClearRank()
   mvars.res_noMissionClearRank=true
 end
-function this.SetMissionScoreTable(e)
-  if not IsTypeTable(e)then
+function this.SetMissionScoreTable(missionScoreTable)
+  if not IsTypeTable(missionScoreTable)then
     return
   end
-  mvars.res_missionScoreTable=e
+  mvars.res_missionScoreTable=missionScoreTable
 end
 function this.SetMissionFinalScore()
   if mvars.res_noResult then
@@ -178,23 +179,24 @@ function this.SetMissionFinalScore()
   this.RegistUsedLimitedItemLangId()
   TppBuddyService.BuddyProcessMissionSuccess()
   this.SaveBestCount()
-  local t,a=this.CalcBaseScore()
-  this.CalcTimeScore(t,a)
+  local baseScore,clearRank=this.CalcBaseScore()
+  this.CalcTimeScore(baseScore,clearRank)
   this.CalcEachScore()
-  local n=this.CalcTotalScore()
-  local t=this.DecideMissionClearRank()
+  local totalScore=this.CalcTotalScore()
+  local clearRank=this.DecideMissionClearRank()
   local updateGmpOnMissionClear
   if TppMission.IsFOBMission(vars.missionCode)then
     return
   end
-  Tpp.IncrementPlayData"totalMissionClearCount"this.SetSpecialBonusResultScore()
-  if t~=TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED then
-    TppHero.MissionClear(t)
+  Tpp.IncrementPlayData"totalMissionClearCount"
+  this.SetSpecialBonusResultScore()
+  if clearRank~=TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED then
+    TppHero.MissionClear(clearRank)
   end
-  if t==TppDefine.MISSION_CLEAR_RANK.S then
+  if clearRank==TppDefine.MISSION_CLEAR_RANK.S then
     TppEmblem.AcquireOnSRankClear(vars.missionCode)
   end
-  TppMotherBaseManagement.AwardedMeritMedalPointToPlayerStaff{clearRank=t}
+  TppMotherBaseManagement.AwardedMeritMedalPointToPlayerStaff{clearRank=clearRank}
   if bit.band(vars.playerPlayFlag,PlayerPlayFlag.USE_CHICKEN_CAP)==PlayerPlayFlag.USE_CHICKEN_CAP then
     if gvars.chickenCapClearCount<MAX_32BIT_UINT then
       gvars.chickenCapClearCount=gvars.chickenCapClearCount+1
@@ -203,12 +205,12 @@ function this.SetMissionFinalScore()
   if(vars.playerType==PlayerType.DD_MALE or vars.playerType==PlayerType.DD_FEMALE)then
     TppTrophy.Unlock(11)
   end
-  updateGmpOnMissionClear=this.UpdateGmpOnMissionClear(vars.missionCode,t,n)
+  updateGmpOnMissionClear=this.UpdateGmpOnMissionClear(vars.missionCode,clearRank,totalScore)
   if vars.totalBatteryPowerAsGmp then
     TppUiCommand.SetResultBatteryGmp(vars.totalBatteryPowerAsGmp)--RETAILPATCH: 1060 added
     TppTerminal.UpdateGMP{gmp=vars.totalBatteryPowerAsGmp}
   end
-  this.SetBestRank(vars.missionCode,t)
+  this.SetBestRank(vars.missionCode,clearRank)
   if updateGmpOnMissionClear then
     local size=this.CalcMissionClearHistorySize()
     this.SetMissionClearHistorySize(size)
@@ -221,7 +223,8 @@ function this.SetMissionFinalScore()
     end
   end
   if mvars.res_enablePlayStyle then
-    this.SaveMissionClearPlayStyleParameter()svars.playStyle=this.DecidePlayStyle()
+    this.SaveMissionClearPlayStyleParameter()
+    svars.playStyle=this.DecidePlayStyle()
     TppEmblem.AcquireByPlayStyle(svars.playStyle)
     this.AddNewPlayStyleHistory()
   else
@@ -238,13 +241,21 @@ function this.IsUsedChickCap()
 end
 function this.RegistUsedLimitedItemLangId()
   mvars.res_isUsedRankLimitedItem=false
-  local e={{PlayerPlayFlag.USE_CHICKEN_CAP,"name_st_chiken"},{PlayerPlayFlag.USE_STEALTH,"name_it_12043"},{PlayerPlayFlag.USE_INSTANT_STEALTH,"name_it_12040"},{PlayerPlayFlag.USE_FULTON_MISSILE,"name_dw_31007"},{PlayerPlayFlag.USE_PARASITE_CAMO,"name_it_13050"},{PlayerPlayFlag.USE_MUGEN_BANDANA,"name_st_37002"},{PlayerPlayFlag.USE_HIGHGRADE_EQUIP,"result_spcialitem_etc"}}--RETAILPATCH: 1060 higrade added
-  for t,e in ipairs(e)do
-    local e,t=e[1],e[2]
-    if e then
-      if bit.band(vars.playerPlayFlag,e)==e then
+  local rankRestrictionItems={
+    {PlayerPlayFlag.USE_CHICKEN_CAP,"name_st_chiken"},
+    {PlayerPlayFlag.USE_STEALTH,"name_it_12043"},
+    {PlayerPlayFlag.USE_INSTANT_STEALTH,"name_it_12040"},
+    {PlayerPlayFlag.USE_FULTON_MISSILE,"name_dw_31007"},
+    {PlayerPlayFlag.USE_PARASITE_CAMO,"name_it_13050"},
+    {PlayerPlayFlag.USE_MUGEN_BANDANA,"name_st_37002"},
+    {PlayerPlayFlag.USE_HIGHGRADE_EQUIP,"result_spcialitem_etc"}--RETAILPATCH: 1060 higrade added
+  }
+  for i,itemInfo in ipairs(rankRestrictionItems)do
+    local playFlag,langId=itemInfo[1],itemInfo[2]
+    if playFlag then
+      if bit.band(vars.playerPlayFlag,playFlag)==playFlag then
         mvars.res_isUsedRankLimitedItem=true
-        TppUiCommand.SetResultScore(t,"ranklimited")
+        TppUiCommand.SetResultScore(langId,"ranklimited")
       end
     end
   end
@@ -375,9 +386,9 @@ function this.Init(missionTable)
   end
   do
     for t,missionCode in ipairs{10043,11043}do
-      local e=TppDefine.MISSION_ENUM[tostring(missionCode)]
-      if gvars.res_bestRank[e]==TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED then
-        gvars.res_bestRank[e]=TppDefine.MISSION_CLEAR_RANK.E+1
+      local missionEnum=TppDefine.MISSION_ENUM[tostring(missionCode)]
+      if gvars.res_bestRank[missionEnum]==TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED then
+        gvars.res_bestRank[missionEnum]=TppDefine.MISSION_CLEAR_RANK.E+1
       end
     end
   end
@@ -405,45 +416,45 @@ function this.Init(missionTable)
       mvars.res_noMissionClearRank=true
     end
     if missionTable.sequence.specialBonus then
-      local e=missionTable.sequence.specialBonus.first
-      if e then
+      local firstBonus=missionTable.sequence.specialBonus.first
+      if firstBonus then
         mvars.res_isExistFirstSpecialBonus=true
-        if e.maxCount then
-          mvars.res_firstSpecialBonusMaxCount=e.maxCount
+        if firstBonus.maxCount then
+          mvars.res_firstSpecialBonusMaxCount=firstBonus.maxCount
         end
-        local t=e.missionTask
-        if t then
+        local missionTask=firstBonus.missionTask
+        if missionTask then
           mvars.res_firstBonusMissionTask={}
-          for t,e in pairs(t)do
+          for t,e in pairs(missionTask)do
             mvars.res_firstBonusMissionTask[t]=e
           end
           mvars.res_firstBonusMissionTask.isFirstHide=true
         end
-        if e.pointList then
-          if Tpp.IsTypeTable(e.pointList)then
-            mvars.res_firstSpecialBonusPointList=e.pointList
-            mvars.res_firstSpecialBonusMaxCount=#e.pointList
+        if firstBonus.pointList then
+          if Tpp.IsTypeTable(firstBonus.pointList)then
+            mvars.res_firstSpecialBonusPointList=firstBonus.pointList
+            mvars.res_firstSpecialBonusMaxCount=#firstBonus.pointList
           end
         end
       end
-      local e=missionTable.sequence.specialBonus.second
-      if e then
+      local secondBonus=missionTable.sequence.specialBonus.second
+      if secondBonus then
         mvars.res_isExistSecondSpecialBonus=true
-        if e.maxCount then
-          mvars.res_secondSpecialBonusMaxCount=e.maxCount
+        if secondBonus.maxCount then
+          mvars.res_secondSpecialBonusMaxCount=secondBonus.maxCount
         end
-        local t=e.missionTask
-        if t then
+        local missionTask=secondBonus.missionTask
+        if missionTask then
           mvars.res_secondBonusMissionTask={}
-          for e,t in pairs(t)do
+          for e,t in pairs(missionTask)do
             mvars.res_secondBonusMissionTask[e]=t
           end
           mvars.res_secondBonusMissionTask.isFirstHide=true
         end
-        if e.pointList then
-          if Tpp.IsTypeTable(e.pointList)then
-            mvars.res_secondSpecialBonusPointList=e.pointList
-            mvars.res_secondSpecialBonusMaxCount=#e.pointList
+        if secondBonus.pointList then
+          if Tpp.IsTypeTable(secondBonus.pointList)then
+            mvars.res_secondSpecialBonusPointList=secondBonus.pointList
+            mvars.res_secondSpecialBonusMaxCount=#secondBonus.pointList
           end
         end
       end
@@ -475,8 +486,8 @@ function this.Init(missionTable)
     mvars.res_bonusMissionClearTimeRatio=1
   end
 end
-function this.OnReload(t)
-  this.Init(t)
+function this.OnReload(missionTable)
+  this.Init(missionTable)
 end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
@@ -497,69 +508,69 @@ function this.OnMissionCanStart()
     end
   end
 end
-function this.SetScoreTable(e)
-  if not IsTypeTable(e)then
+function this.SetScoreTable(scoreTable)
+  if not IsTypeTable(scoreTable)then
     return
   end
-  mvars.res_scoreTable=e
+  mvars.res_scoreTable=scoreTable
 end
-function this.SetRankTable(t)
-  if not IsTypeTable(t)then
+function this.SetRankTable(tankTable)
+  if not IsTypeTable(tankTable)then
     return
   end
-  mvars.res_rankTable=t
+  mvars.res_rankTable=tankTable
 end
 this.saveCountTable={{"bestScoreTime","scoreTime"},{"bestScoreAlert","alertCount"},{"bestScoreKill","killCount"},{"bestScoreHostage","hostageCount"},{"bestScoreGameOver","failedCount"},{"bestScoreGameOver","timeParadoxCount"},{"bestScoreTacticalActionPoint","tacticalActionPoint"}}
 function this.SaveBestCount()
-  local t=svars
+  local svars=svars
   for a,e in pairs(this.saveCountTable)do
-    t[e[1]]=0
+    svars[e[1]]=0
   end
   for a,e in pairs(this.saveCountTable)do
-    t[e[1]]=t[e[1]]+t[e[2]]
+    svars[e[1]]=svars[e[1]]+svars[e[2]]
   end
 end
 function this.DEBUG_Count()
   for e,e in pairs(this.saveCountTable)do
   end
 end
-local o=1e3
+local oneK=1e3
 function this.CalcBaseScore()
   if not mvars.res_missionScoreTable then
     return
   end
-  local i=svars
-  local s
-  local n,t
-  local a=TppMission.GetMissionName()
-  local r=#TppDefine.MISSION_CLEAR_RANK_LIST
-  for e=1,r do
-    s=TppDefine.MISSION_CLEAR_RANK_LIST[e]
-    local t=mvars.res_missionScoreTable.baseTime[s]*o
-    if i.bestScoreTime<=t then
-      n=e
+  local svars=svars
+  local clearRankN
+  local clearRank,baseScore
+  local missionName=TppMission.GetMissionName()
+  local numClearRanks=#TppDefine.MISSION_CLEAR_RANK_LIST
+  for n=1,numClearRanks do
+    clearRankN=TppDefine.MISSION_CLEAR_RANK_LIST[n]
+    local scoreTime=mvars.res_missionScoreTable.baseTime[clearRankN]*oneK
+    if svars.bestScoreTime<=scoreTime then
+      clearRank=n
       break
     end
   end
-  if n==nil then
-    n=r
+  if clearRank==nil then
+    clearRank=numClearRanks
   end
-  if a=="s10040"then
-    t=this.RANK_BASE_SCORE_10040[s]
-  elseif a=="s10054"or a=="s11054"then
-    t=this.RANK_BASE_SCORE_10054[s]
-  elseif a=="s10130"or a=="s11130"then
-    t=this.RANK_BASE_SCORE_10130[s]
-  elseif a=="s10140"or a=="s11140"then
-    t=this.RANK_BASE_SCORE_10140[s]
+  if missionName=="s10040"then
+    baseScore=this.RANK_BASE_SCORE_10040[clearRankN]
+  elseif missionName=="s10054"or missionName=="s11054"then
+    baseScore=this.RANK_BASE_SCORE_10054[clearRankN]
+  elseif missionName=="s10130"or missionName=="s11130"then
+    baseScore=this.RANK_BASE_SCORE_10130[clearRankN]
+  elseif missionName=="s10140"or missionName=="s11140"then
+    baseScore=this.RANK_BASE_SCORE_10140[clearRankN]
   else
-    t=this.RANK_BASE_SCORE[s]
+    baseScore=this.RANK_BASE_SCORE[clearRankN]
   end
   if this.IsUsedChickCap()then
-    t=0
-    n=TppDefine.MISSION_CLEAR_RANK.E
+    baseScore=0
+    clearRank=TppDefine.MISSION_CLEAR_RANK.E
   end
-  return t,n
+  return baseScore,clearRank
 end
 local a=1/1e3
 local t=60
@@ -568,33 +579,33 @@ local i=(t*60)*.25
 local o=(t*60)*1
 local c=(t*60)*4
 local u=(t*60)*.5
-function this.CalcTimeScore(r,l)
+function this.CalcTimeScore(baseScore,clearRank)
   if not mvars.res_missionScoreTable then
     return
   end
-  local s=svars
-  local S=TppDefine.MISSION_CLEAR_RANK_LIST[l]
-  local S=mvars.res_missionScoreTable.baseTime[S]
-  local a=S-(s.bestScoreTime*a)
+  local svars=svars
+  local rankEnum=TppDefine.MISSION_CLEAR_RANK_LIST[clearRank]
+  local sRankScoreTime=mvars.res_missionScoreTable.baseTime[rankEnum]
+  local a=sRankScoreTime-(svars.bestScoreTime*a)
   if a<0 then
     a=0
   end
   local t=a*t
-  local a=TppMission.GetMissionName()
-  if l>TppDefine.MISSION_CLEAR_RANK.S then
-    if a=="s10040"then
+  local missionName=TppMission.GetMissionName()
+  if clearRank>TppDefine.MISSION_CLEAR_RANK.S then
+    if missionName=="s10040"then
       if t>u then
         t=u
       end
-    elseif a=="s10054"or a=="s11054"then
+    elseif missionName=="s10054"or missionName=="s11054"then
       if t>i then
         t=i
       end
-    elseif a=="s10130"or a=="s11130"then
+    elseif missionName=="s10130"or missionName=="s11130"then
       if t>o then
         t=o
       end
-    elseif a=="s10140"or a=="s11140"then
+    elseif missionName=="s10140"or missionName=="s11140"then
       if t>c then
         t=c
       end
@@ -606,9 +617,9 @@ function this.CalcTimeScore(r,l)
   end
   if this.IsUsedChickCap()then
     t=0
-    r=0
+    baseScore=0
   end
-  s.bestScoreTimeScore=t+r
+  svars.bestScoreTimeScore=t+baseScore
 end
 this.calcScoreTable={bestScoreAlertScore={"alertCount","bestScoreAlert"},bestScoreHostageScore={"hostageCount","bestScoreHostage"},bestScoreTakeHitCountScore={"takeHitCount","takeHitCount"},bestScoreTacticalActionPointScore={"tacticalActionPoint","tacticalActionPoint","tacticalTakeDownPoint"},bestScoreMarkingCountScore={"markingCount",vars="playerMarkingCountInMission"},bestScoreInterrogateScore={"interrogateCount","interrogateCount"},bestScoreHeadShotBonusScore={"headShotCount","headshotCount2"},bestScoreNeutralizeBonusScore={"neutralizeCount","neutralizeCount"}}
 this.bonusScoreTable={bestScoreNoReflexScore={"reflexCount","noReflexBonus",nil},bestScoreAlertScore={"alertCount","noAlertBonus",true},bestScoreKillScore={"bestScoreKill","noKillBonus",nil},bestScoreNoRetryScore={"retryCount","noRetryBonus",true},bestScorePerfectStealthNoKillBonusScore={{"alertCount","bestScoreKill","reflexCount"},"perfectStealthNoKillBonus",true}}
@@ -963,14 +974,14 @@ function this.SaveMissionClearPlayStyleParameter()
   if svars.bestScorePerfectStealthNoKillBonusScore>0 then
     gvars.res_isPerfectStealth[0]=true
     Tpp.IncrementPlayData"totalPerfectStealthMissionClearCount"
-    elseif svars.alertCount==0 then
+  elseif svars.alertCount==0 then
     gvars.res_isStealth[0]=true
     Tpp.IncrementPlayData"totalStealthMissionClearCount"
-    end
+  end
 end
 function this.DecidePlayStyle()
-  local t=TppStory.GetCurrentStorySequence()
-  if t<TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON then
+  local storySequence=TppStory.GetCurrentStorySequence()
+  if storySequence<TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON then
     return 1
   end
   if vars.playerPlayFlag then
@@ -978,32 +989,32 @@ function this.DecidePlayStyle()
       return 2
     end
   end
-  local t=true
+  local isPerfectStealth=true
   for e=0,TppDefine.PLAYSTYLE_HISTORY_MAX do
     if gvars.res_isPerfectStealth[e]==false then
-      t=false
+      isPerfectStealth=false
       break
     end
   end
-  if t then
+  if isPerfectStealth then
     return 3
   end
-  local t=true
+  local isStealth=true
   for e=0,TppDefine.PLAYSTYLE_HISTORY_MAX do
     if gvars.res_isStealth[e]==false then
-      t=false
+      isStealth=false
       break
     end
   end
-  if t then
+  if isStealth then
     return 4
   end
-  local a,t=this.GetTotalHeadShotCount(),this.GetTotalNeutralizeCount()
-  if t<1 then
-    t=1
+  local totalHeadShotCount,totalNeutralizeCount=this.GetTotalHeadShotCount(),this.GetTotalNeutralizeCount()
+  if totalNeutralizeCount<1 then
+    totalNeutralizeCount=1
   end
-  local t=a/t
-  if t>=this.PLAYSTYLE_HEAD_SHOT then
+  local headshotToNeutralize=totalHeadShotCount/totalNeutralizeCount
+  if headshotToNeutralize>=this.PLAYSTYLE_HEAD_SHOT then
     return 6
   end
   return this.DecideNeutralizePlayStyle()
@@ -1180,78 +1191,78 @@ function this.OnTacticalActionPoint(gameId,tacticalTakedownType)--RETAILPATCH 10
   else
     SendCommand(gameId,tacticalTakedownType,{id="SetTacticalTakedown"})
     this.AddTacticalActionPoint{isSneak=true,gameObjectId=gameId,tacticalTakeDownType=tacticalTakedownType}--RETAILPATCH 1070 params added
-  end
+end
 end
 function this.GetTacticalActionPoint(e)--RETAILPATCH 1070>
   if e then
     return svars.tacticalActionPoint
-  else
-    if vars.missionCode~=50050 then
-      return 0
-    end
-    return svars.tacticalActionPointClient
+else
+  if vars.missionCode~=50050 then
+    return 0
   end
+  return svars.tacticalActionPointClient
+end
 end--<
 function this.AddTacticalActionPoint(takedownInfo)--RETAILPATCH 1070 reworked
   if mvars.res_noTacticalTakeDown then
     return
-  end
-  local function SetSvar(t,actionPoint)
-    if t then
-      svars.tacticalActionPoint=actionPoint
-    else
-      if vars.missionCode~=50050 then
-        return
-      end
-      svars.tacticalActionPointClient=actionPoint
+end
+local function SetSvar(t,actionPoint)
+  if t then
+    svars.tacticalActionPoint=actionPoint
+  else
+    if vars.missionCode~=50050 then
+      return
     end
+    svars.tacticalActionPointClient=actionPoint
   end
-  local a=true
-  if takedownInfo and(takedownInfo.isSneak==false)then
-    a=false
+end
+local a=true
+if takedownInfo and(takedownInfo.isSneak==false)then
+  a=false
+end
+local s=this.GetTacticalActionPoint(a)
+if a then
+  Tpp.IncrementPlayData"rnk_TotalTacticalTakeDownCount"
+  TppChallengeTask.RequestUpdate"PLAY_RECORD"end
+if s>=mvars.res_missionScoreTable.tacticalTakeDownPoint.countLimit then
+  return
+end
+SetSvar(a,s+1)
+if a then
+  this.CallCountAnnounce("result_tactical_takedown",svars.tacticalActionPoint,n)
+  TppTutorial.DispGuide("TAKE_DOWN",TppTutorial.DISPLAY_OPTION.TIPS)
+  local e=takedownInfo and takedownInfo.tacticalTakeDownType
+  if e then
+    Mission.SendMessage("Mission","OnAddTacticalActionPoint",takedownInfo.gameObjectId,takedownInfo.tacticalTakeDownType)
   end
-  local s=this.GetTacticalActionPoint(a)
-  if a then
-    Tpp.IncrementPlayData"rnk_TotalTacticalTakeDownCount"
-    TppChallengeTask.RequestUpdate"PLAY_RECORD"end
-  if s>=mvars.res_missionScoreTable.tacticalTakeDownPoint.countLimit then
-    return
-  end
-  SetSvar(a,s+1)
-  if a then
-    this.CallCountAnnounce("result_tactical_takedown",svars.tacticalActionPoint,n)
-    TppTutorial.DispGuide("TAKE_DOWN",TppTutorial.DISPLAY_OPTION.TIPS)
-    local e=takedownInfo and takedownInfo.tacticalTakeDownType
-    if e then
-      Mission.SendMessage("Mission","OnAddTacticalActionPoint",takedownInfo.gameObjectId,takedownInfo.tacticalTakeDownType)
-    end
-  end
+end
 end
 function this.CallCountAnnounce(t,a,s)
   TppUiCommand.CallCountAnnounce(t,a,s)
 end
 this.PLAYER_CAUSE_TO_SAVE_INDEX={
-[NeutralizeCause.CQC]=1,
-[NeutralizeCause.NO_KILL]=2,
-[NeutralizeCause.NO_KILL_BULLET]=2,
-[NeutralizeCause.CQC_KNIFE]=3,
-[NeutralizeCause.HANDGUN]=4,
-[NeutralizeCause.SUBMACHINE_GUN]=5,
-[NeutralizeCause.SHOTGUN]=6,
-[NeutralizeCause.ASSAULT_RIFLE]=7,
-[NeutralizeCause.MACHINE_GUN]=8,
-[NeutralizeCause.SNIPER_RIFLE]=9,
-[NeutralizeCause.MISSILE]=10,
-[NeutralizeCause.GRENADE]=11,
-[NeutralizeCause.MINE]=12}
+  [NeutralizeCause.CQC]=1,
+  [NeutralizeCause.NO_KILL]=2,
+  [NeutralizeCause.NO_KILL_BULLET]=2,
+  [NeutralizeCause.CQC_KNIFE]=3,
+  [NeutralizeCause.HANDGUN]=4,
+  [NeutralizeCause.SUBMACHINE_GUN]=5,
+  [NeutralizeCause.SHOTGUN]=6,
+  [NeutralizeCause.ASSAULT_RIFLE]=7,
+  [NeutralizeCause.MACHINE_GUN]=8,
+  [NeutralizeCause.SNIPER_RIFLE]=9,
+  [NeutralizeCause.MISSILE]=10,
+  [NeutralizeCause.GRENADE]=11,
+  [NeutralizeCause.MINE]=12}
 this.NPC_CAUSE_TO_SAVE_INDEX={
-[NeutralizeCause.QUIET]=13,
-[NeutralizeCause.D_DOG]=14,
-[NeutralizeCause.D_HORSE]=15,
-[NeutralizeCause.D_WALKER_GEAR]=16,
-[NeutralizeCause.VEHICLE]=17,
-[NeutralizeCause.SUPPORT_HELI]=18,
-[NeutralizeCause.ASSIST]=19}
+  [NeutralizeCause.QUIET]=13,
+  [NeutralizeCause.D_DOG]=14,
+  [NeutralizeCause.D_HORSE]=15,
+  [NeutralizeCause.D_WALKER_GEAR]=16,
+  [NeutralizeCause.VEHICLE]=17,
+  [NeutralizeCause.SUPPORT_HELI]=18,
+  [NeutralizeCause.ASSIST]=19}
 this.NEUTRALIZE_PLAY_STYLE_ID={7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28}
 function this.GetPlayStyleSaveIndex(n,r,a,t)
   if a==NeutralizeType.INVALID then

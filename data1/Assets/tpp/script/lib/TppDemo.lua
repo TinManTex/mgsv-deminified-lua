@@ -1183,7 +1183,9 @@ this.mtbsPriorityFuncList={
       return false
     else
       local n=TppStory.CanArrivalQuietInMB(true)
-      local e=TppQuest.IsOpen"sovietBase_q99030"local a=not TppRadio.IsPlayed"f2000_rtrg8290"return(n and e)and a
+      local e=TppQuest.IsOpen"sovietBase_q99030"
+      local a=not TppRadio.IsPlayed"f2000_rtrg8290"
+      return(n and e)and a
     end
   end,
   AnableDevBattleGear=function()

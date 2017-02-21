@@ -141,12 +141,12 @@ function this.ResetGimmick(resetParams)
     Gimmick.ResetGimmick(gimmickIdParams.type,gimmickIdParams.locatorName,gimmickIdParams.dataSetName)
   end
 end
-function this.EnableMarkerGimmick(e)
-  local e=mvars.gim_identifierParamTable[e]
+function this.EnableMarkerGimmick(gimmickId)
+  local gimmickInfo=mvars.gim_identifierParamTable[gimmickId]
   if not Gimmick.BreakGimmick then
     return
   end
-  Gimmick.EnableMarkerGimmick(e.type,e.locatorName,e.dataSetName,true)
+  Gimmick.EnableMarkerGimmick(gimmickInfo.type,gimmickInfo.locatorName,gimmickInfo.dataSetName,true)
 end
 function this.OnAllocate(missionTable)
   if TppLocation.IsAfghan()then

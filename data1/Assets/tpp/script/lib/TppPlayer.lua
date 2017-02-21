@@ -371,7 +371,7 @@ function this._SetWeapons(weaponTable,category)
     local equipment=TppEquip[slotName]
     if equipment==nil then
     else
-      local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,T=TppEquip.GetAmmoInfo(equipment)
+      local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(equipment)
       if slotType then
         vars[category][slotType]=equipment
         local ammoCount,altAmmoCount
@@ -389,7 +389,7 @@ function this._SetWeapons(weaponTable,category)
           if underBarrelAmmo then
             altAmmoCount=underBarrelAmmo
           else
-            altAmmoCount=T
+            altAmmoCount=altDefaultAmmo
           end
           gvars.initAmmoStockIds[slotType+TppDefine.WEAPONSLOT.MAX]=altAmmoId
           gvars.initAmmoStockCounts[slotType+TppDefine.WEAPONSLOT.MAX]=altAmmoCount
@@ -465,23 +465,23 @@ function this.RestoreWeaponsFromUsingTemp()
   if not gvars.ply_isUsingTempWeapons then
     return
   end
-  for a=0,11 do
-    if gvars.ply_lastWeaponsUsingTemp[a]~=TppEquip.EQP_None then
-      if a>=TppDefine.WEAPONSLOT.SUPPORT_0 and a<=TppDefine.WEAPONSLOT.SUPPORT_7 then
-        local e=a-TppDefine.WEAPONSLOT.SUPPORT_0
-        vars.initSupportWeapons[e]=gvars.ply_lastWeaponsUsingTemp[a]
+  for i=0,11 do
+    if gvars.ply_lastWeaponsUsingTemp[i]~=TppEquip.EQP_None then
+      if i>=TppDefine.WEAPONSLOT.SUPPORT_0 and i<=TppDefine.WEAPONSLOT.SUPPORT_7 then
+        local e=i-TppDefine.WEAPONSLOT.SUPPORT_0
+        vars.initSupportWeapons[e]=gvars.ply_lastWeaponsUsingTemp[i]
       else
-        vars.initWeapons[a]=gvars.ply_lastWeaponsUsingTemp[a]
+        vars.initWeapons[i]=gvars.ply_lastWeaponsUsingTemp[i]
       end
-      local i,o,l,n,r,t=TppEquip.GetAmmoInfo(gvars.ply_lastWeaponsUsingTemp[a])
-      this.SupplyAmmoByBulletId(i,l)
-      gvars.initAmmoInWeapons[a]=o
-      this.SupplyAmmoByBulletId(n,t)
-      gvars.initAmmoSubInWeapons[a]=r
+      local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(gvars.ply_lastWeaponsUsingTemp[i])
+      this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
+      gvars.initAmmoInWeapons[ammoId]=ammoInWeapon
+      this.SupplyAmmoByBulletId(altAmmoId,altDefaultAmmo)
+      gvars.initAmmoSubInWeapons[ammoId]=altAmmoInWeapon
     end
   end
-  for e=0,11 do
-    gvars.ply_lastWeaponsUsingTemp[e]=TppEquip.EQP_None
+  for i=0,11 do
+    gvars.ply_lastWeaponsUsingTemp[i]=TppEquip.EQP_None
   end
   gvars.ply_isUsingTempWeapons=false
   return true
@@ -549,15 +549,15 @@ function this.InitItemStockCount()
   if TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT==nil then
     return
   end
-  for e=AmmoStockIndex.ITEM,AmmoStockIndex.ITEM_END-1 do
-    vars.ammoStockIds[e]=0
-    vars.ammoStockCounts[e]=0
+  for n=AmmoStockIndex.ITEM,AmmoStockIndex.ITEM_END-1 do
+    vars.ammoStockIds[n]=0
+    vars.ammoStockCounts[n]=0
   end
 end
-function this.GetBulletNum(e)
-  for a=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
-    if(e~=nil and e==vars.ammoStockIds[a])then
-      return vars.ammoStockCounts[a]
+function this.GetBulletNum(bulletType)
+  for ammoStockType=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
+    if(bulletType~=nil and bulletType==vars.ammoStockIds[ammoStockType])then
+      return vars.ammoStockCounts[ammoStockType]
     end
   end
   return 0
@@ -629,77 +629,77 @@ function this.ForceSetAllInitialWeapon()
   vars.isInitialWeapon[TppDefine.WEAPONSLOT.SECONDARY]=1
 end
 function this.SupplyAllAmmoFullOnMissionFinalize()
-  local a={TppDefine.WEAPONSLOT.PRIMARY_HIP,TppDefine.WEAPONSLOT.PRIMARY_BACK,TppDefine.WEAPONSLOT.SECONDARY}
-  for t,a in ipairs(a)do
-    this.SupplyWeaponAmmoFull(a)
+  local slots={TppDefine.WEAPONSLOT.PRIMARY_HIP,TppDefine.WEAPONSLOT.PRIMARY_BACK,TppDefine.WEAPONSLOT.SECONDARY}
+  for n,slot in ipairs(slots)do
+    this.SupplyWeaponAmmoFull(slot)
   end
-  for a=0,3 do
-    local a=vars.initSupportWeapons[a]
-    if a~=TppEquip.EQP_None then
-      this.SupplySupportWeaponAmmoFull(a)
+  for n=0,3 do
+    local supportId=vars.initSupportWeapons[n]
+    if supportId~=TppEquip.EQP_None then
+      this.SupplySupportWeaponAmmoFull(supportId)
     end
   end
 end
-function this.SupplyWeaponAmmoFull(a)
-  local t=vars.initWeapons[a]
-  if t==TppEquip.EQP_None then
+function this.SupplyWeaponAmmoFull(slot)
+  local weapons=vars.initWeapons[slot]
+  if weapons==TppEquip.EQP_None then
     return
   end
-  local n,t,r,i,o,l=TppEquip.GetAmmoInfo(t)
-  this.SupplyAmmoByBulletId(n,r)
-  gvars.initAmmoInWeapons[a]=t
-  this.SupplyAmmoByBulletId(i,l)
-  gvars.initAmmoSubInWeapons[a]=o
+  local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weapons)
+  this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
+  gvars.initAmmoInWeapons[slot]=ammoInWeapon
+  this.SupplyAmmoByBulletId(altAmmoId,altDefaultAmmo)
+  gvars.initAmmoSubInWeapons[slot]=altAmmoInWeapon
 end
-function this.SupplySupportWeaponAmmoFull(a)
-  local t,n,a,n,n,n=TppEquip.GetAmmoInfo(a)
-  this.SupplyAmmoByBulletId(t,a)
+function this.SupplySupportWeaponAmmoFull(weapons)
+  local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weapons)
+  this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
 end
-function this.SupplyAmmoByBulletId(t,n)
-  if t==TppEquip.BL_None then
+function this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
+  if ammoId==TppEquip.BL_None then
     return
   end
-  local e
-  for a=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
-    if gvars.initAmmoStockIds[a]==t then
-      e=a
+  local ammoStockId
+  for i=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
+    if gvars.initAmmoStockIds[i]==ammoId then
+      ammoStockId=i
       break
     end
   end
-  if not e then
-    for a=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
-      if gvars.initAmmoStockIds[a]==TppEquip.BL_None then
-        gvars.initAmmoStockIds[a]=t
-        e=a
+  if not ammoStockId then
+    for i=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
+      if gvars.initAmmoStockIds[i]==TppEquip.BL_None then
+        gvars.initAmmoStockIds[i]=ammoId
+        ammoStockId=i
         break
       end
     end
   end
-  if not e then
+  if not ammoStockId then
     return
   end
-  gvars.initAmmoStockCounts[e]=n
+  gvars.initAmmoStockCounts[ammoStockId]=defaultAmmo
 end
 function this.SavePlayerCurrentAmmoCount()
-  for e=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
-    gvars.initAmmoStockIds[e]=vars.ammoStockIds[e]
-    gvars.initAmmoStockCounts[e]=vars.ammoStockCounts[e]
+  for i=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
+    gvars.initAmmoStockIds[i]=vars.ammoStockIds[i]
+    gvars.initAmmoStockCounts[i]=vars.ammoStockCounts[i]
   end
-  local e={TppDefine.WEAPONSLOT.PRIMARY_HIP,TppDefine.WEAPONSLOT.PRIMARY_BACK,TppDefine.WEAPONSLOT.SECONDARY}
-  for a,e in ipairs(e)do
-    gvars.initAmmoInWeapons[e]=vars.ammoInWeapons[e]
-    gvars.initAmmoSubInWeapons[e]=vars.ammoSubInWeapons[e]
+  local slots={TppDefine.WEAPONSLOT.PRIMARY_HIP,TppDefine.WEAPONSLOT.PRIMARY_BACK,TppDefine.WEAPONSLOT.SECONDARY}
+  for n,slot in ipairs(slots)do
+    gvars.initAmmoInWeapons[slot]=vars.ammoInWeapons[slot]
+    gvars.initAmmoSubInWeapons[slot]=vars.ammoSubInWeapons[slot]
   end
 end
 function this.SetMissionStartAmmoCount()
-  for e=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
-    vars.ammoStockIds[e]=gvars.initAmmoStockIds[e]
-    vars.ammoStockCounts[e]=gvars.initAmmoStockCounts[e]
+  for i=0,TppScriptVars.PLAYER_AMMO_STOCK_TYPE_COUNT-1 do
+    vars.ammoStockIds[i]=gvars.initAmmoStockIds[i]
+    vars.ammoStockCounts[i]=gvars.initAmmoStockCounts[i]
   end
-  local e={TppDefine.WEAPONSLOT.PRIMARY_HIP,TppDefine.WEAPONSLOT.PRIMARY_BACK,TppDefine.WEAPONSLOT.SECONDARY}
-  for a,e in ipairs(e)do
-    vars.ammoInWeapons[e]=gvars.initAmmoInWeapons[e]
-    vars.ammoSubInWeapons[e]=gvars.initAmmoSubInWeapons[e]
+  local slots={TppDefine.WEAPONSLOT.PRIMARY_HIP,TppDefine.WEAPONSLOT.PRIMARY_BACK,TppDefine.WEAPONSLOT.SECONDARY}
+  for i,slot in ipairs(slots)do
+    vars.ammoInWeapons[slot]=gvars.initAmmoInWeapons[slot]
+    vars.ammoSubInWeapons[slot]=gvars.initAmmoSubInWeapons[slot]
   end
 end
 function this.SetEquipMissionBlockGroupSize()
@@ -719,9 +719,9 @@ function this.SetMaxPlacedLocatorCount()
   end
 end
 function this.IsDecoy(e)
-  local e=TppEquip.GetSupportWeaponTypeId(e)
-  local a={[TppEquip.SWP_TYPE_Decoy]=true,[TppEquip.SWP_TYPE_ActiveDecoy]=true,[TppEquip.SWP_TYPE_ShockDecoy]=true}
-  if a[e]then
+  local supportWeaponTypeId=TppEquip.GetSupportWeaponTypeId(e)
+  local decoyTypes={[TppEquip.SWP_TYPE_Decoy]=true,[TppEquip.SWP_TYPE_ActiveDecoy]=true,[TppEquip.SWP_TYPE_ShockDecoy]=true}
+  if decoyTypes[supportWeaponTypeId]then
     return true
   else
     return false
@@ -736,17 +736,17 @@ function this.IsMine(e)
     return false
   end
 end
-function this.AddTrapSettingForIntel(t)
-  local trapName=t.trapName
-  local direction=t.direction or 0
-  local directionRange=t.directionRange or 60
-  local intelName=t.intelName
-  local autoIcon=t.autoIcon
-  local gotFlagName=t.gotFlagName
-  local markerTrapName=t.markerTrapName
-  local markerObjectiveName=t.markerObjectiveName
-  local identifierName=t.identifierName
-  local locatorName=t.locatorName
+function this.AddTrapSettingForIntel(trapInfo)
+  local trapName=trapInfo.trapName
+  local direction=trapInfo.direction or 0
+  local directionRange=trapInfo.directionRange or 60
+  local intelName=trapInfo.intelName
+  local autoIcon=trapInfo.autoIcon
+  local gotFlagName=trapInfo.gotFlagName
+  local markerTrapName=trapInfo.markerTrapName
+  local markerObjectiveName=trapInfo.markerObjectiveName
+  local identifierName=trapInfo.identifierName
+  local locatorName=trapInfo.locatorName
   if not IsTypeString(trapName)then
     return
   end
@@ -797,9 +797,9 @@ function this.ShowIconForIntel(e,t)
   if not IsTypeString(e)then
     return
   end
-  local n
+  local trapName
   if mvars.ply_intelTrapInfo and mvars.ply_intelTrapInfo[e]then
-    n=mvars.ply_intelTrapInfo[e].trapName
+    trapName=mvars.ply_intelTrapInfo[e].trapName
   end
   local a=mvars.ply_intelFlagInfo[e]
   if a then
@@ -810,7 +810,7 @@ function this.ShowIconForIntel(e,t)
   if not t then
     if Tpp.IsNotAlert()then
       Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=Fox.StrCode32"GetIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
-    elseif n then
+    elseif trapName then
       Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=Fox.StrCode32"NGIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
       if not TppRadio.IsPlayed(TppRadio.COMMON_RADIO_LIST[TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT])then
         TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT)
@@ -829,11 +829,11 @@ function this.GotIntel(a)
   local e=mvars.ply_intelMarkerObjectiveName[a]
   if e then
     local a=TppMission.GetParentObjectiveName(e)
-    local e={}
+    local objectives={}
     for a,t in pairs(a)do
-      table.insert(e,a)
+      table.insert(objectives,a)
     end
-    TppMission.UpdateObjective{objectives=e}
+    TppMission.UpdateObjective{objectives=objectives}
   end
 end
 function this.HideIconForIntel()
@@ -1935,13 +1935,14 @@ function this.MakeFultonRecoverSucceedRatio(t,_gameId,RENAMEanimalId,r,staffOrRe
       percentage=0
     end
   end--< 
-    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck() and Tpp.IsSoldier(gameId) then--tex>
-    local soldierType=TppEnemy.GetSoldierType(gameId)
-    local soldierSubType=TppEnemy.GetSoldierSubType(gameId,soldierType)
-    if soldierSubType=="SOVIET_WILDCARD" or soldierSubType=="PF_WILDCARD" then
-      percentage=0
-    end
-  end--<
+  --tex TODO: add own ivar
+--    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck() and Tpp.IsSoldier(gameId) then--tex>
+--    local soldierType=TppEnemy.GetSoldierType(gameId)
+--    local soldierSubType=TppEnemy.GetSoldierSubType(gameId,soldierType)
+--    if soldierSubType=="SOVIET_WILDCARD" or soldierSubType=="PF_WILDCARD" then
+--      percentage=0
+--    end
+--  end--<
   if Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex> WORKAROUND something weird happening with fuledtempstaff on map exit, disabling for now
     percentage=0
   end--<
@@ -2274,9 +2275,9 @@ function this.OnEnterIntelMarkerTrap(e,a)
   else
     return
   end
-  local e=mvars.ply_intelMarkerObjectiveName[e]
-  if e then
-    TppMission.UpdateObjective{objectives={e}}
+  local objective=mvars.ply_intelMarkerObjectiveName[e]
+  if objective then
+    TppMission.UpdateObjective{objectives={objective}}
   end
 end
 function this.OnEnterIntelTrap(a,t)

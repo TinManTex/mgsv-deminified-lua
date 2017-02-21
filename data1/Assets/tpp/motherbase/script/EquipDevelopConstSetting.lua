@@ -6,8 +6,8 @@
 --   p01=TppEquip.EQP_WP_Com_sg_020_FL, //Asset name
 --   p02=TppMbDev.EQP_DEV_TYPE_Shotgun, //Asset type
 --   p03=0, //Prerequisite Item ID
---   p04=0, //Specialist requirement (handgun specialist, cybernetics specialist, etc)
---   p05=65535, //Required flag (set 0 to disable check) - 65535, TppMotherBaseManagementConst.DESIGN_2000,
+--   p04=0, //Specialist/staff skill requirement (handgun specialist, cybernetics specialist, etc)
+--   p05=65535, //Design requirements - 65535, TppMotherBaseManagementConst.DESIGN_2000,
 --   p06="name_wp_4040", //Item name (displayed in iDroid)
 --   p07="info_wp_4040", //Item description (displayed in iDroid)
 --   p08="/Assets/tpp/ui/texture/EquipIcon/npc/ui_wp_com_sg_020_alp", //Item picture (displayed in iDroid)

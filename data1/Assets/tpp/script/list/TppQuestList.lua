@@ -189,7 +189,8 @@ this.questList={
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsCommand",clusterName="Command",
     infoList={
       {name="Mtbs_child_dog",invokeStepName="QStep_Start"},
-      {name="mtbs_q42010",invokeStepName="QStep_Start"}}},
+      {name="mtbs_q42010",invokeStepName="QStep_Start"}
+      }},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsCombat",clusterName="Combat",infoList={{name="mtbs_q42070",invokeStepName="QStep_Start"}}},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsDevelop",clusterName="Develop",
     infoList={

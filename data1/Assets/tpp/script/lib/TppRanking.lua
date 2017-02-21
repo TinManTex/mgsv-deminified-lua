@@ -126,22 +126,22 @@ function this._ShowScoreNumberAnnounceLog(e)
   TppUiCommand.AnnounceLogViewLangId("announce_trial_num",e)
 end
 function this.UpdateOpenRanking()
-  for e,a in pairs(this.OPEN_CONDITION)do
-    local t=gvars.rnk_isOpen[e]
+  for k,v in pairs(this.OPEN_CONDITION)do
+    local rnk_isOpen=gvars.rnk_isOpen[k]
     local n=false
-    if a==true then
+    if v==true then
       n=true
-    elseif Tpp.IsTypeNumber(a)then
-      n=TppStory.IsMissionCleard(a)
-    elseif Tpp.IsTypeFunc(a)then
-      n=a()
+    elseif Tpp.IsTypeNumber(v)then
+      n=TppStory.IsMissionCleard(v)
+    elseif Tpp.IsTypeFunc(v)then
+      n=v()
     end
-    if(((e==11)or(e==12))or(e==13))and(not t)then
+    if(((k==11)or(k==12))or(k==13))and(not rnk_isOpen)then
       if n then
-        TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.RANKING,arg1=e}
+        TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.RANKING,arg1=k}
       end
     end
-    gvars.rnk_isOpen[e]=n
+    gvars.rnk_isOpen[k]=n
   end
 end
 function this.RegistMissionClearRankingResult(a,n,t)

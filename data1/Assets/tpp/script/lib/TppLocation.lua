@@ -1,16 +1,17 @@
+--TppLocation.lua
 local this={}
 function this.GetLocationName()
   if vars.locationCode==10 then
     return"afgh"
-    elseif vars.locationCode==20 then
+  elseif vars.locationCode==20 then
     return"mafr"
-    elseif vars.locationCode==30 then
+  elseif vars.locationCode==30 then
     return"cypr"
-    elseif vars.locationCode==50 then
+  elseif vars.locationCode==50 then
     return"mtbs"
-    elseif vars.locationCode==55 then
+  elseif vars.locationCode==55 then
     return"mbqf"
-    end
+  end
 end
 function this.IsAfghan()
   if vars.locationCode==10 then
@@ -52,7 +53,7 @@ function this.SetBuddyBlock(locationId)
     if locationId==10 or locationId==20 then--afgh,mafr
       if TppBuddy2BlockController.CreateBlock then
         TppBuddy2BlockController.CreateBlock()
-      end
+    end
     else
       if TppBuddy2BlockController.DeleteBlock then
         TppBuddy2BlockController.DeleteBlock()

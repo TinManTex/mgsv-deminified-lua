@@ -102,6 +102,7 @@ this.requires={
   "/Assets/tpp/script/lib/InfHelicopter.lua",
   "/Assets/tpp/script/lib/InfNPC.lua",
   "/Assets/tpp/script/lib/InfNPCHeli.lua",
+  "/Assets/tpp/script/lib/InfInterrogation.lua",
   "/Assets/tpp/script/lib/InfSoldierParams.lua",
   "/Assets/tpp/script/lib/InfInspect.lua",
   "/Assets/tpp/script/lib/InfFova.lua",

@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+--TppRevenge.lua
 local this={}
 local GetGameObjectId=GameObject.GetGameObjectId
 local GetTypeIndex=GameObject.GetTypeIndex
@@ -360,21 +361,24 @@ function this.IsNoRevengeMission(missionCode)
   if missionCode==nil then
     return false
   end
-  local e=this.NO_REVENGE_MISSION_LIST[missionCode]
-  if e==nil then
+  local isNot=this.NO_REVENGE_MISSION_LIST[missionCode]
+  if isNot==nil then
     return false
   end
-  return e
+  return isNot
 end
 function this.IsNoStealthCombatRevengeMission(missionCode)
   if missionCode==nil then
     return false
   end
-  local e=this.NO_STEALTH_COMBAT_REVENGE_MISSION_LIST[missionCode]
-  if e==nil then
+  if (missionCode==30010 or missionCode==30020) and Ivars.disableNoStealthCombatRevengeMission:Is(1) then--tex>
+    return false
+  end--<
+  local isNot=this.NO_STEALTH_COMBAT_REVENGE_MISSION_LIST[missionCode]
+  if isNot==nil then
     return false
   end
-  return e
+  return isNot
 end
 function this.GetEquipGradeLimit()
   return mvars.revenge_revengeConfig.EQUIP_GRADE_LIMIT
@@ -408,7 +412,7 @@ function this.GetReinforceCount()
   if Ivars.forceReinforceRequest:Is(1) then--tex>
     if not InfRevenge.DoCustomRevenge() then
       mvars.revenge_revengeConfig.REINFORCE_COUNT=99
-    end
+  end
   end--<
   local count=mvars.revenge_revengeConfig.REINFORCE_COUNT
   if count then
@@ -799,16 +803,16 @@ function this.SetUpEnemy()
   end
 end
 function this.GetRevengeLvLimitRank()
-  local e=gvars.str_storySequence
-  if e<TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON then
+  local storySequence=gvars.str_storySequence
+  if storySequence<TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON then
     return 1
-  elseif e<TppDefine.STORY_SEQUENCE.CLEARD_RESCUE_HUEY then
+  elseif storySequence<TppDefine.STORY_SEQUENCE.CLEARD_RESCUE_HUEY then
     return 2
-  elseif e<TppDefine.STORY_SEQUENCE.CLEARD_ELIMINATE_THE_POWS then
+  elseif storySequence<TppDefine.STORY_SEQUENCE.CLEARD_ELIMINATE_THE_POWS then
     return 3
-  elseif e<TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA then
+  elseif storySequence<TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA then
     return 4
-  elseif e<TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
+  elseif storySequence<TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
     return 5
   else
     return 6
@@ -818,7 +822,7 @@ end
 function this.GetRevengeLv(revengeType)
   local missionId=TppMission.GetMissionID()
   if TppMission.IsHardMission(missionId) then --CULL or Ivars.revengeMode:Is"MAX" or Ivars.revengeModeForMissions:Is"MAX" then--tex added
-    return this.GetRevengeLvMax(revengeType,this.REVENGE_LV_LIMIT_RANK_MAX)--RETAILBUG: was just REVENGE_LV_LIMIT_RANK_MAX, the limit on REVE is max rank anyway which GetRevengeLvMax defaults to
+    return this.GetRevengeLvMax(revengeType,this.REVENGE_LV_LIMIT_RANK_MAX)--tex RETAILBUG: was just REVENGE_LV_LIMIT_RANK_MAX, the limit on REVE is max rank anyway which GetRevengeLvMax defaults to
   else
     return gvars.rev_revengeLv[revengeType]
   end
@@ -835,16 +839,16 @@ function this.GetRevengeLvMax(revengeType,limitMaxRank)
   end
   return 0
 end
-function this.GetRevengePoint(e)
-  return gvars.rev_revengePoint[e]
+function this.GetRevengePoint(revengeType)
+  return gvars.rev_revengePoint[revengeType]
 end
-function this.AddRevengePoint(n,E)
-  this.SetRevengePoint(n,gvars.rev_revengePoint[n]+E)
+function this.AddRevengePoint(revengeType,points)
+  this.SetRevengePoint(revengeType,gvars.rev_revengePoint[revengeType]+points)
 end
-function this.GetRevengeTriggerName(n)
-  for e,E in pairs(this.REVENGE_TRIGGER_TYPE)do
-    if E==n then
-      return e
+function this.GetRevengeTriggerName(triggerType)
+  for name,enum in pairs(this.REVENGE_TRIGGER_TYPE)do
+    if enum==triggerType then
+      return name
     end
   end
   return""
@@ -898,13 +902,13 @@ function this.UpdateRevengeLv(missionId)
   end
   this._SetEnmityLv()
 end
-function this._GetUiParameterValue(revengeLevel)
+function this._GetUiParameterValue(revengeType)
   local rankLimitForUi2=4
   local rankLimitForUi3=5
-  local currentLevel=this.GetRevengeLv(revengeLevel)
-  if currentLevel>=this.GetRevengeLvMax(revengeLevel,rankLimitForUi3)then
+  local currentLevel=this.GetRevengeLv(revengeType)
+  if currentLevel>=this.GetRevengeLvMax(revengeType,rankLimitForUi3)then
     return 3
-  elseif currentLevel>=this.GetRevengeLvMax(revengeLevel,rankLimitForUi2)then
+  elseif currentLevel>=this.GetRevengeLvMax(revengeType,rankLimitForUi2)then
     return 2
   elseif currentLevel>=1 then
     return 1
@@ -985,9 +989,10 @@ function this._SetEnmityLv()
   local staffEnmityLv=enmityLevels[enmityLevel]
   TppMotherBaseManagement.SetStaffInitEnmityLv{lv=staffEnmityLv}
 end
-function this.OnMissionClearOrAbort(missionId)
+function this.OnMissionClearOrAbort(missionId,isAbort)--tex added isAbort
   gvars.rev_revengeRandomValue=math.random(0,2147483647)
-  this.ApplyMissionTendency(missionId)
+  this.ApplyMissionTendency(missionId,isAbort)--tex added isAbort
+  this._ReduceRevengePointByTime(missionId)--tex added
   this._ReduceRevengePointByChickenCap(missionId)
   this._ReduceBlockedCount(missionId)
   this._ReceiveClearedDeployRevengeMission()
@@ -1096,50 +1101,91 @@ function this._ReduceRevengePointByChickenCap(missionId)
     this._ReduceRevengePointOther()
   end
 end
-function this.ReduceRevengePointOnAbort(e)
+--tex>
+function this._ReduceRevengePointByTime(missionId)
+
+  if missionId==nil then
+    missionId=TppMission.GetMissionID()
+  end
+  --  if this.IsNoRevengeMission(missionId)then
+  --    return
+  --  end
+  if missionId~=30050 then
+    return
+  end
+  if bit.band(vars.playerPlayFlag,PlayerPlayFlag.USE_CHICKEN_CAP)==PlayerPlayFlag.USE_CHICKEN_CAP then
+    return
+  end
+
+  if Ivars.revengeDecayOnLongMbVisit:Is(0) then
+    return
+  end
+
+  local getMbVisitRevengeDecay=InfMain.GetMbVisitRevengeDecay()
+  if getMbVisitRevengeDecay>0 then
+    InfMenu.PrintLangId"mb_visit_revenge_decay"
+    for i=1,getMbVisitRevengeDecay do
+      this._ReduceRevengePointStealthCombat()
+      this._ReduceRevengePointOther()
+    end
+  end
+end
+--<
+function this.ReduceRevengePointOnAbort(missionId)
 end
 function this._GetMissionTendency(missionId)
   local mStealth=this.GetRevengePoint(this.REVENGE_TYPE.M_STEALTH)
   local mCombat=this.GetRevengePoint(this.REVENGE_TYPE.M_COMBAT)
   if mStealth==0 and mCombat==0 then
-    return"STEALTH"end
+    return"STEALTH"
+  end
   if mCombat==0 then
-    return"STEALTH"end
+    return"STEALTH"
+  end
   if mStealth==0 then
-    return"COMBAT"end
+    return"COMBAT"
+  end
   local tendencyDifference=mStealth-mCombat
   local r=.3
-  local maxLevel=10--VERIFY: name
-  local e=(mStealth+mCombat)*r
-  if e<maxLevel then
-    e=maxLevel
+  local min=10--VERIFY: name
+  local mStealthCombatReduction=(mStealth+mCombat)*r
+  if mStealthCombatReduction<min then
+    mStealthCombatReduction=min
   end
   local tendency="DRAW"
-  if tendencyDifference>=e then
+  if tendencyDifference>=mStealthCombatReduction then
     tendency="STEALTH"
-  elseif tendencyDifference<=-e then
+  elseif tendencyDifference<=-mStealthCombatReduction then
     tendency="COMBAT"
   end
   return tendency
 end
-function this.ApplyMissionTendency(missionId)
+--tex added isAbort
+function this.ApplyMissionTendency(missionId,isAbort)
   if missionId==nil then
     missionId=TppMission.GetMissionID()
   end
   if(not this.IsNoRevengeMission(missionId)and not this.IsNoStealthCombatRevengeMission(missionId))and bit.band(vars.playerPlayFlag,PlayerPlayFlag.USE_CHICKEN_CAP)~=PlayerPlayFlag.USE_CHICKEN_CAP then
     local missionTendancy=this._GetMissionTendency(missionId)
-    local missionTendancyPoint=this.MISSION_TENDENCY_POINT_TABLE[missionTendancy]
-    if missionTendancyPoint then
-      local nextStealthLevel=this.GetRevengeLv(this.REVENGE_TYPE.STEALTH)+1
-      local nextCombatLevel=this.GetRevengeLv(this.REVENGE_TYPE.COMBAT)+1
-      if nextStealthLevel>#missionTendancyPoint.STEALTH then
-        nextStealthLevel=#missionTendancyPoint.STEALTH
+    local missionTendancyPointTable=this.MISSION_TENDENCY_POINT_TABLE[missionTendancy]
+    if missionTendancyPointTable then
+      local stealthLevel=this.GetRevengeLv(this.REVENGE_TYPE.STEALTH)+1--NMC: gvars.rev_revengeLv indexed from 0? or is this actually current level + 1??
+      local combatLevel=this.GetRevengeLv(this.REVENGE_TYPE.COMBAT)+1
+      if stealthLevel>#missionTendancyPointTable.STEALTH then
+        stealthLevel=#missionTendancyPointTable.STEALTH
       end
-      if nextCombatLevel>#missionTendancyPoint.COMBAT then
-        nextCombatLevel=#missionTendancyPoint.COMBAT
+      if combatLevel>#missionTendancyPointTable.COMBAT then
+        combatLevel=#missionTendancyPointTable.COMBAT
       end
-      this.AddRevengePoint(this.REVENGE_TYPE.STEALTH,missionTendancyPoint.STEALTH[nextStealthLevel])
-      this.AddRevengePoint(this.REVENGE_TYPE.COMBAT,missionTendancyPoint.COMBAT[nextCombatLevel])
+      --InfMenu.DebugPrint(missionTendancy.." add points: stealth:"..tostring(missionTendancyPointTable.STEALTH[stealthLevel])..", combat:"..tostring(missionTendancyPointTable.COMBAT[combatLevel]))--DEBUG
+      --tex> bit of a kludge, would prefer to scale free roam by time in world
+      local notFree=missionId~=30010 and missionId~=30020
+      local didSomething=this.GetRevengePoint(this.REVENGE_TYPE.M_STEALTH)>0 or this.GetRevengePoint(this.REVENGE_TYPE.M_COMBAT)>0
+      --<
+      if notFree or (not isAbort and didSomething) then--tex added bypass for freeroam
+        this.AddRevengePoint(this.REVENGE_TYPE.STEALTH,missionTendancyPointTable.STEALTH[stealthLevel])
+        this.AddRevengePoint(this.REVENGE_TYPE.COMBAT,missionTendancyPointTable.COMBAT[combatLevel])
+      end
     end
   end
   this.SetRevengePoint(this.REVENGE_TYPE.M_STEALTH,0)
@@ -1930,64 +1976,64 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
     if missionAbilitySoldiers[soldierId]==nil then
       local personalAbilitySettings={}
       do
-        local abilityLevel
+        local stealthLevel
         if soldierConfig.STEALTH_SPECIAL then
-          abilityLevel="sp"
+          stealthLevel="sp"
         elseif soldierConfig.STEALTH_HIGH then
-          abilityLevel="high"
+          stealthLevel="high"
         elseif soldierConfig.STEALTH_LOW then
-          abilityLevel="low"
+          stealthLevel="low"
         end
-        personalAbilitySettings.notice=abilityLevel
-        personalAbilitySettings.cure=abilityLevel
-        personalAbilitySettings.reflex=abilityLevel
+        personalAbilitySettings.notice=stealthLevel
+        personalAbilitySettings.cure=stealthLevel
+        personalAbilitySettings.reflex=stealthLevel
       end
       do
-        local abilityLevel
+        local combatLevel
         if soldierConfig.COMBAT_SPECIAL then
-          abilityLevel="sp"
+          combatLevel="sp"
         elseif soldierConfig.COMBAT_HIGH then
-          abilityLevel="high"
+          combatLevel="high"
         elseif soldierConfig.COMBAT_LOW then
-          abilityLevel="low"
+          combatLevel="low"
         end
-        personalAbilitySettings.shot=abilityLevel
-        personalAbilitySettings.grenade=abilityLevel
-        personalAbilitySettings.reload=abilityLevel
-        personalAbilitySettings.hp=abilityLevel
+        personalAbilitySettings.shot=combatLevel
+        personalAbilitySettings.grenade=combatLevel
+        personalAbilitySettings.reload=combatLevel
+        personalAbilitySettings.hp=combatLevel
       end
       do
-        local abilityLevel
+        local speedLevel
         if soldierConfig.STEALTH_SPECIAL or soldierConfig.COMBAT_SPECIAL then
-          abilityLevel="sp"
+          speedLevel="sp"
         elseif soldierConfig.STEALTH_HIGH or soldierConfig.COMBAT_HIGH then
-          abilityLevel="high"
+          speedLevel="high"
         elseif soldierConfig.STEALTH_LOW or soldierConfig.COMBAT_LOW then
-          abilityLevel="low"
+          speedLevel="low"
         end
-        personalAbilitySettings.speed=abilityLevel
+        personalAbilitySettings.speed=speedLevel
       end
       do
-        local abilitiyLevel
+        local fultonLevel
         if soldierConfig.FULTON_SPECIAL then
-          abilitiyLevel="sp"
+          fultonLevel="sp"
         elseif soldierConfig.FULTON_HIGH then
-          abilitiyLevel="high"
+          fultonLevel="high"
         elseif soldierConfig.FULTON_LOW then
-          abilitiyLevel="low"
+          fultonLevel="low"
         end
-        personalAbilitySettings.fulton=abilitiyLevel
+        personalAbilitySettings.fulton=fultonLevel
       end
       do
-        local abilityLevel
+        local holdupLevel
         if soldierConfig.HOLDUP_SPECIAL then
-          abilityLevel="sp"
+          holdupLevel="sp"
         elseif soldierConfig.HOLDUP_HIGH then
-          abilityLevel="high"
+          holdupLevel="high"
         elseif soldierConfig.HOLDUP_LOW then
-          abilityLevel="low"
+          holdupLevel="low"
         end
-        personalAbilitySettings.holdup=abilityLevel
+        personalAbilitySettings.holdup=holdupLevel
       end
       TppEnemy.ApplyPersonalAbilitySettings(soldierId,personalAbilitySettings)
     end

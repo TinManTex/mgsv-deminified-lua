@@ -342,7 +342,8 @@ function this.SafeStopAndPostJingleOnShowResult()
       TppMusicManager.PostJingleEvent("MissionEnd","Play_bgm_common_jingle_ed")
     end
   end
-  TppSoundDaemon.SetMute"Result"end
+  TppSoundDaemon.SetMute"Result"
+end
 function this.PostJingleStartResultPresentation(n)
   if vars.missionCode==50050 then
     return

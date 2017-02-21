@@ -142,7 +142,16 @@ TppMotherBaseManagement.RegisterSectionClusterBuildParam{base="Fob4",category="M
 TppMotherBaseManagement.SetSmallDiamondGmp{gmp=TppDefine.SMALL_DIAMOND_GMP}
 TppMotherBaseManagement.SetLargeDiamondGmp{gmp=TppDefine.LARGE_DIAMOND_GMP}
 TppMotherBaseManagement.RegisterResourceBaseExtractingTimeMinute{timeMinute=1}
-TppMotherBaseManagement.RegisterContainerParam{commonMetalCounts={white=750,red=7500,yellow=1500},fuelResourceCounts={white=750,red=7500,yellow=1500},bioticResourceCounts={white=750,red=7500,yellow=1500},minorMetalCounts={white=400,red=4e3,yellow=800},preciousMetalCounts={white=50,red=500,yellow=100},usableResourceContainerRate=50,redContainerCountRate=40,yellowContainerCountRate=40}
+TppMotherBaseManagement.RegisterContainerParam{
+  commonMetalCounts={white=750,red=7500,yellow=1500},
+  fuelResourceCounts={white=750,red=7500,yellow=1500},
+  bioticResourceCounts={white=750,red=7500,yellow=1500},
+  minorMetalCounts={white=400,red=4e3,yellow=800},
+  preciousMetalCounts={white=50,red=500,yellow=100},
+  usableResourceContainerRate=50,
+  redContainerCountRate=40,
+  yellowContainerCountRate=40
+}
 TppMotherBaseManagement.RegisterResourceParam{resource="CommonMetal",baseSalePrice=100,countInContainer=50,countPer1Minute=4}
 TppMotherBaseManagement.RegisterResourceParam{resource="FuelResource",baseSalePrice=100,countInContainer=50,countPer1Minute=4}
 TppMotherBaseManagement.RegisterResourceParam{resource="BioticResource",baseSalePrice=100,countInContainer=50,countPer1Minute=4}
