@@ -128,27 +128,27 @@ function this.ShowUpdateScoreAnnounceLog(rankingCategoryEnum,score)
     this._ShowScoreNumberAnnounceLog(score)
   end
 end
-function this.GetRankingLangId(e)
-  return string.format("ranking_name_%02d",e)
+function this.GetRankingLangId(rankingCategoryEnum)
+  return string.format("ranking_name_%02d",rankingCategoryEnum)
 end
-function this._ShowCommonUpdateScoreAnnounceLog(n)
+function this._ShowCommonUpdateScoreAnnounceLog(rankingCategoryEnum)
   TppUI.ShowAnnounceLog"trial_update"
-  local rankingLangId=this.GetRankingLangId(n)
+  local rankingLangId=this.GetRankingLangId(rankingCategoryEnum)
   TppUiCommand.AnnounceLogViewLangId(rankingLangId)
 end
-function this._ShowScoreTimeAnnounceLog(n)
-  local e=math.floor(n/6e4)
-  local a=math.floor((n-e*6e4)/1e3)
-  local n=(n-e*6e4)-a*1e3
+function this._ShowScoreTimeAnnounceLog(scoreTime)
+  local e=math.floor(scoreTime/6e4)
+  local a=math.floor((scoreTime-e*6e4)/1e3)
+  local n=(scoreTime-e*6e4)-a*1e3
   TppUiCommand.AnnounceLogViewLangId("announce_trial_time",e,a,n)
 end
-function this._ShowScoreDistanceAnnounceLog(n)
-  local e=math.floor(n)
-  local n=(n-e)*1e3
+function this._ShowScoreDistanceAnnounceLog(scoreDistance)
+  local e=math.floor(scoreDistance)
+  local n=(scoreDistance-e)*1e3
   TppUiCommand.AnnounceLogViewLangId("announce_trial_length",e,n)
 end
-function this._ShowScoreNumberAnnounceLog(e)
-  TppUiCommand.AnnounceLogViewLangId("announce_trial_num",e)
+function this._ShowScoreNumberAnnounceLog(score)
+  TppUiCommand.AnnounceLogViewLangId("announce_trial_num",score)
 end
 function this.UpdateOpenRanking()
   for key,value in pairs(this.OPEN_CONDITION)do
@@ -169,9 +169,9 @@ function this.UpdateOpenRanking()
     gvars.rnk_isOpen[key]=isOpen
   end
 end
-function this.RegistMissionClearRankingResult(a,missionCode,t)
+function this.RegistMissionClearRankingResult(usedRankLimitedItem,missionCode,totalScore)
   local missionBoardId
-  if a then
+  if usedRankLimitedItem then
     missionBoardId=RecordRanking.GetMissionLimitBordId(missionCode)
   else
     missionBoardId=RecordRanking.GetMissionBordId(missionCode)
@@ -179,7 +179,7 @@ function this.RegistMissionClearRankingResult(a,missionCode,t)
   if missionBoardId==RankingBordId.NONE then
     return
   end
-  mvars.rnk_missionClearRankingResult={missionBoardId,t}
+  mvars.rnk_missionClearRankingResult={missionBoardId,totalScore}
 end
 function this.SendCurrentRankingScore()
   if RecordRanking.IsRankingBusy()then
@@ -231,17 +231,17 @@ function this.CheckPlayRecordChallengeTask()
   local r={IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,IsEqualOrMoreTotalFultonCount,TppResult.IsEqualOrMoreCboxGlidingDistance}
   local o={100,200,300,400,500,600,700,800,900,150}
   local t={true,2250,2260,2270,2280,2290,2300,2310,2320,true}
-  local e={}
+  local tasks={}
   for n,taskId in ipairs(n)do
     local o,t,completedTaskIdForVisible=r[n],o[n],t[n]
     local isCompleted=o(t)
     if completedTaskIdForVisible==true then
-      table.insert(e,{taskId=taskId,isVisible=true,isCompleted=isCompleted})
+      table.insert(tasks,{taskId=taskId,isVisible=true,isCompleted=isCompleted})
     else
-      table.insert(e,{taskId=taskId,completedTaskIdForVisible=completedTaskIdForVisible,isCompleted=isCompleted})
+      table.insert(tasks,{taskId=taskId,completedTaskIdForVisible=completedTaskIdForVisible,isCompleted=isCompleted})
     end
   end
-  return e
+  return tasks
 end
 function this.OnReload(missionTable)
   this.Init(missionTable)
@@ -267,16 +267,16 @@ function this.OnHeadShot(gameId,attackId,attackerObjectId,flag)
     PlayRecord.RegistPlayRecord"PLAYER_HEADSHOT"
   end
 end
-function this.OnCBoxSlideEnd(n,e)
-  local e=e/10
-  PlayRecord.RegistPlayRecord("CBOX_SLIDING",e)
-  if(e>gvars.rnk_CboxGlidingDistance)then
-    gvars.rnk_CboxGlidingDistance=e
+function this.OnCBoxSlideEnd(n,distance)
+  local scoreDistance=distance/10
+  PlayRecord.RegistPlayRecord("CBOX_SLIDING",scoreDistance)
+  if(scoreDistance>gvars.rnk_CboxGlidingDistance)then
+    gvars.rnk_CboxGlidingDistance=scoreDistance
     TppChallengeTask.RequestUpdate"PLAY_RECORD"
   end
 end
-function TppResult.IsEqualOrMoreCboxGlidingDistance(e)
-  if gvars.rnk_CboxGlidingDistance>=e then
+function TppResult.IsEqualOrMoreCboxGlidingDistance(distance)
+  if gvars.rnk_CboxGlidingDistance>=distance then
     return true
   else
     return false

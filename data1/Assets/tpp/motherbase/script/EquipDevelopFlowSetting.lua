@@ -1,6 +1,80 @@
 --EquipDevelopFlowSetting.lua
 --RETAILPATCH 1090,1.10 various changes and additions
 this={}
+--NOTES, via unknown321 https://github.com/unknown321/mgsmonsterguns/blob/gh-pages/parameters.txt, nasanhak http://forum.xentax.com/viewtopic.php?f=10&t=12407&p=122960#p122960 and mgo EquipDevelopSetting.lua
+
+--nasanhak order of records in these files seems to be strict meaning you can't insert the same number of records at the beginning or in the middle in both the Const and Flow files and expect it to work. The dev pages/chains break. Anything new has to go at the end.
+
+--unknown321 I assume that any parameter below can be overridden by konami via online patches
+--You get patches when you log into server (or just after that, happens only once per game session)
+
+--TppMotherBaseManagement.RegFlwDev{
+--  p50=0,--index of develop item defined by order of TppMotherBaseManagement.RegCstDev calls 
+--nasanhak combo of p51 and p52 creates the dev chain for an item/weapon - can be customized but if not careful, may break development menu tabs/game in subtle ways
+--  p51=0,--derivationIndex--nasanhak order of dev of item chains, from 0
+--  p52=1,--developRank2--grade, grade 0 doesnt show in dev pages
+--  p53=0,--developGmpCost--development gmp
+--  p54=100,--usageGmpCost--deployment cost gmp
+--nasanhak first unit type requirement is not set in this file, or in any file as far as I can tell
+--  p55=0,--sectionLvForDevelop--MB development cluster level requirement 1 --cannot be zero if a unit type is set
+--  p56={0-7},--sectionID2ForDevelop--MB development cluster 2 id--VERIFY 0=none, 1=command>7=medical, see REF below VERIFY
+--  p57=0,--sectionLv2ForDevelop--MB development cluster level requirement 2 --cannot be zero if a unit type is set
+--  p58="<resourceId>",--resourceType1--Development resource 1 id, see resource ids below
+--  p59=0,--resourceType1Count--Development resource 1 quantity
+--  p60="<resourceId>",--resourceType2--Development resource 2 id,, see resource ids below
+--  p61=0,--resourceType2Count--Development resource 2 quantity
+--  p62=1,--{0,1}--initialAvailable - set as developed
+--  p63=0,--sectionIDForDevelop -nasanhak **ID of 1st unit requirement for SOME weapons/items - seems to override p55(higher preference)
+--  p64=0,--developSectionLv -nasanhak **level requirement for 1st unit type for SOME weapons/items - SPECULATION(did not test): If 0, then p55 acts as 1st unit level? At any rate set to 1 for easy level requirements
+--  p65="",--resourceUsageType1--Deployment resource 1 id
+--  p66=0,--resourceUsageType1Count--Deployment resource 1 quantity
+--  p67="",--resourceUsageType2--Deployment resource 2 id
+--  p68=0,--resourceUsageType2Count--Deployment resource 2 quantity
+--  p69=0,--displayInfo 
+--nasanhak
+--   0 - show in dev menus
+--   1 - DLC and then some
+--   2 - Anything un-develop-able - Enemy weapons(cause these need equip info too, just can't be developed), Infected NVG from M43, Balaclava & Headgear, Looks to be unused DD skins(Ocelot & Miller), One Walker Gear pistol, Battle Gear stuff, Honeybee, Skull face gun, Volgin gun(his attack that is), Enemy shields and D.MINE MARKER
+--   3 - only for wormhole fulton all 4 grades
+--   5 - All unused - Fulton cargo, fulton normal, fulton wormhole; Hides equip from equip menu as well
+--  p70=0,--
+--  p71=0,--developTimeMinute--Development time
+--  p72={0-7},--isValidMbCoin  --Offline (0) Online (1)
+--  p73=0,--intimacyPoint -- buddy points reuired for dev
+--  p74=1--isFobAvailable
+--nasanhak
+--   0 means items cannot be equipped for FOBs at sortie screen - cannot commence FOB mission
+--   This does not control item usage once on FOBs
+--   So changing from 0 to 1 will allow you to deploy to FOBs with let's say the infinity bandanna/parasite suit
+--   but the Stealth Camo, supply flare, support flare, cigar, parasites will still not be usable
+--}
+
+--Resource ids
+--See TppTerminal.RESOURCE_INFORMATION_TABLE for plant types
+--"CommonMetal"
+--"MinorMetal"
+--"PreciousMetal"
+--"FuelResource"
+--"BioticResource"
+--"Plant2000"
+--"Plant2001"
+--"Plant2002"
+--"Plant2003"
+--"Plant2004"
+--"Plant2005"
+--"Plant2006"
+--"Plant2007"
+
+--REF clusters 
+--{
+--"Command",
+--"Combat",
+--"Develop",
+--"BaseDev",
+--"Support",
+--"Spy",
+--"Medical"
+--}
 TppMotherBaseManagement.RegFlwDev{p50=0,p51=0,p52=1,p53=0,p54=100,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=1,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=0,p73=0,p74=1}
 TppMotherBaseManagement.RegFlwDev{p50=1,p51=0,p52=2,p53=7e4,p54=700,p55=7,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=0,p73=0,p74=1}
 TppMotherBaseManagement.RegFlwDev{p50=2,p51=0,p52=3,p53=2e5,p54=2e3,p55=20,p56=0,p57=0,p58="Plant2000",p59=60,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=18,p72=0,p73=0,p74=1}
@@ -880,4 +954,5 @@ TppMotherBaseManagement.RegFlwDev{p50=874,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,
 TppMotherBaseManagement.RegFlwDev{p50=875,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
 --<RETAILPATCH 1.10
 return this
+
 

@@ -341,9 +341,9 @@ function this.CheckRadioGroupIsCommonRadio(radioNameStrCode,a)
   end
   local commonRadioNameStrCode
   if Tpp.IsTypeTable(commonRadioName)then
-    commonRadioNameStrCode=Fox.StrCode32(commonRadioName[1])
+    commonRadioNameStrCode=StrCode32(commonRadioName[1])
   else
-    commonRadioNameStrCode=Fox.StrCode32(commonRadioName)
+    commonRadioNameStrCode=StrCode32(commonRadioName)
   end
   if radioNameStrCode==commonRadioNameStrCode then
     return true
@@ -665,7 +665,7 @@ function this._PlayDebugLine(text,delay)
 end
 function this.PlaySelectBuddy(strCodeMbdvcSelection)
   if TppBuddyService.CheckBuddyCommonFlag(BuddyCommonFlag.BUDDY_FORCE_HOSPITALIZE)then
-    if(strCodeMbdvcSelection==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_SCOUT)or strCodeMbdvcSelection==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_ATTACK))or strCodeMbdvcSelection==Fox.StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_DISMISS)then
+    if(strCodeMbdvcSelection==StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_SCOUT)or strCodeMbdvcSelection==StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_ATTACK))or strCodeMbdvcSelection==StrCode32(TppTerminal.MBDVCMENU.MSN_BUDDY_QUIET_DISMISS)then
       this.PlayCommonRadio(TppDefine.COMMON_RADIO.CALL_BUDDY_QUIET_WHILE_FORCE_HOSPITALIZE)
     end
   end

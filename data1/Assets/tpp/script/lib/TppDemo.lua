@@ -284,6 +284,10 @@ this.FINISH_WAIT_CHECK_FUNC={
   end
 }
 function this.Play(demoName,demoFuncs,demoFlags)
+  InfLog.Add("TppDemo.Play "..demoName)--tex DEBUG
+  InfLog.PrintInspect(demoFuncs)
+  InfLog.PrintInspect(demoFlags)--<
+
   local demoId=mvars.dem_demoList[demoName]
   if(demoId==nil)then
     return
@@ -303,11 +307,11 @@ function this.Play(demoName,demoFuncs,demoFlags)
       demoFlags.waitBlockLoadEndOnDemoSkip=true
     end
   end
-  if demoId=="p31_040010_000_final"then--PATCHUP:
+  if demoId=="p31_040010_000_final"then--PATCHUP: s10070 Demo_SahelanTest
     demoFlags.waitBlockLoadEndOnDemoSkip=false
     mvars.dem_resereveEnableInGameFlag=false
   end
-  if(demoId=="p51_070020_000_final")or(demoId=="p21_020010")then--PATCHUP:
+  if(demoId=="p51_070020_000_final")or(demoId=="p21_020010")then--PATCHUP: s10240 Demo_Opening, s10010 escapeFromHospital
     mvars.dem_resereveEnableInGameFlag=false
   end
   --tex> force snake off for demo
@@ -779,7 +783,14 @@ function this.OnDemoDisable(demoName)
 end
 function this.AddPlayReqeustInfo(demoId,demoFlags)
   local playRequestInfo=this.MakeNewPlayRequestInfo(demoFlags)
-  for functionName,o in pairs(playRequestInfo)do
+
+  InfLog.Add("AddPlayReqeustInfo:")--tex DEBUG>
+  InfLog.Add("demoFlags:")
+  InfLog.PrintInspect(demoFlags)
+  InfLog.Add("playRequestInfo:")
+  InfLog.PrintInspect(playRequestInfo)--<
+
+  for functionName,use in pairs(playRequestInfo)do
     local requestStart=true
     local PlayRequestStart=this.PLAY_REQUEST_START_FUNC[functionName]
     if PlayRequestStart then
@@ -838,8 +849,8 @@ function this.MakeNewPlayRequestInfo(demoFlags)
   local playRequestInfo={missionStateCheck=false,gameCameraInterpedToDemo=gameCameraInterpedToDemo,demoBlockLoaded=demoBlockLoaded,playerModelReloaded=playerModelReloaded,playerActionAllowed=playerActionAllowed,playerMoveToPosition=playerMoveToPosition,waitTextureLoadOnDemoPlay=waitTextureLoadOnDemoPlay}
   return playRequestInfo
 end
-function this.DeletePlayRequestInfo(demoId,n)
-  if n and n.useDemoBlock then
+function this.DeletePlayRequestInfo(demoId,demoFlags)
+  if demoFlags and demoFlags.useDemoBlock then
     mvars.demo_playRequestInfo.demoBlock[demoId]=nil
   else
     mvars.demo_playRequestInfo.missionBlock[demoId]=nil
@@ -849,8 +860,11 @@ function this.ProcessPlayRequest(playRequestInfoDemoBlock)
   if not next(playRequestInfoDemoBlock)then
     return
   end
-  for demoId,a in pairs(playRequestInfoDemoBlock)do
-    local canStartPlay=this.CanStartPlay(demoId,a)
+  InfLog.Add"ProcessPlayRequest:"--tex DEBUG>
+  InfLog.PrintInspect(playRequestInfoDemoBlock)--<
+  for demoId,startCheckFunctions in pairs(playRequestInfoDemoBlock)do
+    local canStartPlay=this.CanStartPlay(demoId,startCheckFunctions)
+    InfLog.Add(demoId.." canStartPlay:"..tostring(canStartPlay))
     if canStartPlay then
       if not IsDemoPaused()then
         if not IsPlayingDemoId(demoId)then
@@ -863,19 +877,20 @@ function this.ProcessPlayRequest(playRequestInfoDemoBlock)
     end
   end
 end
-function this.CanStartPlay(demoId,t)
-  local a=true
-  for n,r in pairs(t)do
-    if r==false then
-      local e=this.PLAY_REQUEST_START_CHECK_FUNC[n](demoId)
-      if e then
-        t[n]=true
+function this.CanStartPlay(demoId,startCheckFuncions)
+  local canStart=true
+  for funcName,funcPasses in pairs(startCheckFuncions)do
+    if funcPasses==false then
+      local checkPassed=this.PLAY_REQUEST_START_CHECK_FUNC[funcName](demoId)
+      InfLog.Add("CanStartPlay "..demoId.." check "..funcName.." "..tostring(checkPassed))--tex DEBUG
+      if checkPassed then
+        startCheckFuncions[funcName]=true
       else
-        a=false
+        canStart=false
       end
     end
   end
-  return a
+  return canStart
 end
 function this.AddFinishWaitRequestInfo(demoId,demoFlags,finishWaitFuncName)
   local FinishWaitStartFunc
@@ -932,6 +947,7 @@ function this.CanFinishPlay(demoId,t)
   return canFinishPlay
 end
 function this._Play(demoName,demoId)
+  InfLog.AddFlow("TppDemo._Play "..demoName.." "..demoId)--tex DEBUG
   mvars.dem_playedList[demoName]=true
   this.ClearReserveInTheBackGround()
   DemoDaemon.Play(demoId)
@@ -1320,8 +1336,8 @@ function this.IsQuestStart()
   end
   return false
 end
-function this.IsSortieMBDemo(e)
-  if TppDefine.MB_FREEPLAY_RIDEONHELI_DEMO_DEFINE[e]then
+function this.IsSortieMBDemo(demoName)
+  if TppDefine.MB_FREEPLAY_RIDEONHELI_DEMO_DEFINE[demoName]then
     return true
   else
     return false

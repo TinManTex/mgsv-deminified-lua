@@ -1,12 +1,14 @@
+-- DOBUILD: 0
 -- TppVarInit.lua
 local this={}
-local i=Tpp.IsTypeFunc
+--ORPHAN local IsTypeFunc=Tpp.IsTypeFunc
 local IsTable=Tpp.IsTypeTable
-local i=Tpp.IsTypeString
-local i=Tpp.IsTypeNumber
-local i=bit.bnot
-local i,i,i=bit.band,bit.bor,bit.bxor
-function this.StartTitle(i)
+--ORPHAN local IsTypeString=Tpp.IsTypeString
+--ORPHAN local IsTypeNumber=Tpp.IsTypeNumber
+--ORPHAN local bnot=bit.bnot
+--ORPHAN local band,bor,bxor=bit.band,bit.bor,bit.bxor
+function this.StartTitle(unk1)
+   InfLog.AddFlow("TppVarInit.StartTitle "..tostring(vars.missionCode))--tex
   TppSystemLua.UseAiSystem(true)
   TppSimpleGameSequenceSystem.Start()
   local function DoStart()
@@ -258,7 +260,7 @@ function this.InitializeOnlineChallengeTaskLocalCompletedVars()
   end
 end
 --<
-function this.InitializeForContinue(e)
+function this.InitializeForContinue(missionTable)
   TppSave.VarRestoreOnContinueFromCheckPoint()
   TppEnemy.RestoreOnContinueFromCheckPoint()
   if not TppMission.IsFOBMission(vars.missionCode)then
@@ -269,7 +271,7 @@ function this.InitializeForContinue(e)
   if svars.chickCapEnabled then
     gvars.elapsedTimeSinceLastUseChickCap=0
   end
-  if e.sequence and e.sequence.ALWAYS_APPLY_TEMPORATY_PLAYER_PARTS_SETTING then
+  if missionTable.sequence and missionTable.sequence.ALWAYS_APPLY_TEMPORATY_PLAYER_PARTS_SETTING then
     TppPlayer.MissionStartPlayerTypeSetting()
   end
   if gvars.isContinueFromTitle then
@@ -281,6 +283,7 @@ function this.ClearIsContinueFromTitle()
   gvars.isContinueFromTitle=false
 end
 function this.StartInitMission()
+  InfLog.AddFlow("TppVarInit.StartInitMission "..tostring(vars.missionCode))--tex
   TppSystemLua.UseAiSystem(true)
   TppSimpleGameSequenceSystem.Start()
   vars.locationCode=TppDefine.LOCATION_ID.INIT
@@ -293,8 +296,8 @@ function this.StartInitMission()
   TppSave.VarSaveConfig()
   TppSave.VarSavePersonalData()
   TppMission.Load(vars.locationCode,nil,{force=true,showLoadingTips=false})
-  local e=Fox.GetActMode()
-  if(e=="EDIT")then
+  local actMode=Fox.GetActMode()
+  if(actMode=="EDIT")then
     Fox.SetActMode"GAME"
   end
 end
@@ -319,10 +322,10 @@ function this.SetInitPlayerWeapons(initWeaponsTable)
     end
   end
 end
-function this.SetInitPlayerItems(e)
-  for e,i in pairs(e)do
-    vars.initItems[e-1]=i
-    vars.items[e-1]=i
+function this.SetInitPlayerItems(initPlayerItems)
+  for i,equipId in pairs(initPlayerItems)do
+    vars.initItems[i-1]=equipId
+    vars.items[i-1]=equipId
   end
 end
 function this.DEBUG_GetDefaultPlayerWeaponAndItemTable()

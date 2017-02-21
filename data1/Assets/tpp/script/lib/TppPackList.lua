@@ -1,4 +1,6 @@
+-- TppPackList.lua
 local this={}
+local StrCode32=Fox.StrCode32
 local missionTypeNameCodes={"s","e","f","h","o"}
 local missionTypeNames={"story","extra","free","heli","online"}
 function this.MakeDefaultMissionPackList(missionCode)
@@ -82,7 +84,7 @@ function this.IsMissionPackLabel(label)
   if not Tpp.IsTypeString(label)then
     return
   end
-  if gvars.pck_missionPackLabelName==Fox.StrCode32(label)then
+  if gvars.pck_missionPackLabelName==StrCode32(label)then
     return true
   else
     return false
@@ -139,7 +141,7 @@ function this.SetUseDdEmblemFova(missionCode)
 end
 function this.SetMissionPackLabelName(labelName)
   if Tpp.IsTypeString(labelName)then
-    gvars.pck_missionPackLabelName=Fox.StrCode32(labelName)
+    gvars.pck_missionPackLabelName=StrCode32(labelName)
   end
 end
 function this.SetDefaultMissionPackLabelName()

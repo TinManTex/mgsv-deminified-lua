@@ -36,30 +36,33 @@ this.CLOCK_MESSAGE_AT_MORNING_FORMAT="AnimalRouteChangeAtMorning%02d"
 this.weatherTable={}
 local weatherTableCount=0
 local l_numAnimals=0
-function this.GetDefaultTimeTable(animal)
-  if animal=="Goat"then
-    return nightTimes.Goat
-  elseif animal=="Wolf"then
-    return nightTimes.Wolf
-  elseif animal=="Bear"then
-    return nightTimes.Bear
-  elseif animal=="Nubian"then
-    return nightTimes.Nubian
-  elseif animal=="Jackal"then
-    return nightTimes.Jackal
-  elseif animal=="Zebra"then
-    return nightTimes.Zebra
-  elseif animal=="BuddyPuppy"then
-    return nightTimes.BuddyPuppy
-  elseif animal=="MotherDog"then
-    return nightTimes.MotherDog
-  elseif animal=="Rat"then
-    return nightTimes.Rat
-  elseif animal=="NoAnimal"then
-    return nightTimes.NoAnimal
-  else
-    return nil
-  end
+function this.GetDefaultTimeTable(animalType)
+  --tex REWORKED
+  return nightTimes[animalType]
+    --ORIG
+    --  if animal=="Goat"then
+    --    return nightTimes.Goat
+    --  elseif animal=="Wolf"then
+    --    return nightTimes.Wolf
+    --  elseif animal=="Bear"then
+    --    return nightTimes.Bear
+    --  elseif animal=="Nubian"then
+    --    return nightTimes.Nubian
+    --  elseif animal=="Jackal"then
+    --    return nightTimes.Jackal
+    --  elseif animal=="Zebra"then
+    --    return nightTimes.Zebra
+    --  elseif animal=="BuddyPuppy"then
+    --    return nightTimes.BuddyPuppy
+    --  elseif animal=="MotherDog"then
+    --    return nightTimes.MotherDog
+    --  elseif animal=="Rat"then
+    --    return nightTimes.Rat
+    --  elseif animal=="NoAnimal"then
+    --    return nightTimes.NoAnimal
+    --  else
+    --    return nil
+    --  end
 end
 function this.StopAnimalBlockLoad()
   mvars.anm_stopAnimalBlockLoad=true
@@ -115,39 +118,42 @@ function this._GetAnimalBlockAreaName(areaSettings,maxAreaNum,areaKey,blockIndex
     local areaSetting=areaSettings[i]
     local areaExtents=areaSetting[areaKey]
     if CheckBlockArea(areaExtents,blockIndexX,blockIndexY)then
-      for a,e in ipairs(areaSetting.defines)do
-        if(not Tpp.IsTypeFunc(e.conditionFunc))or(e.conditionFunc())then
+      for i,areaDef in ipairs(areaSetting.defines)do
+        if(not Tpp.IsTypeFunc(areaDef.conditionFunc))or(areaDef.conditionFunc())then
           local time=TppClock.GetTime"number"
-          return e.keyList[time%#e.keyList+1],areaSetting.areaName
+          return areaDef.keyList[time%#areaDef.keyList+1],areaSetting.areaName
         end
       end
     end
   end
 end
 function this._GetSetupTable(animalType)
-  if animalType=="Goat"then
-    return animalsTable.Goat
-  elseif animalType=="Wolf"then
-    return animalsTable.Wolf
-  elseif animalType=="Bear"then
-    return animalsTable.Bear
-  elseif animalType=="Nubian"then
-    return animalsTable.Nubian
-  elseif animalType=="Jackal"then
-    return animalsTable.Jackal
-  elseif animalType=="Zebra"then
-    return animalsTable.Zebra
-  elseif animalType=="BuddyPuppy"then
-    return animalsTable.BuddyPuppy
-  elseif animalType=="MotherDog"then
-    return animalsTable.MotherDog
-  elseif animalType=="Rat"then
-    return animalsTable.Rat
-  elseif animalType=="NoAnimal"then
-    return animalsTable.NoAnimal
-  else
-    return nil
-  end
+  --tex REWORKED
+  return animalsTable[animalType]
+    --ORIG
+    --  if animalType=="Goat"then
+    --    return animalsTable.Goat
+    --  elseif animalType=="Wolf"then
+    --    return animalsTable.Wolf
+    --  elseif animalType=="Bear"then
+    --    return animalsTable.Bear
+    --  elseif animalType=="Nubian"then
+    --    return animalsTable.Nubian
+    --  elseif animalType=="Jackal"then
+    --    return animalsTable.Jackal
+    --  elseif animalType=="Zebra"then
+    --    return animalsTable.Zebra
+    --  elseif animalType=="BuddyPuppy"then
+    --    return animalsTable.BuddyPuppy
+    --  elseif animalType=="MotherDog"then
+    --    return animalsTable.MotherDog
+    --  elseif animalType=="Rat"then
+    --    return animalsTable.Rat
+    --  elseif animalType=="NoAnimal"then
+    --    return animalsTable.NoAnimal
+    --  else
+    --    return nil
+    --  end
 end
 function this._IsNight(currentTime,nightStart,nightEnd)
   local isNight=(currentTime<nightEnd)or(currentTime>=nightStart)
@@ -182,12 +188,12 @@ function this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable
   end
   local timeLagClockTime=TppClock.ParseTimeString(timeLag,"number")
   local currentTime=TppClock.GetTime"number"
-  local n=0
+  local timeLagForAnimal=0
   if setupTable.isDead==false then
     if setupTable.isHerd==false then
       for animalIndex=0,(groupNumber-1)do
-        n=timeLagClockTime*animalIndex
-        if this._IsNight(currentTime,nightStartClockTime+n,nightEndClockTime+n)then
+        timeLagForAnimal=timeLagClockTime*animalIndex
+        if this._IsNight(currentTime,nightStartClockTime+timeLagForAnimal,nightEndClockTime+timeLagForAnimal)then
           this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,animalIndex)
         else
           this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,animalIndex)
@@ -195,8 +201,8 @@ function this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable
       end
     else
       for animalIndex=0,(groupNumber-1)do
-        n=timeLagClockTime*animalIndex
-        if this._IsNight(currentTime,nightStartClockTime+n,nightEndClockTime+n)then
+        timeLagForAnimal=timeLagClockTime*animalIndex
+        if this._IsNight(currentTime,nightStartClockTime+timeLagForAnimal,nightEndClockTime+timeLagForAnimal)then
           this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,animalIndex)
         else
           this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,animalIndex)
@@ -249,13 +255,13 @@ function this._RegisterWeatherTable(sender,param,func)
   }
   weatherTableCount=weatherTableCount+1
 end
-function this._RegisterClockMessage(t,i,o,n,a,l)
-  local t=string.format(t,a)
-  this._RegisterWeatherTable(t,n,l)
-  local e=i+o*a
-  local e=TppClock.FormalizeTime(e,"string")
-  TppClock.RegisterClockMessage(t,e)
-  return t
+function this._RegisterClockMessage(clockFmt,clockTime,timeLagClock,RENsomeBool,animalGroupCount,changeRouteFunc)
+  local clockName=string.format(clockFmt,animalGroupCount)
+  this._RegisterWeatherTable(clockName,RENsomeBool,changeRouteFunc)
+  local time=clockTime+timeLagClock*animalGroupCount
+  local tppClockTime=TppClock.FormalizeTime(time,"string")
+  TppClock.RegisterClockMessage(clockName,tppClockTime)
+  return clockName
 end
 function this._AddClockMessage(n,t,a,r)
   local numAnimals=1
@@ -369,7 +375,11 @@ function this.OnInitializeAnimalBlock()
     return
   end
   mvars.animalBlockScript.DidInitialized=true
-  mvars.animalBlockScript.Messages=Tpp.StrCode32Table{Block={{msg="StageBlockCurrentSmallBlockIndexUpdated",func=function(x,y)this._UpdateActiveAnimalBlock(x,y)end}}}
+  mvars.animalBlockScript.Messages=Tpp.StrCode32Table{
+    Block={
+      {msg="StageBlockCurrentSmallBlockIndexUpdated",func=function(x,y)this._UpdateActiveAnimalBlock(x,y)end}
+    }
+  }
   l_numAnimals=0
   this.weatherTable={}
   local t=mvars.loc_locationAnimalSettingTable

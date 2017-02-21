@@ -173,7 +173,7 @@ function this.OnAllocate(missionTable)
       local e=e.switch
       if IsTypeTable(e)then
         for n,e in ipairs(e)do
-          local n=Fox.StrCode32(e)
+          local n=StrCode32(e)
           mvars.snd_bgmSwitchTable[n]=e
           mvars.snd_bgmSwitchTable[e]=n
         end

@@ -946,26 +946,26 @@ function this.DisableOcelot()
     GameObject.SendCommand(gameId,command)
   end
 end
-function this.ChangeBlock(t,demoName)
-  local t=this.demoBlockList[t]
-  local o=this.demoBlockList[demoName]
-  local n=#t~=#o
-  if not n then
-    for e=1,#t do
-      if t[e]~=buddyFpk then
-        if t[e]~=o[e]then
-          n=true
+function this.ChangeBlock(currentDemoName,nextDemoName)
+  local currentDemoFpkList=this.demoBlockList[currentDemoName]
+  local nextDemoFpkList=this.demoBlockList[nextDemoName]
+  local differentBlockList=#currentDemoFpkList~=#nextDemoFpkList
+  if not differentBlockList then
+    for i=1,#currentDemoFpkList do
+      if currentDemoFpkList[i]~=buddyFpk then
+        if currentDemoFpkList[i]~=nextDemoFpkList[i]then
+          differentBlockList=true
           break
         end
       end
     end
   end
-  if n then
-    local clusterName=f30050_demo.GetDemoPlayCluster(demoName)
-    local t=TppDefine.CLUSTER_DEFINE[clusterName]
-    f30050_sequence.RegisterFovaFpk(t)
-    this.UpdatePackList(demoName)
-    TppScriptBlock.LoadDemoBlock(demoName,true)
+  if differentBlockList then
+    local clusterName=f30050_demo.GetDemoPlayCluster(nextDemoName)
+    local clusterId=TppDefine.CLUSTER_DEFINE[clusterName]
+    f30050_sequence.RegisterFovaFpk(clusterId)
+    this.UpdatePackList(nextDemoName)
+    TppScriptBlock.LoadDemoBlock(nextDemoName,true)
   end
 end
 function this.GetNextDemo(demoName)
@@ -1012,7 +1012,7 @@ function this.UpdatePackList(demoName)
   end
   local packList={}
   packList[demoName]={}
-  local n=false
+  local hasQuestPacks=false
   if this.demoBlockList[demoName]then
     Tpp.ApendArray(packList[demoName],this.demoBlockList[demoName])
     local demoOptions=this.demoOptions[demoName]
@@ -1020,10 +1020,10 @@ function this.UpdatePackList(demoName)
       table.insert(packList[demoName],buddyFpk)
     end
   elseif TppQuestList.questPackList[demoName]then
-    n=true
+    hasQuestPacks=true
     Tpp.ApendArray(packList[demoName],TppQuestList.questPackList[demoName])
   end
-  if n or demoName=="Empty"then
+  if hasQuestPacks or demoName=="Empty"then
     Tpp.ApendArray(packList[demoName],this.GetPackListForStorySequence())
   end
   if mvars.f30050demo_fovaPackList then
@@ -1033,8 +1033,8 @@ function this.UpdatePackList(demoName)
     TppQuest.RegisterQuestPackList(packList,"demo_block")
   end
 end
-function this.RegisterFovaPack(e)
-  mvars.f30050demo_fovaPackList=e
+function this.RegisterFovaPack(packList)
+  mvars.f30050demo_fovaPackList=packList
 end
 function this.GetPackListForStorySequence()
   mvars.f30050_isSetLiquid=false

@@ -2,25 +2,27 @@
 -- TppMain.lua
 local this={}
 local ApendArray=Tpp.ApendArray
-local n=Tpp.DEBUG_StrCode32ToString
+--ORPHAN local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
 local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeTable=Tpp.IsTypeTable
 local IsSavingOrLoading=TppScriptVars.IsSavingOrLoading
 local UpdateScriptsInScriptBlocks=ScriptBlock.UpdateScriptsInScriptBlocks
 local GetCurrentMessageResendCount=Mission.GetCurrentMessageResendCount
-local updateList={}
-local numUpdate=0
-local onUpdateList={}--NMC: from mission scripts, sequences use this, RESEARCH but does this also grab OnUpdate in mission_main.lua?
+local InfLog=InfLog--tex
+
+local moduleUpdateFuncs={}
+local numModuleUpdateFuncs=0
+local missionScriptOnUpdateFuncs={}--NMC: from mission scripts, sequences use this, RESEARCH but does this also grab OnUpdate in mission_main.lua?
 local numOnUpdate=0
 --ORPHAN local RENAMEsomeupdatetable2={}
 --ORPHAN local RENAMEsomeupdate2=0
-local n={}
-local n=0
+--ORPHAN local unk1={}
+--ORPHAN local unk2=0
 local onMessageTable={}
-local P={}
+--ORPHAN local unk3={}
 local onMessageTableSize=0
 local messageExecTable={}
-local h={}
+--ORPHAN local unk4={}
 local messageExecTableSize=0
 --NMC: cant actually see this referenced anywhere
 local function RENAMEwhatisquarksystem()
@@ -66,7 +68,7 @@ function this.DisablePause()
 end
 function this.EnableBlackLoading(showLoadingTips)
   TppGameStatus.Set("TppMain.lua","S_IS_BLACK_LOADING")
-  if showLoadingTips and not Ivars.debugMode:Is"BLANK_LOADING_SCREEN" then--tex added bypass
+  if showLoadingTips then--tex CULL and not Ivars.debugMode:Is"BLANK_LOADING_SCREEN" then--tex added bypass
     TppUI.StartLoadingTips()
   end
 end
@@ -75,425 +77,432 @@ function this.DisableBlackLoading()
   TppUI.FinishLoadingTips()
 end
 function this.OnAllocate(missionTable)--NMC: via mission_main.lua, is called in order laid out, OnAllocate is before OnInitialize
-  InfInspect.TryFuncDebug(function(missionTable)--tex
-    --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Onallocate begin")
-    --SplashScreen.Show(SplashScreen.Create("dbeinak","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5020_l_alp.ftex",1280,640),0,0.1,0)--tex dog--tex ghetto as 'does it run?' indicator DEBUG
-    InfMain.OnAllocateTop(missionTable)--tex
-    TppWeather.OnEndMissionPrepareFunction()
-    this.DisableGameStatus()
-    this.EnablePause()
-    TppClock.Stop()
-    updateList={}
-    numUpdate=0
-
-    --ORPHAN: RENAMEsomeupdatetable2={}
-    --ORPHAN: RENAMEsomeupdate2=0
-    TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil)
-    TppSave.WaitingAllEnqueuedSaveOnStartMission()
-    if TppMission.IsFOBMission(vars.missionCode)then
-      TppMission.SetFOBMissionFlag()
-      TppGameStatus.Set("Mission","S_IS_ONLINE")
-    else
-      TppGameStatus.Reset("Mission","S_IS_ONLINE")
-    end
-    Mission.Start()
-    TppMission.WaitFinishMissionEndPresentation()
-    TppMission.DisableInGameFlag()
-    TppException.OnAllocate(missionTable)
-    TppClock.OnAllocate(missionTable)
-    TppTrap.OnAllocate(missionTable)
-    TppCheckPoint.OnAllocate(missionTable)
-    TppUI.OnAllocate(missionTable)
-    TppDemo.OnAllocate(missionTable)
-    TppScriptBlock.OnAllocate(missionTable)
-    TppSound.OnAllocate(missionTable)
-    TppPlayer.OnAllocate(missionTable)
-    TppMission.OnAllocate(missionTable)
-    TppTerminal.OnAllocate(missionTable)
-    TppEnemy.OnAllocate(missionTable)
-    TppRadio.OnAllocate(missionTable)
-    TppGimmick.OnAllocate(missionTable)
-    TppMarker.OnAllocate(missionTable)
-    TppRevenge.OnAllocate(missionTable)
-    this.ClearStageBlockMessage()
-    TppQuest.OnAllocate(missionTable)
-    TppAnimal.OnAllocate(missionTable)
-    InfMain.OnAllocate(missionTable)--tex
-    --tex reworked
-    local locationModule=_G[InfMain.GetLocationName()]
-    if locationModule then
-      locationModule.OnAllocate()
-    end--
-    --ORIG
-    --    local function locationOnAllocate()
-    --      if TppLocation.IsAfghan()then
-    --        if afgh then
-    --          afgh.OnAllocate()
-    --        end
-    --      elseif TppLocation.IsMiddleAfrica()then
-    --        if mafr then
-    --          mafr.OnAllocate()
-    --        end
-    --      elseif TppLocation.IsCyprus()then
-    --        if cypr then
-    --          cypr.OnAllocate()
-    --        end
-    --      elseif TppLocation.IsMotherBase()then
-    --        if mtbs then
-    --          mtbs.OnAllocate()
-    --        end
-    --      end
-    --    end
-    --    locationOnAllocate()
-    if missionTable.sequence then
-      if f30050_sequence then--
-        function f30050_sequence.NeedPlayQuietWishGoMission()--RETAILPATCH: 1.0.4.1 PATCHUP: in general I understand the need for patch ups, and in cases like this i even admire the method, however the implementation of just shoving them seemingly anywhere... needs better execution.
-          local isClearedSideOps=TppQuest.IsCleard"mtbs_q99011"
-          local isNotPlayDemo=not TppDemo.IsPlayedMBEventDemo"QuietWishGoMission"
-          local isCanArrival=TppDemo.GetMBDemoName()==nil
-          return(isClearedSideOps and isNotPlayDemo)and isCanArrival
-        end
-      end
-      if IsTypeFunc(missionTable.sequence.MissionPrepare)then
-        missionTable.sequence.MissionPrepare()
-      end
-      if IsTypeFunc(missionTable.sequence.OnEndMissionPrepareSequence)then
-        TppSequence.SetOnEndMissionPrepareFunction(missionTable.sequence.OnEndMissionPrepareSequence)
-      end
-    end
-    InfMain.MissionPrepare()--tex
-    for name,missionScript in pairs(missionTable)do
-      if IsTypeFunc(missionScript.OnLoad)then
-        missionScript.OnLoad()
-      end
-    end
-    do
-      local allSvars={}
-      this.allSvars=allSvars--tex DEBUG see Ivars debug thingamy
-      for t,lib in ipairs(Tpp._requireList)do
-        if _G[lib]then
-          if _G[lib].DeclareSVars then
-            ApendArray(allSvars,_G[lib].DeclareSVars(missionTable))
-          end
-        end
-      end
-      local missionSvars={}
-      for n,module in pairs(missionTable)do
-        if IsTypeFunc(module.DeclareSVars)then
-          ApendArray(missionSvars,module.DeclareSVars())
-        end
-        if IsTypeTable(module.saveVarsList)then
-          ApendArray(missionSvars,TppSequence.MakeSVarsTable(module.saveVarsList))
-        end
-      end
-      if OnlineChallengeTask then--RETAILPATCH 1090>
-        ApendArray(missionSvars,OnlineChallengeTask.DeclareSVars())
-      end--<
-      ApendArray(allSvars,missionSvars)
-      TppScriptVars.DeclareSVars(allSvars)
-      TppScriptVars.SetSVarsNotificationEnabled(false)
-      while IsSavingOrLoading()do
-        coroutine.yield()
-      end
-      TppRadioCommand.SetScriptDeclVars()
-      local layoutCode=vars.mbLayoutCode
-      if gvars.ini_isTitleMode then
-        TppPlayer.MissionStartPlayerTypeSetting()
-      else
-        if TppMission.IsMissionStart()then
-          TppVarInit.InitializeForNewMission(missionTable)
-          TppPlayer.MissionStartPlayerTypeSetting()
-          if not TppMission.IsFOBMission(vars.missionCode)then
-            TppSave.VarSave(vars.missionCode,true)
-          end
-        else
-          TppVarInit.InitializeForContinue(missionTable)
-        end
-        TppVarInit.ClearIsContinueFromTitle()
-      end
-      TppUiCommand.ExcludeNonPermissionContents()--RETAILPATCH: 1.0.4.1 --tex trying to lock down dlc mods?
-      TppStory.SetMissionClearedS10030()
-      if(not TppMission.IsDefiniteMissionClear())then--RETAILPATCH: 1060 check added
-        TppTerminal.StartSyncMbManagementOnMissionStart()
-      end
-      if TppLocation.IsMotherBase()then
-        if layoutCode~=vars.mbLayoutCode then
-          if vars.missionCode==30050 then
-            vars.mbLayoutCode=layoutCode
-          else
-            vars.mbLayoutCode=TppLocation.ModifyMbsLayoutCode(TppMotherBaseManagement.GetMbsTopologyType())
-          end
-        end
-      end
-      TppPlayer.FailSafeInitialPositionForFreePlay()--RETAILPATCH: 1060
-      this.StageBlockCurrentPosition(true)
-      TppMission.SetSortieBuddy()
-      if vars.missionCode~=10260 then--RETAILPATCH 1070 wrapped in check NMC why didnt you add this to the function itself konami?
-        TppMission.ResetQuietEquipIfUndevelop()--RETAILPATCH: 1060
-      end
-      TppStory.UpdateStorySequence{updateTiming="BeforeBuddyBlockLoad"}
-      if missionTable.sequence then
-        local dbt=missionTable.sequence.DISABLE_BUDDY_TYPE
-        if TppMission.IsMbFreeMissions(vars.missionCode) and Ivars.mbEnableBuddies:Is(1) then--tex no DISABLE_BUDDY_TYPE
-          dbt=nil
-        end--
-        if dbt ~= nil then
-          local disableBuddyType
-          if IsTypeTable(dbt)then
-            disableBuddyType=dbt
-          else
-            disableBuddyType={dbt}
-          end
-          for n,buddyType in ipairs(disableBuddyType)do
-            TppBuddyService.SetDisableBuddyType(buddyType)
-          end
-        end
-      end
-      --if(vars.missionCode==11043)or(vars.missionCode==11044)then--tex ORIG: changed to issubs check, more robust even without my mod
-      if TppMission.IsActualSubsistenceMission() then--tex was IsSubsistenceMission
-        TppBuddyService.SetDisableAllBuddy()
-      end
-      if TppGameSequence.GetGameTitleName()=="TPP"then
-        if missionTable.sequence and missionTable.sequence.OnBuddyBlockLoad then
-          missionTable.sequence.OnBuddyBlockLoad()
-        end
-        if TppLocation.IsAfghan()or TppLocation.IsMiddleAfrica()then
-          TppBuddy2BlockController.Load()
-        end
-      end
-      TppSequence.SaveMissionStartSequence()
-      TppScriptVars.SetSVarsNotificationEnabled(true)
+  --InfLog.PCallDebug(function(missionTable)--tex can't use consistantly since it triggers yield across c boundary error
+  InfLog.AddFlow("OnAllocate Top "..vars.missionCode)--tex
+  InfMain.OnAllocateTop(missionTable)--tex
+  TppWeather.OnEndMissionPrepareFunction()
+  this.DisableGameStatus()
+  this.EnablePause()
+  TppClock.Stop()
+  moduleUpdateFuncs={}
+  numModuleUpdateFuncs=0
+  --ORPHAN: RENAMEsomeupdatetable2={}
+  --ORPHAN: RENAMEsomeupdate2=0
+  TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil)
+  TppSave.WaitingAllEnqueuedSaveOnStartMission()
+  if TppMission.IsFOBMission(vars.missionCode)then
+    TppMission.SetFOBMissionFlag()
+    TppGameStatus.Set("Mission","S_IS_ONLINE")
+  else
+    TppGameStatus.Reset("Mission","S_IS_ONLINE")
   end
-  InfSoldierParams.SoldierParametersMod()--tex
-  if missionTable.enemy then
-    if IsTypeTable(missionTable.enemy.soldierPowerSettings)then
-      TppEnemy.SetUpPowerSettings(missionTable.enemy.soldierPowerSettings)
-    end
-  end
-  TppRevenge.DecideRevenge(missionTable)
-  if TppEquip.CreateEquipMissionBlockGroup then
-    if(vars.missionCode>6e4)then--NMC the e3/tradeshow demos I think
-      TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*24}--=9338880 -- nearly 5x the max retail block size
-    else
-      --TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*32}--DEBUG TEST
-      TppPlayer.SetEquipMissionBlockGroupSize()--TppDefine.DEFAULT_EQUIP_MISSION_BLOCK_GROUP_SIZE = 1677721, sequence.EQUIP_MISSION_BLOCK_GROUP_SIZE= max 1887437 (s10054)
-    end
-  end
-  if TppEquip.CreateEquipGhostBlockGroups then
-    if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-      TppEquip.CreateEquipGhostBlockGroups{ghostCount=16}
-    elseif TppMission.IsFOBMission(vars.missionCode) then
-      TppEquip.CreateEquipGhostBlockGroups{ghostCount=1}
-    end
-  end
-  TppEquip.StartLoadingToEquipMissionBlock()
-  TppPlayer.SetMaxPickableLocatorCount()
-  TppPlayer.SetMaxPlacedLocatorCount()
-  TppEquip.AllocInstances{instance=60,realize=60}
-  TppEquip.ActivateEquipSystem()
-  if TppEnemy.IsRequiredToLoadDefaultSoldier2CommonPackage()then
-    TppEnemy.LoadSoldier2CommonBlock()
-  end
+  Mission.Start()
+  TppMission.WaitFinishMissionEndPresentation()
+  TppMission.DisableInGameFlag()
+  TppException.OnAllocate(missionTable)
+  TppClock.OnAllocate(missionTable)
+  TppTrap.OnAllocate(missionTable)
+  TppCheckPoint.OnAllocate(missionTable)
+  TppUI.OnAllocate(missionTable)
+  TppDemo.OnAllocate(missionTable)
+  TppScriptBlock.OnAllocate(missionTable)
+  TppSound.OnAllocate(missionTable)
+  TppPlayer.OnAllocate(missionTable)
+  TppMission.OnAllocate(missionTable)
+  TppTerminal.OnAllocate(missionTable)
+  TppEnemy.OnAllocate(missionTable)
+  TppRadio.OnAllocate(missionTable)
+  TppGimmick.OnAllocate(missionTable)
+  TppMarker.OnAllocate(missionTable)
+  TppRevenge.OnAllocate(missionTable)
+  this.ClearStageBlockMessage()
+  TppQuest.OnAllocate(missionTable)
+  TppAnimal.OnAllocate(missionTable)
+  InfMain.OnAllocate(missionTable)--tex
+  --tex reworked
+  local locationModule=_G[InfUtil.GetLocationName()]
+  if locationModule then
+    locationModule.OnAllocate()
+  end--
+  --ORIG
+  --    local function locationOnAllocate()
+  --      if TppLocation.IsAfghan()then
+  --        if afgh then
+  --          afgh.OnAllocate()
+  --        end
+  --      elseif TppLocation.IsMiddleAfrica()then
+  --        if mafr then
+  --          mafr.OnAllocate()
+  --        end
+  --      elseif TppLocation.IsCyprus()then
+  --        if cypr then
+  --          cypr.OnAllocate()
+  --        end
+  --      elseif TppLocation.IsMotherBase()then
+  --        if mtbs then
+  --          mtbs.OnAllocate()
+  --        end
+  --      end
+  --    end
+  --    locationOnAllocate()
   if missionTable.sequence then
-    mvars.mis_baseList=missionTable.sequence.baseList
-    TppCheckPoint.RegisterCheckPointList(missionTable.sequence.checkPointList)
+    if f30050_sequence then--
+      function f30050_sequence.NeedPlayQuietWishGoMission()--RETAILPATCH: 1.0.4.1 PATCHUP: in general I understand the need for patch ups, and in cases like this i even admire the method, however the implementation of just shoving them seemingly anywhere... needs better execution.
+        local isClearedVisitQuietQuest=TppQuest.IsCleard"mtbs_q99011"
+        local isNotPlayDemo=not TppDemo.IsPlayedMBEventDemo"QuietWishGoMission"
+        local isCanArrival=TppDemo.GetMBDemoName()==nil
+        return(isClearedVisitQuietQuest and isNotPlayDemo)and isCanArrival
+      end
+    end
+    if IsTypeFunc(missionTable.sequence.MissionPrepare)then
+      missionTable.sequence.MissionPrepare()
+    end
+    if IsTypeFunc(missionTable.sequence.OnEndMissionPrepareSequence)then
+      TppSequence.SetOnEndMissionPrepareFunction(missionTable.sequence.OnEndMissionPrepareSequence)
+    end
   end
-  --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Onallocate end")--DEBUG
-  --SplashScreen.Show(SplashScreen.Create("dbeinak","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5020_l_alp.ftex",1280,640),0,0.1,0)--tex dog--tex ghetto as 'does it run?' indicator
-  end,missionTable)--
-end
-function this.OnInitialize(missionTable)--NMC: see onallocate for notes
-  InfInspect.TryFuncDebug(function(missionTable)--tex
-    --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Oninitialize begin")--DEBUG
-    --SplashScreen.Show(SplashScreen.Create("dbbinin","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5005_l_alp.ftex",1280,640))--tex eagle--tex ghetto as 'does it run?' indicator
-    InfMain.OnInitializeTop(missionTable)--tex
-    if TppMission.IsFOBMission(vars.missionCode)then
-      TppMission.SetFobPlayerStartPoint()
-    elseif TppMission.IsNeedSetMissionStartPositionToClusterPosition()then
-      TppMission.SetMissionStartPositionMtbsClusterPosition()
-      this.StageBlockCurrentPosition(true)
-    else
-      TppCheckPoint.SetCheckPointPosition()
+  InfMain.MissionPrepare()--tex
+  for name,module in pairs(missionTable)do
+    if IsTypeFunc(module.OnLoad)then
+      module.OnLoad()
     end
-    if TppEnemy.IsRequiredToLoadSpecialSolider2CommonBlock()then
-      TppEnemy.LoadSoldier2CommonBlock()
-    end
-    if TppMission.IsMissionStart()then
-      TppTrap.InitializeVariableTraps()
-    else
-      TppTrap.RestoreVariableTrapState()
-    end
-    TppAnimalBlock.InitializeBlockStatus()
-    if TppQuestList then
-      TppQuest.RegisterQuestList(TppQuestList.questList)
-      TppQuest.RegisterQuestPackList(TppQuestList.questPackList)
-    end
-    TppHelicopter.AdjustBuddyDropPoint()
-    if missionTable.sequence then
-      local settings=missionTable.sequence.NPC_ENTRY_POINT_SETTING
-      if IsTypeTable(settings)then
-        TppEnemy.NPCEntryPointSetting(settings)
-      end
-    end
-    TppLandingZone.OverwriteBuddyVehiclePosForALZ()
-    --InfMain.OverwriteBuddyPosForMb()--tex no go
-    if missionTable.enemy then
-      if IsTypeTable(missionTable.enemy.vehicleSettings)then
-        TppEnemy.SetUpVehicles()
-      end
-      if IsTypeFunc(missionTable.enemy.SpawnVehicleOnInitialize)then
-        missionTable.enemy.SpawnVehicleOnInitialize()
-      end
-      TppReinforceBlock.SetUpReinforceBlock()
-    end
-    for name,entry in pairs(missionTable)do
-      if IsTypeFunc(entry.Messages)then
-        missionTable[name]._messageExecTable=Tpp.MakeMessageExecTable(entry.Messages())
-      end
-    end
-    if mvars.loc_locationCommonTable then
-      mvars.loc_locationCommonTable.OnInitialize()
-    end
-    InfMain.ModifyMinesAndDecoys()--tex
-    TppLandingZone.OnInitialize()
+  end
+  do
+    local allSvars={}
+    this.allSvars=allSvars--tex DEBUG see Ivars debug thingamy
     for t,lib in ipairs(Tpp._requireList)do
-      if _G[lib].Init then
-        _G[lib].Init(missionTable)
+      if _G[lib]then
+        if _G[lib].DeclareSVars then
+          ApendArray(allSvars,_G[lib].DeclareSVars(missionTable))
+        end
+      end
+    end
+    --tex>
+    --tex not fob check pretty critical here since svars mismatch actoss clients cause corruption and hangs across clients
+    if not TppMission.IsFOBMission(vars.missionCode)then
+      for i,module in ipairs(InfModules)do
+        if module.DeclareSVars then
+          ApendArray(allSvars,module.DeclareSVars(missionTable))
+        end
+      end
+    end
+    --<
+    local missionSvars={}
+    for name,module in pairs(missionTable)do
+      if IsTypeFunc(module.DeclareSVars)then
+        ApendArray(missionSvars,module.DeclareSVars())
+      end
+      if IsTypeTable(module.saveVarsList)then
+        ApendArray(missionSvars,TppSequence.MakeSVarsTable(module.saveVarsList))
       end
     end
     if OnlineChallengeTask then--RETAILPATCH 1090>
-      OnlineChallengeTask.Init()
+      ApendArray(missionSvars,OnlineChallengeTask.DeclareSVars())
     end--<
-    if missionTable.enemy then
-      if GameObject.DoesGameObjectExistWithTypeName"TppSoldier2"then
-        GameObject.SendCommand({type="TppSoldier2"},{id="CreateFaceIdList"})
+    ApendArray(allSvars,missionSvars)
+    TppScriptVars.DeclareSVars(allSvars)
+    TppScriptVars.SetSVarsNotificationEnabled(false)
+    while IsSavingOrLoading()do
+      coroutine.yield()
+    end
+    TppRadioCommand.SetScriptDeclVars()
+    local layoutCode=vars.mbLayoutCode
+    if gvars.ini_isTitleMode then
+      TppPlayer.MissionStartPlayerTypeSetting()
+    else
+      if TppMission.IsMissionStart()then
+        TppVarInit.InitializeForNewMission(missionTable)
+        TppPlayer.MissionStartPlayerTypeSetting()
+        if not TppMission.IsFOBMission(vars.missionCode)then
+          TppSave.VarSave(vars.missionCode,true)
+        end
+      else
+        TppVarInit.InitializeForContinue(missionTable)
       end
-      if IsTypeTable(missionTable.enemy.soldierDefine)then
-        TppEnemy.DefineSoldiers(missionTable.enemy.soldierDefine)
-      end
-      if missionTable.enemy.InitEnemy and IsTypeFunc(missionTable.enemy.InitEnemy)then
-        missionTable.enemy.InitEnemy()
-      end
-      if IsTypeTable(missionTable.enemy.soldierPersonalAbilitySettings)then
-        TppEnemy.SetUpPersonalAbilitySettings(missionTable.enemy.soldierPersonalAbilitySettings)
-      end
-      if IsTypeTable(missionTable.enemy.travelPlans)then
-        TppEnemy.SetTravelPlans(missionTable.enemy.travelPlans)
-      end
-      TppEnemy.SetUpSoldiers()
-      if IsTypeTable(missionTable.enemy.soldierDefine)then
-        TppEnemy.InitCpGroups()
-        TppEnemy.RegistCpGroups(missionTable.enemy.cpGroups)
-        TppEnemy.SetCpGroups()
-        if mvars.loc_locationGimmickCpConnectTable then
-          TppGimmick.SetCommunicateGimmick(mvars.loc_locationGimmickCpConnectTable)
+      TppVarInit.ClearIsContinueFromTitle()
+    end
+    TppUiCommand.ExcludeNonPermissionContents()--RETAILPATCH: 1.0.4.1 --tex trying to lock down dlc mods?
+    TppStory.SetMissionClearedS10030()
+    if(not TppMission.IsDefiniteMissionClear())then--RETAILPATCH: 1060 check added
+      TppTerminal.StartSyncMbManagementOnMissionStart()
+    end
+    if TppLocation.IsMotherBase()then
+      if layoutCode~=vars.mbLayoutCode then
+        if vars.missionCode==30050 then
+          vars.mbLayoutCode=layoutCode
+        else
+          vars.mbLayoutCode=TppLocation.ModifyMbsLayoutCode(TppMotherBaseManagement.GetMbsTopologyType())
         end
       end
-      if IsTypeTable(missionTable.enemy.interrogation)then
-        TppInterrogation.InitInterrogation(missionTable.enemy.interrogation)
+    end
+    TppPlayer.FailSafeInitialPositionForFreePlay()--RETAILPATCH: 1060
+    this.StageBlockCurrentPosition(true)
+    TppMission.SetSortieBuddy()
+    if vars.missionCode~=10260 then--RETAILPATCH 1070 wrapped in check NMC why didnt you add this to the function itself konami?
+      TppMission.ResetQuietEquipIfUndevelop()--RETAILPATCH: 1060
+    end
+    TppStory.UpdateStorySequence{updateTiming="BeforeBuddyBlockLoad"}
+    if missionTable.sequence then
+      local dbt=missionTable.sequence.DISABLE_BUDDY_TYPE
+      if TppMission.IsMbFreeMissions(vars.missionCode) and Ivars.mbEnableBuddies:Is(1) then--tex no DISABLE_BUDDY_TYPE
+        dbt=nil
+      end--
+      if dbt ~= nil then
+        local disableBuddyType
+        if IsTypeTable(dbt)then
+          disableBuddyType=dbt
+        else
+          disableBuddyType={dbt}
+        end
+        for n,buddyType in ipairs(disableBuddyType)do
+          TppBuddyService.SetDisableBuddyType(buddyType)
+        end
       end
-      if IsTypeTable(missionTable.enemy.useGeneInter)then
-        TppInterrogation.AddGeneInter(missionTable.enemy.useGeneInter)
+    end
+    --if(vars.missionCode==11043)or(vars.missionCode==11044)then--tex ORIG: changed to issubs check, more robust even without my mod
+    if TppMission.IsSubsistenceMission() or Ivars.disableSelectBuddy:Is(1) then--tex added disableSelectBuddy
+      TppBuddyService.SetDisableAllBuddy()
+    end
+    if TppGameSequence.GetGameTitleName()=="TPP"then
+      if missionTable.sequence and missionTable.sequence.OnBuddyBlockLoad then
+        missionTable.sequence.OnBuddyBlockLoad()
       end
-      if IsTypeTable(missionTable.enemy.uniqueInterrogation)then
-        TppInterrogation.InitUniqueInterrogation(missionTable.enemy.uniqueInterrogation)
+      if TppLocation.IsAfghan()or TppLocation.IsMiddleAfrica()then
+        TppBuddy2BlockController.Load()
       end
-      do
-        local routeSets
-        if IsTypeTable(missionTable.enemy.routeSets)then
-          routeSets=missionTable.enemy.routeSets
-          for cpName,n in pairs(routeSets)do
-            if not IsTypeTable(mvars.ene_soldierDefine[cpName])then
-            end
+    end
+    TppSequence.SaveMissionStartSequence()
+    TppScriptVars.SetSVarsNotificationEnabled(true)
+end
+if missionTable.enemy then
+  if IsTypeTable(missionTable.enemy.soldierPowerSettings)then
+    TppEnemy.SetUpPowerSettings(missionTable.enemy.soldierPowerSettings)
+  end
+end
+TppRevenge.DecideRevenge(missionTable)
+if TppEquip.CreateEquipMissionBlockGroup then
+  if(vars.missionCode>6e4)then--NMC the e3/tradeshow demos I think
+    TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*24}--=9338880 -- nearly 5x the max retail block size
+  else
+    --TppEquip.CreateEquipMissionBlockGroup{size=(380*1024)*32}--tex DEBUG TEST
+    TppPlayer.SetEquipMissionBlockGroupSize()--TppDefine.DEFAULT_EQUIP_MISSION_BLOCK_GROUP_SIZE = 1677721, sequence.EQUIP_MISSION_BLOCK_GROUP_SIZE= max 1887437 (s10054)
+  end
+end
+if TppEquip.CreateEquipGhostBlockGroups then
+  if TppSystemUtility.GetCurrentGameMode()=="MGO"then
+    TppEquip.CreateEquipGhostBlockGroups{ghostCount=16}
+  elseif TppMission.IsFOBMission(vars.missionCode) then
+    TppEquip.CreateEquipGhostBlockGroups{ghostCount=1}
+  end
+end
+TppEquip.StartLoadingToEquipMissionBlock()
+TppPlayer.SetMaxPickableLocatorCount()
+TppPlayer.SetMaxPlacedLocatorCount()
+TppEquip.AllocInstances{instance=60,realize=60}
+TppEquip.ActivateEquipSystem()
+if TppEnemy.IsRequiredToLoadDefaultSoldier2CommonPackage()then
+  TppEnemy.LoadSoldier2CommonBlock()
+end
+if missionTable.sequence then
+  mvars.mis_baseList=missionTable.sequence.baseList
+  TppCheckPoint.RegisterCheckPointList(missionTable.sequence.checkPointList)
+end
+--end,missionTable)--DEBUG
+InfLog.AddFlow("OnAllocate Bottom "..vars.missionCode)--tex
+end
+function this.OnInitialize(missionTable)--NMC: see onallocate for notes
+  --InfLog.PCallDebug(function(missionTable)--tex off till I can verify doesn't run into same issue as OnAllocate
+  InfLog.AddFlow("OnInitialize Top "..vars.missionCode)--tex
+  InfMain.OnInitializeTop(missionTable)--tex
+  if TppMission.IsFOBMission(vars.missionCode)then
+    TppMission.SetFobPlayerStartPoint()
+  elseif TppMission.IsNeedSetMissionStartPositionToClusterPosition()then
+    TppMission.SetMissionStartPositionMtbsClusterPosition()
+    this.StageBlockCurrentPosition(true)
+  else
+    TppCheckPoint.SetCheckPointPosition()
+  end
+  if TppEnemy.IsRequiredToLoadSpecialSolider2CommonBlock()then
+    TppEnemy.LoadSoldier2CommonBlock()
+  end
+  if TppMission.IsMissionStart()then
+    TppTrap.InitializeVariableTraps()
+  else
+    TppTrap.RestoreVariableTrapState()
+  end
+  TppAnimalBlock.InitializeBlockStatus()
+  if TppQuestList then
+    InfLog.PCallDebug(InfQuest.RegisterQuests)--tex
+    TppQuest.RegisterQuestList(TppQuestList.questList)
+    TppQuest.RegisterQuestPackList(TppQuestList.questPackList)
+  end
+  TppHelicopter.AdjustBuddyDropPoint()
+  if missionTable.sequence then
+    local settings=missionTable.sequence.NPC_ENTRY_POINT_SETTING
+    if IsTypeTable(settings)then
+      TppEnemy.NPCEntryPointSetting(settings)
+    end
+  end
+  TppLandingZone.OverwriteBuddyVehiclePosForALZ()
+  --InfMain.OverwriteBuddyPosForMb()--tex no go
+  if missionTable.enemy then
+    if IsTypeTable(missionTable.enemy.vehicleSettings)then
+      TppEnemy.SetUpVehicles()
+    end
+    if IsTypeFunc(missionTable.enemy.SpawnVehicleOnInitialize)then
+      missionTable.enemy.SpawnVehicleOnInitialize()
+    end
+    TppReinforceBlock.SetUpReinforceBlock()
+  end
+  for name,module in pairs(missionTable)do
+    if IsTypeFunc(module.Messages)then
+      missionTable[name]._messageExecTable=Tpp.MakeMessageExecTable(module.Messages())
+    end
+  end
+  if mvars.loc_locationCommonTable then
+    mvars.loc_locationCommonTable.OnInitialize()
+  end
+  TppLandingZone.OnInitialize()
+  for t,lib in ipairs(Tpp._requireList)do
+    if _G[lib].Init then
+      _G[lib].Init(missionTable)
+    end
+  end
+  if OnlineChallengeTask then--RETAILPATCH 1090>
+    OnlineChallengeTask.Init()
+  end--<
+  if missionTable.enemy then
+    if GameObject.DoesGameObjectExistWithTypeName"TppSoldier2"then
+      GameObject.SendCommand({type="TppSoldier2"},{id="CreateFaceIdList"})
+    end
+    if IsTypeTable(missionTable.enemy.soldierDefine)then
+      TppEnemy.DefineSoldiers(missionTable.enemy.soldierDefine)
+    end
+    if missionTable.enemy.InitEnemy and IsTypeFunc(missionTable.enemy.InitEnemy)then
+      missionTable.enemy.InitEnemy()
+    end
+    if IsTypeTable(missionTable.enemy.soldierPersonalAbilitySettings)then
+      TppEnemy.SetUpPersonalAbilitySettings(missionTable.enemy.soldierPersonalAbilitySettings)
+    end
+    if IsTypeTable(missionTable.enemy.travelPlans)then
+      TppEnemy.SetTravelPlans(missionTable.enemy.travelPlans)
+    end
+    TppEnemy.SetUpSoldiers()
+    if IsTypeTable(missionTable.enemy.soldierDefine)then
+      TppEnemy.InitCpGroups()
+      TppEnemy.RegistCpGroups(missionTable.enemy.cpGroups)
+      TppEnemy.SetCpGroups()
+      if mvars.loc_locationGimmickCpConnectTable then
+        TppGimmick.SetCommunicateGimmick(mvars.loc_locationGimmickCpConnectTable)
+      end
+    end
+    if IsTypeTable(missionTable.enemy.interrogation)then
+      TppInterrogation.InitInterrogation(missionTable.enemy.interrogation)
+    end
+    if IsTypeTable(missionTable.enemy.useGeneInter)then
+      TppInterrogation.AddGeneInter(missionTable.enemy.useGeneInter)
+    end
+    if IsTypeTable(missionTable.enemy.uniqueInterrogation)then
+      TppInterrogation.InitUniqueInterrogation(missionTable.enemy.uniqueInterrogation)
+    end
+    do
+      local routeSets
+      if IsTypeTable(missionTable.enemy.routeSets)then
+        routeSets=missionTable.enemy.routeSets
+        for cpName,n in pairs(routeSets)do
+          if not IsTypeTable(mvars.ene_soldierDefine[cpName])then
           end
         end
-        if routeSets then
-          TppEnemy.RegisterRouteSet(routeSets)
-          TppEnemy.MakeShiftChangeTable()
-          TppEnemy.SetUpCommandPost()
-          TppEnemy.SetUpSwitchRouteFunc()
-        end
       end
-      if missionTable.enemy.soldierSubTypes then
-        TppEnemy.SetUpSoldierSubTypes(missionTable.enemy.soldierSubTypes)
-      end
-      TppRevenge.SetUpEnemy()
-      TppEnemy.ApplyPowerSettingsOnInitialize()
-      TppEnemy.ApplyPersonalAbilitySettingsOnInitialize()
-      TppEnemy.SetOccasionalChatList()
-      TppEneFova.ApplyUniqueSetting()
-      if missionTable.enemy.SetUpEnemy and IsTypeFunc(missionTable.enemy.SetUpEnemy)then
-        missionTable.enemy.SetUpEnemy()
-      end
-      if TppMission.IsMissionStart()then
-        TppEnemy.RestoreOnMissionStart2()
-      else
-        TppEnemy.RestoreOnContinueFromCheckPoint2()
+      if routeSets then
+        TppEnemy.RegisterRouteSet(routeSets)
+        TppEnemy.MakeShiftChangeTable()
+        TppEnemy.SetUpCommandPost()
+        TppEnemy.SetUpSwitchRouteFunc()
       end
     end
-    if not TppMission.IsMissionStart()then
-      TppWeather.RestoreFromSVars()
-      TppMarker.RestoreMarkerLocator()
+    if missionTable.enemy.soldierSubTypes then
+      TppEnemy.SetUpSoldierSubTypes(missionTable.enemy.soldierSubTypes)
     end
-    TppPlayer.RestoreSupplyCbox()
-    TppPlayer.RestoreSupportAttack()
-    TppTerminal.MakeMessage()
-    if missionTable.sequence then
-      local SetUpRoutes=missionTable.sequence.SetUpRoutes
-      if SetUpRoutes and IsTypeFunc(SetUpRoutes)then
-        SetUpRoutes()
-      end
-      TppEnemy.RegisterRouteAnimation()
-      local SetUpLocation=missionTable.sequence.SetUpLocation
-      if SetUpLocation and IsTypeFunc(SetUpLocation)then
-        SetUpLocation()
-      end
+--    TppEnemy.armorSoldiers={}--tex DEBUG CULL
+--    TppEnemy.totalSoldiers=0
+    TppRevenge.SetUpEnemy()
+    TppEnemy.ApplyPowerSettingsOnInitialize()
+    TppEnemy.ApplyPersonalAbilitySettingsOnInitialize()
+    TppEnemy.SetOccasionalChatList()
+    TppEneFova.ApplyUniqueSetting()
+    if missionTable.enemy.SetUpEnemy and IsTypeFunc(missionTable.enemy.SetUpEnemy)then
+      missionTable.enemy.SetUpEnemy()
     end
-    for n,module in pairs(missionTable)do
-      if module.OnRestoreSVars then
-        module.OnRestoreSVars()
-      end
-    end
-    TppMission.RestoreShowMissionObjective()
-    TppRevenge.SetUpRevengeMine()
-    if TppPickable.StartToCreateFromLocators then
-      TppPickable.StartToCreateFromLocators()
-    end
-    if TppPlaced and TppPlaced.StartToCreateFromLocators then
-      TppPlaced.StartToCreateFromLocators()
-    end
+    InfMain.SetUpEnemy(missionTable)--tex
     if TppMission.IsMissionStart()then
-      TppRadioCommand.RestoreRadioState()
+      TppEnemy.RestoreOnMissionStart2()
     else
-      TppRadioCommand.RestoreRadioStateContinueFromCheckpoint()
+      TppEnemy.RestoreOnContinueFromCheckPoint2()
     end
-    TppMission.SetPlayRecordClearInfo()--RETAILPATCH 1070
-    TppChallengeTask.RequestUpdateAllChecker()--RETAILPATCH 1070
-    TppMission.PostMissionOrderBoxPositionToBuddyDog()
-    this.SetUpdateFunction(missionTable)
-    this.SetMessageFunction(missionTable)
-    TppQuest.UpdateActiveQuest()
-    TppDevelopFile.OnMissionCanStart()
-    if TppMission.GetMissionID()==30010 or TppMission.GetMissionID()==30020 then
-      if TppQuest.IsActiveQuestHeli()then
-        TppEnemy.ReserveQuestHeli()
-      end
+  end
+  if not TppMission.IsMissionStart()then
+    TppWeather.RestoreFromSVars()
+    TppMarker.RestoreMarkerLocator()
+  end
+  TppPlayer.RestoreSupplyCbox()
+  TppPlayer.RestoreSupportAttack()
+  TppTerminal.MakeMessage()
+  if missionTable.sequence then
+    local SetUpRoutes=missionTable.sequence.SetUpRoutes
+    if SetUpRoutes and IsTypeFunc(SetUpRoutes)then
+      SetUpRoutes()
     end
-    TppDemo.UpdateNuclearAbolitionFlag()
-    TppQuest.AcquireKeyItemOnMissionStart()
-    InfMain.OnInitializeBottom(missionTable)--tex
-    --InfMenu.DebugPrint(Time.GetRawElapsedTimeSinceStartUp().." Oninitialize end")--DEBUG
-    --SplashScreen.Show(SplashScreen.Create("dbeonin","/Assets/tpp/ui/texture/Emblem/front/ui_emb_front_5005_l_alp.ftex",1280,640),0,0.1,0)--tex eagle--tex ghetto as 'does it run?' indicator
-  end,missionTable)--tex
+    TppEnemy.RegisterRouteAnimation()
+    local SetUpLocation=missionTable.sequence.SetUpLocation
+    if SetUpLocation and IsTypeFunc(SetUpLocation)then
+      SetUpLocation()
+    end
+  end
+  for name,module in pairs(missionTable)do
+    if module.OnRestoreSVars then
+      module.OnRestoreSVars()
+    end
+  end
+  TppMission.RestoreShowMissionObjective()
+  TppRevenge.SetUpRevengeMine()
+  if TppPickable.StartToCreateFromLocators then
+    TppPickable.StartToCreateFromLocators()
+  end
+  if TppPlaced and TppPlaced.StartToCreateFromLocators then
+    TppPlaced.StartToCreateFromLocators()
+  end
+  if TppMission.IsMissionStart()then
+    TppRadioCommand.RestoreRadioState()
+  else
+    TppRadioCommand.RestoreRadioStateContinueFromCheckpoint()
+  end
+  TppMission.SetPlayRecordClearInfo()--RETAILPATCH 1070
+  TppChallengeTask.RequestUpdateAllChecker()--RETAILPATCH 1070
+  TppMission.PostMissionOrderBoxPositionToBuddyDog()
+  this.SetUpdateFunction(missionTable)
+  this.SetMessageFunction(missionTable)
+  TppQuest.UpdateActiveQuest()
+  TppDevelopFile.OnMissionCanStart()
+  if TppMission.GetMissionID()==30010 or TppMission.GetMissionID()==30020 then
+    if TppQuest.IsActiveQuestHeli()then
+      TppEnemy.ReserveQuestHeli()
+    end
+  end
+  TppDemo.UpdateNuclearAbolitionFlag()
+  TppQuest.AcquireKeyItemOnMissionStart()
+  InfMain.OnInitializeBottom(missionTable)--tex
+  InfLog.AddFlow("OnInitialize Bottom "..vars.missionCode)--tex
+  --end,missionTable)--tex DEBUG
 end
 function this.SetUpdateFunction(missionTable)
-  updateList={}
-  numUpdate=0
-  onUpdateList={}
+  moduleUpdateFuncs={}
+  numModuleUpdateFuncs=0
+  missionScriptOnUpdateFuncs={}
   numOnUpdate=0
   --ORPHAN: RENAMEsomeupdatetable2={}
   --ORPHAN: RENAMEsomeupdate2=0
-  updateList={
+  moduleUpdateFuncs={
     TppMission.Update,
     TppSequence.Update,
     TppSave.Update,
@@ -502,11 +511,11 @@ function this.SetUpdateFunction(missionTable)
     TppMission.UpdateForMissionLoad,
     InfMain.Update,--tex
   }
-  numUpdate=#updateList
-  for n,e in pairs(missionTable)do
-    if IsTypeFunc(e.OnUpdate)then
+  numModuleUpdateFuncs=#moduleUpdateFuncs
+  for name,module in pairs(missionTable)do
+    if IsTypeFunc(module.OnUpdate)then
       numOnUpdate=numOnUpdate+1
-      onUpdateList[numOnUpdate]=e.OnUpdate
+      missionScriptOnUpdateFuncs[numOnUpdate]=module.OnUpdate
     end
   end
 end
@@ -524,6 +533,7 @@ function this.OnTextureLoadingWaitStart()
 end
 function this.OnMissionStartSaving()
 end
+--CALLER: TppSequence Seq_Mission_Prepare.OnUpdate END_SAVING_FILE
 function this.OnMissionCanStart()
   if TppMission.IsMissionStart()then
     TppWeather.SetDefaultWeatherProbabilities()
@@ -813,12 +823,12 @@ function this.StageBlockCurrentPosition(e)
   end
 end
 function this.OnReload(missionTable)
-  for name,missionScript in pairs(missionTable)do
-    if IsTypeFunc(missionScript.OnLoad)then
-      missionScript.OnLoad()
+  for name,module in pairs(missionTable)do
+    if IsTypeFunc(module.OnLoad)then
+      module.OnLoad()
     end
-    if IsTypeFunc(missionScript.Messages)then
-      missionTable[name]._messageExecTable=Tpp.MakeMessageExecTable(missionScript.Messages())
+    if IsTypeFunc(module.Messages)then
+      missionTable[name]._messageExecTable=Tpp.MakeMessageExecTable(module.Messages())
     end
   end
   if OnlineChallengeTask then--RETAILPATCH 1090>
@@ -846,16 +856,27 @@ function this.OnReload(missionTable)
   this.SetUpdateFunction(missionTable)
   this.SetMessageFunction(missionTable)
 end
-function this.OnUpdate(e)
+function this.OnUpdate(missionTable)
   --NMC OFF local e
-  local update=updateList
-  local onUpdate=onUpdateList
+  local moduleUpdateFuncs=moduleUpdateFuncs--NMC set in SetUpdateFunction
+  local missionScriptOnUpdateFuncs=missionScriptOnUpdateFuncs
   --NMC OFF local t=RENAMEsomeupdatetable2
-  for n=1,numUpdate do
-    update[n]()
-  end
-  for m=1,numOnUpdate do
-    onUpdate[m]()
+  --tex
+  if InfLog.debugOnUpdate then
+    for i=1,numModuleUpdateFuncs do
+      InfLog.PCallDebug(moduleUpdateFuncs[i])
+    end
+    for i=1,numOnUpdate do
+      InfLog.PCallDebug(missionScriptOnUpdateFuncs[i])
+    end
+    --ORIG>
+  else
+    for i=1,numModuleUpdateFuncs do
+      moduleUpdateFuncs[i]()
+    end
+    for i=1,numOnUpdate do
+      missionScriptOnUpdateFuncs[i]()
+    end
   end
   UpdateScriptsInScriptBlocks()
 end
@@ -878,28 +899,42 @@ function this.SetMessageFunction(missionTable)--RENAME:
       onMessageTable[onMessageTableSize]=_G[lib].OnMessage
     end
   end
-  for n,t in pairs(missionTable)do
-    if missionTable[n]._messageExecTable then
+  --tex>
+  if not TppMission.IsFOBMission(vars.missionCode)then
+    for i,module in ipairs(InfModules)do
+      if module.OnMessage then
+        onMessageTableSize=onMessageTableSize+1
+        onMessageTable[onMessageTableSize]=module.OnMessage
+      end
+    end
+  end
+  --<
+  for name,module in pairs(missionTable)do
+    if missionTable[name]._messageExecTable then
       messageExecTableSize=messageExecTableSize+1
-      messageExecTable[messageExecTableSize]=missionTable[n]._messageExecTable
+      messageExecTable[messageExecTableSize]=missionTable[name]._messageExecTable
     end
   end
 end
-function this.OnMessage(n,sender,messageId,arg0,arg1,arg2,arg3)
+--called via mission_main.OnMessage TODO: caller of that? probably engine
+function this.OnMessage(missionTable,sender,messageId,arg0,arg1,arg2,arg3)
+  if Ivars.debugMessages:Is(1)then--tex>
+    InfLookup.PrintOnMessage(sender,messageId,arg0,arg1,arg2,arg3)
+  end--<
   local mvars=mvars--LOCALOPT
   local strLogTextEmpty=""
-  local T
+  --ORPHAN local T
   local DoMessage=Tpp.DoMessage--LOCALOPT
   local CheckMessageOption=TppMission.CheckMessageOption--LOCALOPT
-  local T=TppDebug
-  local T=P
-  local T=h
-  local T=TppDefine.MESSAGE_GENERATION[sender]and TppDefine.MESSAGE_GENERATION[sender][messageId]
-  if not T then
-    T=TppDefine.DEFAULT_MESSAGE_GENERATION
+  --ORPHAN local T=TppDebug
+  --ORPHAN local T=unk3
+  --ORPHAN local T=unk4
+  local resendCount=TppDefine.MESSAGE_GENERATION[sender]and TppDefine.MESSAGE_GENERATION[sender][messageId]
+  if not resendCount then
+    resendCount=TppDefine.DEFAULT_MESSAGE_GENERATION
   end
-  local messageResendCount=GetCurrentMessageResendCount()
-  if messageResendCount<T then
+  local currentResendCount=GetCurrentMessageResendCount()
+  if currentResendCount<resendCount then
     return Mission.ON_MESSAGE_RESULT_RESEND
   end
   for i=1,onMessageTableSize do

@@ -5,24 +5,24 @@ local GetGameObjectId=GameObject.GetGameObjectId
 local n=GameObject.NULL_ID
 local n=GameObject.SendCommand
 local n=Tpp.DEBUG_StrCode32ToString
-function this._EnableMarkerIcon(markerName,r,langId)
-  TppMarker.Enable(markerName,r,"none","map_only_icon",0,false,true)
+function this._EnableMarkerIcon(markerName,radius,langId)
+  TppMarker.Enable(markerName,radius,"none","map_only_icon",0,false,true)
   if langId~=nil then
     local markerId=GetGameObjectId(markerName)
     TppUiCommand.RegisterIconUniqueInformation{markerId=markerId,langId=langId}
   end
 end
-function this.EnableMarker(markerName,a,langId)
+function this.EnableMarker(markerName,radius,langId)
   if markerName==nil then
     return
   end
-  a=a or 0
+  radius=radius or 0
   if Tpp.IsTypeTable(markerName)then
-    for t,_markerName in ipairs(markerName)do
-      this._EnableMarkerIcon(_markerName,a,langId)
+    for i,_markerName in ipairs(markerName)do
+      this._EnableMarkerIcon(_markerName,radius,langId)
     end
   else
-    this._EnableMarkerIcon(markerName,a,langId)
+    this._EnableMarkerIcon(markerName,radius,langId)
   end
   TppUI.ShowAnnounceLog"updateMap"
   end

@@ -191,7 +191,10 @@ this.questList={
       {name="Mtbs_child_dog",invokeStepName="QStep_Start"},
       {name="mtbs_q42010",invokeStepName="QStep_Start"}
       }},
-  {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsCombat",clusterName="Combat",infoList={{name="mtbs_q42070",invokeStepName="QStep_Start"}}},
+  {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsCombat",clusterName="Combat",
+    infoList={
+    {name="mtbs_q42070",invokeStepName="QStep_Start"},
+    }},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsDevelop",clusterName="Develop",
     infoList={
       {name="mtbs_q99050",invokeStepName="QStep_Start",isStory=true,isOnce=true},
@@ -429,15 +432,20 @@ this.questPackList={
   mtbs_q42040={"/Assets/tpp/pack/mission2/quest/mtbs/BaseDev/quest_q42040.fpk"},
   mtbs_q42050={"/Assets/tpp/pack/mission2/quest/mtbs/Medical/quest_q42050.fpk"},
   mtbs_q42060={"/Assets/tpp/pack/mission2/quest/mtbs/Spy/quest_q42060.fpk"},
-  mtbs_q42070={"/Assets/tpp/pack/mission2/quest/mtbs/Combat/quest_q42070.fpk"}
+  mtbs_q42070={"/Assets/tpp/pack/mission2/quest/mtbs/Combat/quest_q42070.fpk"},
 }
 
+--tex lookup table>
+function this.BuildQuestAreaTable(questAreaTable)
+  for n,areaQuests in ipairs(this.questList)do
+    for i,info in ipairs(areaQuests.infoList)do
+      questAreaTable[info.name]=areaQuests.areaName
+    end
+  end
+end
 
 this.questAreaTable={}--tex TABLESETUP
-for n,areaQuests in ipairs(this.questList)do
-  for i,info in ipairs(areaQuests.infoList)do
-    this.questAreaTable[info.name]=areaQuests.areaName
-  end
-end--
+this.BuildQuestAreaTable(this.questAreaTable)
+--<
 
 return this

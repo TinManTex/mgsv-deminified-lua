@@ -1,5 +1,6 @@
 -- DOBUILD: 1
 local this={}
+local StrCode32=Fox.StrCode32
 local IsTypeTable=Tpp.IsTypeTable
 local SendCommand=GameObject.SendCommand
 local GetGameObjectId=GameObject.GetGameObjectId
@@ -10,13 +11,13 @@ local budyIdLimit=4
 this.GMP_POSTER=500
 this.FOB_TUTORIAL_STATE={INIT=0,INTRODUCTION_CONSTRUCT_FOB=1,CONSTRUCT_FOB=2,INTRODUCTION_FOB_MISSIONS=3,FOB_MISSIONS=4,FINISH=127}
 this.unitLvAnnounceLogTable={
-  [Fox.StrCode32"Combat"]={up="unitLvUpCombat",down="unitLvDownCombat"},
-  [Fox.StrCode32"Develop"]={up="unitLvUpRd",down="unitLvDownRd"},
-  [Fox.StrCode32"Support"]={up="unitLvUpSupport",down="unitLvDownSupport"},
-  [Fox.StrCode32"Medical"]={up="unitLvUpMedical",down="unitLvDownMedical"},
-  [Fox.StrCode32"Spy"]={up="unitLvUpIntel",down="unitLvDownIntel"},
-  [Fox.StrCode32"PrantDev"]={up="unitLvUpBaseDev",down="unitLvDownBaseDev"},
-  [Fox.StrCode32"Security"]={up="unitLvUpSecurity",down="unitLvDownSecurity"}
+  [StrCode32"Combat"]={up="unitLvUpCombat",down="unitLvDownCombat"},
+  [StrCode32"Develop"]={up="unitLvUpRd",down="unitLvDownRd"},
+  [StrCode32"Support"]={up="unitLvUpSupport",down="unitLvDownSupport"},
+  [StrCode32"Medical"]={up="unitLvUpMedical",down="unitLvDownMedical"},
+  [StrCode32"Spy"]={up="unitLvUpIntel",down="unitLvDownIntel"},
+  [StrCode32"PrantDev"]={up="unitLvUpBaseDev",down="unitLvDownBaseDev"},
+  [StrCode32"Security"]={up="unitLvUpSecurity",down="unitLvDownSecurity"}
 }
 this.keyItemAnnounceLogTable={
   [TppMotherBaseManagementConst.DESIGN_3011]="key_item_3011",
@@ -254,14 +255,6 @@ this.RESOURCE_INFORMATION_TABLE={
   [TppCollection.TYPE_POSTER_MOE_V]={resourceName="Poster1005",count=1},
   [TppCollection.TYPE_POSTER_MOE_H]={resourceName="Poster1006",count=1}
 }
---CULL
---for collectionType,info in pairs(this.RESOURCE_INFORMATION_TABLE)do
---  if string.find(info.resourceName, "Poster") then
---  else
---    info.count=info.count*10
---  end
---end
---
 this.BLUE_PRINT_LOCATOR_TABLE={col_develop_Revolver_Shotgun=MBMConst.DESIGN_2002,col_develop_Highprecision_SMG=MBMConst.DESIGN_2006,col_develop_HighprecisionAR=MBMConst.DESIGN_2007,col_develop_HighprecisionAR_s10033_0000=MBMConst.DESIGN_2007,col_develop_BullpupAR=MBMConst.DESIGN_2008,col_develop_LongtubeShotgun=MBMConst.DESIGN_2009,col_develop_RevolverGrenade0001=MBMConst.DESIGN_2011,col_develop_RevolverGrenade0002=MBMConst.DESIGN_2011,col_develop_RevolverGrenade0003=MBMConst.DESIGN_2011,col_develop_RevolverGrenade0004=MBMConst.DESIGN_2011,col_develop_Semiauto_SR=MBMConst.DESIGN_2013,col_develop_Semiauto_SR_s10070_0000=MBMConst.DESIGN_2013,col_develop_Antimaterial=MBMConst.DESIGN_2015,col_develop_EuropeSMG0001=MBMConst.DESIGN_2016,col_develop_EuropeSMG0002=MBMConst.DESIGN_2016,col_develop_EuropeSMG0003=MBMConst.DESIGN_2016,col_develop_EuropeSMG0004=MBMConst.DESIGN_2016,col_develop_Stungrenade=MBMConst.DESIGN_2019,col_develop_Stungun=MBMConst.DESIGN_2020,col_develop_Infraredsensor=MBMConst.DESIGN_2021,col_develop_Theftprotection=MBMConst.DESIGN_2022,col_develop_Emergencyrescue=MBMConst.DESIGN_3001,col_develop_FLamethrower=MBMConst.DESIGN_2026,col_develop_Shield=MBMConst.DESIGN_2025,col_develop_Shield0000=MBMConst.DESIGN_2025,col_develop_Shield0001=MBMConst.DESIGN_2025,col_develop_Shield0002=MBMConst.DESIGN_2025,col_develop_GunCamera=MBMConst.DESIGN_2023,col_develop_UAV=MBMConst.DESIGN_2024,col_develop_q60115=MBMConst.DESIGN_2027}
 this.BLUE_PRINT_LANG_ID={[MBMConst.DESIGN_2002]="key_bprint_2002",[MBMConst.DESIGN_2006]="key_bprint_2006",[MBMConst.DESIGN_2007]="key_bprint_2007",[MBMConst.DESIGN_2008]="key_bprint_2008",[MBMConst.DESIGN_2009]="key_bprint_2009",[MBMConst.DESIGN_2011]="key_bprint_2011",[MBMConst.DESIGN_2013]="key_bprint_2013",[MBMConst.DESIGN_2015]="key_bprint_2015",[MBMConst.DESIGN_2016]="key_bprint_2016",[MBMConst.DESIGN_2019]="key_bprint_2019",[MBMConst.DESIGN_2020]="key_bprint_2020",[MBMConst.DESIGN_2021]="key_bprint_2021",[MBMConst.DESIGN_2022]="key_bprint_2022",[MBMConst.DESIGN_2023]="key_bprint_2023",[MBMConst.DESIGN_2024]="key_bprint_2024",[MBMConst.DESIGN_2025]="key_bprint_2025",[MBMConst.DESIGN_2026]="key_bprint_2026",[MBMConst.DESIGN_2027]="key_bprint_2027",[MBMConst.DESIGN_3001]="key_item_3001"}
 this.EMBLEM_LOCATOR_TABLE={["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0000"]="front8",["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0001"]="front10",["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0002"]="front15",["ly003_cl00_collct0000|cl00pl0_uq_0000_collct|col_develop_MTBS_0003"]="front16",["ly003_cl04_collct0000|cl04pl0_uq_0040_collct|col_emblem_quiet"]="front9",col_develop_MTBS_30150_0000="front11",col_develop_MTBS_30250_0000="front7"}
@@ -957,17 +950,17 @@ function this.Messages()
   return Tpp.StrCode32Table{
     GameObject={
       {msg="Fulton",
-        func=function(gameId,gimmickInstance,gimmickDataSet,stafforResourceId)
+        func=function(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,stafforResourceId)
           if not TppMission.IsFOBMission(vars.missionCode)then
-            this.OnFultonMessage(gameId,gimmickInstance,gimmickDataSet,stafforResourceId)
+            this.OnFultonMessage(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,stafforResourceId)
           end
         end,
         option={isExecMissionClear=true,isExecDemoPlaying=true}
       },
       {msg="FultonInfo",
-        func=function(gameId,playerIndex,arg3)
+        func=function(gameId,playerIndex,reduceThisContainer)
           if not TppMission.IsFOBMission(vars.missionCode)then
-            this.OnFultonInfoMessage(gameId,playerIndex,arg3)
+            this.OnFultonInfoMessage(gameId,playerIndex,reduceThisContainer)
           end
         end,
         option={isExecMissionClear=true,isExecDemoPlaying=true}
@@ -1015,15 +1008,15 @@ end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.OnFultonMessage(gameId,gimmickInstance,gimmickDataSet,stafforResourceId)
+function this.OnFultonMessage(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,stafforResourceId)
   mvars.trm_fultonInfo=mvars.trm_fultonInfo or{}
-  mvars.trm_fultonInfo[gameId]={gameId,gimmickInstance,gimmickDataSet,stafforResourceId}
+  mvars.trm_fultonInfo[gameId]={gameId,gimmickInstanceOrAnimalId,gimmickDataSet,stafforResourceId}
 end
-function this.OnFultonInfoMessage(gameId,playerIndex,arg3)
+function this.OnFultonInfoMessage(gameId,playerIndex,reduceThisContainer)
   mvars.trm_fultonInfo=mvars.trm_fultonInfo or{}
   local fultonInfo=mvars.trm_fultonInfo[gameId]
   if fultonInfo then
-    this.OnFulton(fultonInfo[1],fultonInfo[2],fultonInfo[3],fultonInfo[4],nil,nil,playerIndex,arg3)
+    this.OnFulton(fultonInfo[1],fultonInfo[2],fultonInfo[3],fultonInfo[4],nil,nil,playerIndex,reduceThisContainer)
     mvars.trm_fultonInfo[gameId]=nil
   end
   mvars.trm_fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo or{}
@@ -1095,7 +1088,7 @@ function this.SetUp()
   this.SetUpCustomWeaponMBDVCMenu()
 
   --tex> reworked, disable various support menus
-  local isActual=TppMission.IsActualSubsistenceMission()
+  local isActual=TppMission.IsSubsistenceMission()
   for n, ivar in ipairs(Ivars.disableMenuIvars) do
     if isActual or ivar:Is(1) then
       this.EnableDvcMenuByList{{menu=ivar.menuId,active=false}}
@@ -1158,44 +1151,44 @@ function this.SetUpBuddyMBDVCMenu()
     end
   end
 end
-function this.DoFuncByFultonTypeSwitch(gameId,RENAMEanimalId,n,staffOrResourceId,recoveredByHeli,playerIndex,RENAMEmysteryPatchvar,OnFultonSoldier,OnFultonVolgin,OnFultonHostage,OnFultonVehicle,OnFultonContainer,OnFultonGimmickCommon,OnFultonBuddy,OnFultonEnemyWalkerGear,OnFultonAnimal,OnFultonBossQuiet,OnFultonParasiteSquad)
+function this.DoFuncByFultonTypeSwitch(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex,reduceThisContainer,OnFultonSoldier,OnFultonVolgin,OnFultonHostage,OnFultonVehicle,OnFultonContainer,OnFultonGimmickCommon,OnFultonBuddy,OnFultonEnemyWalkerGear,OnFultonAnimal,OnFultonBossQuiet,OnFultonParasiteSquad)
   if Tpp.IsSoldier(gameId)then
-    return OnFultonSoldier(gameId,RENAMEanimalId,n,staffOrResourceId,recoveredByHeli,playerIndex)
+    return OnFultonSoldier(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex)
   elseif Tpp.IsVolgin(gameId)then
     return OnFultonVolgin(gameId)
   elseif Tpp.IsHostage(gameId)then
-    return OnFultonHostage(gameId,RENAMEanimalId,n,staffOrResourceId,recoveredByHeli,playerIndex)
+    return OnFultonHostage(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex)
   elseif Tpp.IsVehicle(gameId)then
-    return OnFultonVehicle(gameId,RENAMEanimalId,n,staffOrResourceId,nil,playerIndex)
+    return OnFultonVehicle(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,playerIndex)
   elseif Tpp.IsFultonContainer(gameId)then
-    return OnFultonContainer(gameId,RENAMEanimalId,n,staffOrResourceId,nil,playerIndex,RENAMEmysteryPatchvar)
+    return OnFultonContainer(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,playerIndex,reduceThisContainer)
   elseif Tpp.IsFultonableGimmick(gameId)then
-    return OnFultonGimmickCommon(gameId,RENAMEanimalId,n,staffOrResourceId,nil,playerIndex)
+    return OnFultonGimmickCommon(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,playerIndex)
   elseif Tpp.IsEnemyWalkerGear(gameId)then
-    return OnFultonEnemyWalkerGear(gameId,RENAMEanimalId,n,staffOrResourceId,nil,playerIndex)
+    return OnFultonEnemyWalkerGear(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,playerIndex)
   elseif Tpp.IsAnimal(gameId)then
-    return OnFultonAnimal(gameId,RENAMEanimalId,n,staffOrResourceId,nil,playerIndex)
+    return OnFultonAnimal(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,playerIndex)
   elseif Tpp.IsBossQuiet(gameId)then
-    return OnFultonBossQuiet(gameId,RENAMEanimalId,n,staffOrResourceId,recoveredByHeli,playerIndex)
+    return OnFultonBossQuiet(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex)
   elseif Tpp.IsParasiteSquad(gameId)then
-    return OnFultonParasiteSquad(gameId,RENAMEanimalId,n,staffOrResourceId,nil,playerIndex)
+    return OnFultonParasiteSquad(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,playerIndex)
   else
     local buddyType=Tpp.GetBuddyTypeFromGameObjectId(gameId)
     if buddyType then
-      return OnFultonBuddy(gameId,RENAMEanimalId,n,staffOrResourceId,buddyType,playerIndex)
+      return OnFultonBuddy(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,buddyType,playerIndex)
     end
   end
 end
-function this.OnFulton(gameId,a,o,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex,i)
+function this.OnFulton(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex,reduceThisContainer)
   if RENpossiblyNotHelicopter then
     mvars.trm_needHeliSoundOnAddStaffsFromTempBuffer=true
   end
   TppEnemy.SetRecovered(gameId)
-  TppEnemy.ExecuteOnRecoveredCallback(gameId,a,o,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex)
+  TppEnemy.ExecuteOnRecoveredCallback(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex)
   if Tpp.IsLocalPlayer(playerIndex)then
-    TppEnemy._OnFulton(gameId,a,o,staffOrResourceId)
+    TppEnemy._OnFulton(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId)
   end
-  this.DoFuncByFultonTypeSwitch(gameId,a,o,staffOrResourceId,RENsomeBool,playerIndex,i,this.OnFultonSoldier,this.OnFultonVolgin,this.OnFultonHostage,this.OnFultonVehicle,this.OnFultonContainer,this.OnFultonGimmickCommon,this.OnFultonBuddy,this.OnFultonEnemyWalkerGear,this.OnFultonAnimal,this.OnFultonBossQuiet,this.OnFultonParasiteSquad)
+  this.DoFuncByFultonTypeSwitch(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,RENsomeBool,playerIndex,reduceThisContainer,this.OnFultonSoldier,this.OnFultonVolgin,this.OnFultonHostage,this.OnFultonVehicle,this.OnFultonContainer,this.OnFultonGimmickCommon,this.OnFultonBuddy,this.OnFultonEnemyWalkerGear,this.OnFultonAnimal,this.OnFultonBossQuiet,this.OnFultonParasiteSquad)
 end
 function this.IncrementFultonCount()
   svars.trm_missionFultonCount=svars.trm_missionFultonCount+1
@@ -1304,7 +1297,7 @@ function this.OnFultonVehicle(vehicleId,a,a,resourceId,a,playerIndex)
     OnlineChallengeTask.UpdateOnFultonVehicle(vehicleId)
   end--<
 end
-function this.OnFultonContainer(gameId,t,n,staffOrResourceId,M,playerIndex,RENAMEmysterypatchvar)
+function this.OnFultonContainer(gameId,t,n,staffOrResourceId,M,playerIndex,reduceThisContainer)
   if mvars.trm_isSkipAddResourceToTempBuffer then
     return
   end
@@ -1323,7 +1316,7 @@ function this.OnFultonContainer(gameId,t,n,staffOrResourceId,M,playerIndex,RENAM
       gimmickName="commFacility_cntn001"
     end
     local isReduceAmount=false
-    if(RENAMEmysterypatchvar==1)then
+    if(reduceThisContainer==1)then
       isReduceAmount=true
     end
     Gimmick.CallFindContainerResourceLog(gimmickName,isReduceAmount)--RETAILPATCH: 1.0.4.0 last param added, same with below
@@ -1372,33 +1365,33 @@ function this.OnFultonAnimal(gameId,animalId)
   if mvars.trm_isSkipAddResourceToTempBuffer then
     return
   end
-  local databastId=TppAnimal.GetDataBaseIdFromAnimalId(animalId)
-  if this.IsAnimalDog(databastId)then
+  local databaseId=TppAnimal.GetDataBaseIdFromAnimalId(animalId)
+  if this.IsAnimalDog(databaseId)then
     this.AddAnimalRecoverHistory(MBMConst.ANIMAL_TYPE_DOG)
-  elseif this.IsAnimalHorse(databastId)then
+  elseif this.IsAnimalHorse(databaseId)then
     this.AddAnimalRecoverHistory(MBMConst.ANIMAL_TYPE_HORSE)
-  elseif this.IsAnimalBear(databastId)then
+  elseif this.IsAnimalBear(databaseId)then
     this.AddAnimalRecoverHistory(MBMConst.ANIMAL_TYPE_BEAR)
-  elseif this.IsAnimalGoat(databastId)then
+  elseif this.IsAnimalGoat(databaseId)then
     this.AddAnimalRecoverHistory(MBMConst.ANIMAL_TYPE_GOAT)
   else
-    local t=0
-    this.AddAnimalRecoverHistory(t)
+    local animalType=0
+    this.AddAnimalRecoverHistory(animalType)
   end
-  local a=TppMotherBaseManagement.DataBaseIdToAnimalGroup{dataBaseId=databastId}
+  local a=TppMotherBaseManagement.DataBaseIdToAnimalGroup{dataBaseId=databaseId}
   if(a==MBMConst.ANIMAL_GROUP_1900)or(a==MBMConst.ANIMAL_GROUP_1920)then
     gvars.trm_recoveredAfghGoatCount=gvars.trm_recoveredAfghGoatCount+1
   elseif(a==MBMConst.ANIMAL_GROUP_1940)or(a==MBMConst.ANIMAL_GROUP_1960)then
     gvars.trm_recoveredMafrGoatCount=gvars.trm_recoveredMafrGoatCount+1
-  elseif(databastId==MBMConst.ANIMAL_200)then
+  elseif(databaseId==MBMConst.ANIMAL_200)then
     gvars.trm_recoveredDonkeyCount=gvars.trm_recoveredDonkeyCount+1
-  elseif(databastId==MBMConst.ANIMAL_210)then
+  elseif(databaseId==MBMConst.ANIMAL_210)then
     gvars.trm_recoveredZebraCount=gvars.trm_recoveredZebraCount+1
-  elseif(databastId==MBMConst.ANIMAL_220)then
+  elseif(databaseId==MBMConst.ANIMAL_220)then
     gvars.trm_recoveredOkapiCount=gvars.trm_recoveredOkapiCount+1
   end
   PlayRecord.RegistPlayRecord"ANIMAL_RESCUE"
-  this.AddTempDataBaseAnimal(databastId,tostring(mvars.animalBlockAreaName))
+  this.AddTempDataBaseAnimal(databaseId,tostring(mvars.animalBlockAreaName))
 end
 function this.GetRecoveredAfghGoatCount()
   return gvars.trm_recoveredAfghGoatCount
@@ -1427,25 +1420,25 @@ end
 function this.IsRecoveredCompleatedBear()
   return TppMotherBaseManagement.IsGotDataBase{dataBaseId=MBMConst.ANIMAL_600}and TppMotherBaseManagement.IsGotDataBase{dataBaseId=MBMConst.ANIMAL_610}
 end
-function this.GetAnimalTypeCountFromRecoveredHistory(n)
-  local e=0
-  for t=0,(TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE-1)do
-    if gvars.trm_animalRecoverHistory[t]==n then
-      e=e+1
+function this.GetAnimalTypeCountFromRecoveredHistory(animalType)
+  local numRecovered=0
+  for i=0,(TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE-1)do
+    if gvars.trm_animalRecoverHistory[i]==animalType then
+      numRecovered=numRecovered+1
     end
   end
-  return e
+  return numRecovered
 end
-function this.AddAnimalRecoverHistory(t)
-  local e=gvars.trm_animalRecoverHistorySize
-  if e<TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE then
-    gvars.trm_animalRecoverHistory[e]=t
-    gvars.trm_animalRecoverHistorySize=e+1
+function this.AddAnimalRecoverHistory(animalType)
+  local entryCount=gvars.trm_animalRecoverHistorySize
+  if entryCount<TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE then
+    gvars.trm_animalRecoverHistory[entryCount]=animalType
+    gvars.trm_animalRecoverHistorySize=entryCount+1
   else
-    for e=1,(TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE-1)do
-      gvars.trm_animalRecoverHistory[e-1]=gvars.trm_animalRecoverHistory[e]
+    for i=1,(TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE-1)do
+      gvars.trm_animalRecoverHistory[i-1]=gvars.trm_animalRecoverHistory[i]
     end
-    gvars.trm_animalRecoverHistory[TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE-1]=t
+    gvars.trm_animalRecoverHistory[TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE-1]=animalType
     gvars.trm_animalRecoverHistorySize=TppDefine.MAX_ANIMAL_RECOVERED_HISTORY_SIZE
   end
 end
@@ -1543,17 +1536,15 @@ end
 function this.AddTempDataBaseAnimal(dataBaseId,areaName)
   TppMotherBaseManagement.AddTempDataBaseAnimal{dataBaseId=dataBaseId,areaName=areaName}
 end
-local n=4
-local RENAMEsomeConst=1.67
+
+local unkSomeConst1=4
+local unkSomeConst2=1.67
 function this.AddPickedUpResourceToTempBuffer(resourceType,langId)
   if not this.RESOURCE_INFORMATION_TABLE[resourceType]then
     return
   end
   local resourceName=this.RESOURCE_INFORMATION_TABLE[resourceType].resourceName
   local resourceCount=this.RESOURCE_INFORMATION_TABLE[resourceType].count
-  if not Ivars.resourceAmountScale:IsDefault() then--tex> --DEBUGNOW
-    resourceCount=resourceCount*(Ivars.resourceAmountScale:Get()/100)
-  end--<
   if TppCollection.IsHerbByType(resourceType)then
     local getHerbRate=Player.GetRateOfGettingHarb()
     resourceCount=resourceCount*getHerbRate

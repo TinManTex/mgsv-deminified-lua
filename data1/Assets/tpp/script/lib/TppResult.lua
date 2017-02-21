@@ -1,7 +1,8 @@
+-- TppResult.lua
 local this={}
 local SendCommand=GameObject.SendCommand
 local IsTypeTable=Tpp.IsTypeTable
-local t,t,t=bit.band,bit.bor,bit.bxor
+local band,bor,bxor=bit.band,bit.bor,bit.bxor
 local MAX_32BIT_UINT=TppDefine.MAX_32BIT_UINT
 this.PLAYSTYLE_HEAD_SHOT=.9
 this.RANK_THRESHOLD={S=13e4,A=1e5,B=6e4,C=3e4,D=1e4,E=0}

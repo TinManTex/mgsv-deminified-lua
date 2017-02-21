@@ -1,9 +1,10 @@
 -- DOBUILD: 1
+-- TppPlayer.lua
 local this={}
 local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeTable=Tpp.IsTypeTable
 local IsTypeString=Tpp.IsTypeString
-local StrCode32=Fox.StrCode32
+local StrCode32=InfLog.StrCode32--tex was Fox.StrCode32
 local TimerStart=GkEventTimerManager.Start
 local TimerStop=GkEventTimerManager.Stop
 local GetTypeIndex=GameObject.GetTypeIndex
@@ -372,15 +373,15 @@ function this._SetWeapons(weaponTable,category)
     return
   end
   local slotNum=TppDefine.WEAPONSLOT.SUPPORT_0-1
-  local slotType,slotName,magazine,ammo,underBarrelAmmo
+  local slotType,equipIdName,magazine,ammo,underBarrelAmmo
   for idx,weaponInfo in pairs(weaponTable)do
-    slotType,slotNum,slotName,magazine,ammo,underBarrelAmmo=this.GetWeaponSlotInfoFromWeaponSet(weaponInfo,slotNum)
-    local equipment=TppEquip[slotName]
-    if equipment==nil then
+    slotType,slotNum,equipIdName,magazine,ammo,underBarrelAmmo=this.GetWeaponSlotInfoFromWeaponSet(weaponInfo,slotNum)
+    local equipId=TppEquip[equipIdName]
+    if equipId==nil then
     else
-      local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(equipment)
+      local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(equipId)
       if slotType then
-        vars[category][slotType]=equipment
+        vars[category][slotType]=equipId
         local ammoCount,altAmmoCount
         if magazine then
           ammoCount=magazine*ammoInWeapon
@@ -407,7 +408,7 @@ function this._SetWeapons(weaponTable,category)
         end
       elseif slotNum>=TppDefine.WEAPONSLOT.SUPPORT_0 and slotNum<=TppDefine.WEAPONSLOT.SUPPORT_7 then
         local supportSlotNum=slotNum-TppDefine.WEAPONSLOT.SUPPORT_0
-        vars.initSupportWeapons[supportSlotNum]=equipment
+        vars.initSupportWeapons[supportSlotNum]=equipId
         gvars.initAmmoStockIds[slotNum]=ammoId
         local ammoCount
         if ammo then
@@ -421,29 +422,29 @@ function this._SetWeapons(weaponTable,category)
   end
 end
 function this.GetWeaponSlotInfoFromWeaponSet(weaponInfo,slotNum)
-  local slotType,slotName,magazine,ammo,underBarrelAmmo
+  local slotType,equipIdName,magazine,ammo,underBarrelAmmo
   if weaponInfo.primaryHip then
     slotType=TppDefine.WEAPONSLOT.PRIMARY_HIP
-    slotName=weaponInfo.primaryHip
+    equipIdName=weaponInfo.primaryHip
     magazine=weaponInfo.magazine
     ammo=weaponInfo.ammo
     underBarrelAmmo=weaponInfo.underBarrelAmmo
   elseif weaponInfo.primaryBack then
     slotType=TppDefine.WEAPONSLOT.PRIMARY_BACK
-    slotName=weaponInfo.primaryBack
+    equipIdName=weaponInfo.primaryBack
     magazine=weaponInfo.magazine
     ammo=weaponInfo.ammo
   elseif weaponInfo.secondary then
     slotType=TppDefine.WEAPONSLOT.SECONDARY
-    slotName=weaponInfo.secondary
+    equipIdName=weaponInfo.secondary
     magazine=weaponInfo.magazine
     ammo=weaponInfo.ammo
   elseif weaponInfo.support then
     slotNum=slotNum+1
-    slotName=weaponInfo.support
+    equipIdName=weaponInfo.support
     ammo=weaponInfo.ammo
   end
-  return slotType,slotNum,slotName,magazine,ammo,underBarrelAmmo
+  return slotType,slotNum,equipIdName,magazine,ammo,underBarrelAmmo
 end
 function this.SaveWeaponsToUsingTemp(weaponTable)
   if gvars.ply_isUsingTempWeapons then
@@ -816,9 +817,9 @@ function this.ShowIconForIntel(e,t)
   end
   if not t then
     if Tpp.IsNotAlert()then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=Fox.StrCode32"GetIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=StrCode32"GetIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
     elseif trapName then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=Fox.StrCode32"NGIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=StrCode32"NGIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
       if not TppRadio.IsPlayed(TppRadio.COMMON_RADIO_LIST[TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT])then
         TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT)
       end
@@ -882,7 +883,7 @@ function this.ShowIconForQuest(e,a)
     a=mvars.ply_questStartFlagInfo[e]
   end
   if not a then
-    Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.TRAINING,message=Fox.StrCode32"QuestStarted",messageInDisplay=Fox.StrCode32"QuestIconInDisplay",messageArg=e}
+    Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.TRAINING,message=StrCode32"QuestStarted",messageInDisplay=Fox.StrCode32"QuestIconInDisplay",messageArg=e}
   end
 end
 function this.QuestStarted(a)
@@ -1577,11 +1578,11 @@ this.VEHICLE_FALL_DEAD_CAMERA={[Vehicle.type.EASTERN_LIGHT_VEHICLE]=this.PlayFal
 function this.Messages()
   local messageTable=Tpp.StrCode32Table{
     Player={
-      {msg="CalcFultonPercent",func=function(t,gameId,o,a,staffOrResourceId)
-        this.MakeFultonRecoverSucceedRatio(t,gameId,o,a,staffOrResourceId,false)
+      {msg="CalcFultonPercent",func=function(unk1,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId)
+        this.MakeFultonRecoverSucceedRatio(unk1,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,false)
       end},
-      {msg="CalcDogFultonPercent",func=function(r,gameId,o,a,staffOrResourceId)
-        this.MakeFultonRecoverSucceedRatio(r,gameId,o,a,staffOrResourceId,true)
+      {msg="CalcDogFultonPercent",func=function(unk1,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId)
+        this.MakeFultonRecoverSucceedRatio(unk1,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,true)
       end},
       {msg="RideHelicopter",func=this.SetHelicopterInsideAction},
       {msg="PlayerFulton",func=this.OnPlayerFulton},
@@ -1817,7 +1818,7 @@ function this.Init(missionTable)
 end
 
 function this.SetSelfSubsistenceOnHardMission()
-  if TppMission.IsActualSubsistenceMission()then--tex was IsSubsistenceMission
+  if TppMission.IsSubsistenceMission()then
     this.SetInitWeapons(TppDefine.CYPR_PLAYER_INITIAL_WEAPON_TABLE)
     this.SetInitItems(TppDefine.CYPR_PLAYER_INITIAL_ITEM_TABLE)
     this.RegisterTemporaryPlayerType{partsType=PlayerPartsType.NORMAL,camoType=PlayerCamoType.OLIVEDRAB,handEquip=TppEquip.EQP_HAND_NORMAL,faceEquipId=0}
@@ -1851,14 +1852,14 @@ this.mbSectionRankSuccessTable={--NMC: tex was in MakeFultonRecoverSucceedRatio,
   [TppMotherBaseManagementConst.SECTION_FUNC_RANK_F]=0,
   [TppMotherBaseManagementConst.SECTION_FUNC_RANK_NONE]=0
 }
-function this.MakeFultonRecoverSucceedRatio(t,_gameId,RENAMEanimalId,r,staffOrResourceId,isDogFultoning)
+function this.MakeFultonRecoverSucceedRatio(unk1,_gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,isDogFultoning)
   local gameId=_gameId
   local percentage=0
   local baseLine=100
   local doFuncSuccess=0
   --RETAILPATCH: 1.0.4.4, was: -v- guess they missed updating this call when they added the param last patch CULL:
   --TppTerminal.DoFuncByFultonTypeSwitch(t,p,r,l,nil,nil,this.GetSoldierFultonSucceedRatio,this.GetVolginFultonSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio)
-  doFuncSuccess=TppTerminal.DoFuncByFultonTypeSwitch(gameId,RENAMEanimalId,r,staffOrResourceId,nil,nil,nil,this.GetSoldierFultonSucceedRatio,this.GetVolginFultonSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio)
+  doFuncSuccess=TppTerminal.DoFuncByFultonTypeSwitch(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,nil,nil,nil,this.GetSoldierFultonSucceedRatio,this.GetVolginFultonSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio,this.GetDefaultSucceedRatio)
   if doFuncSuccess==nil then
     doFuncSuccess=100
   end
@@ -1916,7 +1917,6 @@ function this.MakeFultonRecoverSucceedRatio(t,_gameId,RENAMEanimalId,r,staffOrRe
   --  end
   --  end--<
   --WIP
-  --DEBUGNOW
 --  if --[[Ivars.fultonMotherBaseHandling:Is(1) and--]] Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex>
 --    percentage=0
 --  end--<
@@ -2051,9 +2051,6 @@ function this.OnPickUpCollection(playerId,resourceId,resourceType,langId)
   local resourceCount
   if TppTerminal.RESOURCE_INFORMATION_TABLE[resourceType]and TppTerminal.RESOURCE_INFORMATION_TABLE[resourceType].count then
     resourceCount=TppTerminal.RESOURCE_INFORMATION_TABLE[resourceType].count
-    if not Ivars.resourceAmountScale:IsDefault() then--tex>
-      resourceCount=resourceCount*(Ivars.resourceAmountScale:Get()/100)
-    end--<
   end
   if TppCollection.IsHerbByType(resourceType)then
     local gameId=GameObject.GetGameObjectIdByIndex("TppBuddyDog2",0)

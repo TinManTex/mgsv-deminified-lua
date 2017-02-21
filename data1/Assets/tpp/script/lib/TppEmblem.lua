@@ -1,4 +1,5 @@
 local this={}
+local StrCode32=Fox.StrCode32
 local srankClearEmblems={[10010]="front32",[10020]="front61",[10036]="front27",[10043]="front31",[10033]="front1",[10040]={"front42","front48"},[10041]="front2",[10044]="front3",[10052]="front53",[10054]="front13",[10050]="front21",[10070]="front37",[10080]="front38",[10086]="front4",[10082]="front12",[10090]="front39",[10195]="front65",[10091]="front52",[10100]="front44",[10110]="front33",[10121]={"front5","front64"},[10120]="front19",[10085]="front6",[10200]="front60",[10211]="front45",[10081]="front50",[10130]="front66",[10140]="front23",[10150]="front51",[10151]="front25",[10045]="front29",[10156]="front81",[10093]="front80",[10171]="front14",[10260]="front35",[10280]="front67"}
 local missionClearEmblems={[10050]={"word47","word147"},[10070]={"front68","word96","word109"},[10120]="word149",[10195]={"word157","word158"},[10121]={"word155","word156"},[10130]={"word159","word160","word161"},[10140]={"word150","word151","word162"},[10150]={"word133","word134","word135","word136"},[10151]={"front17","front69","word97","word110","word152"},[10240]={"front36","front43"},[10260]={"front70","word98","word111","word114","word115"},[10280]={"front72","front73","word4","word5","word18","word19","word35","word36","word102"}}
 local allTaskClearEmblems={[10020]="base43",[10030]="base20",[10036]="base39",[10043]="base40",[10033]="base2",[10040]="base4",[10041]="base5",[10044]="base7",[10052]="base8",[10054]="base9",[10050]="base36",[10070]="base14",[10080]="base10",[10086]="base12",[10082]="base13",[10090]="base21",[10195]="base47",[10091]="base22",[10100]="base24",[10110]="base25",[10121]="base46",[10115]="base17",[10120]="base35",[10085]="base26",[10200]="base27",[10211]="base33",[10081]="base28",[10130]="base48",[10140]="base37",[10150]="base15",[10151]="base38",[10045]="base34",[10156]="base29",[10093]="base30",[10171]="base31",[10240]="base45",[10260]="base11",[10280]="base49"}
@@ -70,7 +71,7 @@ function this.Add(o,e,a)
   TppUiCommand.AddEmblemTexture(o)
   local r=TppUiCommand.GetEmblemPartsType(o)
   if e then
-    TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.EMBLEM,arg1=Fox.StrCode32(o),arg2=r}
+    TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId="dummy",rewardType=TppReward.TYPE.EMBLEM,arg1=StrCode32(o),arg2=r}
   end
   if a then
     local o=TppUiCommand.GetEmblemLangId(o)
