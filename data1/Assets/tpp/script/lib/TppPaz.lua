@@ -459,7 +459,8 @@ function this.OnFinishTimer(n)
     GkEventTimerManager.Start(PazTimerSenderIdleMonologue,10+foxmath.FRnd()*10)
   elseif n==PazTimerSenderEnableIdleMonologue then
     mvars.paz_isIdleMonologueEnabled=true
-    GkEventTimerManager.Stop(PazTimerSenderIdleMonologue)GkEventTimerManager.Start(PazTimerSenderIdleMonologue,2+foxmath.FRnd()*2)
+    GkEventTimerManager.Stop(PazTimerSenderIdleMonologue)
+    GkEventTimerManager.Start(PazTimerSenderIdleMonologue,2+foxmath.FRnd()*2)
   end
 end
 function this.OnPazPerceiveSnake()
@@ -725,7 +726,8 @@ function this.UpdateIcon()
       Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=Fox.StrCode32"IconOk",messageArg=""}
       mvars.paz_isIconVisible=true
       if((mvars.paz_doesSnakeHasPicture and mvars.paz_isShowMeMonologueEnabled)and not mvars.paz_isSpeeching)and mvars.paz_lastMonologueLabel~=paz_misete02 then
-        this.SendCommandCallMonologue(paz_misete02)GkEventTimerManager.Start(PazTimerSenderEnableShowMe,30)
+        this.SendCommandCallMonologue(paz_misete02)
+        GkEventTimerManager.Start(PazTimerSenderEnableShowMe,30)
         mvars.paz_isShowMeMonologueEnabled=false
       end
     end

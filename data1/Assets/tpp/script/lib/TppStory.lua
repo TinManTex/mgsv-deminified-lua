@@ -2194,10 +2194,12 @@ function this.DEBUG_SetNeedStoryTest(n)
     TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Medical",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
   end
   if n==10200 then
-    TppMotherBaseManagement.SetMbsClusterParam{category="Develop",grade=4,buildStatus="Completed"}coroutine.yield()
+    TppMotherBaseManagement.SetMbsClusterParam{category="Develop",grade=4,buildStatus="Completed"}
+    coroutine.yield()
   end
   if n==10151 then
-    TppMotherBaseManagement.SetMbsClusterParam{category="Medical",grade=4,buildStatus="Completed"}coroutine.yield()
+    TppMotherBaseManagement.SetMbsClusterParam{category="Medical",grade=4,buildStatus="Completed"}
+    coroutine.yield()
   end
   if n==10054 then
     this.MissionOpen"10050"
@@ -2220,150 +2222,151 @@ function this.DEBUG_SetNeedStoryTest(n)
   vars.personalBirthdayMonth=3
   vars.personalBirthdayDay=10
 end
-function this.DEBUG_SetStorySequence(n,o)do
-  return
-end
-if(n<TppDefine.STORY_SEQUENCE.STORY_START)and(n>TppDefine.STORY_SEQUENCE.STORY_FINISH)then
-  return
-end
-gvars.str_storySequence=n
-for e=0,TppDefine.MISSION_COUNT_MAX do
-  gvars.str_missionOpenPermission[e]=false
-  gvars.str_missionOpenFlag[e]=false
-  gvars.str_missionClearedFlag[e]=false
-  gvars.str_missionNewOpenFlag[e]=false
-end
-if TppDebugMbDevelop then
-  local DebugStorySequenceFunc
-  local i
-  for index=TppDefine.STORY_SEQUENCE.STORY_START,gvars.str_storySequence do
-    local storySequenceName=this.GetStorySequenceName(index)
-    if TppDebugMbDevelop[storySequenceName]then
-      DebugStorySequenceFunc=TppDebugMbDevelop[storySequenceName]
-      i=storySequenceName
+function this.DEBUG_SetStorySequence(n,o)
+  do
+    return
+  end
+  if(n<TppDefine.STORY_SEQUENCE.STORY_START)and(n>TppDefine.STORY_SEQUENCE.STORY_FINISH)then
+    return
+  end
+  gvars.str_storySequence=n
+  for e=0,TppDefine.MISSION_COUNT_MAX do
+    gvars.str_missionOpenPermission[e]=false
+    gvars.str_missionOpenFlag[e]=false
+    gvars.str_missionClearedFlag[e]=false
+    gvars.str_missionNewOpenFlag[e]=false
+  end
+  if TppDebugMbDevelop then
+    local DebugStorySequenceFunc
+    local i
+    for index=TppDefine.STORY_SEQUENCE.STORY_START,gvars.str_storySequence do
+      local storySequenceName=this.GetStorySequenceName(index)
+      if TppDebugMbDevelop[storySequenceName]then
+        DebugStorySequenceFunc=TppDebugMbDevelop[storySequenceName]
+        i=storySequenceName
+      end
+    end
+    if DebugStorySequenceFunc then
+      DebugStorySequenceFunc()
+    else
+      TppDebugMbDevelop.AllDeveloped()
     end
   end
-  if DebugStorySequenceFunc then
-    DebugStorySequenceFunc()
+  local function r(missionCodeName,o,a,t,n)
+    local r=n or{}
+    local missionCode=TppMission.ParseMissionName(missionCodeName)
+    local t=(missionCodeName==t)
+    this.PermitMissionOpen(missionCode)
+    if(not r[missionCodeName])or(t)then
+      this.MissionOpen(missionCode)
+      if(o<a)and(not t)then
+        this.DisableMissionNewOpenFlag(missionCode)
+        this.UpdateMissionCleardFlag(missionCode)
+      end
+    end
+    return t
+  end
+  local t
+  for storySequenceIndex=0,n do
+    local e=this.GetStorySequenceTable(storySequenceIndex)
+    if e==nil then
+      break
+    end
+    if e.main then
+      local e=r(e.main,storySequenceIndex,n,o,e.defaultClose)
+      t=t or e
+    end
+    if e.flag then
+      for s,a in pairs(e.flag)do
+        local e=r(a,storySequenceIndex,n,o,e.defaultClose)
+        t=t or e
+      end
+    end
+    if e.sub then
+      for s,a in pairs(e.sub)do
+        local e=r(a,storySequenceIndex,n,o,e.defaultClose)
+        t=t or e
+      end
+    end
+    if t then
+      gvars.str_storySequence=storySequenceIndex
+      break
+    end
+  end
+  local n=TppResult.CalcMissionClearHistorySize()
+  TppResult.SetMissionClearHistorySize(n)
+  if gvars.str_storySequence>TppDefine.STORY_SEQUENCE.CLEARD_RECUE_MILLER then
+    TppVarInit.SetHorseObtainedAndCanSortie()
+  end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_AFTER_FIND_THE_SECRET_WEAPON then
+    this.MissionOpen(10050)
+    this.UpdateMissionCleardFlag(10050)
+  end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_RESCUE_HUEY then
+    this.MissionOpen(10070)
+    this.UpdateMissionCleardFlag(10070)
+  end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_CAPTURE_THE_WEAPON_DEALER then
+    this.MissionOpen(10115)
+    this.UpdateMissionCleardFlag(10115)
+    TppMotherBaseManagement.SetFobSvars{fob="Fob1",got=true,oceanAreaId=2,topologyType=10,color="Orange"}
+  end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_BEFORE_ENDRESS_PROXY_WAR then
+    this.MissionOpen(11050)
+    this.UpdateMissionCleardFlag(11050)
+  end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_MURDER_INFECTORS then
+    this.MissionOpen(10240)
+    this.UpdateMissionCleardFlag(10240)
+  end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_THE_TRUTH then
+    local n={11080,11121,11130,11044,11151,10260,10280}
+    if TppGameSequence.GetSpecialVersionName()=="e3_2015"then
+      n={11080,11121,11130,11044,11151,10260}
+    end
+    for t,n in ipairs(n)do
+      this.MissionOpen(n)
+      this.UpdateMissionCleardFlag(n)
+    end
+    if TppQuest.QAReleaseFullOpen then
+      TppQuest.QAReleaseFullOpen()
+    end
+  end
+  if TppTerminal.PandemicTutorialStoryCondition()then
+    TppTerminal.FinishPandemicTutorial()
+    TppTerminal.StartPandemicEvent()
+  end
+  if TppTerminal.CheckPandemicEventFinish()then
+    TppTerminal.FinishPandemicTutorial()
+    TppTerminal.FinishPandemicEvent()
+  end
+  if this.IsAlwaysOpenRetakeThePlatform()then
+    TppUiCommand.SetMission10115Emergency(false)
   else
-    TppDebugMbDevelop.AllDeveloped()
+    TppUiCommand.SetMission10115Emergency(true)
   end
-end
-local function r(missionCodeName,o,a,t,n)
-  local r=n or{}
-  local missionCode=TppMission.ParseMissionName(missionCodeName)
-  local t=(missionCodeName==t)
-  this.PermitMissionOpen(missionCode)
-  if(not r[missionCodeName])or(t)then
-    this.MissionOpen(missionCode)
-    if(o<a)and(not t)then
-      this.DisableMissionNewOpenFlag(missionCode)
-      this.UpdateMissionCleardFlag(missionCode)
-    end
+  if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
+    this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,2)
+    TppQuest.StartElapsedEvent(1)
   end
-  return t
-end
-local t
-for storySequenceIndex=0,n do
-  local e=this.GetStorySequenceTable(storySequenceIndex)
-  if e==nil then
-    break
+  if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_RETRIEVE_VOLGIN then
+    this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,2)
+    TppQuest.StartElapsedEvent(1)
   end
-  if e.main then
-    local e=r(e.main,storySequenceIndex,n,o,e.defaultClose)
-    t=t or e
+  if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_MURDER_INFECTORS then
+    this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,1)
+    TppQuest.StartElapsedEvent(3)
   end
-  if e.flag then
-    for s,a in pairs(e.flag)do
-      local e=r(a,storySequenceIndex,n,o,e.defaultClose)
-      t=t or e
-    end
+  if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_AFTER_MURDER_INFECTORS_ONE_MISSION then
+    this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,1)
+    TppQuest.StartElapsedEvent(3)
   end
-  if e.sub then
-    for s,a in pairs(e.sub)do
-      local e=r(a,storySequenceIndex,n,o,e.defaultClose)
-      t=t or e
-    end
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
+    gvars.qst_questOpenFlag[TppDefine.QUEST_INDEX.sovietBase_q99030]=true
+    gvars.qst_questOpenFlag[TppDefine.QUEST_INDEX.tent_q99040]=true
   end
-  if t then
-    gvars.str_storySequence=storySequenceIndex
-    break
-  end
-end
-local n=TppResult.CalcMissionClearHistorySize()
-TppResult.SetMissionClearHistorySize(n)
-if gvars.str_storySequence>TppDefine.STORY_SEQUENCE.CLEARD_RECUE_MILLER then
-  TppVarInit.SetHorseObtainedAndCanSortie()
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_AFTER_FIND_THE_SECRET_WEAPON then
-  this.MissionOpen(10050)
-  this.UpdateMissionCleardFlag(10050)
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_RESCUE_HUEY then
-  this.MissionOpen(10070)
-  this.UpdateMissionCleardFlag(10070)
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_CAPTURE_THE_WEAPON_DEALER then
-  this.MissionOpen(10115)
-  this.UpdateMissionCleardFlag(10115)
-  TppMotherBaseManagement.SetFobSvars{fob="Fob1",got=true,oceanAreaId=2,topologyType=10,color="Orange"}
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_BEFORE_ENDRESS_PROXY_WAR then
-  this.MissionOpen(11050)
-  this.UpdateMissionCleardFlag(11050)
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_MURDER_INFECTORS then
-  this.MissionOpen(10240)
-  this.UpdateMissionCleardFlag(10240)
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_THE_TRUTH then
-  local n={11080,11121,11130,11044,11151,10260,10280}
-  if TppGameSequence.GetSpecialVersionName()=="e3_2015"then
-    n={11080,11121,11130,11044,11151,10260}
-  end
-  for t,n in ipairs(n)do
-    this.MissionOpen(n)
-    this.UpdateMissionCleardFlag(n)
-  end
-  if TppQuest.QAReleaseFullOpen then
-    TppQuest.QAReleaseFullOpen()
-  end
-end
-if TppTerminal.PandemicTutorialStoryCondition()then
-  TppTerminal.FinishPandemicTutorial()
-  TppTerminal.StartPandemicEvent()
-end
-if TppTerminal.CheckPandemicEventFinish()then
-  TppTerminal.FinishPandemicTutorial()
-  TppTerminal.FinishPandemicEvent()
-end
-if this.IsAlwaysOpenRetakeThePlatform()then
-  TppUiCommand.SetMission10115Emergency(false)
-else
-  TppUiCommand.SetMission10115Emergency(true)
-end
-if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
-  this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,2)
-  TppQuest.StartElapsedEvent(1)
-end
-if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_RETRIEVE_VOLGIN then
-  this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,2)
-  TppQuest.StartElapsedEvent(1)
-end
-if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_MURDER_INFECTORS then
-  this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,1)
-  TppQuest.StartElapsedEvent(3)
-end
-if gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_AFTER_MURDER_INFECTORS_ONE_MISSION then
-  this.StartElapsedMissionEvent(TppDefine.ELAPSED_MISSION_EVENT.STORY_SEQUENCE,1)
-  TppQuest.StartElapsedEvent(3)
-end
-if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO then
-  gvars.qst_questOpenFlag[TppDefine.QUEST_INDEX.sovietBase_q99030]=true
-  gvars.qst_questOpenFlag[TppDefine.QUEST_INDEX.tent_q99040]=true
-end
-TppTerminal.OnEstablishMissionClear()
-TppRanking.UpdateOpenRanking()
+  TppTerminal.OnEstablishMissionClear()
+  TppRanking.UpdateOpenRanking()
 end
 function this.DecreaseElapsedMissionClearCount()
   for n=0,TppDefine.ELAPSED_MISSION_COUNT_MAX-1 do

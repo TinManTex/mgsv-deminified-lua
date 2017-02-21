@@ -200,14 +200,14 @@ function this.Init(missionTable)
   end
 end
 function this.SetDefaultTakeOffTime()
-  local e=this.GetSupportHeliGameObjectId()
-  if(e==nil)then
+  local heliId=this.GetSupportHeliGameObjectId()
+  if(heliId==nil)then
     return
   end
-  if e==NULL_ID then
+  if heliId==NULL_ID then
     return
   end
-  GameObject.SendCommand(e,{id="SetTakeOffWaitTime",time=5})
+  GameObject.SendCommand(heliId,{id="SetTakeOffWaitTime",time=5})
 end
 function this.SetNoTakeOffTime()
   local heliId=this.GetSupportHeliGameObjectId()

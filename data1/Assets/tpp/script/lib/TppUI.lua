@@ -742,17 +742,17 @@ function this.HideTextureLogo()
   TppUiCommand.HideTextureLogo()
 end
 function this.ShowCallSupportBuddyAnnounceLog()
-  local n=this.BUDDY_LANG_ID[mvars.ui_callSupportBuddyType]
-  if n then
-    local i=TppSupportRequest.GetCallBuddyGmpCost(mvars.ui_callSupportBuddyType)
-    this.ShowAnnounceLog("callSupportBuddyReceived",n)
-    TppTerminal.UpdateGMP{gmp=-i,gmpCostType=TppDefine.GMP_COST_TYPE.BUDDY}
-    svars.supportGmpCost=svars.supportGmpCost+i
+  local langId=this.BUDDY_LANG_ID[mvars.ui_callSupportBuddyType]
+  if langId then
+    local gmp=TppSupportRequest.GetCallBuddyGmpCost(mvars.ui_callSupportBuddyType)
+    this.ShowAnnounceLog("callSupportBuddyReceived",langId)
+    TppTerminal.UpdateGMP{gmp=-gmp,gmpCostType=TppDefine.GMP_COST_TYPE.BUDDY}
+    svars.supportGmpCost=svars.supportGmpCost+gmp
     mvars.ui_callSupportBuddyType=nil
   end
 end
-function this.SetSupportCallBuddyType(e)
-  mvars.ui_callSupportBuddyType=e
+function this.SetSupportCallBuddyType(buddyType)
+  mvars.ui_callSupportBuddyType=buddyType
 end
 function this.StartLoadingTips()
   TppUiCommand.StartLoadingTipsCommon()
@@ -1038,7 +1038,8 @@ function this.Init()
   if hasUi then
     TppUiCommand.RegisterSideOpsListFunction("TppQuest","GetSideOpsListTable")
   end
-  TppUiCommand.SetMBMapArrowIcon(false)GameConfig.ApplyAllConfig()
+  TppUiCommand.SetMBMapArrowIcon(false)
+  GameConfig.ApplyAllConfig()
   TppUiCommand.EraseDisplayTimer()
   TppUiCommand.ResetCpNameBaseLangId()
   if TppUiCommand.RegistCpNameBaseLangId and mvars.loc_locationBaseTelop then

@@ -363,6 +363,8 @@ function this._ActivateReinforce()
     table.insert(reinforceSoldiers,driverId)
 --    TppMarker.Enable(vehicleId,0,"moving","all",0,true,false)--tex DEBUG
 --    TppMarker.Enable(driverId,0,"moving","all",0,true,false)--tex DEBUG
+
+
   end
   if hasHeli then
 --    InfMenu.DebugPrint("_ActivateReinforce hasheli")--DEBUG

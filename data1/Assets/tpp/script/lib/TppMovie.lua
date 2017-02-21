@@ -5,20 +5,20 @@ local IsTypeTable=Tpp.IsTypeTable
 local IsTypeString=Tpp.IsTypeString
 this.CallbackFunctionTable={}
 function this.Play(demoFlags)
-  local a
+  local targetSuffix
   if TppGameSequence.GetTargetArea()=="Japan"then
-    a="_jp"
+    targetSuffix="_jp"
     else
-    a="_en"
+    targetSuffix="_en"
     end
   if not IsTypeTable(demoFlags)then
     return
   end
-  local o=demoFlags.videoName
-  if not IsTypeString(o)then
+  local videoName=demoFlags.videoName
+  if not IsTypeString(videoName)then
     return
   end
-  o=o..a
+  videoName=videoName..targetSuffix
   local subTitleName=demoFlags.subtitleName or""
   local a=false
   if demoFlags.isLoop then
@@ -36,12 +36,12 @@ function this.Play(demoFlags)
       return
     end
   end
-  local t=demoFlags.memoryPool
-  if not t then
+  local memoryPool=demoFlags.memoryPool
+  if not memoryPool then
   end
-  local n=StrCode32(o)
-  this.CallbackFunctionTable[n]={videoName=o,onStart=onStart,onEnd=onEnd}
-  local o=TppVideoPlayer.LoadVideo{VideoName=o,SubtitleName=subTitleName,MemoryPool=t}
+  local n=StrCode32(videoName)
+  this.CallbackFunctionTable[n]={videoName=videoName,onStart=onStart,onEnd=onEnd}
+  local o=TppVideoPlayer.LoadVideo{VideoName=videoName,SubtitleName=subTitleName,MemoryPool=memoryPool}
   if not o then
     TppVideoPlayer.PlayVideo()
   else
@@ -60,22 +60,23 @@ function this.CommonDoMessage.onStart()
   end
   exceptGameStatus.PauseMenu=nil
   TppUI.FadeIn(TppUI.FADE_SPEED.FADE_MOMENT,"FadeInForMovieStart",nil,{exceptGameStatus=exceptGameStatus})
-  TppUiStatusManager.ClearStatus"PauseMenu"Player.SetPause()
+  TppUiStatusManager.ClearStatus"PauseMenu"
+  Player.SetPause()
 end
 function this.CommonDoMessage.onEnd()
   TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT)
   Player.UnsetPause()
 end
-function this.DoMessage(n,o)
-  local n=this.CallbackFunctionTable[n]
-  if not n then
+function this.DoMessage(n,functionName)
+  local functionTable=this.CallbackFunctionTable[n]
+  if not functionTable then
     return
   end
-  local a=n.videoName
-  this.CommonDoMessage[o]()
-  local e=n[o]
-  if e then
-    e()
+  local videoName=functionTable.videoName
+  this.CommonDoMessage[functionName]()
+  local Func=functionTable[functionName]
+  if Func then
+    Func()
   end
 end
 return this

@@ -677,7 +677,7 @@ function this._SetUpRevengeMine()
         --        end
         for i,locatorName in ipairs(mineLocatorList)do
           TppPlaced.SetEnableByLocatorName(locatorName,enable)
-        end
+      end
       end
       --NMC I don't understand why the double pass for _EnableDecoy
       local decoyLocatorList=mineField.decoyLocatorList
@@ -693,7 +693,7 @@ function this._SetUpRevengeMine()
         --        --ORPHAN if enable then
         --          RENsomeBool=false
         --        end
-      end
+  end
     end
   end
 end
@@ -1309,6 +1309,7 @@ function this._CreateRevengeConfig(revengeTypes)
   local doCustom=Ivars.IsForMission("revengeMode","CUSTOM")
   if doCustom then
     revengeConfig=InfRevenge.CreateCustomRevengeConfig()
+    
     for powerType,setting in pairs(revengeConfig)do
       mvars.ene_missionRequiresPowerSettings[powerType]=setting
     end
@@ -1345,7 +1346,7 @@ function this._CreateRevengeConfig(revengeTypes)
   if Tpp.IsTypeNumber(revengeConfig.ARMOR)and not this.CanUseArmor() then
     if not disablePowerSettings.SHIELD then
       local shieldCount=revengeConfig.SHIELD or 0
-      if Ivars.disableConvertArmorToShield:Is(0) or shieldCount==0 then--tex added disable/0 check
+      if Ivars.disableConvertArmorToShield:Is(0) then--DEBUGNOW or shieldCount==0 then--tex added disable/0 check
         if Tpp.IsTypeNumber(shieldCount)then
           revengeConfig.SHIELD=shieldCount+revengeConfig.ARMOR
       end
@@ -1973,13 +1974,13 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   --    InfMenu.DebugPrint(instr)
   --  end--<
 
-  --tex fix issues with RADIO body
+  --tex fix issues with RADIO body>
   local applyPowersToLrrp=Ivars.applyPowersToLrrp:Is()>0
-  local vehiclePatrols=Ivars.vehiclePatrolProfile:Is()>0 and vars.missionCode==30010 or vars.missionCode==30020--tex
+  local isVehiclePatrols=Ivars.vehiclePatrolProfile:Is()>0 and Ivars.vehiclePatrolProfile:MissionCheck()
   for soldierConfigId,soldierConfig in ipairs(cpConfig)do
     local soldierId=soldierIdForConfigIdTable[soldierConfigId]
     local addRadio=false
-    if isLrrpVehicleCp and vehiclePatrols then
+    if isLrrpVehicleCp and isVehiclePatrols then
       local vehicleInfo=mvars.inf_patrolVehicleInfo[isLrrpVehicleCp]
       if vehicleInfo then
         local baseTypeInfo=InfVehicle.vehicleBaseTypes[vehicleInfo.baseType]

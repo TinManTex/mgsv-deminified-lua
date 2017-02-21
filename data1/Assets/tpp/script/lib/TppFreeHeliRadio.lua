@@ -246,7 +246,8 @@ function this.TryPandemicStart()
   local i=TppMission.IsHelicopterSpace(vars.missionCode)
   local o=TppMission.IsFreeMission(vars.missionCode)
   if not TppMotherBaseManagement.IsPandemicEventMode()then
-    TppTerminal.StartPandemicEvent()n=true
+    TppTerminal.StartPandemicEvent()
+    n=true
   end
   if TppMotherBaseManagement.IsPandemicEventMode()then
     if not TppRadio.IsPlayed"f2000_rtrg9010"then

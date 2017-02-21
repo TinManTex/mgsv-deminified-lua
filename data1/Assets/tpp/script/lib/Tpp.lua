@@ -89,6 +89,7 @@ this.requires={
   "/Assets/tpp/script/lib/InfMain.lua",
   "/Assets/tpp/script/lib/InfMenuCommands.lua",
   "/Assets/tpp/script/lib/InfMenuDefs.lua",
+  "/Assets/tpp/script/lib/InfQuickMenuDefs.lua",
   "/Assets/tpp/script/lib/InfMenu.lua",
   "/Assets/tpp/script/lib/InfEneFova.lua",
   "/Assets/tpp/script/lib/InfEquip.lua",
@@ -111,6 +112,8 @@ this.requires={
   "/Assets/tpp/script/lib/InfFova.lua",
   "/Assets/tpp/script/lib/InfLZ.lua",
   "/Assets/tpp/script/lib/InfGameEvent.lua",
+  "/Assets/tpp/script/lib/InfParasite.lua",
+  "/Assets/tpp/script/lib/InfBuddy.lua",
   "/Assets/tpp/script/lib/InfHooks.lua",--<
 }
 function this.IsTypeFunc(e)
@@ -719,7 +722,8 @@ function this.ShowChunkInstallingPopup(t,l)
   end
   TppUiCommand.ShowErrorPopup(TppDefine.ERROR_ID.NOW_INSTALLING,e)
 end
-function this.ClearChunkInstallPopupUpdateTime()n=0
+function this.ClearChunkInstallPopupUpdateTime()
+  n=0
 end
 function this.GetFormatedStorageSizePopupParam(t)
   local n=1024

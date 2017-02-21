@@ -2232,9 +2232,9 @@ function this.IgnoreAlertOutOfMissionAreaForBossQuiet(e)
   end
 end
 function this.EnableAlertOutOfMissionArea()
-  local e=false
+  local ignoreAlert=false
   if mvars.mis_ignoreAlertOfMissionArea==true then
-    e=true
+    ignoreAlert=true
   end
   if svars.mis_canMissionClear then
     return
@@ -2246,7 +2246,7 @@ function this.EnableAlertOutOfMissionArea()
     mvars.mis_enableAlertOutOfMissionArea=true
     TppUI.ShowAnnounceLog"closeOutOfMissionArea"
     TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.OUTSIDE_MISSION_AREA)
-    if not e then
+    if not ignoreAlert then
       TppTerminal.PlayTerminalVoice("VOICE_WARN_MISSION_AREA",true,1)
       TppOutOfMissionRangeEffect.Enable(3)
     end
@@ -2270,8 +2270,8 @@ function this.ExitHotZone()
 end
 function this.PlayCommonRadioOnInsideOfHotZone()
   if svars.mis_canMissionClear then
-    local e=not IsHelicopter(vars.playerVehicleGameObjectId)
-    if e then
+    local notInHeli=not IsHelicopter(vars.playerVehicleGameObjectId)
+    if notInHeli then
       TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.RETURN_HOTZONE)
     end
   end

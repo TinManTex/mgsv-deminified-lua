@@ -648,6 +648,11 @@ function this.AcquireGzPrivilegeKeyItem()
   for t,a in pairs(t)do
     this.AcquireGzPrivilege(t,n)
   end
+  --RETAILPATCH 1.10>
+  if TppMotherBaseManagement.IsGotDataBase{dataBaseId=MBMConst.EXTRA_4011}then
+    TppMotherBaseManagement.DirectAddDataBase{dataBaseId=MBMConst.EXTRA_6000,isNew=false}
+  end
+  --<
 end
 function this.AcquireDlcItemKeyItem()
   local dlcList={
@@ -672,7 +677,8 @@ function this.AcquireDlcItemKeyItem()
     SUIT_THE_BOSS=MBMConst.EXTRA_4026,
     SUIT_EVA=MBMConst.EXTRA_4027,
     HORSE_WESTERN=MBMConst.EXTRA_4028,
-    HORSE_PARADE=MBMConst.EXTRA_4009
+    HORSE_PARADE=MBMConst.EXTRA_4009,
+    ARM_GOLD=MBMConst.EXTRA_6000,--RETAILPATCH 1.10 added
   }
   local function funcAdd(n,e)
     local dataBaseId=dlcList[e]
@@ -1444,10 +1450,10 @@ function this.AddAnimalRecoverHistory(t)
   end
 end
 function this.OnFultonBossQuiet(t,t,t,t)
-  local command=SendCommand({type="TppBossQuiet2"},{id="GetQuietType"})
-  local reourceId=this.parasiteSquadFultonResouceId[command]
-  if reourceId then
-    this._OnFultonParasiteSquad(reourceId)
+  local quietType=SendCommand({type="TppBossQuiet2"},{id="GetQuietType"})
+  local resourceId=this.parasiteSquadFultonResouceId[quietType]
+  if resourceId then
+    this._OnFultonParasiteSquad(resourceId)
   end
 end
 function this.OnFultonParasiteSquad(gameId,n,n,n)
@@ -1481,8 +1487,8 @@ function this.OnRecoverByHelicopter()
 end
 function this.OnRecoverByHelicopterOnCheckPoint()
   TppHelicopter.SetNewestPassengerTable()
-  local t=TppHelicopter.GetPassengerlist()
-  if t then
+  local passengerList=TppHelicopter.GetPassengerlist()
+  if passengerList then
     TppHelicopter.ForcePullOut()
   end
   this.OnRecoverByHelicopterAlreadyGetPassengerList()
@@ -1805,16 +1811,16 @@ end
 function this.StartChangeDayTerminalAnnounce()
   mvars.trm_stopChangeDayTerminalAnnounce=nil
 end
-function this.TerminalVoiceWeatherForecast(n)
-  local t={[TppDefine.WEATHER.SUNNY]="VOICE_WEATHER_CLAER",[TppDefine.WEATHER.CLOUDY]=nil,[TppDefine.WEATHER.RAINY]=nil,[TppDefine.WEATHER.SANDSTORM]="VOICE_WEATHER_SANDSTORM",[TppDefine.WEATHER.FOGGY]=nil}
-  local a={[TppDefine.WEATHER.SUNNY]="weather_sunny",[TppDefine.WEATHER.CLOUDY]="weather_cloudy",[TppDefine.WEATHER.RAINY]="weather_rainy",[TppDefine.WEATHER.SANDSTORM]="weather_sandstorm",[TppDefine.WEATHER.FOGGY]="weather_foggy"}
-  local t=t[n]
-  local n=a[n]
-  if t then
-    this.PlayTerminalVoice(t)
+function this.TerminalVoiceWeatherForecast(weatherType)
+  local weatherVoices={[TppDefine.WEATHER.SUNNY]="VOICE_WEATHER_CLAER",[TppDefine.WEATHER.CLOUDY]=nil,[TppDefine.WEATHER.RAINY]=nil,[TppDefine.WEATHER.SANDSTORM]="VOICE_WEATHER_SANDSTORM",[TppDefine.WEATHER.FOGGY]=nil}
+  local weatherAnnounces={[TppDefine.WEATHER.SUNNY]="weather_sunny",[TppDefine.WEATHER.CLOUDY]="weather_cloudy",[TppDefine.WEATHER.RAINY]="weather_rainy",[TppDefine.WEATHER.SANDSTORM]="weather_sandstorm",[TppDefine.WEATHER.FOGGY]="weather_foggy"}
+  local weatherVoice=weatherVoices[weatherType]
+  local weatherAnnounce=weatherAnnounces[weatherType]
+  if weatherVoice then
+    this.PlayTerminalVoice(weatherVoice)
   end
-  if n then
-    TppUI.ShowAnnounceLog(n)
+  if weatherAnnounce then
+    TppUI.ShowAnnounceLog(weatherAnnounce)
   end
 end
 function this.TerminalVoiceOnSunSet()
@@ -2403,14 +2409,14 @@ function this.PickUpEmblem(e)
   end
   TppEmblem.Add(e,false,true)
 end
-function this.EnableTerminalVoice(e)
-  mvars.trm_voiceDisabled=not e
+function this.EnableTerminalVoice(enable)
+  mvars.trm_voiceDisabled=not enable
 end
-function this.PlayTerminalVoice(n,e,t)
+function this.PlayTerminalVoice(voiceName,e,t)
   if mvars.trm_voiceDisabled and e~=false then
     return
   end
-  TppUiCommand.RequestMbSoundControllerVoice(n,e,t)
+  TppUiCommand.RequestMbSoundControllerVoice(voiceName,e,t)
 end
 function this.OnFultonFailedEnd(e,t,n,a)
   mvars.trm_fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo or{}

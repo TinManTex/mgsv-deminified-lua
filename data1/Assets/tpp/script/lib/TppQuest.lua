@@ -1376,7 +1376,7 @@ function this.Clear(questName)
     end
   end
 end
-function this.GoToMBAfterClear(e)
+function this.GoToMBAfterClear(questName)
   if not Tpp.IsNotAlert()then
     return
   end
@@ -1386,11 +1386,11 @@ function this.GoToMBAfterClear(e)
   if vars.missionCode==30050 then
     return
   end
-  local forceDemoName=TppStory.GetForceMBDemoNameOrRadioList("clearSideOpsForceMBDemo",{clearSideOpsName=e})
+  local forceDemoName=TppStory.GetForceMBDemoNameOrRadioList("clearSideOpsForceMBDemo",{clearSideOpsName=questName})
   if forceDemoName then
     TppMission.ReserveMissionClear{nextMissionId=TppDefine.SYS_MISSION_ID.MTBS_FREE,missionClearType=TppDefine.MISSION_CLEAR_TYPE.FORCE_GO_TO_MB_ON_SIDE_OPS_CLEAR}
     TppDemo.SetNextMBDemo(forceDemoName)
-    mvars.qst_currentClearQuestName=e
+    mvars.qst_currentClearQuestName=questName
   end
 end
 function this.Failure(questName)
@@ -1426,10 +1426,10 @@ function this.Update(currentQuestName)
   if questIndex==nil then
     return
   end
-  local targetWithMessageCount,targetWithMessageCount=TppEnemy.GetQuestCount()
+  local targetWithMessageCount,targetCount=TppEnemy.GetQuestCount()
   local questMarkCount,questMarkTotalCount=TppGimmick.GetQuestShootingPracticeCount()
   if targetWithMessageCount>0 and targetWithMessageCount>1 then
-    this.ShowAnnounceLog(QUEST_STATUS_TYPES.UPDATE,currentQuestName,targetWithMessageCount,targetWithMessageCount)
+    this.ShowAnnounceLog(QUEST_STATUS_TYPES.UPDATE,currentQuestName,targetWithMessageCount,targetCount)
   elseif questMarkCount>0 and questMarkTotalCount>1 then
     this.UpdateShootingPracticeUi()
     this.ShowAnnounceLog(QUEST_STATUS_TYPES.UPDATE,currentQuestName,questMarkCount,questMarkTotalCount)
@@ -1756,21 +1756,22 @@ function this.DEBUG_Init()
 end
 function this.DebugUpdate()
   local mvars=mvars
-  local a=(nil).Print
-  local t=(nil).NewContext()
+  local Print=(nil).Print
+  local NewContext=(nil).NewContext()
   if mvars.debug.showCurrentQuest then
-    a(t,"")a(t,{.5,.5,1},"LuaQuest showCurrentQuest")
-    a(t,"Current Area Name : "..tostring(this.GetCurrentAreaName()))
-    a(t,"Current Quest Name : "..tostring(this.GetCurrentQuestName()))
+    Print(NewContext,"")
+    Print(NewContext,{.5,.5,1},"LuaQuest showCurrentQuest")
+    Print(NewContext,"Current Area Name : "..tostring(this.GetCurrentAreaName()))
+    Print(NewContext,"Current Quest Name : "..tostring(this.GetCurrentQuestName()))
     local i=this.GetQuestBlockState()
     local scriptBlockStateNames={}
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_EMPTY]="EMPTY"
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_PROCESSING]="PROCESSING"
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE]="INACTIVE"
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE]="ACTIVE"
-    a(t,"Quest block state : "..tostring(scriptBlockStateNames[i]))
-    a(t,"gvars.qst_currentQuestName : "..tostring(gvars.qst_currentQuestName))
-    a(t,"gvars.qst_currentQuestStepNumber : "..tostring(gvars.qst_currentQuestStepNumber))
+    Print(NewContext,"Quest block state : "..tostring(scriptBlockStateNames[i]))
+    Print(NewContext,"gvars.qst_currentQuestName : "..tostring(gvars.qst_currentQuestName))
+    Print(NewContext,"gvars.qst_currentQuestStepNumber : "..tostring(gvars.qst_currentQuestStepNumber))
     do
       local o={0,1,0}
       local r={1,0,0}
@@ -1781,24 +1782,24 @@ function this.DebugUpdate()
         s="No register quest step table! Please Check quest script!"
         o=r
       end
-      a(t,o,"scriptStatus : "..s)
+      Print(NewContext,o,"scriptStatus : "..s)
     end
   end
   if mvars.debug.showQuestStatus then
-    a(t,"")
-    a(t,{.5,.5,1},"LuaQuest showQuestStatus")
+    Print(NewContext,"")
+    Print(NewContext,{.5,.5,1},"LuaQuest showQuestStatus")
     local s=mvars.debug.selectQuest
     local o=mvars.debug.selectQuestIndex
     if s>0 and o>0 then
       local s=mvars.qst_questList[s]
       if s then
-        a(t,string.format("AreaName = %s",s.areaName))
+        Print(NewContext,string.format("AreaName = %s",s.areaName))
         local n=s.infoList[o]
         if n then
-          a(t,string.format("name = %s",n.name))
-          a(t,string.format("invokeStepName = %s",n.invokeStepName))
+          Print(NewContext,string.format("name = %s",n.name))
+          Print(NewContext,string.format("invokeStepName = %s",n.invokeStepName))
           if n.clusterName then
-            DebutTextPrint(t,string.format("clusterName  =%s",n.clusterName))
+            DebutTextPrint(NewContext,string.format("clusterName  =%s",n.clusterName))
           else
             local function a(t,n,e)
               local a=(nil).Print
@@ -1809,25 +1810,26 @@ function this.DebugUpdate()
               local n=e[n]
               local e=s[n]
               if e then
-                a(t,n,e)
+                a(NewContext,n,e)
               end
             end
           end
-          a(t,"IsOpen : "..tostring(this.IsOpen(n.name)))
-          a(t,"IsCleard : "..tostring(this.IsCleard(n.name)))
-          a(t,"IsRepop : "..tostring(this.IsRepop(n.name)))
-          a(t,"IsActive : "..tostring(this.IsActive(n.name)))
+          Print(NewContext,"IsOpen : "..tostring(this.IsOpen(n.name)))
+          Print(NewContext,"IsCleard : "..tostring(this.IsCleard(n.name)))
+          Print(NewContext,"IsRepop : "..tostring(this.IsRepop(n.name)))
+          Print(NewContext,"IsActive : "..tostring(this.IsActive(n.name)))
         else
-          a(t,"No define quest. index: "..tostring(o))
+          Print(NewContext,"No define quest. index: "..tostring(o))
         end
       end
     end
   end
   if mvars.debug.showHistoryQuestStep then
-    a(t,"")a(t,{.5,.5,1},"LuaQuest historyQuestStep")
+    Print(NewContext,"")
+    Print(NewContext,{.5,.5,1},"LuaQuest historyQuestStep")
     local e=#mvars.debug.historyQuestStep
     for e=1,e do
-      a(t,string.format("%03d: %s",e,mvars.debug.historyQuestStep[e]))
+      Print(NewContext,string.format("%03d: %s",e,mvars.debug.historyQuestStep[e]))
     end
   end
   if mvars.debug.updateActiveQuest then
@@ -1856,7 +1858,7 @@ function this.DebugUpdate()
             end
           end
         else
-          a(t,"No define quest. index: "..tostring(s))
+          Print(NewContext,"No define quest. index: "..tostring(s))
         end
       end
     end
@@ -2836,7 +2838,7 @@ function this.GetClearCassette(questName)
     TppCassette.Acquire{cassetteList={"tp_m_10150_21","tp_m_10150_22","tp_m_10150_24","tp_m_10150_25"},isShowAnnounceLog=true}
   end
 end
-function this.ShowAnnounceLog(status,questName,u,l)
+function this.ShowAnnounceLog(status,questName,questCurrentCount,questTotalCount)
   if not status then
     return
   end
@@ -2847,8 +2849,8 @@ function this.ShowAnnounceLog(status,questName,u,l)
     if not questName then
       return
     end
-    local a=this.GetQuestNameLangId(questName)
-    if a~=false then
+    local questNameLangId=this.GetQuestNameLangId(questName)
+    if questNameLangId~=false then
       local showAnnounceLogId=questCompleteLangIds[questName]
       local targetWithMessageCount,targetCount=TppEnemy.GetQuestCount()
       local questMarkCount,questMarkTotalCount=TppGimmick.GetQuestShootingPracticeCount()
@@ -2860,10 +2862,10 @@ function this.ShowAnnounceLog(status,questName,u,l)
         end
       end
       TppUI.ShowAnnounceLog"quest_list_update"
-      TppUI.ShowAnnounceLog("quest_complete",a)
-      local e=this.GetQuestNameId(questName)
-      if(e~=false)and(e~="q99012")then
-        TppUiCommand.ShowSideFobInfo("end",string.format("name_%s",e),"hud_quest_finish")
+      TppUI.ShowAnnounceLog("quest_complete",questNameLangId)
+      local questNameId=this.GetQuestNameId(questName)
+      if(questNameId~=false)and(questNameId~="q99012")then
+        TppUiCommand.ShowSideFobInfo("end",string.format("name_%s",questNameId),"hud_quest_finish")
         TppSoundDaemon.PostEvent"sfx_s_sideops_sted"
       end
     end
@@ -2871,10 +2873,10 @@ function this.ShowAnnounceLog(status,questName,u,l)
     if not questName then
       return
     end
-    local e=this.GetQuestNameLangId(questName)
-    if e~=false then
+    local questNameLangId=this.GetQuestNameLangId(questName)
+    if questNameLangId~=false then
       TppUI.ShowAnnounceLog"quest_list_update"
-      TppUI.ShowAnnounceLog("quest_delete",e)
+      TppUI.ShowAnnounceLog("quest_delete",questNameLangId)
     end
   elseif status==QUEST_STATUS_TYPES.UPDATE then
     if not questName then
@@ -2882,7 +2884,7 @@ function this.ShowAnnounceLog(status,questName,u,l)
     end
     local showAnnounceLogId=questCompleteLangIds[questName]
     if showAnnounceLogId then
-      TppUI.ShowAnnounceLog(showAnnounceLogId,u,l)
+      TppUI.ShowAnnounceLog(showAnnounceLogId,questCurrentCount,questTotalCount)
     end
   end
 end

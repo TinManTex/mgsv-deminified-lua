@@ -1,5 +1,5 @@
 --EquipDevelopFlowSetting.lua
---RETAILPATCH 1090 various changes and additions
+--RETAILPATCH 1090,1.10 various changes and additions
 this={}
 TppMotherBaseManagement.RegFlwDev{p50=0,p51=0,p52=1,p53=0,p54=100,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=1,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=0,p73=0,p74=1}
 TppMotherBaseManagement.RegFlwDev{p50=1,p51=0,p52=2,p53=7e4,p54=700,p55=7,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=0,p73=0,p74=1}
@@ -865,5 +865,19 @@ TppMotherBaseManagement.RegFlwDev{p50=860,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,
 TppMotherBaseManagement.RegFlwDev{p50=861,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
 TppMotherBaseManagement.RegFlwDev{p50=862,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
 TppMotherBaseManagement.RegFlwDev{p50=863,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+--RETAILPATCH 1.10>
+TppMotherBaseManagement.RegFlwDev{p50=864,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=865,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=866,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=867,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=868,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=869,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=870,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=871,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=872,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=873,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=874,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+TppMotherBaseManagement.RegFlwDev{p50=875,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1}
+--<RETAILPATCH 1.10
 return this
 

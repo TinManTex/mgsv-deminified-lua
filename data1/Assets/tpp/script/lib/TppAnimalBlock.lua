@@ -148,9 +148,9 @@ function this._GetSetupTable(animalType)
     return nil
   end
 end
-function this._IsNight(e,t,a)
-  local e=(e<a)or(e>=t)
-  return e
+function this._IsNight(currentTime,nightStart,nightEnd)
+  local isNight=(currentTime<nightEnd)or(currentTime>=nightStart)
+  return isNight
 end
 function this._IsNightForAnimalType(animalType,time)
   local timeTable=this.GetDefaultTimeTable(animalType)
@@ -165,40 +165,40 @@ function this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable
   if IsTable(animalSetting)then
     groupNumber=animalSetting.groupNumber or 0
   end
-  local n=animalSetting.nightStartTime
-  if n==nil then
-    n=this.GetDefaultTimeTable(animalType).nightStartTime
+  local nightStartTime=animalSetting.nightStartTime
+  if nightStartTime==nil then
+    nightStartTime=this.GetDefaultTimeTable(animalType).nightStartTime
   end
-  local r=TppClock.ParseTimeString(n,"number")
-  local n=animalSetting.nightEndTime
-  if n==nil then
-    n=this.GetDefaultTimeTable(animalType).nightEndTime
+  local nightStartClockTime=TppClock.ParseTimeString(nightStartTime,"number")
+  local nightEndTime=animalSetting.nightEndTime
+  if nightEndTime==nil then
+    nightEndTime=this.GetDefaultTimeTable(animalType).nightEndTime
   end
-  local c=TppClock.ParseTimeString(n,"number")
-  local time=animalSetting.timeLag
-  if time==nil then
-    time=this.GetDefaultTimeTable(animalType).timeLag
+  local nightEndClockTime=TppClock.ParseTimeString(nightEndTime,"number")
+  local timeLag=animalSetting.timeLag
+  if timeLag==nil then
+    timeLag=this.GetDefaultTimeTable(animalType).timeLag
   end
-  local o=TppClock.ParseTimeString(time,"number")
+  local timeLagClockTime=TppClock.ParseTimeString(timeLag,"number")
   local currentTime=TppClock.GetTime"number"
   local n=0
   if setupTable.isDead==false then
     if setupTable.isHerd==false then
-      for a=0,(groupNumber-1)do
-        n=o*a
-        if this._IsNight(currentTime,r+n,c+n)then
-          this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,a)
+      for animalIndex=0,(groupNumber-1)do
+        n=timeLagClockTime*animalIndex
+        if this._IsNight(currentTime,nightStartClockTime+n,nightEndClockTime+n)then
+          this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,animalIndex)
         else
-          this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,a)
+          this._SetRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,animalIndex)
         end
       end
     else
-      for a=0,(groupNumber-1)do
-        n=o*a
-        if this._IsNight(currentTime,r+n,c+n)then
-          this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,a)
+      for animalIndex=0,(groupNumber-1)do
+        n=timeLagClockTime*animalIndex
+        if this._IsNight(currentTime,nightStartClockTime+n,nightEndClockTime+n)then
+          this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.nightRouteFormat,animalIndex)
         else
-          this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,a)
+          this._SetHerdRoute(setupTable.type,setupTable.locatorFormat,setupTable.routeFormat,animalIndex)
         end
       end
     end
@@ -206,23 +206,23 @@ function this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable
     this._ChangeDeadState(setupTable.type,animalSetting.position,animalSetting.degRotationY)
   end
 end
-function this._SetHerdRoute(type,a,n,t)
+function this._SetHerdRoute(type,locatorFormat,routeFormat,groupIndex)
   local herdId={type=type,index=0}
   if herdId==NULL_ID then
     return
   end
-  local name=string.format(a,t)
-  local route=string.format(n,t)
+  local name=string.format(locatorFormat,groupIndex)
+  local route=string.format(routeFormat,groupIndex)
   local command={id="SetHerdEnabledCommand",type="Route",name=name,instanceIndex=0,route=route}
   GameObject.SendCommand(herdId,command)
 end
-function this._SetRoute(type,a,n,t)
+function this._SetRoute(type,locatorFormat,routeFormat,animalIndex)
   local herdId={type=type,index=0}
   if herdId==NULL_ID then
     return
   end
-  local name=string.format(a,t)
-  local route=string.format(n,t)
+  local name=string.format(locatorFormat,animalIndex)
+  local route=string.format(routeFormat,animalIndex)
   local command={id="SetRoute",name=name,route=route}
   GameObject.SendCommand(herdId,command)
 end

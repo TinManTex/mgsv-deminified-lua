@@ -89,7 +89,8 @@ function this.OnEndExceptionDialogForSignInUserChange()
   gvars.isLoadedInitMissionOnSignInUserChanged=true
   this.isLoadedInitMissionOnSignInUserChanged=true
   TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,"FadeOutOnEndExceptionDialogForSignInUserChange",nil,{setMute=true})
-  FadeFunction.SetFadeCallEnable(false)SignIn.SetStartupProcessCompleted(false)
+  FadeFunction.SetFadeCallEnable(false)
+  SignIn.SetStartupProcessCompleted(false)
   TppUI.SetFadeColorToBlack()
   StageBlockCurrentPositionSetter.SetEnable(false)
   TppUiCommand.SetLoadIndicatorVisible(true)
@@ -233,7 +234,9 @@ function this.OnEndExceptionDialogForCheckMgoChunkInstallation()
   end
   return this.PROCESS_STATE.FINISH
 end
-function this.CancelMgoInvitation()InvitationManager.ResetAccept()InvitationManager.EnableMessage(true)
+function this.CancelMgoInvitation()
+  InvitationManager.ResetAccept()
+  InvitationManager.EnableMessage(true)
   if Chunk.GetChunkState(Chunk.INDEX_MGO)~=Chunk.STATE_INSTALLED then
     Chunk.SetChunkInstallSpeed(Chunk.INSTALL_SPEED_NORMAL)
   end

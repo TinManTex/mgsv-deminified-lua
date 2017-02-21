@@ -194,9 +194,9 @@ SoundCoreDaemon.SetInterferenceRTPCName("obstruction_rtpc","occlusion_rtpc")
 SoundCoreDaemon.SetDopplerRTPCName"doppler"
 SoundCoreDaemon.SetRearParameter("rear_rtpc",5)
 if TppSoundDaemon then
-  local e=TppSoundDaemon{}
+  local tppSoundDaemon=TppSoundDaemon{}
   if TppSoundEditorDaemon then
-    local e=TppSoundEditorDaemon{}
+    local tppSoundEditorDaemon=TppSoundEditorDaemon{}
   end
 end
 TppRadioCommand.CreateSoundControl()

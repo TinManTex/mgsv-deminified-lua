@@ -393,6 +393,7 @@ this.MISSION_COMMON_PACK={
   DD_SOLDIER_BTRDRS="/Assets/tpp/pack/mission2/common/mis_com_dd_soldier_btdrs.fpk",
   DD_SOLDIER_ARMOR="/Assets/tpp/pack/mission2/common/mis_com_dd_soldier_armor.fpk",
   FOB_HOSTAGE="/Assets/tpp/pack/mission2/common/mis_com_fob_hostage.fpk",
+  DD_SOLDIER_SWIM_SUIT="/Assets/tpp/pack/mission2/common/mis_com_dd_soldier_swim_suit.fpk",--RETAIL: 1.10
   AFGH_DECOY="/Assets/tpp/pack/collectible/decoy/decoy_svs.fpk",
   MAFR_DECOY="/Assets/tpp/pack/collectible/decoy/decoy_pf.fpk",
   MTBS_DECOY="/Assets/tpp/pack/collectible/decoy/decoy_fob.fpk",

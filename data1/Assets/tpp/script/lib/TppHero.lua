@@ -503,8 +503,8 @@ function this.Messages()
         elseif Tpp.IsParasiteSquad(soldierId)then
           this.SetAndAnnounceHeroicOgrePoint(this.DYING_PARASITE,"destroyed_skull","destroyed_skull")
         elseif Tpp.IsBossQuiet(soldierId)then
-          local n=SendCommand({type="TppBossQuiet2"},{id="GetQuietType"})
-          if n==Fox.StrCode32"Cam"then
+          local quietType=SendCommand({type="TppBossQuiet2"},{id="GetQuietType"})
+          if quietType==Fox.StrCode32"Cam"then
             this.SetAndAnnounceHeroicOgrePoint(this.DYING_PARASITE,"destroyed_skull","destroyed_skull")
           end
         end
@@ -592,28 +592,28 @@ function this.DeclareSVars()
   }
 end
 function this.UpdateHero()
-  local n=gvars.isHero
-  local e=TppMotherBaseManagement.GetHeroicPoint()
-  if(e>=vars.mbmHeroThreshold)then
+  local isHero=gvars.isHero
+  local heroicPoints=TppMotherBaseManagement.GetHeroicPoint()
+  if(heroicPoints>=vars.mbmHeroThreshold)then
     gvars.isHero=true
   end
-  if(e<vars.mbmNotHeroThreshold)then
+  if(heroicPoints<vars.mbmNotHeroThreshold)then
     gvars.isHero=false
   end
   if(TppStory.GetCurrentStorySequence()<TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO)then
     gvars.isHero=false
   end
-  if(not n)and gvars.isHero then
+  if(not isHero)and gvars.isHero then
     TppUI.ShowAnnounceLog"get_hero"
   end
-  if n and(not gvars.isHero)then
+  if isHero and(not gvars.isHero)then
     TppUI.ShowAnnounceLog"lost_hero"
   end
   if gvars.isHero then
     TppTrophy.Unlock(46,3e4)
-    local e={"word80","word81","word82","word83","word84","word85","word86","word88","word89","front40","front41"}
-    for n,e in ipairs(e)do
-      TppEmblem.Add(e,true)
+    local emblems={"word80","word81","word82","word83","word84","word85","word86","word88","word89","front40","front41"}
+    for i,emlem in ipairs(emblems)do
+      TppEmblem.Add(emlem,true)
     end
   end
 end

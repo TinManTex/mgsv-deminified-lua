@@ -96,6 +96,7 @@ this.PLAY_REQUEST_START_FUNC={
     mvars.dem_tempPlayerInfo.playerCamoType=vars.playerCamoType
     mvars.dem_tempPlayerInfo.playerFaceId=vars.playerFaceId
     mvars.dem_tempPlayerInfo.playerFaceEquipId=vars.playerFaceEquipId
+    mvars.dem_tempPlayerSuitLevel=Player.GetItemLevel(TppEquip.EQP_SUIT)--RETAILPATCH 1.10
     local forceSnake=true--tex>
     if Ivars.useSoldierForDemos:Is(1) then
       if vars.playerType~=PlayerType.DD_FEMALE or not InfMain.noSkipIsSnakeOnly[demoId] then
@@ -227,6 +228,12 @@ this.FINISH_WAIT_START_FUNC={
     for varName,value in pairs(mvars.dem_tempPlayerInfo)do
       vars[varName]=value
     end
+    --RETAILPATCH 1.10
+    if mvars.dem_tempPlayerSuitLevel then
+      Player.SetItemLevel(TppEquip.EQP_SUIT,mvars.dem_tempPlayerSuitLevel)
+      mvars.dem_tempPlayerSuitLevel=nil
+    end
+    --<
     mvars.dem_tempPlayerInfo=nil
     return true
   end

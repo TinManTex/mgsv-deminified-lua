@@ -9,6 +9,38 @@ local RENlang3=3
 local RENlang4=4
 local RENlang5=5
 local RENlang6=6
+--RETAILPATCH 1.10>
+local securitySwimSuitBodies={
+  female={
+    TppEnemyBodyId.dlf_enef0_def,
+    TppEnemyBodyId.dlf_enef1_def,
+    TppEnemyBodyId.dlf_enef2_def,
+    TppEnemyBodyId.dlf_enef3_def,
+    TppEnemyBodyId.dlf_enef4_def,
+    TppEnemyBodyId.dlf_enef5_def,
+    TppEnemyBodyId.dlf_enef6_def,
+    TppEnemyBodyId.dlf_enef7_def,
+    TppEnemyBodyId.dlf_enef8_def,
+    TppEnemyBodyId.dlf_enef9_def,
+    TppEnemyBodyId.dlf_enef10_def,
+    TppEnemyBodyId.dlf_enef11_def,
+  },
+  male={
+    TppEnemyBodyId.dlf_enem0_def,
+    TppEnemyBodyId.dlf_enem1_def,
+    TppEnemyBodyId.dlf_enem2_def,
+    TppEnemyBodyId.dlf_enem3_def,
+    TppEnemyBodyId.dlf_enem4_def,
+    TppEnemyBodyId.dlf_enem5_def,
+    TppEnemyBodyId.dlf_enem6_def,
+    TppEnemyBodyId.dlf_enem7_def,
+    TppEnemyBodyId.dlf_enem8_def,
+    TppEnemyBodyId.dlf_enem9_def,
+    TppEnemyBodyId.dlf_enem10_def,
+    TppEnemyBodyId.dlf_enem11_def,
+  }
+}
+--<RETAILPATCH 1.10
 local prs2_main0_def_v00PartsAfghan="/Assets/tpp/parts/chara/prs/prs2_main0_def_v00.parts"
 local prs5_main0_def_v00PartsAfrica="/Assets/tpp/parts/chara/prs/prs5_main0_def_v00.parts"
 local prs3_main0_def_v00PartsAfghanFree="/Assets/tpp/parts/chara/prs/prs3_main0_def_v00.parts"
@@ -824,7 +856,7 @@ function fovaSetupFuncs.Mb(n,missionId)
 
   --tex> ddsuit SetDefaultPartsPath
   if InfMain.IsDDBodyEquip(missionId) then
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo()
+    local bodyInfo=InfEneFova.GetMaleDDBodyInfo()
     if bodyInfo and bodyInfo.partsPath then
       TppSoldier2.SetDefaultPartsPath(bodyInfo.partsPath)
     end
@@ -923,6 +955,11 @@ function fovaSetupFuncs.Mb(n,missionId)
         {TppEnemyFaceId.dds_balaclava15,MAX_REALIZED_COUNT,MAX_REALIZED_COUNT,0}
       }
     end
+    --RETAILPATCH 1.10
+    if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
+      TppSoldier2.SetDefaultPartsPath"/Assets/tpp/parts/chara/dlf/dlf1_enem0_def_v00.parts"
+    end
+    --<
     for a,e in ipairs(balaclavas)do
       table.insert(faces,e)
     end
@@ -988,10 +1025,10 @@ function fovaSetupFuncs.Mb(n,missionId)
   local bodies={}
   --tex> ddsuit bodies
   if InfMain.IsDDBodyEquip(missionId) then
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo()
+    local bodyInfo=InfEneFova.GetMaleDDBodyInfo()
     if bodyInfo then
-      if bodyInfo.maleBodyId then
-        this.SetupBodies(bodyInfo.maleBodyId,bodies)
+      if bodyInfo.bodyId then
+        this.SetupBodies(bodyInfo.bodyId,bodies)
       end
       if bodyInfo.soldierSubType then
         local bodyIdTable=TppEnemy.bodyIdTable[bodyInfo.soldierSubType]
@@ -1003,10 +1040,10 @@ function fovaSetupFuncs.Mb(n,missionId)
       end
     end
 
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo(true)--tex female
+    local bodyInfo=InfEneFova.GetFemaleDDBodyInfo()
     if bodyInfo then
-      if bodyInfo.femaleBodyId then
-        this.SetupBodies(bodyInfo.femaleBodyId,bodies)
+      if bodyInfo.bodyId then
+        this.SetupBodies(bodyInfo.bodyId,bodies)
       end
       if bodyInfo.soldierSubType then
         local bodyIdTable=TppEnemy.bodyIdTable[bodyInfo.soldierSubType]
@@ -1028,6 +1065,12 @@ function fovaSetupFuncs.Mb(n,missionId)
     else
       bodies={{TppEnemyBodyId.dds5_main0_v00,MAX_REALIZED_COUNT},{TppEnemyBodyId.dds6_main0_v00,MAX_REALIZED_COUNT}}
     end
+    --RETAILPATCH 1.10>
+    if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
+      local securitySwimSuitGrade=TppMotherBaseManagement.GetMbsClusterSecuritySwimSuitGrade()
+      bodies={{securitySwimSuitBodies.female[securitySwimSuitGrade],MAX_REALIZED_COUNT},{securitySwimSuitBodies.male[securitySwimSuitGrade],MAX_REALIZED_COUNT}}
+    end
+    --<
   else
     bodies={{TppEnemyBodyId.dds3_main0_v00,MAX_REALIZED_COUNT},{TppEnemyBodyId.dds8_main0_v00,MAX_REALIZED_COUNT}}
   end
@@ -1035,17 +1078,10 @@ function fovaSetupFuncs.Mb(n,missionId)
 
   --tex> dd suit SetExtendPartsInfo
   if InfMain.IsDDBodyEquip(missionId) then
-
-    --tex CULL only female uses extendparts
-    --    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo()
-    --    if bodyInfo then
-    --      if bodyInfo.extendPartsInfo then
-    --        TppSoldier2.SetExtendPartsInfo(bodyInfo.extendPartsInfo)
-    --      end
-    --    end
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo(true)--tex female
-    if bodyInfo and bodyInfo.extendPartsInfo then
-      TppSoldier2.SetExtendPartsInfo(bodyInfo.extendPartsInfo)
+    --tex only female uses extendparts
+    local bodyInfo=InfEneFova.GetFemaleDDBodyInfo()
+    if bodyInfo and bodyInfo.partsPath then
+      TppSoldier2.SetExtendPartsInfo{type=1,path=bodyInfo.partsPath}
     end
     --<
     --not ddogs, shining lights
@@ -1059,6 +1095,11 @@ function fovaSetupFuncs.Mb(n,missionId)
       else
         TppSoldier2.SetExtendPartsInfo{type=1,path="/Assets/tpp/parts/chara/dds/dds6_enef0_def_v00.parts"}
       end
+      --RETAILPATCH 1.10>
+      if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
+        TppSoldier2.SetExtendPartsInfo{type=1,path="/Assets/tpp/parts/chara/dlf/dlf0_enem0_def_f_v00.parts"}
+      end
+      --<
     elseif missionId~=10115 and missionId~=11115 then
       TppSoldier2.SetExtendPartsInfo{type=1,path="/Assets/tpp/parts/chara/dds/dds8_main0_def_v00.parts"}
     end
@@ -1421,16 +1462,25 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
   if InfMain.IsDDBodyEquip(vars.missionCode) then
 
     local isFemale=IsFemale(faceId)
-    local bodyInfo=InfEneFova.GetCurrentDDBodyInfo(isFemale)
+    local bodyInfo=nil
+    if isFemale then
+      bodyInfo=InfEneFova.GetFemaleDDBodyInfo()
+    else
+      bodyInfo=InfEneFova.GetMaleDDBodyInfo()
+    end
     if bodyInfo then
-      if isFemale and bodyInfo.femaleBodyId then
-        bodyId=bodyInfo.femaleBodyId
-        GameObject.SendCommand(soldierId,{id="UseExtendParts",enabled=true})
-      else
-        bodyId=bodyInfo.maleBodyId
-        GameObject.SendCommand(soldierId,{id="UseExtendParts",enabled=false})
-      end
+      GameObject.SendCommand(soldierId,{id="UseExtendParts",enabled=isFemale})
+      
+      bodyId=bodyInfo.bodyId
       if bodyId and type(bodyId)=="table"then
+        --tex WORKAROUND don't know what's going on here,math.random(#bodyId) is returning same number each time
+        --even though the seed is set and 'run-in' outside the function and this function is called a bunch of times in a loop
+        --so just setting seed here to something that's unique per call
+        math.randomseed(soldierId)
+        math.random()
+        math.random()
+        math.random()
+        
         bodyId=bodyId[math.random(#bodyId)]
       end
 
@@ -1609,7 +1659,16 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
       end
     end
     end--if fob suits/body
-
+    --RETAILPATCH 1.10>
+    if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
+      local securitySwimsuitGrade=TppMotherBaseManagement.GetMbsClusterSecuritySwimSuitGrade()
+      if IsFemale(faceId)then
+        bodyId=securitySwimSuitBodies.female[securitySwimsuitGrade]
+      else
+        bodyId=securitySwimSuitBodies.male[securitySwimsuitGrade]
+      end
+    end
+    --<
     if this.IsUseGasMaskInFOB()and ddSuit~=TppEnemy.FOB_PF_SUIT_ARMOR then
       if IsFemale(faceId)then
         if TppEnemy.IsHelmet(soldierId)then
@@ -1633,7 +1692,7 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
         end
       end
       TppEnemy.AddPowerSetting(soldierId,{"GAS_MASK"})
-    end--if gasmaskfob
+    end
     -- not fob
   else
     if IsFemale(faceId)then

@@ -664,7 +664,9 @@ function this.QAReleaseDebugUpdate()
     end
   end
   if mvars.qaDebug.showOnTaskVersion then
-    Print(newContext,{.5,.5,1},"LuaUI ShowOnlineChallengeTaskVersion")Print(newContext,string.format("   ServerVersion : %d",TppNetworkUtil.GetOnlineChallengeTaskVersion()))Print(newContext,string.format("    LocalVersion : %d",gvars.localOnlineChallengeTaskVersion))
+    Print(newContext,{.5,.5,1},"LuaUI ShowOnlineChallengeTaskVersion")
+    Print(newContext,string.format("   ServerVersion : %d",TppNetworkUtil.GetOnlineChallengeTaskVersion()))
+    Print(newContext,string.format("    LocalVersion : %d",gvars.localOnlineChallengeTaskVersion))
   end
   --<
 end
