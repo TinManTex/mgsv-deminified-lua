@@ -61,18 +61,19 @@ function this.Messages()
           this._RegisterOptionRadio"f2000_oprg0105"
         end
       end},
-      {msg="Unconscious",func=function(i)
+      {msg="Unconscious",func=function(gameId)
         local n="f2000_oprg0210"
-        if(Tpp.IsSoldier(i)and(not mvars.FreeHeliRadio_addOptionRadioCount[n]))and(not TppStory.IsMissionCleard(10040))then
+        if(Tpp.IsSoldier(gameId)and(not mvars.FreeHeliRadio_addOptionRadioCount[n]))and(not TppStory.IsMissionCleard(10040))then
           this._RegisterOptionRadio(n)
         end
       end},
-      {msg="FultonFailed",func=function(i,t,t,n)
-        if Tpp.IsSoldier(i)and n==TppGameObject.FULTON_FAILED_TYPE_ON_FINISHED_RISE then
-          local n="f2000_rtrg1240"if(vars.weather~=TppDefine.WEATHER.SUNNY)and(not TppRadio.IsPlayed(n))then
+      {msg="FultonFailed",func=function(gameId,locatorName,locatorNameUpper,failureType)
+        if Tpp.IsSoldier(gameId)and failureType==TppGameObject.FULTON_FAILED_TYPE_ON_FINISHED_RISE then
+          local n="f2000_rtrg1240"
+          if(vars.weather~=TppDefine.WEATHER.SUNNY)and(not TppRadio.IsPlayed(n))then
             this._PlayRadio(n)
           else
-            local n=SendCommand(i,{id="GetStateFlag"})
+            local n=SendCommand(gameId,{id="GetStateFlag"})
             if(band(n,StateFlag.DYING_LIFE)~=0)and(math.random(1,2)<2)then
               this._PlayRadio"f2000_rtrg0070"
             else
@@ -194,8 +195,10 @@ function this.RegistAnimalOptionalRadio(n)
     return
   end
   if n=="Goat"then
-    mvars.FreeHeliRadio_animalRadioGroup="f2000_oprg0065"elseif n=="Wolf"then
-    mvars.FreeHeliRadio_animalRadioGroup="f2000_oprg0075"end
+    mvars.FreeHeliRadio_animalRadioGroup="f2000_oprg0065"
+  elseif n=="Wolf"then
+    mvars.FreeHeliRadio_animalRadioGroup="f2000_oprg0075"
+  end
   if mvars.FreeHeliRadio_animalRadioGroup then
     this._RegisterOptionRadio(mvars.FreeHeliRadio_animalRadioGroup)
   end

@@ -423,7 +423,8 @@ if SoundCommand then
   local e=SoundCommand{}
 end
 if Editor then
-  Fox.SetActMode"EDIT"end
+  Fox.SetActMode"EDIT"
+end
 if e=="Windows"then
   if GrxLightCapture then
     GrxLightCapture():InitInstance()

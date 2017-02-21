@@ -131,11 +131,11 @@ function this.SetupBodies(bodyIds,bodies)--tex>
 
   if type(bodyIds)=="number"then
     local bodyEntry={bodyIds,MAX_REALIZED_COUNT}
-    table.insert(bodies,bodyEntry)
+    bodies[#bodies+1]=bodyEntry
   elseif type(bodyIds)=="table"then
     for n,bodyId in ipairs(bodyIds)do
       local bodyEntry={bodyId,MAX_REALIZED_COUNT}
-      table.insert(bodies,bodyEntry)
+      bodies[#bodies+1]=bodyEntry
     end
   end
 end--<
@@ -263,12 +263,14 @@ function this.GetArmorTypeTable(missionCode)
   local armorType=missionArmorType[missionCode]
   if armorType~=nil then
     return armorType
-  else--tex>
+  else
+    --tex>
     if InfMain.ForceArmor(missionCode) then
       --tex would like to be soldiersubtypespecific but fova setup isnt that granular
       return {pfArmorTypes.PF_A,pfArmorTypes.PF_B,pfArmorTypes.PF_C}
+    end
+    --<
   end
-  end--<
   return default
 end
 --ORIG
@@ -1132,9 +1134,9 @@ end
 local l_uniqueSettings={}
 local l_uniqueFaceFovas={}
 local l_uniqueBodyFovas={}
-local l_hostageFovas={}
+local l_hostageBodyIds={}
 local numDdHostages=0
-local i=0
+local RENsomeNumber2=0
 local faceIdS10081=0
 local faceIdS10091_0=0
 local faceIdS10091_1=0
@@ -1147,9 +1149,9 @@ function this.InitializeUniqueSetting()
   l_uniqueSettings={}
   l_uniqueFaceFovas={}
   l_uniqueBodyFovas={}
-  l_hostageFovas={}
+  l_hostageBodyIds={}
   numDdHostages=0
-  i=0
+  RENsomeNumber2=0
   faceIdS10081=0
   faceIdS10091_0=0
   faceIdS10091_1=0
@@ -1227,12 +1229,12 @@ function this.GetFaceId_s10091_1()
   return faceIdS10091_1
 end
 function this.GetFaceIdForFemaleHostage(missionCode)
-  local n=RENsomeNumber
+  local RENsomeNumber=RENsomeNumber
   if missionCode==10086 then
-    return 613,n
+    return 613,RENsomeNumber
   end
-  local t=i
-  i=i+1
+  local t=RENsomeNumber2
+  RENsomeNumber2=RENsomeNumber2+1
   local race={}
   table.insert(race,0)
   if TppLocation.IsAfghan()then
@@ -1246,7 +1248,7 @@ function this.GetFaceIdForFemaleHostage(missionCode)
   if TppSoldierFace.GetRandomFaceId~=nil then
     faceId=TppSoldierFace.GetRandomFaceId{race=race,gender=1,useIndex=useIndex}
     if faceId~=EnemyFova.INVALID_FOVA_VALUE then
-      return faceId,n
+      return faceId,RENsomeNumber
     else
       local faceGroup=(gvars.hosface_groupNumber+t)%50
       faceId=350+faceGroup
@@ -1255,7 +1257,7 @@ function this.GetFaceIdForFemaleHostage(missionCode)
     local faceGroup=(gvars.hosface_groupNumber+t)%50
     faceId=350+faceGroup
   end
-  return faceId,n
+  return faceId,RENsomeNumber
 end
 function this.GetFaceIdAndFlag(fovaType,faceId)
   local NOT_USED_FOVA_VALUE=EnemyFova.NOT_USED_FOVA_VALUE
@@ -1289,47 +1291,47 @@ function this.RegisterUniqueSetting(uniqueType,name,faceId,bodyId)
     local faceIdx2=2
     local faceIdx3=3
     local faceIdx4=4
-    local face=nil
-    for t,n in ipairs(l_uniqueFaceFovas)do
-      if n[faceFaceIdIdx1]==faceId then
-        face=n
+    local faceFova=nil
+    for i,_faceFova in ipairs(l_uniqueFaceFovas)do
+      if _faceFova[faceFaceIdIdx1]==faceId then
+        faceFova=_faceFova
       end
     end
-    if not face then
-      face={faceId,0,0,0}
-      table.insert(l_uniqueFaceFovas,face)
+    if not faceFova then
+      faceFova={faceId,0,0,0}
+      table.insert(l_uniqueFaceFovas,faceFova)
     end
     if uniqueType=="enemy"then
-      face[faceIdx2]=face[faceIdx2]+1
-      face[faceIdx3]=face[faceIdx3]+1
+      faceFova[faceIdx2]=faceFova[faceIdx2]+1
+      faceFova[faceIdx3]=faceFova[faceIdx3]+1
     elseif uniqueType=="hostage"then
-      face[faceIdx4]=face[faceIdx4]+1
+      faceFova[faceIdx4]=faceFova[faceIdx4]+1
     end
   end
   do
     local bodyIdx1=1
     local bodyIdx2=2
-    local body=nil
-    for t,a in ipairs(l_uniqueBodyFovas)do
-      if a[bodyIdx1]==bodyId then
-        body=a
+    local bodyFova=nil
+    for i,_bodyFova in ipairs(l_uniqueBodyFovas)do
+      if _bodyFova[bodyIdx1]==bodyId then
+        bodyFova=_bodyFova
       end
     end
-    if not body then
-      body={bodyId,0}
-      table.insert(l_uniqueBodyFovas,body)
+    if not bodyFova then
+      bodyFova={bodyId,0}
+      table.insert(l_uniqueBodyFovas,bodyFova)
     end
-    body[bodyIdx2]=body[bodyIdx2]+1
+    bodyFova[bodyIdx2]=bodyFova[bodyIdx2]+1
     if uniqueType=="hostage"then
-      local e=bodyId
-      for t,a in ipairs(l_hostageFovas)do
-        if a==bodyId then
-          e=nil
+      local hostageBodyId=bodyId
+      for i,_bodyId in ipairs(l_hostageBodyIds)do
+        if _bodyId==bodyId then
+          hostageBodyId=nil
           break
         end
       end
-      if e then
-        table.insert(l_hostageFovas,e)
+      if hostageBodyId then
+        table.insert(l_hostageBodyIds,hostageBodyId)
       end
     end
   end
@@ -1341,8 +1343,8 @@ function this.AddUniqueSettingPackage(uniqueSettings)
     end
   end
   TppSoldierFace.OverwriteMissionFovaData{face=l_uniqueFaceFovas,body=l_uniqueBodyFovas,additionalMode=true}
-  if#l_hostageFovas>0 then
-    TppSoldierFace.SetBodyFovaUserType{hostage=l_hostageFovas}
+  if#l_hostageBodyIds>0 then
+    TppSoldierFace.SetBodyFovaUserType{hostage=l_hostageBodyIds}
   end
 end
 function this.AddUniquePackage(uniqueSetting)
@@ -1358,6 +1360,7 @@ function this.AddUniquePackage(uniqueSetting)
   end
 end
 function this.ApplyUniqueSetting()
+  --InfMenu.DebugPrint("#"..#l_uniqueSettings.. " UniqueSettings")--DEBUG
   local NULL_ID=GameObject.NULL_ID
   local NOT_USED_FOVA_VALUE=EnemyFova.NOT_USED_FOVA_VALUE
   if gvars.ene_fovaUniqueTargetIds[0]==NULL_ID then
@@ -1477,7 +1480,7 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
       --if IsDDBodyEquip<
     end
 
-    if Ivars.mbDDHeadGear:Is(0) then    
+    if Ivars.mbDDHeadGear:Is(0) then
       local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
       if powerSettings then
         powerSettings.HELMET=nil
@@ -1681,7 +1684,7 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
   local isNoKillMode=InfMain.GetMbsClusterSecurityIsNoKillMode()--tex was TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
   local uavType=TppUav.DEVELOP_LEVEL_LMG_0
   local setUav=false
-  local isNLUav=false  
+  local isNLUav=false
   local defaultUavType=100--RETAILPATCH 1080, following was 0, now defaultUavType
   local lethalUavType=defaultUavType
   local nonLethalUavType=defaultUavType
@@ -1784,7 +1787,11 @@ function this.GetUavCombatGradeAndEmpLevel(p1,p2,p3,p4)
   if p1<9 then
     return nil,0
   end
-  local d={[9]={4,2},[10]={5,3},[11]={6,4}}
+  local d={
+    [9]={4,2},
+    [10]={5,3},
+    [11]={6,4}
+  }
   local n,e
   if p2 then
     e=2
@@ -1814,4 +1821,7 @@ function this.GetUavCombatGradeAndEmpLevel(p1,p2,p3,p4)
   return e,n
 end
 --<
+function this.GetUniqueSettings()--tex>
+  return l_uniqueSettings
+end--<
 return this

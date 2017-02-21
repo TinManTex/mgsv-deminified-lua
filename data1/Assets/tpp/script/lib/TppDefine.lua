@@ -1,3 +1,4 @@
+-- TppDefine.lua
 local this={}
 local E=bit.bnot
 local E,bor,E=bit.band,bit.bor,bit.bxor
@@ -464,7 +465,7 @@ this.DEFAULT_SOLIDER2_COMMON_PACKAGE=Fox.StrCode32"default"
 this.SOLIDER2_COMMON_PACK_PREREQUISITES={s10150_special={"mission_block"},s10151_special={"mission_block"},s10151_ending={"mission_block"}}
 this.AFR_ARMOR={TYPE_CFA=1,TYPE_ZRS=2,TYPE_RC=3}
 this.QUEST_DEFINE={
-  "waterway_q99010",
+  "waterway_q99010",--quiet fight
   "waterway_q99012",
   "sovietBase_q99020",
   "sovietBase_q99030",

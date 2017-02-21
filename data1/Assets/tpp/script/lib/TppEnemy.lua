@@ -339,12 +339,12 @@ this.weaponIdTable={
   WILDCARD={--tex> dd max grades except for noted
     NORMAL={
       HANDGUN=TppEquip.EQP_WP_West_hg_030,--geist p3 machine pistol grade 4 - shows shotgun icon but clearly isnt,
-      SMG=TppEquip.EQP_WP_West_sm_017,
-      ASSAULT=TppEquip.EQP_WP_West_ar_057,
+      SMG=TppEquip.EQP_WP_West_sm_01b,
+      ASSAULT=TppEquip.EQP_WP_West_ar_05b,
       SNIPER=TppEquip.EQP_WP_EX_sr_000,--molotok-68 grade 9
       SHOTGUN=TppEquip.EQP_WP_Com_sg_018,
-      MG=TppEquip.EQP_WP_West_mg_021,--alm48 flashlight grade 4 --TppEquip.EQP_WP_West_mg_037,
-      MISSILE=TppEquip.EQP_WP_Com_ms_010,
+      MG=TppEquip.EQP_WP_West_mg_03b,--alm48 flashlight grade 4 --TppEquip.EQP_WP_West_mg_037,
+      MISSILE=TppEquip.EQP_WP_Com_ms_02b,
       SHIELD=TppEquip.EQP_SLD_DD_01,
     },
   },--<
@@ -1083,7 +1083,7 @@ function this.GetBodyId(soldierId,soldierType,soldierSubType,soldierPowerSetting
       bodyIdTable=this.bodyIdTable.SOVIET_B
     end
     if soldierSubType=="SOVIET_WILDCARD" then--tex>
-      bodyIdTable=this.bodyIdTable.SOVIET_WILDCARD
+      bodyIdTable=nil
     end--<
   elseif soldierType==EnemyType.TYPE_PF then
     bodyIdTable=this.bodyIdTable.PF_A
@@ -1093,7 +1093,7 @@ function this.GetBodyId(soldierId,soldierType,soldierSubType,soldierPowerSetting
       bodyIdTable=this.bodyIdTable.PF_C
     end
     if soldierSubType=="PF_WILDCARD" then--tex>
-      bodyIdTable=this.bodyIdTable.PF_WILDCARD
+      bodyIdTable=nil
     end--<
   elseif soldierType==EnemyType.TYPE_DD then
     bodyIdTable=this.bodyIdTable.DD_A
@@ -2189,17 +2189,17 @@ function this.RegistRoutePointMessage(e)
     Tpp.MergeTable(mvars.ene_routePointMessage.main,messageExecTable,true)
   end
 end
-function this.IsBaseCp(e)
+function this.IsBaseCp(cpId)
   if not mvars.ene_baseCpList then
     return
   end
-  return mvars.ene_baseCpList[e]
+  return mvars.ene_baseCpList[cpId]
 end
-function this.IsOuterBaseCp(e)
+function this.IsOuterBaseCp(cpId)
   if not mvars.ene_outerBaseCpList then
     return
   end
-  return mvars.ene_outerBaseCpList[e]
+  return mvars.ene_outerBaseCpList[cpId]
 end
 function this.ChangeRouteSets(t,a)
   mvars.ene_routeSetsTemporary=mvars.ene_routeSets
@@ -2762,7 +2762,7 @@ function this.RestoreOnContinueFromCheckPoint2()
   --a manual unrealize will fix that, but may just send it into an actual lostcontrol
   --others may be flying, but with the lostcontrol sounds
   --see NMC note in RestoreOnMissionStart2 for more
-  if not InfMain.IvarsEnabledForMission(InfNPCHeli.heliEnableIvars) then
+  if not Ivars.EnabledForMission(InfNPCHeli.heliEnableIvars) then
     if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
       local typeHeli={type="TppEnemyHeli"}
       SendCommand(typeHeli,{id="RestoreFromSVars"})
@@ -2805,7 +2805,7 @@ function this.StoreSVars(_markerOnly)
   end
   this._StoreSVars_Hostage(markerOnly)
   --tex WORKAROUND added bypass, see restore
-  if not InfMain.IvarsEnabledForMission(InfNPCHeli.heliEnableIvars) then
+  if not Ivars.EnabledForMission(InfNPCHeli.heliEnableIvars) then
     if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
       SendCommand({type="TppEnemyHeli"},{id="StoreToSVars"})
     end
@@ -2914,10 +2914,10 @@ function this.Init(missionTable)
 end
 function this.RegistCommonRoutePointMessage()
 end
-function this.OnReload(n)
+function this.OnReload(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
   this.RegistCommonRoutePointMessage()
-  if n.enemy then
+  if missionTable.enemy then
     this.SetUpCommandPost()
     this.SetUpSwitchRouteFunc()
   end
@@ -2971,9 +2971,6 @@ function this.SetUpSoldiers()
   if not IsTypeTable(mvars.ene_soldierDefine)then
     return
   end
-
-  InfMain.RandomizeCpSubTypeTable()--tex
-
   local missionId=TppMission.GetMissionID()
   for cpName,soldierList in pairs(mvars.ene_soldierDefine)do
     local cpId=GetGameObjectId(cpName)
@@ -3019,8 +3016,8 @@ function this.SetUpSoldiers()
       end
     end
   end
-  for t,cpName in pairs(mvars.ene_cpList)do
-    if mvars.ene_baseCpList[t]then
+  for cpId,cpName in pairs(mvars.ene_cpList)do
+    if mvars.ene_baseCpList[cpId]then
       local soldierList=mvars.ene_soldierDefine[cpName]
       for t,soldierName in ipairs(soldierList)do
         local soldierId=GetGameObjectId(soldierName)
@@ -3031,8 +3028,8 @@ function this.SetUpSoldiers()
       end
     end
   end
-  for i,cpName in pairs(mvars.ene_cpList)do
-    if not mvars.ene_baseCpList[i]then
+  for cpId,cpName in pairs(mvars.ene_cpList)do
+    if not mvars.ene_baseCpList[cpId]then
       local cpSoldiers=mvars.ene_soldierDefine[cpName]
       for t,soldierName in ipairs(cpSoldiers)do
         local soldierId=GetGameObjectId(soldierName)
@@ -3074,7 +3071,10 @@ function this.AssignSoldiersToCP()
       SendCommand(soldierId,{id="SetCommandPost",cp=cp})
       if mvars.ene_lrrpTravelPlan[cpId]then
         SendCommand(soldierId,{id="SetLrrp",travelPlan=mvars.ene_lrrpTravelPlan[cpId]})
-        mvars.ene_soldierLrrp[soldierId]=true
+        local dontSet=Ivars.applyPowersToLrrp:Is()>0 or (mvars.ene_lrrpVehicle[cpId] and Ivars.vehiclePatrolProfile:Is()>0 and vars.missionCode==30010 or vars.missionCode==30020)--tex
+        if not dontSet then--tex bypassing, handling with more finess by assiging RADIO in _ApplyRevengeToCp
+          mvars.ene_soldierLrrp[soldierId]=true--NMC it's sole purpose seems to be to indicate for RADIO body, TODO could probably remove from GetBodyId, restore this without bypass, and let my code handle default of all lrrp (foot and vehicle) set RADIO
+        end
         if mvars.ene_lrrpVehicle[cpId]then
           local lrrpVehicle=GameObject.GetGameObjectId("TppVehicle2",mvars.ene_lrrpVehicle[cpId])
           local command={id="SetRelativeVehicle",targetId=lrrpVehicle,rideFromBeginning=true}
@@ -3143,7 +3143,7 @@ function this.RegistVehicleSettings(vehicleSettings)
   end
   mvars.ene_vehicleSettings=vehicleSettings
   local instanceCount=0
-  for e,e in pairs(vehicleSettings)do
+  for k,v in pairs(vehicleSettings)do
     instanceCount=instanceCount+1
   end
   mvars.ene_vehicleDefine=mvars.ene_vehicleDefine or{}
@@ -3151,7 +3151,7 @@ function this.RegistVehicleSettings(vehicleSettings)
 end
 --NMC vehicleSpawnList = *_enemy.lua .VEHICLE_SPAWN_LIST
 function this.SpawnVehicles(vehicleSpawnList)
-  for t,spawnInfo in ipairs(vehicleSpawnList)do
+  for i,spawnInfo in ipairs(vehicleSpawnList)do
     this.SpawnVehicle(spawnInfo)
   end
 end
@@ -3166,9 +3166,7 @@ function this.SpawnVehicle(spawnInfo)
   if not locator then
     return
   end
-  local e=GameObject.SendCommand({type="TppVehicle2"},spawnInfo)
-  if not e then
-  end
+  local vehicleId=SendCommand({type="TppVehicle2"},spawnInfo)
 end
 function this.RespawnVehicle(spawnInfo)
   if not IsTypeTable(spawnInfo)then
@@ -3177,16 +3175,14 @@ function this.RespawnVehicle(spawnInfo)
   if spawnInfo.id~="Respawn"then
     spawnInfo.id="Respawn"
   end
-  local n=spawnInfo.name
-  if not n then
+  local name=spawnInfo.name
+  if not name then
     return
   end
-  local e=GameObject.SendCommand({type="TppVehicle2"},spawnInfo)
-  if not e then
-  end
+  local vehicleId=SendCommand({type="TppVehicle2"},spawnInfo)
 end
 function this.DespawnVehicles(despawnList)
-  for t,spawnInfo in ipairs(despawnList)do
+  for i,spawnInfo in ipairs(despawnList)do
     this.DespawnVehicle(spawnInfo)
   end
 end
@@ -3201,23 +3197,22 @@ function this.DespawnVehicle(spawnInfo)
   if not locator then
     return
   end
-  local e=GameObject.SendCommand({type="TppVehicle2"},spawnInfo)
-  if not e then
-  end
+  local vehicleId=SendCommand({type="TppVehicle2"},spawnInfo)
 end
-function this.SetUpVehicles()--ORPHANED
+--ORPHANED
+function this.SetUpVehicles()
   if mvars.ene_vehicleSettings==nil then
     return
-end
-for locator,e in pairs(mvars.ene_vehicleSettings)do
-  if(IsTypeString(locator)and IsTypeTable(e))and e.type then
-    local command={id="Spawn",locator=locator,type=e.type}
-    if e.subType then
-      command.subType=e.subType
-    end
-    SendCommand({type="TppVehicle2"},command)
   end
-end
+  for locator,spawnInfo in pairs(mvars.ene_vehicleSettings)do
+    if(IsTypeString(locator)and IsTypeTable(spawnInfo))and spawnInfo.type then
+      local command={id="Spawn",locator=locator,type=spawnInfo.type}
+      if spawnInfo.subType then
+        command.subType=spawnInfo.subType
+      end
+      SendCommand({type="TppVehicle2"},command)
+    end
+  end
 end
 function this.AddCpIntelTrapTable(e)
   mvars.ene_cpIntelTrapTable=mvars.ene_cpIntelTrapTable or{}
@@ -3266,7 +3261,8 @@ function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
     if phase==this.PHASE.SNEAK then
       routeSetType=SetForTime(cpId)
     else
-      routeSetType="caution"end
+      routeSetType="caution"
+    end
   end
   return routeSetType
 end
@@ -3534,7 +3530,8 @@ function this._InsertShiftChangeUnit(t,a,n)
         mvars.ene_shiftChangeTable[t][e][a*2]={n[e].hold,n[e].goal}
       else
         mvars.ene_shiftChangeTable[t][e][a*2-1]={n[e].start,n[e].goal}
-        mvars.ene_shiftChangeTable[t][e][a*2]="dummy"end
+        mvars.ene_shiftChangeTable[t][e][a*2]="dummy"
+      end
     end
   end
 end
@@ -3569,12 +3566,14 @@ function this._GetShiftChangeRouteGroup(n,r,a,l,p,i,s,t)
     e=e-i
   end
   local a=n[e]
-  local t="default"if l[i]then
+  local t="default"
+  if l[i]then
     t=i
   end
   local e=nil
   if s then
-    e="default"if p[i]then
+    e="default"
+    if p[i]then
       e=i
     end
   end
@@ -4758,14 +4757,14 @@ end
 end
 function this.SetupActivateQuestEnemy(enemyList)--NMC: from <quest>.lua .QUEST_TABLE.enemyList
   local i=1
-  local function Setup(enemyDef,r)
+  local function Setup(enemyDef,disable)
     local soldierId=enemyDef.enemyName
     if IsTypeString(soldierId)then
       soldierId=GameObject.GetGameObjectId(soldierId)
     end
     if soldierId==NULL_ID then
     else
-      if r==false then
+      if disable==false then
         if mvars.ene_isQuestSetup==false then
           if enemyDef.soldierType then
             this.SetSoldierType(soldierId,enemyDef.soldierType)
@@ -4776,17 +4775,17 @@ function this.SetupActivateQuestEnemy(enemyList)--NMC: from <quest>.lua .QUEST_T
             if TppLocation.IsMiddleAfrica()then
             end
           end
-          local a=true
+          local applyPowerSetting=true
           if enemyDef.powerSetting then
             for n,powerType in ipairs(enemyDef.powerSetting)do
               if powerType=="QUEST_ARMOR"then
                 if mvars.ene_questArmorId==0 then
-                  a=false
+                  applyPowerSetting=false
                 end
               end
             end
           end
-          if a==true then
+          if applyPowerSetting==true then
             local powerSetting=enemyDef.powerSetting or{nil}
             this.ApplyPowerSetting(soldierId,powerSetting)
           else
@@ -5232,18 +5231,18 @@ function this.CheckQuestNpcLifeStatus(gameId)
 end
 function this.IsQuestInHelicopter()
   TppHelicopter.SetNewestPassengerTable()
-  for e,n in pairs(mvars.ene_questTargetList)do
-    if TppHelicopter.IsInHelicopter(e)then
+  for gameId,targetInfo in pairs(mvars.ene_questTargetList)do
+    if TppHelicopter.IsInHelicopter(gameId)then
       return true
     end
   end
   return false
 end
-function this.IsQuestInHelicopterGameObjectId(n)
+function this.IsQuestInHelicopterGameObjectId(heliId)
   TppHelicopter.SetNewestPassengerTable()
-  for e,t in pairs(mvars.ene_questTargetList)do
-    if TppHelicopter.IsInHelicopter(e)then
-      if e==n then
+  for gameId,targetInfo in pairs(mvars.ene_questTargetList)do
+    if TppHelicopter.IsInHelicopter(gameId)then
+      if gameId==heliId then
         return true
       end
     end
@@ -5257,35 +5256,35 @@ function this.IsQuestTarget(e)
   if not next(mvars.ene_questTargetList)then
     return false
   end
-  for n,t in pairs(mvars.ene_questTargetList)do
-    if t.isTarget==true then
-      if e==n then
+  for gameId,targetInfo in pairs(mvars.ene_questTargetList)do
+    if targetInfo.isTarget==true then
+      if e==gameId then
         return true
       end
     end
   end
   return false
 end
-function this.IsQuestNpc(n)
-  for e,t in pairs(mvars.ene_questTargetList)do
-    if n==e then
+function this.IsQuestNpc(npcId)
+  for gameId,targetInfo in pairs(mvars.ene_questTargetList)do
+    if npcId==gameId then
       return true
     end
   end
   return false
 end
 function this.GetQuestCount()
-  local e=0
-  local n=0
-  for a,t in pairs(mvars.ene_questTargetList)do
-    if t.isTarget==true then
-      e=e+1
-      if t.messageId~="None"then
-        n=n+1
+  local targetCount=0
+  local targetWithMessageCount=0
+  for targetId,targetInfo in pairs(mvars.ene_questTargetList)do
+    if targetInfo.isTarget==true then
+      targetCount=targetCount+1
+      if targetInfo.messageId~="None"then
+        targetWithMessageCount=targetWithMessageCount+1
       end
     end
   end
-  return n,e
+  return targetWithMessageCount,targetCount
 end
 function this.SetQuestEnemy(gameObjectId,isTarget)
   if IsTypeString(gameObjectId)then
@@ -5294,8 +5293,8 @@ function this.SetQuestEnemy(gameObjectId,isTarget)
   if gameObjectId==NULL_ID then
   end
   if not mvars.ene_questTargetList[gameObjectId]then
-    local n={messageId="None",isTarget=isTarget}
-    mvars.ene_questTargetList[gameObjectId]=n
+    local targetInfo={messageId="None",isTarget=isTarget}
+    mvars.ene_questTargetList[gameObjectId]=targetInfo
   end
 end
 function this.CheckDeactiveQuestAreaForceFulton()
@@ -5305,15 +5304,15 @@ function this.CheckDeactiveQuestAreaForceFulton()
   if not next(mvars.ene_questTargetList)then
     return
   end
-  for n,t in pairs(mvars.ene_questTargetList)do
-    if Tpp.IsSoldier(n)or Tpp.IsHostage(n)then
-      if this.CheckQuestDistance(n)then
-        if this.CheckQuestNpcLifeStatus(n)then
-          GameObject.SendCommand(n,{id="RequestForceFulton"})
+  for gameId,targetInfo in pairs(mvars.ene_questTargetList)do
+    if Tpp.IsSoldier(gameId)or Tpp.IsHostage(gameId)then
+      if this.CheckQuestDistance(gameId)then
+        if this.CheckQuestNpcLifeStatus(gameId)then
+          GameObject.SendCommand(gameId,{id="RequestForceFulton"})
           TppRadio.Play"f1000_rtrg5140"
           TppSoundDaemon.PostEvent"sfx_s_rescue_pow"
         else
-          GameObject.SendCommand(n,{id="RequestDisableWithFadeout"})
+          GameObject.SendCommand(gameId,{id="RequestDisableWithFadeout"})
         end
       end
     end
@@ -5351,7 +5350,7 @@ function this.CheckQuestAllTarget(questType,_messageId,gameId,t,a)
   end
   for gameId,questTarget in pairs(mvars.ene_questTargetList)do
     local d=false
-    local T=questTarget.isTarget or false
+    local isTarget=questTarget.isTarget or false
     if p==true then
       if Tpp.IsSoldier(gameId)or Tpp.IsHostage(gameId)then
         if this.CheckQuestDistance(gameId)then
@@ -5362,7 +5361,7 @@ function this.CheckQuestAllTarget(questType,_messageId,gameId,t,a)
         end
       end
     end
-    if T==true then
+    if isTarget==true then
       if d==false then
         local messageId=questTarget.messageId
         if messageId~="None"then

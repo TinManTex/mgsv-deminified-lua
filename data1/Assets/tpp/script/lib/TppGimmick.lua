@@ -1,3 +1,4 @@
+-- TppGimmick.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local IsTypeTable=GameObject.GetTypeIndex
@@ -177,14 +178,14 @@ function this.Init(missionTable)
   TppTerminal.InitializeBluePrintLocatorIdTable()
   if TppMission.IsMissionStart()then
     for missionCode,collectionNames in pairs(this.MissionCollectionTable)do
-      local n=(vars.missionCode==missionCode)
-      if n==false then
+      local isCurrent=(vars.missionCode==missionCode)
+      if isCurrent==false then
         if TppMission.IsHardMission(vars.missionCode)then
-          local e=TppMission.GetNormalMissionCodeFromHardMission(vars.missionCode)
-          n=(e==missionCode)
+          local normalMissionCode=TppMission.GetNormalMissionCodeFromHardMission(vars.missionCode)
+          isCurrent=(normalMissionCode==missionCode)
         end
       end
-      this.EnableCollectionTable(collectionNames,n,true)
+      this.EnableCollectionTable(collectionNames,isCurrent,true)
     end
     do
       local t={"col_develop_Revolver_Shotgun"}
@@ -492,17 +493,17 @@ function this.SetUpConnectPowerCutTable(e)
   mvars.gim_connectPowerCutAreaTable={}
   mvars.gim_connectPowerCutCpTable={}
   for n,e in pairs(e)do
-    local t=e.powerCutAreaName
-    local e=e.cpName
-    mvars.gim_connectPowerCutAreaTable[n]=t
-    if e then
-      local i=GetGameObjectId(e)
-      if i~=NULL_ID then
-        mvars.gim_connectPowerCutCpTable[n]=i
-        local i={type="TppCommandPost2"}
-        local n=mvars.gim_identifierParamTable[n]
-        local e={id="SetPowerSourceGimmick",cpName=e,gimmicks=n,areaName=t}
-        GameObject.SendCommand(i,e)
+    local areaName=e.powerCutAreaName
+    local cpName=e.cpName
+    mvars.gim_connectPowerCutAreaTable[n]=areaName
+    if cpName then
+      local cpId=GetGameObjectId(cpName)
+      if cpId~=NULL_ID then
+        mvars.gim_connectPowerCutCpTable[n]=cpId
+        local tppCommandPost={type="TppCommandPost2"}
+        local gimmicks=mvars.gim_identifierParamTable[n]
+        local command={id="SetPowerSourceGimmick",cpName=cpName,gimmicks=gimmicks,areaName=areaName}
+        GameObject.SendCommand(tppCommandPost,command)
       end
     end
   end
@@ -518,7 +519,7 @@ function this.SetCommunicateGimmick(e)
     return
   end
   mvars.gim_gimmickIdToCpTable=mvars.gim_gimmickIdToCpTable or{}
-  local r={type="TppCommandPost2"}
+  local tppCommandPost={type="TppCommandPost2"}
   for cpName,e in pairs(e)do
     local gimmicks={}
     for e,t in ipairs(e)do
@@ -526,33 +527,33 @@ function this.SetCommunicateGimmick(e)
       if e then
         table.insert(gimmicks,e)
       end
-      local e=GetGameObjectId(cpName)
-      if e~=NULL_ID then
-        mvars.gim_gimmickIdToCpTable[StrCode32(t)]=e
+      local cpId=GetGameObjectId(cpName)
+      if cpId~=NULL_ID then
+        mvars.gim_gimmickIdToCpTable[StrCode32(t)]=cpId
       end
     end
     local isCommunicateBase=e.isCommunicateBase
     local groupName=e.groupName
-    local e={id="SetCommunicateGimmick",cpName=cpName,isCommunicateBase=isCommunicateBase,gimmicks=gimmicks,groupName=groupName}
-    GameObject.SendCommand(r,e)
+    local command={id="SetCommunicateGimmick",cpName=cpName,isCommunicateBase=isCommunicateBase,gimmicks=gimmicks,groupName=groupName}
+    GameObject.SendCommand(tppCommandPost,command)
   end
 end
-function this.BreakGimmick(a,n,t,i)
-  local n=this.GetGimmickID(a,n,t)
-  if not n then
+function this.BreakGimmick(gameId,n,t,i)
+  local gimmickId=this.GetGimmickID(gameId,n,t)
+  if not gimmickId then
     return
   end
-  this.BreakConnectedGimmick(n)
-  this.CheckBrokenAndBreakConnectedGimmick(n)
-  this.HideAsset(n)
-  this.ShowAnnounceLog(n)
-  this.UnlockLandingZone(n)
+  this.BreakConnectedGimmick(gimmickId)
+  this.CheckBrokenAndBreakConnectedGimmick(gimmickId)
+  this.HideAsset(gimmickId)
+  this.ShowAnnounceLog(gimmickId)
+  this.UnlockLandingZone(gimmickId)
   local t=false
   if(i==NULL_ID)then
     t=true
   end
-  this.PowerCut(n,true,t)
-  this.SetHeroicAndOrgPoint(n,i)
+  this.PowerCut(gimmickId,true,t)
+  this.SetHeroicAndOrgPoint(gimmickId,i)
 end
 function this.GetGimmickID(gameId,n,i)
   local isTable=IsTypeTable(gameId)
@@ -629,11 +630,11 @@ function this.SetVisibility(gimmickId,visible)
   Gimmick.InvisibleGimmick(identifierParams.type,identifierParams.locatorName,identifierParams.dataSetName,visible)
   return true
 end
-function this.UnlockLandingZone(e)
+function this.UnlockLandingZone(gimmickId)
   if TppLandingZone.IsDisableUnlockLandingZoneOnMission()then
     return
   end
-  local e=mvars.gim_connectLandingZoneTable[e]
+  local e=mvars.gim_connectLandingZoneTable[gimmickId]
   if not e then
     return
   end
@@ -663,30 +664,30 @@ function this._ShowCommCutOffAnnounceLog(e)
   if not mvars.gim_gimmickIdToCpTable then
     return
   end
-  local e=mvars.gim_gimmickIdToCpTable[StrCode32(e)]
-  if not e then
+  local cpId=mvars.gim_gimmickIdToCpTable[StrCode32(e)]
+  if not cpId then
     return
   end
-  GameObject.SendCommand(e,{id="SetCommunicateAnnounce"})
+  GameObject.SendCommand(cpId,{id="SetCommunicateAnnounce"})
 end
-function this.SwitchGimmick(n,i,t,o)
-  local n=this.GetGimmickID(n,i,t)
-  if not n then
+function this.SwitchGimmick(gameId,i,t,o)
+  local gimmickId=this.GetGimmickID(gameId,i,t)
+  if not gimmickId then
     return
   end
-  local i=false
+  local powerCutOn=false
   if(o==0)then
-    i=true
+    powerCutOn=true
   end
-  this.PowerCut(n,i,false)
+  this.PowerCut(gimmickId,powerCutOn,false)
 end
-function this.PowerCut(e,n,i)
-  local e=mvars.gim_connectPowerCutAreaTable[e]
-  if e then
-    if n then
-      Gimmick.PowerCutOn(e,i)
+function this.PowerCut(gimmickId,powerCutOn,RENsomeBool)
+  local connectPowerCutAreaTable=mvars.gim_connectPowerCutAreaTable[gimmickId]
+  if connectPowerCutAreaTable then
+    if powerCutOn then
+      Gimmick.PowerCutOn(connectPowerCutAreaTable,RENsomeBool)
     else
-      Gimmick.PowerCutOff(e)
+      Gimmick.PowerCutOff(connectPowerCutAreaTable)
     end
   end
 end
@@ -842,7 +843,7 @@ function this.CheckQuestAllTarget(questType,a,l)
         if e.idType=="Develop"then
           if a==TppCollection.GetUniqueIdByLocatorName(e.developId)then
             e.messageId="Recovered"
-            end
+          end
         end
       end
     elseif questType==TppDefine.QUEST_TYPE.SHOOTING_PRACTIVE then
@@ -864,7 +865,7 @@ function this.CheckQuestAllTarget(questType,a,l)
             else
               if a==e then
                 n.messageId="Recovered"
-                end
+              end
             end
           end
         end
@@ -934,11 +935,11 @@ function this.IsQuestTarget(i)
   end
   return false
 end
-function this.SetQuestInvisibleGimmick(t,i,e)
-  local n=e or false
+function this.SetQuestInvisibleGimmick(questMarkSetIndex,RENsomeBool,RENsomeBool2)
+  local n=RENsomeBool2 or false
   for o,gimmickIdInfo in pairs(mvars.gim_questTargetList)do
-    if t==mvars.gim_questMarkSetIndex or n==true then
-      Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,gimmickIdInfo.locatorName,gimmickIdInfo.dataSetName,i)
+    if questMarkSetIndex==mvars.gim_questMarkSetIndex or n==true then
+      Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,gimmickIdInfo.locatorName,gimmickIdInfo.dataSetName,RENsomeBool)
     end
   end
 end
@@ -966,7 +967,7 @@ function this.EndQuestShootingPractice(questClearType)
     mvars.gim_isquestMarkStart=false
     for n,e in pairs(mvars.gim_questTargetList)do
       e.messageId="None"
-      end
+    end
     mvars.gim_questMarkCount=0
   end
 end
@@ -990,8 +991,8 @@ function this.OnTerminateMineQuest()
     mvars.gim_isQuestSetup=false
   end
 end
-function this.CheckQuestPlaced(mineEquipId,n)
-  if this.CheckQuestMine(mineEquipId,n)then
+function this.CheckQuestPlaced(mineEquipId,index)
+  if this.CheckQuestMine(mineEquipId,index)then
     mvars.gim_questmineCount=mvars.gim_questmineCount+1
     TppUI.ShowAnnounceLog("mine_quest_log",mvars.gim_questmineCount,mvars.gim_questmineTotalCount)
   end
@@ -1001,10 +1002,10 @@ function this.CheckQuestPlaced(mineEquipId,n)
     return false
   end
 end
-function this.CheckQuestMine(mineEquipId,e)
+function this.CheckQuestMine(mineEquipId,index)
   for n,equipId in pairs(TppDefine.QUEST_MINE_TYPE_LIST)do
     if mineEquipId==equipId then
-      if TppPlaced.IsQuestBlock(e)then
+      if TppPlaced.IsQuestBlock(index)then
         return true
       else
         return false

@@ -140,6 +140,7 @@ function this.UnlockOnAllMissionTaskCompleted()
     this.Unlock(13,3e4)
   end
 end
-function this.UnlockOnAllQuestClear()this.Unlock(17)
+function this.UnlockOnAllQuestClear()
+  this.Unlock(17)
 end
 return this

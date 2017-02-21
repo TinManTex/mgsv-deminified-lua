@@ -649,7 +649,8 @@ function this.QAReleaseDebugUpdate()
         if s then
           local r=mvars.qaDebug.debugOnlineChallengeTaskTextTable and mvars.qaDebug.debugOnlineChallengeTaskTextTable[s]
           if not r then
-            r="threshold is"end
+            r="threshold is"
+            end
           Print(newContext,string.format("   Task %02d : [%s] %s %06.2f : ( Current %06.2f )",o,t,r,n[o].threshold,OnlineChallengeTask.GetCurrentTaskValue(o)))
         end
       end
@@ -850,7 +851,8 @@ function this.DebugUpdate()
     local n,t=Tpp.GetCurrentStageSmallBlockIndex()
     Print(newContext,string.format("current block position (x,y) = (%03d, %03d)",n,t))
     Print(newContext,"Load animal block area = "..tostring(mvars.animalBlockAreaName))
-    local n=ScriptBlock.GetScriptBlockId"animal_block"local t
+    local n=ScriptBlock.GetScriptBlockId"animal_block"
+    local t
     if n~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
       t=ScriptBlock.GetScriptBlockState(n)
     end
@@ -867,12 +869,18 @@ function this.DebugUpdate()
     Print(newContext,"animal block state : "..tostring(n))
     if mvars.animalBlockScript then
       Print(newContext,"animalBlockScript exist")
-      local t=""if mvars.animalBlockScript.OnMessage then
-        t="exist"else
-        t="  not"end
-      local n=""if mvars.animalBlockScript.OnReload then
-        n="exist"else
-        n="  not"end
+      local t=""
+      if mvars.animalBlockScript.OnMessage then
+        t="exist"
+        else
+        t="  not"
+        end
+      local n=""
+      if mvars.animalBlockScript.OnReload then
+        n="exist"
+        else
+        n="  not"
+        end
       Print(newContext,"OnMessage "..(tostring(t)..(" OnReload "..tostring(n))))
       this.ShowMessageTable(newContext,"MessageTable",mvars.animalBlockScript.messageExecTable)
     else
@@ -1014,7 +1022,8 @@ function this.PerfCheckEnd(e,r)
   if((e<=0)and(e>#o.PERF_CHECK_TYPE))then
     return
   end
-  local p=r or""local r=0
+  local p=r or""
+  local r=0
   local a=os.clock()-s[e]
   if(e==o.PERF_CHECK_TYPE.OnUpdate)then
     if(i<v)then

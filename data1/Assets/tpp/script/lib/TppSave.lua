@@ -129,11 +129,11 @@ function this.GetSaveGameDataQueue(missionCode,needIcon,doSaveFunc,isCheckPoint)
   saveInfo=this._SaveQuestData(saveInfo)
   return saveInfo
 end
-function this.SaveConfigData(needIcon,t,n)
-  if t then
+function this.SaveConfigData(needIcon,doSave,reserveNextMissionStart)
+  if doSave then
     local saveInfo=this.MakeNewSaveQueue(TppDefine.SAVE_SLOT.CONFIG,TppDefine.SAVE_SLOT.CONFIG_SAVE,TppScriptVars.CATEGORY_CONFIG,TppDefine.CONFIG_SAVE_FILE_NAME,needIcon)
     return this.DoSave(saveInfo,true)
-  elseif n then
+  elseif reserveNextMissionStart then
     this.ReserveNextMissionStartSave(TppDefine.CONFIG_SAVE_FILE_NAME)
   else
     this.EnqueueSave(TppDefine.SAVE_SLOT.CONFIG,TppDefine.SAVE_SLOT.CONFIG_SAVE,TppScriptVars.CATEGORY_CONFIG,TppDefine.CONFIG_SAVE_FILE_NAME,needIcon)
@@ -142,8 +142,8 @@ end
 function this.SaveMGOData()
   this.EnqueueSave(TppDefine.SAVE_SLOT.MGO,TppDefine.SAVE_SLOT.MGO_SAVE,TppScriptVars.CATEGORY_MGO,TppDefine.MGO_SAVE_FILE_NAME)
 end
-function this.SavePersonalData(needIcon,t,reserveNextMissionStartSave)
-  if t then
+function this.SavePersonalData(needIcon,doSave,reserveNextMissionStartSave)
+  if doSave then
     local saveInfo=this.MakeNewSaveQueue(TppDefine.SAVE_SLOT.PERSONAL,TppDefine.SAVE_SLOT.PERSONAL_SAVE,TppScriptVars.CATEGORY_PERSONAL,TppDefine.PERSONAL_DATA_SAVE_FILE_NAME,needIcon)
     return this.DoSave(saveInfo,true)
   elseif reserveNextMissionStartSave then
@@ -251,10 +251,10 @@ end
 function this._SaveQuestData(saveInfo)
   return this.AddSlotToSaveQueue(saveInfo,TppDefine.SAVE_SLOT.QUEST,TppDefine.SAVE_SLOT.SAVING,TppScriptVars.CATEGORY_QUEST)
 end
-function this._SaveMissionRestartableData(a)
-  a=this.AddSlotToSaveQueue(a,TppDefine.SAVE_SLOT.MISSION_START,TppDefine.SAVE_SLOT.SAVING,TppDefine.CATEGORY_MISSION_RESTARTABLE)
-  a=this.AddSlotToSaveQueue(a,TppDefine.SAVE_SLOT.CHECK_POINT_RESTARTABLE,TppDefine.SAVE_SLOT.SAVING,TppDefine.CATEGORY_MISSION_RESTARTABLE)
-  return a
+function this._SaveMissionRestartableData(saveInfo)
+  saveInfo=this.AddSlotToSaveQueue(saveInfo,TppDefine.SAVE_SLOT.MISSION_START,TppDefine.SAVE_SLOT.SAVING,TppDefine.CATEGORY_MISSION_RESTARTABLE)
+  saveInfo=this.AddSlotToSaveQueue(saveInfo,TppDefine.SAVE_SLOT.CHECK_POINT_RESTARTABLE,TppDefine.SAVE_SLOT.SAVING,TppDefine.CATEGORY_MISSION_RESTARTABLE)
+  return saveInfo
 end
 function this.MakeNewGameSaveData(acquirePrivilegeInTitleScreen)
   TppVarInit.InitializeOnNewGameAtFirstTime()
@@ -264,23 +264,23 @@ function this.MakeNewGameSaveData(acquirePrivilegeInTitleScreen)
   end
   this.VarSave(vars.missionCode,true)
   this.VarSaveOnRetry()
-  local n,t=this.GetSaveGameDataQueue(vars.missionCode)
+  local saveInfo,saveResult=this.GetSaveGameDataQueue(vars.missionCode)
   if gvars.permitGameSave then
-    n=this.GetSaveGameDataQueue(vars.missionCode)
-    t=this.DoSave(n,true)
+    saveInfo=this.GetSaveGameDataQueue(vars.missionCode)
+    saveResult=this.DoSave(saveInfo,true)
   end
   if acquirePrivilegeInTitleScreen then
     this.CheckAndSavePersonalData()
   end
-  return t
+  return saveResult
 end
 function this.SaveImportedGameData()
-  local n,a=this.GetSaveGameDataQueue(vars.missionCode)
+  local saveInfo,saveResult=this.GetSaveGameDataQueue(vars.missionCode)
   if gvars.permitGameSave then
-    n=this.GetSaveGameDataQueue(vars.missionCode)
-    a=this.DoSave(n,true)
+    saveInfo=this.GetSaveGameDataQueue(vars.missionCode)
+    saveResult=this.DoSave(saveInfo,true)
   end
-  return a
+  return saveResult
 end
 function this.GetIntializedCompositSlotSaveQueue(fileName,needIcon,doSaveFunc,isCheckPoint)
   return{fileName=fileName,needIcon=needIcon,doSaveFunc=doSaveFunc,isCheckPoint=isCheckPoint}
@@ -311,9 +311,9 @@ function this.EnqueueSave(saveInfoOrType,slot,category,fileName,needIcon)
   if(gvars.isLoadedInitMissionOnSignInUserChanged or TppException.isLoadedInitMissionOnSignInUserChanged)or TppException.isNowGoingToMgo then
     return
   end
-  local n
+  local saveInfo
   if Tpp.IsTypeTable(saveInfoOrType)then
-    n=saveInfoOrType
+    saveInfo=saveInfoOrType
   else
     if slot==nil then
       return
@@ -326,8 +326,8 @@ function this.EnqueueSave(saveInfoOrType,slot,category,fileName,needIcon)
     return
   end
   this.saveQueueDepth=this.saveQueueDepth+1
-  if n then
-    this.saveQueueList[this.saveQueueDepth]=n
+  if saveInfo then
+    this.saveQueueList[this.saveQueueDepth]=saveInfo
   else
     this.saveQueueList[this.saveQueueDepth]=this.MakeNewSaveQueue(saveInfoOrType,slot,category,fileName,needIcon)
   end
@@ -359,16 +359,16 @@ function this.ProcessSaveQueue()
   if not IsEnqueuedSaveData()then
     return false
   end
-  local a=this.saveQueueList[1]
-  if a then
-    local a=this.DoSave(a)
-    if a~=nil then
+  local saveParams=this.saveQueueList[1]
+  if saveParams then
+    local saveResult=this.DoSave(saveParams)
+    if saveResult~=nil then
       this.DequeueSave()
-      if a==TppScriptVars.WRITE_FAILED then
+      if saveResult==TppScriptVars.WRITE_FAILED then
         if(gvars.sav_SaveResultCheckFileName~=0)then
-          local e=this.SAVE_RESULT_FUNCTION[gvars.sav_SaveResultCheckFileName]
-          if e then
-            e(false)
+          local CheckFileName=this.SAVE_RESULT_FUNCTION[gvars.sav_SaveResultCheckFileName]
+          if CheckFileName then
+            CheckFileName(false)
           end
           gvars.sav_SaveResultCheckFileName=0
         end
@@ -414,28 +414,28 @@ function this.DoSave(saveParams,n)
   if doSaveFunc then
     doSaveFunc()
   end
-  local e=TppScriptVars.WriteSlotToFile(saveParams.savingSlot,fileName,needIcon)
+  local saveResult=TppScriptVars.WriteSlotToFile(saveParams.savingSlot,fileName,needIcon)
   if r then
     gvars.sav_SaveResultCheckFileName=Fox.StrCode32(fileName)
     if isCheckPoint then
       gvars.sav_isCheckPointSaving=true
     end
   end
-  return e
+  return saveResult
 end
 function this.Update()
   if(not IsSavingOrLoading())then
     if(gvars.sav_SaveResultCheckFileName~=0)then
-      local a=true
+      local success=true
       local lastResult=TppScriptVars.GetLastResult()
-      local n,t=this.GetSaveResultErrorMessage(lastResult)
-      if n then
-        a=false
-        TppUiCommand.ShowErrorPopup(n,t)
+      local errorId,popupId=this.GetSaveResultErrorMessage(lastResult)
+      if errorId then
+        success=false
+        TppUiCommand.ShowErrorPopup(errorId,popupId)
       end
       local SaveResultFunc=this.SAVE_RESULT_FUNCTION[gvars.sav_SaveResultCheckFileName]
       if SaveResultFunc then
-        SaveResultFunc(a)
+        SaveResultFunc(success)
       end
       gvars.sav_SaveResultCheckFileName=0
       gvars.sav_isCheckPointSaving=false
@@ -447,29 +447,30 @@ function this.Update()
     end
   end
   if IsSavingOrLoading()then
-    local e=TppScriptVars.GetSaveState()
-    if e==TppScriptVars.STATE_SAVING then
+    local saveState=TppScriptVars.GetSaveState()
+    if saveState==TppScriptVars.STATE_SAVING then
       if gvars.sav_isCheckPointSaving then
-        TppUI.ShowSavingIcon"checkpoint"else
+        TppUI.ShowSavingIcon"checkpoint"
+      else
         TppUI.ShowSavingIcon()
       end
     end
-    if e==TppScriptVars.STATE_LOADING then
+    if saveState==TppScriptVars.STATE_LOADING then
       TppUI.ShowLoadingIcon()
     end
-    if e==TppScriptVars.STATE_PROCESSING then
+    if saveState==TppScriptVars.STATE_PROCESSING then
       TppUI.ShowLoadingIcon()
     end
   end
 end
 this.SaveErrorMessageIdTable={[TppScriptVars.RESULT_ERROR_INVALID_STORAGE]={TppDefine.ERROR_ID.CANNOT_FIND_STORAGE_IN_GAME,Popup.TYPE_ONE_BUTTON}}
-function this.GetSaveResultErrorMessage(a)
-  if a==TppScriptVars.RESULT_OK then
+function this.GetSaveResultErrorMessage(result)
+  if result==TppScriptVars.RESULT_OK then
     return
   end
-  local e=this.SaveErrorMessageIdTable[a]
-  if e then
-    return e[1],e[2]
+  local errorInfo=this.SaveErrorMessageIdTable[result]
+  if errorInfo then
+    return errorInfo[1],errorInfo[2]
   else
     return TppDefine.ERROR_ID.SAVE_FAILED_UNKNOWN_REASON
   end
@@ -477,7 +478,7 @@ end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
-function this.OnReload(a)
+function this.OnReload(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.Messages()
@@ -537,8 +538,8 @@ function this.VarSaveMbMangement(a,n)
     this.SaveVarsToSlot(TppDefine.SAVE_SLOT.MB_MANAGEMENT,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_MB_MANAGEMENT)
   end
 end
-function this.VarSaveQuest(a)
-  if this.CanSaveMbMangementData(a)then
+function this.VarSaveQuest(missionCode)
+  if this.CanSaveMbMangementData(missionCode)then
     this.SaveVarsToSlot(TppDefine.SAVE_SLOT.MB_MANAGEMENT,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_MB_MANAGEMENT)
   end
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.QUEST,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_QUEST)
@@ -588,15 +589,15 @@ local categories={
 }
 function this.CheckGameDataVersion()
   for n,category in ipairs(categories)do
-    local n=TppDefine.SAVE_FILE_INFO[category].slot
+    local slot=TppDefine.SAVE_FILE_INFO[category].slot
     local result=this.CheckSlotVersion(category,TppDefine.SAVE_SLOT.SAVING)
     if result~=TppDefine.SAVE_FILE_LOAD_RESULT.OK then
       return result
     end
     if TppDefine.SAVE_FILE_INFO[category].missionStartSlot then
-      local e=this.CheckSlotVersion(category,TppDefine.SAVE_SLOT.SAVING,true)
-      if e~=TppDefine.SAVE_FILE_LOAD_RESULT.OK then
-        return e
+      local checkSlotResult=this.CheckSlotVersion(category,TppDefine.SAVE_SLOT.SAVING,true)
+      if checkSlotResult~=TppDefine.SAVE_FILE_LOAD_RESULT.OK then
+        return checkSlotResult
       end
     end
   end

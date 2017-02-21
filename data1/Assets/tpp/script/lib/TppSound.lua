@@ -142,7 +142,7 @@ function this.DeclareSVars()
     {name="snd_phaseBgmTagHash",type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
     nil}
 end
-function this.OnAllocate(n)
+function this.OnAllocate(missionTable)
   if(vars.missionCode==30010)or(vars.missionCode==30020)then
     mvars.snd_bgmList={}
     mvars.snd_bgmList.bgm_heliStart={start="Play_bgm_sideop_start",finish="Stop_bgm_sideop_start"}
@@ -152,12 +152,14 @@ function this.OnAllocate(n)
     mvars.snd_bgmList={}
     mvars.snd_bgmList.bgm_heliStart={start="Play_bgm_mtbs_free_start",finish="Stop_bgm_mtbs_free_start"}
   end
-  if not n.sound then
-    mvars.snd_startHeliClearJingleName="Play_bgm_mission_clear_heli"mvars.snd_finishHeliClearJingleName="Stop_bgm_mission_clear_heli"return
+  if not missionTable.sound then
+    mvars.snd_startHeliClearJingleName="Play_bgm_mission_clear_heli"
+    mvars.snd_finishHeliClearJingleName="Stop_bgm_mission_clear_heli"
+    return
   end
-  if IsTypeTable(n.sound.bgmList)then
-    mvars.snd_bgmList=n.sound.bgmList
-    if n.sound.USE_COMMON_ESCAPE_BGM then
+  if IsTypeTable(missionTable.sound.bgmList)then
+    mvars.snd_bgmList=missionTable.sound.bgmList
+    if missionTable.sound.USE_COMMON_ESCAPE_BGM then
       if TppLocation.IsAfghan()then
         mvars.snd_bgmList.bgm_escape=this.afghCommonEsacapeBgm.bgm_escape
       elseif TppLocation.IsMiddleAfrica()then
@@ -177,34 +179,38 @@ function this.OnAllocate(n)
       end
     end
   end
-  if IsTypeString(n.sound.missionStartTelopJingleName)then
-    mvars.snd_missionStartTelopJingleName=n.sound.missionStartTelopJingleName
+  if IsTypeString(missionTable.sound.missionStartTelopJingleName)then
+    mvars.snd_missionStartTelopJingleName=missionTable.sound.missionStartTelopJingleName
   end
-  if IsTypeTable(n.sound.noRestorePhaseBGMList)then
+  if IsTypeTable(missionTable.sound.noRestorePhaseBGMList)then
     mvars.snd_noRestorePhaseBGM={}
-    for n,e in ipairs(n.sound.noRestorePhaseBGMList)do
+    for n,e in ipairs(missionTable.sound.noRestorePhaseBGMList)do
       mvars.snd_noRestorePhaseBGM[StrCode32(e)]=true
     end
   end
-  if Tpp.IsTypeString(n.sound.showCreditJingleName)then
-    mvars.snd_showCreditJingle=n.sound.showCreditJingleName
+  if Tpp.IsTypeString(missionTable.sound.showCreditJingleName)then
+    mvars.snd_showCreditJingle=missionTable.sound.showCreditJingleName
   else
-    mvars.snd_showCreditJingle="Set_Switch_bgm_jingle_result_credit"end
-  if Tpp.IsTypeString(n.sound.heliDescentJingleName)then
-    mvars.snd_heliDescentJingle=n.sound.heliDescentJingleName
+    mvars.snd_showCreditJingle="Set_Switch_bgm_jingle_result_credit"
+  end
+  if Tpp.IsTypeString(missionTable.sound.heliDescentJingleName)then
+    mvars.snd_heliDescentJingle=missionTable.sound.heliDescentJingleName
   else
-    mvars.snd_heliDescentJingle="Play_bgm_mission_heli_descent"end
-  if Tpp.IsTypeString(n.sound.startHeliClearJingleName)then
-    mvars.snd_startHeliClearJingleName=n.sound.startHeliClearJingleName
+    mvars.snd_heliDescentJingle="Play_bgm_mission_heli_descent"
+  end
+  if Tpp.IsTypeString(missionTable.sound.startHeliClearJingleName)then
+    mvars.snd_startHeliClearJingleName=missionTable.sound.startHeliClearJingleName
   else
-    mvars.snd_startHeliClearJingleName="Play_bgm_mission_clear_heli"end
-  if Tpp.IsTypeString(n.sound.finishHeliClearJingleName)then
-    mvars.snd_finishHeliClearJingleName=n.sound.finishHeliClearJingleName
+    mvars.snd_startHeliClearJingleName="Play_bgm_mission_clear_heli"
+  end
+  if Tpp.IsTypeString(missionTable.sound.finishHeliClearJingleName)then
+    mvars.snd_finishHeliClearJingleName=missionTable.sound.finishHeliClearJingleName
   else
-    mvars.snd_finishHeliClearJingleName="Stop_bgm_mission_clear_heli"end
+    mvars.snd_finishHeliClearJingleName="Stop_bgm_mission_clear_heli"
+  end
 end
-function this.OnReload(n)
-  this.OnAllocate(n)
+function this.OnReload(missionTable)
+  this.OnAllocate(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.Init()

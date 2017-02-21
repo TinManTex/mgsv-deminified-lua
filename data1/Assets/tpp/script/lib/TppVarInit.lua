@@ -1,3 +1,4 @@
+-- TppVarInit.lua
 local this={}
 local i=Tpp.IsTypeFunc
 local IsTable=Tpp.IsTypeTable
@@ -38,8 +39,8 @@ function this.StartTitle(i)
   else
     TppMission.RequestLoad(vars.missionCode,missionIdInit,{showLoadingTips=false})
   end
-  local e=Fox.GetActMode()
-  if(e=="EDIT")then
+  local actMode=Fox.GetActMode()
+  if(actMode=="EDIT")then
     Fox.SetActMode"GAME"
   end
 end
@@ -54,11 +55,11 @@ function this.SetVarsTitleCypr()
 end
 function this.SetVarsTitleHeliSpace()
   TppMission.VarResetOnNewMission()
-  local i,e=TppMission.GetCurrentLocationHeliMissionAndLocationCode()
+  local missionCode,locationCode=TppMission.GetCurrentLocationHeliMissionAndLocationCode()
   gvars.title_nextMissionCode=vars.missionCode
-  gvars.title_nextLocationCode=e
-  vars.missionCode=i
-  vars.locationCode=e
+  gvars.title_nextLocationCode=locationCode
+  vars.missionCode=missionCode
+  vars.locationCode=locationCode
   TppUiCommand.LoadoutSetForStartFromHelicopter()
   TppHelicopter.ResetMissionStartHelicopterRoute()
   TppPlayer.ResetInitialPosition()
@@ -77,9 +78,9 @@ function this.ClearAllVarsAndSlot()--RETAILPATCH: 1006
   TppSave.VarSave(TppDefine.SYS_MISSION_ID.INIT,true)
   TppSave.VarSaveConfig()
   TppSave.VarSavePersonalData()
-  local i=TppSave.GetSaveGameDataQueue(vars.missionCode)
-  for a,e in ipairs(i.slot)do
-    TppScriptVars.CopySlot({i.savingSlot,e},e)
+  local saveInfo=TppSave.GetSaveGameDataQueue(vars.missionCode)
+  for k,v in ipairs(saveInfo.slot)do
+    TppScriptVars.CopySlot({saveInfo.savingSlot,v},v)
   end
 end--
 function this.InitializeOnStatingMainFrame()
@@ -93,19 +94,19 @@ function this.InitializeOnStatingMainFrame()
     [TppDefine.SAVE_SLOT.MISSION_START+1]=10*oneK,
     [TppDefine.SAVE_SLOT.CHECK_POINT_RESTARTABLE+1]=10*oneK
   }
-  local size={}
+  local compositeSlotSize={}
   local slotsTotalSize=0
   for slotIndex,size in ipairs(saveSlotSizes)do
     slotsTotalSize=slotsTotalSize+size
-    size[slotIndex]=size
+    compositeSlotSize[slotIndex]=size
   end
   saveSlotSizes[TppDefine.SAVE_SLOT.SAVING+1]=slotsTotalSize+92
-  local n=1*oneK
+  local configSize=1*oneK
   local platform=TppGameSequence.GetTargetPlatform()
   if((platform=="Steam"or platform=="Win32")or platform=="Win64")then
-    n=2*oneK
+    configSize=2*oneK
   end
-  saveSlotSizes[TppDefine.SAVE_SLOT.CONFIG+1]=n
+  saveSlotSizes[TppDefine.SAVE_SLOT.CONFIG+1]=configSize
   saveSlotSizes[TppDefine.SAVE_SLOT.CONFIG_SAVE+1]=saveSlotSizes[TppDefine.SAVE_SLOT.CONFIG+1]
   local personalSize=3*oneK
   saveSlotSizes[TppDefine.SAVE_SLOT.PERSONAL+1]=personalSize
@@ -115,10 +116,10 @@ function this.InitializeOnStatingMainFrame()
     saveSlotSizes[TppDefine.SAVE_SLOT.MGO+1]=mgoSize
     saveSlotSizes[TppDefine.SAVE_SLOT.MGO_SAVE+1]=mgoSize
   end
-  Tpp.DEBUG_DumpTable(size)
+  Tpp.DEBUG_DumpTable(compositeSlotSize)
   Tpp.DEBUG_DumpTable(saveSlotSizes)
   TppScriptVars.CreateSaveSlot(saveSlotSizes)
-  TppSave.RegistCompositSlotSize(size)
+  TppSave.RegistCompositSlotSize(compositeSlotSize)
   TppSave.SetUpCompositSlot()
   TppScriptVars.SetFileSizeList{
     {TppSave.GetGameSaveFileName(),saveSlotSizes[TppDefine.SAVE_SLOT.SAVING+1]},

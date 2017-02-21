@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppDemo.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local IsTypeFunc=Tpp.IsTypeFunc
@@ -18,7 +19,7 @@ function this.Messages()
       {msg="DemoSkipStart",func=this.EnableWaitBlockLoadOnDemoSkip,option={isExecDemoPlaying=true,isExecMissionClear=true,isExecGameOver=true}},
       {msg="FinishInterpCameraToDemo",func=this.OnEndGameCameraInterp,option={isExecMissionClear=true,isExecGameOver=true}},
       {msg="FinishMovingToPosition",sender="DemoStartMoveToPosition",
-        func=function(a,moveResultStr32)
+        func=function(str32Name,moveResultStr32)
           local moveResult=this.MOVET_TO_POSITION_RESULT[moveResultStr32]
           mvars.dem_waitingMoveToPosition=nil
         end,
@@ -64,27 +65,27 @@ function this.Messages()
   }
 end
 this.PLAY_REQUEST_START_FUNC={
-  missionStateCheck=function(n,e)
-    local isExecMissionClear=e.isExecMissionClear
-    local isExecGameOver=e.isExecGameOver
-    local isExecDemoPlaying=e.isExecDemoPlaying
+  missionStateCheck=function(demoId,demoFlags)
+    local isExecMissionClear=demoFlags.isExecMissionClear
+    local isExecGameOver=demoFlags.isExecGameOver
+    local isExecDemoPlaying=demoFlags.isExecDemoPlaying
     if not TppMission.CheckMissionState(isExecMissionClear,isExecGameOver,isExecDemoPlaying,false)then
       return false
     end
     return true
   end,
-  gameCameraInterpedToDemo=function(demoName)
-    if not FindDemoBody(demoName)then
+  gameCameraInterpedToDemo=function(demoId)
+    if not FindDemoBody(demoId)then
       return
     end
     if mvars.dem_gameCameraInterpWaitingDemoName~=nil then
       return false
     end
-    mvars.dem_gameCameraInterpWaitingDemoName=demoName
-    Player.RequestToInterpCameraToDemo(demoName,1,2,Vector3(.4,.6,-1),true)
+    mvars.dem_gameCameraInterpWaitingDemoName=demoId
+    Player.RequestToInterpCameraToDemo(demoId,1,2,Vector3(.4,.6,-1),true)
     return true
   end,
-  playerModelReloaded=function(e)
+  playerModelReloaded=function(demoId)
     if mvars.dem_tempPlayerInfo~=nil then
       return false
     end
@@ -95,35 +96,44 @@ this.PLAY_REQUEST_START_FUNC={
     mvars.dem_tempPlayerInfo.playerCamoType=vars.playerCamoType
     mvars.dem_tempPlayerInfo.playerFaceId=vars.playerFaceId
     mvars.dem_tempPlayerInfo.playerFaceEquipId=vars.playerFaceEquipId
-    TppPlayer.ForceChangePlayerToSnake(true)
+    local forceSnake=true--tex>
+    if Ivars.useSoldierForDemos:Is(1) then
+      if vars.playerType~=PlayerType.DD_FEMALE or not InfMain.noSkipIsSnakeOnly[demoId] then
+        forceSnake=false
+      end
+    end
+    if forceSnake then--tex bypass--<
+      TppPlayer.ForceChangePlayerToSnake(true)
+    end
     mvars.dem_tempPlayerReloadCounter={}
     mvars.dem_tempPlayerReloadCounter.start=0
     mvars.dem_tempPlayerReloadCounter.finish=0
     return true
   end,
-  demoBlockLoaded=function(e)
-    TppScriptBlock.RequestActivate"demo_block"return true
+  demoBlockLoaded=function(demoId)
+    TppScriptBlock.RequestActivate"demo_block"
+    return true
   end,
   playerActionAllowed=function(e)
     return true
   end,
-  playerMoveToPosition=function(n,e)
+  playerMoveToPosition=function(demoId,demoFlags)
     if mvars.dem_waitingMoveToPosition then
       return false
     end
-    local e=e.playerMoveToPosition
-    if not e.position then
+    local playerMoveToPosition=demoFlags.playerMoveToPosition
+    if not playerMoveToPosition.position then
       return false
     end
-    if not e.direction then
+    if not playerMoveToPosition.direction then
       return false
     end
     Player.RequestToSetTargetStance(PlayerStance.STAND)
-    Player.RequestToMoveToPosition{name="DemoStartMoveToPosition",position=e.position,direction=e.direction,onlyInterpPosition=true,timeout=10}
+    Player.RequestToMoveToPosition{name="DemoStartMoveToPosition",position=playerMoveToPosition.position,direction=playerMoveToPosition.direction,onlyInterpPosition=true,timeout=10}
     mvars.dem_waitingMoveToPosition=true
     return true
   end,
-  waitTextureLoadOnDemoPlay=function(e)
+  waitTextureLoadOnDemoPlay=function(demoId)
     mvars.dem_setTempCamera=false
     mvars.dem_textureLoadWaitOnDemoPlayEndTime=nil
     return true
@@ -214,15 +224,15 @@ this.FINISH_WAIT_START_FUNC={
       mvars.dem_donePlayerRestoreFadeOut=true
       TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT)
     end
-    for e,n in pairs(mvars.dem_tempPlayerInfo)do
-      vars[e]=n
+    for varName,value in pairs(mvars.dem_tempPlayerInfo)do
+      vars[varName]=value
     end
     mvars.dem_tempPlayerInfo=nil
     return true
   end
 }
 this.FINISH_WAIT_CHECK_FUNC={
-  waitBlockLoadEndOnDemoSkip=function(e)
+  waitBlockLoadEndOnDemoSkip=function(demoId)
     if mvars.dem_enableWaitBlockLoadOnDemoSkip then
       TppUI.ShowAccessIconContinue()
       return false
@@ -231,7 +241,7 @@ this.FINISH_WAIT_CHECK_FUNC={
       return true
     end
   end,
-  waitTextureLoadOnDemoEnd=function(e)
+  waitTextureLoadOnDemoEnd=function(demoId)
     if mvars.dem_enableWaitBlockLoadOnDemoSkip then
       return false
     end
@@ -247,7 +257,7 @@ this.FINISH_WAIT_CHECK_FUNC={
       return false
     end
   end,
-  playerModelReloaded=function(e)
+  playerModelReloaded=function(demoId)
     if mvars.dem_donePlayerRestoreFadeOut then
       mvars.dem_donePlayerRestoreFadeOut=nil
       return false
@@ -293,8 +303,11 @@ function this.Play(demoName,demoFuncs,demoFlags)
   if(demoId=="p51_070020_000_final")or(demoId=="p21_020010")then--PATCHUP:
     mvars.dem_resereveEnableInGameFlag=false
   end
-  if Ivars.useSoldierForDemos:Is(1) and demoName~="Demo_Funeral" then--tex> force snake off for demo, also PATCHUP: shining lights end cinematic forces snake head for ash
-    demoFlags.isSnakeOnly=false
+  --tex> force snake off for demo
+  if Ivars.useSoldierForDemos:Is(1) then
+    if vars.playerType~=PlayerType.DD_FEMALE or not InfMain.noSkipIsSnakeOnly[demoName] then
+      demoFlags.isSnakeOnly=false
+    end
   end--<
   mvars.dem_demoFlags[demoName]=demoFlags
   return this.AddPlayReqeustInfo(demoId,demoFlags)
@@ -309,8 +322,8 @@ function this.EnableGameStatus(target,_except)
   end
   Tpp.SetGameStatus{target=target,except=except,enable=true,scriptName="TppDemo.lua"}
 end
-function this.DisableGameStatusOnPlayRequest(e)
-  if not e then
+function this.DisableGameStatusOnPlayRequest(isInGame)
+  if not isInGame then
     Tpp.SetGameStatus{target="all",enable=false,except={S_DISABLE_NPC=false},scriptName="TppDemo.lua"}
   end
 end
@@ -452,20 +465,20 @@ function this.EnableInGameFlagIfResereved()
     TppMission.EnableInGameFlag()
   end
 end
-function this.ReserveInTheBackGround(n)
-  if not IsTypeTable(n)then
+function this.ReserveInTheBackGround(demoFlags)
+  if not IsTypeTable(demoFlags)then
     return
   end
-  local demoName=n.demoName
+  local demoName=demoFlags.demoName
   local demoId=mvars.dem_demoList[demoName]
   if not demoId then
     return
   end
   mvars.dem_reservedDemoId=demoId
-  mvars.dem_reservedDemoLoadPosition=n.position
+  mvars.dem_reservedDemoLoadPosition=demoFlags.position
   local playerPause=true
-  if n.playerPause then
-    playerPause=n.playerPause
+  if demoFlags.playerPause then
+    playerPause=demoFlags.playerPause
   end
   if playerPause then
     mvars.dem_reservedPlayerWarpAndPause=true
@@ -488,11 +501,11 @@ function this.ExecuteBackGroundLoad(demoId)
     mvars.dem_DoneBackGroundLoading=true
   end
 end
-function this.SetStageBlockLoadPosition(e)
+function this.SetStageBlockLoadPosition(position)
   TppGameStatus.Set("TppDemo.ReserveInTheBackground","S_IS_BLACK_LOADING")
   mvars.dem_isSetStageBlockPosition=true
   StageBlockCurrentPositionSetter.SetEnable(true)
-  StageBlockCurrentPositionSetter.SetPosition(e:GetX(),e:GetZ())
+  StageBlockCurrentPositionSetter.SetPosition(position:GetX(),position:GetZ())
 end
 function this.SetPlayerPause()
   mvars.dem_isPlayerPausing=true
@@ -577,16 +590,16 @@ function this.ClearIgnoreNpcDisableOnDemoEnd()
   end
   mvars.dem_npcDisableList=nil
 end
-function this.IsPlayedMBEventDemo(e)
-  local demoEnum=TppDefine.MB_FREEPLAY_DEMO_ENUM[e]
+function this.IsPlayedMBEventDemo(demoName)
+  local demoEnum=TppDefine.MB_FREEPLAY_DEMO_ENUM[demoName]
   if demoEnum then
     return gvars.mbFreeDemoPlayedFlag[demoEnum]
   end
 end
-function this.ClearPlayedMBEventDemoFlag(e)
-  local e=TppDefine.MB_FREEPLAY_DEMO_ENUM[e]
-  if e then
-    gvars.mbFreeDemoPlayedFlag[e]=false
+function this.ClearPlayedMBEventDemoFlag(demoName)
+  local demoEnum=TppDefine.MB_FREEPLAY_DEMO_ENUM[demoName]
+  if demoEnum then
+    gvars.mbFreeDemoPlayedFlag[demoEnum]=false
   end
 end
 function this.OnAllocate(missionTable)
@@ -609,8 +622,8 @@ end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
-function this.OnReload(n)
-  this.OnAllocate(n)
+function this.OnReload(missionTable)
+  this.OnAllocate(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.Update()
@@ -629,7 +642,7 @@ end
 
 --REF
 --this.demoList = {
---  Demo_RecoverReptilePod  = "p31_060010", 
+--  Demo_RecoverReptilePod  = "p31_060010",
 function this.Register(list)
   mvars.dem_demoList=list
   for demoName,demoId in pairs(list)do
@@ -662,7 +675,8 @@ function this.OnDemoPlay(demoName,t)
   end
   if mvars.dem_resereveEnableInGameFlag then
     if TppMission.GetMissionClearState()<=TppDefine.MISSION_CLEAR_STATE.MISSION_GAME_END then
-      TppSoundDaemon.ResetMute"Loading"end
+      TppSoundDaemon.ResetMute"Loading"
+    end
   end
   local n=mvars.dem_demoList[demoName]
   if(n=="p31_080110_000_final")then
@@ -689,11 +703,11 @@ function this.OnDemoEnd(demoName)
   end
   this.AddFinishWaitRequestInfo(demoId,demoFlags)
 end
-function this.OnDemoInterrupt(n)
-  if mvars.dem_playedList[n]==nil then
+function this.OnDemoInterrupt(demoName)
+  if mvars.dem_playedList[demoName]==nil then
     return
   end
-  this.OnDemoEnd(n)
+  this.OnDemoEnd(demoName)
 end
 function this.OnDemoSkip(demoName,demoIdStr32)
   local demoId=mvars.dem_demoList[demoName]
@@ -701,11 +715,11 @@ function this.OnDemoSkip(demoName,demoIdStr32)
   local muteDemos={p31_010010=true,p41_030005_000_final=true,p51_070020_000_final=true,p31_050026_000_final=true}
   if muteDemos[demoId]then
     TppSoundDaemon.SetMuteInstant"Loading"
-    end
+  end
   if(demoId=="p31_080110_000_final")then
     if GkEventTimerManager.IsTimerActive"p31_080110_000_showLocationTelop"then
       GkEventTimerManager.Stop"p31_080110_000_showLocationTelop"
-      end
+    end
     TppUiCommand.HideInfoTypingText()
   end
   mvars.dem_isSkipped[demoId]=true
@@ -1176,7 +1190,8 @@ this.mtbsPriorityFuncList={
       return false
     end
     local n=TppStory.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA
-    local e=TppQuest.IsOpen"sovietBase_q99030"return n and not e
+    local e=TppQuest.IsOpen"sovietBase_q99030"
+    return n and not e
   end,
   InterrogateQuiet=function()
     if this.IsPlayedMBEventDemo"InterrogateQuiet"then
@@ -1226,9 +1241,11 @@ function this.UpdateHappyBirthDayFlag()
   if this.IsPlayedMBEventDemo"HappyBirthDay"then
     if TppUiCommand.IsBirthDay()then
       if gvars.elapsedTimeSinceLastPlay>(24*60)*60 and(not gvars.isPlayedHappyBirthDayToday)then
-        this.ClearPlayedMBEventDemoFlag"HappyBirthDay"end
+        this.ClearPlayedMBEventDemoFlag"HappyBirthDay"
+      end
     else
-      this.ClearPlayedMBEventDemoFlag"HappyBirthDay"gvars.isPlayedHappyBirthDayToday=false
+      this.ClearPlayedMBEventDemoFlag"HappyBirthDay"
+      gvars.isPlayedHappyBirthDayToday=false
     end
   end
 end

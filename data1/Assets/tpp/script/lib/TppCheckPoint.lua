@@ -98,9 +98,9 @@ function this.SetCheckPointPosition()
   if n==nil then
     return
   end
-  local e,n=this.GetCheckPointLocator(n)
-  if e then
-    TppPlayer.SetInitialPosition(e,n)
+  local pos,rotY=this.GetCheckPointLocator(n)
+  if pos then
+    TppPlayer.SetInitialPosition(pos,rotY)
   end
 end
 function this.GetCheckPointLocator(e)--NMC returns position,rotation

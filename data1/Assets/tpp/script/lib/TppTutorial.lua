@@ -334,24 +334,24 @@ function this.OnStartCarryIdle()
   this.DispGuide("SHOULDER_THROW",this.DISPLAY_OPTION.CONTROL)
   this.DispGuide("CARRY_WEAPON_LIMIT",this.DISPLAY_OPTION.TIPS)
 end
-function this.OnPickUpCollection(n,n,T)
-  if T==TppCollection.TYPE_DIAMOND_SMALL or T==TppCollection.TYPE_DIAMOND_LARGE then
+function this.OnPickUpCollection(playerId,resourceId,resourceType,langId)
+  if resourceType==TppCollection.TYPE_DIAMOND_SMALL or resourceType==TppCollection.TYPE_DIAMOND_LARGE then
     this.DispGuide("DIAMOND",this.DISPLAY_OPTION.TIPS)
-  elseif TppCollection.IsHerbByType(T)then
+  elseif TppCollection.IsHerbByType(resourceType)then
     this.DispGuide("PLANT",this.DISPLAY_OPTION.TIPS)
     if not TppUiCommand.IsDispGuide"TipsGuide"then
-      local T=this.PlantRadioMatchTable[T]
+      local T=this.PlantRadioMatchTable[resourceType]
       if T then
         this.PlayTutorialRadioOnly(T,{delayTime="mid"})
       end
     end
-  elseif T==TppCollection.TYPE_DEVELOPMENT_FILE then
+  elseif resourceType==TppCollection.TYPE_DEVELOPMENT_FILE then
     this.DispGuide("DEV_DOCUMENT",this.DISPLAY_OPTION.TIPS)
-  elseif T==TppCollection.TYPE_EMBLEM then
+  elseif resourceType==TppCollection.TYPE_EMBLEM then
     this.DispGuide("EMBLEM",this.DISPLAY_OPTION.TIPS)
-  elseif T==TppCollection.TYPE_SHIPPING_LABEL then
+  elseif resourceType==TppCollection.TYPE_SHIPPING_LABEL then
     this.DispGuide("BOX_MOVE",this.DISPLAY_OPTION.TIPS)
-  elseif T>=TppCollection.TYPE_MATERIAL_CM_0 and T<=TppCollection.TYPE_MATERIAL_BR_7 then
+  elseif resourceType>=TppCollection.TYPE_MATERIAL_CM_0 and resourceType<=TppCollection.TYPE_MATERIAL_BR_7 then
     this.DispGuide("MATERIAL",this.DISPLAY_OPTION.TIPS)
   end
 end
@@ -700,7 +700,7 @@ end
 function this.MakeMessageExecTable()
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
-function this.OnReload(T)
+function this.OnReload(missionTable)
   this.MakeMessageExecTable()
   this.OpenTipsOnCurrentStory()
 end

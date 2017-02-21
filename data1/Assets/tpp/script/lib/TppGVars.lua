@@ -1,5 +1,5 @@
 -- DOBUILD: 1
-
+-- TppGVars.lua
 local this={}
 this.DeclareGVarsTable={
   {name="ini_isReturnToTitle",type=TppScriptVars.TYPE_BOOL,value=false,save=false},

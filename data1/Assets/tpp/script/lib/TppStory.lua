@@ -26,7 +26,6 @@ this.storySequenceTable_Master={
   {main="s10080"},
   {flag={"s10086"}},
   {flag={"s10082"}},
-
   {main="s10090",
     condition=function()
       if TppMotherBaseManagement.CanOpenS10091()then
@@ -296,7 +295,6 @@ this.radioDemoTable={
     end,
     radioList={"f2000_rtrg1345","f2000_rtrg1347"}
   },
-
   QuietTreatment2={
     storyCondition=function(e)
       return e.demoName=="ArrivedMotherBaseAfterQuietBattle"
@@ -391,7 +389,8 @@ this.radioDemoTable={
     end,
     detailCondition=function()
       if TppQuest.IsOpen"mtbs_q99011"then
-        local e=not TppQuest.IsCleard"mtbs_q99011"if e then
+        local e=not TppQuest.IsCleard"mtbs_q99011"
+        if e then
           TppCassette.Acquire{cassetteList={"tp_c_00000_13"},
             {delayTimeSec=2}}
           TppCassette.Acquire{cassetteList={"tp_m_10050_03"},
@@ -505,7 +504,8 @@ this.radioDemoTable={
       return this.GetCurrentStorySequence()==TppDefine.STORY_SEQUENCE.CLEARD_RESCUE_HUEY
     end,
     detailCondition=function()
-      local n=TppRadio.IsPlayed"f2000_rtrg8090"local e=TppMission.IsHelicopterSpace(vars.missionCode)
+      local n=TppRadio.IsPlayed"f2000_rtrg8090"
+      local e=TppMission.IsHelicopterSpace(vars.missionCode)
       return n and e
     end,
     radioList={"f2000_rtrg8100"}
@@ -1146,7 +1146,8 @@ this.radioDemoTable={
             storyCondition=function()
               local t=TppServerManager.GetNuclearAbolitionCount()
               local n=TppServerManager.GetNuclearNum()
-              local e=TppDemo.IsPlayedMBEventDemo"NuclearEliminationCeremony"if(t~=-1)then
+              local e=TppDemo.IsPlayedMBEventDemo"NuclearEliminationCeremony"
+              if(t~=-1)then
                 if(e)and(n>0)then
                   return true
                 end
@@ -1368,10 +1369,10 @@ end
 function this.IncrementStorySequence()
   gvars.str_storySequence=gvars.str_storySequence+1
 end
-function this.PermitMissionOpen(e)
-  local e=TppDefine.MISSION_ENUM[tostring(e)]
-  if e then
-    gvars.str_missionOpenPermission[e]=true
+function this.PermitMissionOpen(missionCode)
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(missionCode)]
+  if missionEnum then
+    gvars.str_missionOpenPermission[missionEnum]=true
   end
 end
 function this.MissionOpen(missionCode)
@@ -1410,11 +1411,11 @@ function this.CheckAllMissionCleared()
   local i=true
   local a=true
   local s=true
-  for missionCodeStr,d in pairs(TppDefine.MISSION_ENUM)do
-    local o=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
-    if not o then
-      local o=tonumber(missionCodeStr)
-      if(not gvars.str_missionClearedFlag[d])then
+  for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
+    local missingNumberEnum=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
+    if not missingNumberEnum then
+      local missionCode=tonumber(missionCodeStr)
+      if(not gvars.str_missionClearedFlag[enum])then
         if TppDefine.HARD_MISSION_ENUM[missionCodeStr]then
           a=false
         else
@@ -1424,10 +1425,10 @@ function this.CheckAllMissionCleared()
       end
       local n=true
       local r={[10240]=true,[10115]=true,[10030]=true}
-      if r[o]then
+      if r[missionCode]then
         n=false
       end
-      if n and(TppResult.GetBestRank(o)~=TppDefine.MISSION_CLEAR_RANK.S)then
+      if n and(TppResult.GetBestRank(missionCode)~=TppDefine.MISSION_CLEAR_RANK.S)then
         if TppDefine.HARD_MISSION_ENUM[missionCodeStr]then
           s=false
         else
@@ -1442,11 +1443,11 @@ end
 function this.CalcAllMissionClearedCount()
   local e=0
   local n=0
-  for missionCodeStr,r in pairs(TppDefine.MISSION_ENUM)do
-    local i=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
-    if not i then
+  for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
+    local missingNumberEnum=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
+    if not missingNumberEnum then
       local missionCode=tonumber(missionCodeStr)
-      if(gvars.str_missionClearedFlag[r])then
+      if(gvars.str_missionClearedFlag[enum])then
         e=e+1
       end
       n=n+1
@@ -1458,26 +1459,26 @@ function this.CalcAllMissionTaskCompletedCount()
   local e=0
   local n=0
   for missionCodeStr,i in pairs(TppDefine.MISSION_ENUM)do
-    local i=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
-    if not i then
+    local missingNumberEnum=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
+    if not missingNumberEnum then
       local t=tonumber(missionCodeStr)e=e+TppUI.GetTaskCompletedNumber(t)
       n=n+TppUI.GetMaxMissionTask(t)
     end
   end
   return e,n
 end
-function this.UpdateMissionCleardFlag(e)
-  local n=TppDefine.MISSION_ENUM[tostring(e)]
-  if n then
-    gvars.str_missionClearedFlag[n]=true
-    TppCassette.AcquireOnMissionClear(e)
-    TppEmblem.AcquireOnMissionClear(e)
-    TppTerminal.AddUniqueVolunteerStaff(e)
-    TppTrophy.UnlockOnMissionClear(e)
+function this.UpdateMissionCleardFlag(missionCode)
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(missionCode)]
+  if missionEnum then
+    gvars.str_missionClearedFlag[missionEnum]=true
+    TppCassette.AcquireOnMissionClear(missionCode)
+    TppEmblem.AcquireOnMissionClear(missionCode)
+    TppTerminal.AddUniqueVolunteerStaff(missionCode)
+    TppTrophy.UnlockOnMissionClear(missionCode)
   end
 end
 function this.CloseEmergencyMission()
-  for e,e in ipairs(TppDefine.EMERGENCY_MISSION_LIST)do
+  for i,missionCode in ipairs(TppDefine.EMERGENCY_MISSION_LIST)do
   end
 end
 function this.GetStorySequenceName(index)
@@ -1591,8 +1592,10 @@ function this.OpenRetakeThePlatform()
   end
   this.MissionOpen(10115)
   TppMotherBaseManagement.CompletedClusterBuild{base="MotherBase",category="Develop",grade=1}
-  TppRadio.Play"f1000_rtrg1010"TppUI.ShowEmergencyAnnounceLog()
-  TppUI.ShowAnnounceLog"missionListUpdate"end
+  TppRadio.Play"f1000_rtrg1010"
+  TppUI.ShowEmergencyAnnounceLog()
+  TppUI.ShowAnnounceLog"missionListUpdate"
+end
 function this.CheckAndOpenRetakeThePlatform()
   if this.CanOccurRetakeThePlatform()then
     if not this.IsMissionOpen(10115)then
@@ -1601,8 +1604,8 @@ function this.CheckAndOpenRetakeThePlatform()
   end
 end
 function this.IsAlwaysOpenRetakeThePlatform()
-  local n=TppDefine.MISSION_ENUM[tostring(10115)]
-  if(gvars.str_missionOpenPermission[n]==false)then
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(10115)]
+  if(gvars.str_missionOpenPermission[missionEnum]==false)then
     return false
   end
   if TppTerminal.IsCleardRetakeThePlatform()then
@@ -1673,7 +1676,7 @@ function this.CanPlayMgo(e)
     return true
   end
 end
-function this.OnReload(n)
+function this.OnReload(missionTable)
   this.SetUpStorySequenceTable()
 end
 function this.SetUpStorySequenceTable()
@@ -1707,8 +1710,8 @@ function this.UpdateStorySequence(params)
     local missionId=params.missionId
     updateSequence=this.UpdateStorySequenceOnMissionClear(missionId)
   else
-    local t=this.GetCurrentStorySequenceTable()
-    if(t and t.updateTiming)and t.updateTiming[updateTiming]then
+    local storySequenceTable=this.GetCurrentStorySequenceTable()
+    if(storySequenceTable and storySequenceTable.updateTiming)and storySequenceTable.updateTiming[updateTiming]then
       updateSequence=this._UpdateStorySequence()
     end
   end
@@ -1719,8 +1722,8 @@ function this.UpdateStorySequence(params)
     if next(updateSequence)then
       gvars.mis_isExistOpenMissionFlag=true
     end
-    local e=this.GetCurrentStorySequence()
-    if TppDefine.CONTINUE_TIPS_TABLE[e]then
+    local currentStorySeq=this.GetCurrentStorySequence()
+    if TppDefine.CONTINUE_TIPS_TABLE[currentStorySeq]then
       gvars.continueTipsCount=1
     end
   end
@@ -2015,35 +2018,35 @@ function this.GetStoryRadioListFromIndex(n,t)
   local n=n[t][2]
   return this.radioDemoTable[n].radioList
 end
-function this.GetForceMBDemoNameOrRadioList(listName,options)
+function this.GetForceMBDemoNameOrRadioList(radioCategory,options)
   if options==nil then
     options={}
   end
-  if not this.eventPlayTimmingTable[listName]then
+  if not this.eventPlayTimmingTable[radioCategory]then
     return
   end
-  if(listName=="forceMBDemo"or listName=="blackTelephone")and this.PLAY_DEMO_END_MISSION[vars.missionCode]then
+  if(radioCategory=="forceMBDemo"or radioCategory=="blackTelephone")and this.PLAY_DEMO_END_MISSION[vars.missionCode]then
     return
   end
-  for a,t in ipairs(this.eventPlayTimmingTable[listName])do
-    local s=t[1]
-    local r=t[2]
-    local t=this.radioDemoTable[r]
-    local o=this._GetRadioList(t,options)
-    if(not this.IsDoneEvent(t,s,listName,r)and t.storyCondition(options))and t.detailCondition(options)then
-      if t.demoName then
+  for n,eventInfo in ipairs(this.eventPlayTimmingTable[radioCategory])do
+    local RENsomeBool=eventInfo[1]
+    local radioName=eventInfo[2]
+    local radioDemoInfo=this.radioDemoTable[radioName]
+    local radioList=this._GetRadioList(radioDemoInfo,options)
+    if(not this.IsDoneEvent(radioDemoInfo,RENsomeBool,radioCategory,radioName)and radioDemoInfo.storyCondition(options))and radioDemoInfo.detailCondition(options)then
+      if radioDemoInfo.demoName then
         if this.DEBUG_SkipDemoRadio then
-          TppMbFreeDemo.PlayMtbsEventDemo{demoName=t.demoName}
+          TppMbFreeDemo.PlayMtbsEventDemo{demoName=radioDemoInfo.demoName}
         end
-        return t.demoName,a
-      elseif o then
-        if listName=="blackTelephone"or listName=="clearSideOpsForceMBRadio"then
-          gvars.forceMbRadioPlayedFlag[TppDefine.FORCE_MB_RETURN_RADIO_ENUM[r]]=true
+        return radioDemoInfo.demoName,n
+      elseif radioList then
+        if radioCategory=="blackTelephone"or radioCategory=="clearSideOpsForceMBRadio"then
+          gvars.forceMbRadioPlayedFlag[TppDefine.FORCE_MB_RETURN_RADIO_ENUM[radioName]]=true
         end
-        if listName=="freeHeliRadio"then
-          mvars.str_currentFreeHeliRadioList=o
+        if radioCategory=="freeHeliRadio"then
+          mvars.str_currentFreeHeliRadioList=radioList
         end
-        return o,a
+        return radioList,n
       end
     end
   end
@@ -2051,28 +2054,28 @@ end
 function this.GetCurrentFreeHeliRadioList()
   return mvars.str_currentFreeHeliRadioList
 end
-function this._GetRadioList(e,n)
-  if e.selectRadioFunction then
-    return e.selectRadioFunction(n)
+function this._GetRadioList(radioDemoInfo,options)
+  if radioDemoInfo.selectRadioFunction then
+    return radioDemoInfo.selectRadioFunction(options)
   end
-  return e.radioList
+  return radioDemoInfo.radioList
 end
-function this.IsDoneEvent(e,t,n,i)
-  if not t then
+function this.IsDoneEvent(radioDemoInfo,RENsomeBool,radioCategory,radioName)
+  if not RENsomeBool then
     return false
   end
-  if e.demoName then
-    return TppDemo.IsPlayedMBEventDemo(e.demoName)
+  if radioDemoInfo.demoName then
+    return TppDemo.IsPlayedMBEventDemo(radioDemoInfo.demoName)
   end
-  if e.radioList then
-    for n,e in ipairs(e.radioList)do
+  if radioDemoInfo.radioList then
+    for n,e in ipairs(radioDemoInfo.radioList)do
       if TppRadio.IsPlayed(e)then
         return true
       end
     end
-    if n=="blackTelephone"or n=="clearSideOpsForceMBRadio"then
-      if gvars.forceMbRadioPlayedFlag[TppDefine.FORCE_MB_RETURN_RADIO_ENUM[i]]then
-        for n,e in ipairs(e.radioList)do
+    if radioCategory=="blackTelephone"or radioCategory=="clearSideOpsForceMBRadio"then
+      if gvars.forceMbRadioPlayedFlag[TppDefine.FORCE_MB_RETURN_RADIO_ENUM[radioName]]then
+        for n,e in ipairs(radioDemoInfo.radioList)do
           TppRadio.SetPlayedGlobalFlag(e)
         end
         return true
@@ -2088,11 +2091,11 @@ function this.UpdateDemoFlagQuietWishGoMission()
   end
 end
 function this.DEBUG_GetUnclearedMissionCode()
-  for t,e in pairs(TppDefine.MISSION_ENUM)do
-    local n=gvars.str_missionOpenFlag[e]
-    local e=gvars.str_missionClearedFlag[e]
+  for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
+    local n=gvars.str_missionOpenFlag[enum]
+    local e=gvars.str_missionClearedFlag[enum]
     if n and(not e)then
-      return tonumber(t)
+      return tonumber(missionCodeStr)
     end
   end
 end
@@ -2117,8 +2120,8 @@ function this.DEBUG_TestStorySequence()
     TppTerminal.ReleaseMbSection()
     this.UpdateStorySequence{updateTiming="OnMissionClear",missionId=TppMission.GetMissionID()}
     this.DEBUG_SetNeedStoryTest(vars.missionCode)
-    local n=this.GetForceMBDemoNameOrRadioList"forceMBDemo"
-    this.GetForceMBDemoNameOrRadioList("blackTelephone",{demoName=n})
+    local demoName=this.GetForceMBDemoNameOrRadioList"forceMBDemo"
+    this.GetForceMBDemoNameOrRadioList("blackTelephone",{demoName=demoName})
     this.GetForceMBDemoNameOrRadioList"freeHeliRadio"
     this.GetForceMBDemoNameOrRadioList"freeHeliRadio"
     repeat
@@ -2197,7 +2200,8 @@ function this.DEBUG_SetNeedStoryTest(n)
     TppMotherBaseManagement.SetMbsClusterParam{category="Medical",grade=4,buildStatus="Completed"}coroutine.yield()
   end
   if n==10054 then
-    this.MissionOpen"10050"end
+    this.MissionOpen"10050"
+  end
   if n==10171 then
     TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Command",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
     TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Combat",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
@@ -2205,7 +2209,8 @@ function this.DEBUG_SetNeedStoryTest(n)
     TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="BaseDev",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
     TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Support",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
     TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Spy",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
-    TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Medical",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}coroutine.yield()
+    TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category="Medical",grade=4,buildStatus="Completed",timeMinute=0,isNew=false}
+    coroutine.yield()
     TppMotherBaseManagement.DEBUG_DirectAddRandomStaffs{count=3500}
   end
   if n==10240 then
@@ -2370,19 +2375,19 @@ function this.DecreaseElapsedMissionClearCount()
     end
   end
 end
-function this.EnableMissionNewOpenFlag(n)
-  this.SetMissionNewOpenFlag(n,true)
+function this.EnableMissionNewOpenFlag(missionCode)
+  this.SetMissionNewOpenFlag(missionCode,true)
 end
-function this.DisableMissionNewOpenFlag(n)
-  this.SetMissionNewOpenFlag(n,false)
+function this.DisableMissionNewOpenFlag(missionCode)
+  this.SetMissionNewOpenFlag(missionCode,false)
 end
-function this.SetMissionNewOpenFlag(e,n)
-  if TppMission.IsSysMissionId(e)then
+function this.SetMissionNewOpenFlag(missionCode,open)
+  if TppMission.IsSysMissionId(missionCode)then
     return
   end
-  local e=TppDefine.MISSION_ENUM[tostring(e)]
-  if e then
-    gvars.str_missionNewOpenFlag[e]=n
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(missionCode)]
+  if missionEnum then
+    gvars.str_missionNewOpenFlag[missionEnum]=open
   end
 end
 return this
