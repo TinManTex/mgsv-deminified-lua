@@ -239,8 +239,8 @@ function this.FadeIn(o,a,i,n)
   CallFadeIn(o,t,i)
   this.EnableGameStatusOnFadeInStart()
 end
-function this.OverrideFadeInGameStatus(e)
-  mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary=e
+function this.OverrideFadeInGameStatus(status)
+  mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary=status
 end
 function this.UnsetOverrideFadeInGameStatus()
   mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary=nil

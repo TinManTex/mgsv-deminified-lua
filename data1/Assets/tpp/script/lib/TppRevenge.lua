@@ -788,8 +788,8 @@ function this.SetUpEnemy()
     if cpId==NULL_ID then
     else
       if TppLocation.IsMotherBase()or TppLocation.IsMBQF()then
-        for RenamesomeMotherBaseCounter=0,3 do
-          this._ApplyRevengeToCp(cpId,mvars.revenge_revengeConfig,RenamesomeMotherBaseCounter)
+        for plant=0,3 do
+          this._ApplyRevengeToCp(cpId,mvars.revenge_revengeConfig,plant)
         end
       else
         this._ApplyRevengeToCp(cpId,mvars.revenge_revengeConfig)
@@ -1594,7 +1594,7 @@ end
 
 --CALLER: SetUpEnemy
 --INPUT: mvars.revenge_revengeConfig < _CreateRevengeConfig
-function this._ApplyRevengeToCp(cpId,revengeConfig,RENsomeMBcounter)
+function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   local revengeConfigCp={}--tex> -v- all changed from using revengeConfig to revengeConfigCp, GOTCHA: be wary of what you're modifying since other stuff reads the original revengeconfig and your changes wont be reflected
   for k,v in pairs(revengeConfig)do
     revengeConfigCp[k]=v
@@ -1612,8 +1612,8 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,RENsomeMBcounter)
         soldierIds={}
         local soldierLocators=mvars.mbSoldier_enableSoldierLocatorList[clusterIdList]
         for n,soldierName in ipairs(soldierLocators)do
-          local RENsomeMbSomethingId=tonumber(string.sub(soldierName,-6,-6))
-          if RENsomeMbSomethingId~=nil and RENsomeMbSomethingId==RENsomeMBcounter then
+          local soldierPlant=tonumber(string.sub(soldierName,-6,-6))
+          if soldierPlant~=nil and soldierPlant==plant then
             local soldierId=GameObject.GetGameObjectId("TppSoldier2",soldierName)
             soldierIds[soldierId]=r
           end

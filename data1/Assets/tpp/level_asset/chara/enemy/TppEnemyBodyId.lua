@@ -63,8 +63,8 @@ chd1_v03=133,
 chd1_v04=134,
 chd1_v05=135,
 
-dds0_main1_v00=140,--DD_PW
-dds0_main1_v01=141,--unused?
+dds0_main1_v00=140,--DD_PW--10115--bodyIdTable ASSAULT
+dds0_main1_v01=141,--DD_PW--10115
 dds3_main0_v00=142,--DD_A default/drab
 dds5_main0_v00=143,--DD_FOB Tiger
 dds5_main0_v01=144,--unused?

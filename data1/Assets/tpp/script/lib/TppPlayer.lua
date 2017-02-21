@@ -1936,6 +1936,10 @@ function this.MakeFultonRecoverSucceedRatio(t,_gameId,RENAMEanimalId,r,staffOrRe
   if Ivars.mbWarGamesProfile:Is"INVASION" then--tex> WORKAROUND something weird happening with fuledtempstaff on map exit, disabling for now
     percentage=0
   end--<
+  if Tpp.IsFultonContainer(gameId) and vars.missionCode==30050 and Ivars.mbCollectionRepop:Is(1)then--tex> more weirdness
+    percentage=0
+  end--<
+  
   local forcePercent
   if mvars.ply_forceFultonPercent then
     forcePercent=mvars.ply_forceFultonPercent[gameId]
