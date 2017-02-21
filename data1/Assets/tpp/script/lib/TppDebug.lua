@@ -156,9 +156,9 @@ function this.DEBUG_FobGPU()
   local Debug_setupfob=function(topologyType)
     math.randomseed(os.time())
     TppMotherBaseManagement.SetGmp{gmp=1e6}
-    local e=300
+    local staffCount=300
     if TppMotherBaseManagement.DEBUG_DirectAddRandomStaffs then
-      TppMotherBaseManagement.DEBUG_DirectAddRandomStaffs{count=e}
+      TppMotherBaseManagement.DEBUG_DirectAddRandomStaffs{count=staffCount}
     end
     do
       local resources={CommonMetal=100,MinorMetal=100,PreciousMetal=100,FuelResource=100,BioticResource=100}
@@ -172,8 +172,8 @@ function this.DEBUG_FobGPU()
     end
     do
       local colors={"Orange","Blue","Black","Blick","Gray","Od","Pink","Sand"}
-      local r=math.random(1,#colors)
-      TppMotherBaseManagement.SetFobSvars{fob="Fob1",got=true,oceanAreaId=70,topologyType=topologyType,color=colors[r]}
+      local randomColor=math.random(1,#colors)
+      TppMotherBaseManagement.SetFobSvars{fob="Fob1",got=true,oceanAreaId=70,topologyType=topologyType,color=colors[randomColor]}
       local categories={"Command","Combat","Develop","BaseDev","Support","Spy","Medical"}
       for e,category in ipairs(categories)do
         local grade=math.random(4,4)

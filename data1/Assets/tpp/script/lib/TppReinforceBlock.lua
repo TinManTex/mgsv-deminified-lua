@@ -384,8 +384,8 @@ function this._DeactivateReinforce()
     local leaveSoldiers=this._HasSoldier and Ivars.forceSuperReinforce:Is()>0--tex 
     if not leaveSoldiers then--tex added check
       mvars.reinforce_isEnabledSoldiers=false
-      for n,r in ipairs(this.REINFORCE_SOLDIER_NAMES)do
-        this._SetEnabledSoldier(r,false)
+      for n,soldierName in ipairs(this.REINFORCE_SOLDIER_NAMES)do
+        this._SetEnabledSoldier(soldierName,false)
       end
     end
   end

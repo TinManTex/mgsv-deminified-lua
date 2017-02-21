@@ -621,12 +621,12 @@ end
 function this.Hide(hide)
   this.SetVisibility(hide,true)
 end
-function this.SetVisibility(e,n)
-  local e=mvars.gim_identifierParamTable[e]
-  if not e then
+function this.SetVisibility(gimmickId,visible)
+  local identifierParams=mvars.gim_identifierParamTable[gimmickId]
+  if not identifierParams then
     return
   end
-  Gimmick.InvisibleGimmick(e.type,e.locatorName,e.dataSetName,n)
+  Gimmick.InvisibleGimmick(identifierParams.type,identifierParams.locatorName,identifierParams.dataSetName,visible)
   return true
 end
 function this.UnlockLandingZone(e)
@@ -756,7 +756,7 @@ function this.OnActivateQuest(questTable)
   if mvars.gim_isQuestSetup==false then
     this.InitQuest()
   end
-  local t=false
+  local questIsSetUp=false
   if mvars.gim_isQuestSetup==false then
     if(questTable.targetGimmicklList and Tpp.IsTypeTable(questTable.targetGimmicklList))and next(questTable.targetGimmicklList)then
       for n,gimmickId in pairs(questTable.targetGimmicklList)do
@@ -764,14 +764,14 @@ function this.OnActivateQuest(questTable)
         table.insert(mvars.gim_questTargetList,targetInfo)
         TppMarker.SetQuestMarkerGimmick(gimmickId)
       end
-      t=true
+      questIsSetUp=true
     end
     if(questTable.targetDevelopList and Tpp.IsTypeTable(questTable.targetDevelopList))and next(questTable.targetDevelopList)then
       for n,e in pairs(questTable.targetDevelopList)do
-        local e={developId=e,messageId="None",idType="Develop"}
-        table.insert(mvars.gim_questTargetList,e)
+        local targetInfo={developId=e,messageId="None",idType="Develop"}
+        table.insert(mvars.gim_questTargetList,targetInfo)
       end
-      t=true
+      questIsSetUp=true
     end
     if(questTable.gimmickMarkList and Tpp.IsTypeTable(questTable.gimmickMarkList))and next(questTable.gimmickMarkList)then
       for n,e in pairs(questTable.gimmickMarkList)do
@@ -781,27 +781,27 @@ function this.OnActivateQuest(questTable)
           mvars.gim_questMarkStartData=e.dataSetName
           Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,mvars.gim_questMarkStartLocator,mvars.gim_questMarkStartData,true)
         else
-          local e={locatorName=e.locatorName,dataSetName=e.dataSetName,messageId="None",setIndex=e.setIndex}
-          table.insert(mvars.gim_questTargetList,e)
-          t=true
+          local targetInfo={locatorName=e.locatorName,dataSetName=e.dataSetName,messageId="None",setIndex=e.setIndex}
+          table.insert(mvars.gim_questTargetList,targetInfo)
+          questIsSetUp=true
           mvars.gim_questMarkTotalCount=mvars.gim_questMarkTotalCount+1
         end
       end
-      t=true
+      questIsSetUp=true
       this.SetQuestInvisibleGimmick(0,true,true)
     end
     if questTable.gimmickTimerList then
       mvars.gim_questDisplayTimeSec=questTable.gimmickTimerList.displayTimeSec
       mvars.gim_questCautionTimeSec=questTable.gimmickTimerList.cautionTimeSec
-      t=true
+      questIsSetUp=true
     end
     if questTable.gimmickOffsetType then
-      local n,e=mtbs_cluster.GetDemoCenter(questTable.gimmickOffsetType,"plnt0")
-      Gimmick.SetOffsetPosition(n,e)
+      local position,rotation=mtbs_cluster.GetDemoCenter(questTable.gimmickOffsetType,"plnt0")
+      Gimmick.SetOffsetPosition(position,rotation)
       if mvars.gim_questMarkStartName then
         Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,mvars.gim_questMarkStartLocator,mvars.gim_questMarkStartData,false)
       end
-      t=true
+      questIsSetUp=true
     end
     if(questTable.containerList and Tpp.IsTypeTable(questTable.containerList))and next(questTable.containerList)then
       for n,container in pairs(questTable.containerList)do
@@ -809,10 +809,10 @@ function this.OnActivateQuest(questTable)
         local dataSetName=container.dataSetName
         Gimmick.SetFultonableContainerForMission(locatorName,dataSetName,0,false)
       end
-      t=true
+      questIsSetUp=true
     end
   end
-  if t==true then
+  if questIsSetUp==true then
     mvars.gim_isQuestSetup=true
   end
 end
@@ -936,9 +936,9 @@ function this.IsQuestTarget(i)
 end
 function this.SetQuestInvisibleGimmick(t,i,e)
   local n=e or false
-  for o,e in pairs(mvars.gim_questTargetList)do
+  for o,gimmickIdInfo in pairs(mvars.gim_questTargetList)do
     if t==mvars.gim_questMarkSetIndex or n==true then
-      Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,e.locatorName,e.dataSetName,i)
+      Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,gimmickIdInfo.locatorName,gimmickIdInfo.dataSetName,i)
     end
   end
 end

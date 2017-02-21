@@ -159,15 +159,15 @@ this.demoOptions={
     isFinishFadeOut=true,heliEnableAfterDemo=true},
   LongTimeNoSee_DDSoldier={time="14:30:00",weather=TppDefine.WEATHER.SUNNY,heliEnableAfterDemo=true,OnEnter=function()
     if Ivars.mbDemoSelection:Is(1) then return end--tex skip demo onend
-    local e="/Assets/tpp/level/mission2/free/f30050/f30050_gimmick_target.fox2"
+    local dataSetName="/Assets/tpp/level/mission2/free/f30050/f30050_gimmick_target.fox2"
     local t="mtbs_bord001_vrtn003_gim_n0000|srt_mtbs_bord001_vrtn003"
     local n="mtbs_bord001_vrtn003_gim_n0001|srt_mtbs_bord001_vrtn003"
     local o="mtbs_bord001_vrtn003_gim_n0002|srt_mtbs_bord001_vrtn003"
     local l="mtbs_bord001_vrtn003_gim_n0003|srt_mtbs_bord001_vrtn003"
-    Gimmick.InvisibleGimmick(-1,t,e,true)
-    Gimmick.InvisibleGimmick(-1,n,e,true)
-    Gimmick.InvisibleGimmick(-1,o,e,true)
-    Gimmick.InvisibleGimmick(-1,l,e,true)
+    Gimmick.InvisibleGimmick(-1,t,dataSetName,true)
+    Gimmick.InvisibleGimmick(-1,n,dataSetName,true)
+    Gimmick.InvisibleGimmick(-1,o,dataSetName,true)
+    Gimmick.InvisibleGimmick(-1,l,dataSetName,true)
     gvars.elapsedTimeSinceLastPlay=0
   end,
   demoEndRouteList={{locatorName="ly003_cl00_npc0000|cl00pl0_uq_0000_npc2|sol_plnt0_0002",routeName="ly003_cl00_route0000|cl00pl0_uq_0000_free|rt_p51_010060_0001"},
@@ -766,8 +766,8 @@ function this.PlayMtbsEventDemo(params)
         pos=Vector3(5e3,0,5e3)
         rotQuat=Quat.RotationY(0)
       else
-        local e,l=this.GetDemoPlayCluster(demoName)
-        pos,rotQuat=mtbs_cluster.GetDemoCenter(e,l)
+        local cluster,plant=this.GetDemoPlayCluster(demoName)
+        pos,rotQuat=mtbs_cluster.GetDemoCenter(cluster,plant)
       end
       DemoDaemon.SetDemoTransform(f30050_demo.demoList[demoName],rotQuat,pos)
       if not noHeli then

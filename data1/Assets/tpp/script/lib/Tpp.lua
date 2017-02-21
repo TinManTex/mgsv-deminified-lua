@@ -503,7 +503,7 @@ function this.IsMortar(e)--RETAILPATCH 1070
   return IsGameObjectType(e,TppGameObject.GAME_OBJECT_TYPE_MORTAR)
 end
 function this.IsGatlingGun(e)
-  return IsGameObjectTypen(e,TppGameObject.GAME_OBJECT_TYPE_GATLINGGUN)
+  return IsGameObjectType(e,TppGameObject.GAME_OBJECT_TYPE_GATLINGGUN)
 end
 function this.IsMachineGun(e)
   return IsGameObjectType(e,TppGameObject.GAME_OBJECT_TYPE_MACHINEGUN)

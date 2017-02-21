@@ -77,6 +77,8 @@ TppEquip.ReloadEquipMotionData{
     {TppEquip.EQP_WP_SP_sm_010,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sm02_default.mtar"},
     {TppEquip.EQP_WP_SP_sg_010,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sg02_default.mtar"},
     {TppEquip.EQP_WP_EX_hg_000,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},
+    {TppEquip.EQP_WP_EX_hg_000_G01,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},--RETAILPATCH 1080
+    {TppEquip.EQP_WP_EX_hg_000_G02,"/Assets/tpp/motion/mtar/equip/chimera/receiver/hg01_default.mtar"},--RETAILPATCH 1080
     {TppEquip.EQP_WP_EX_gl_000,"/Assets/tpp/motion/mtar/equip/chimera/receiver/gl00_default.mtar"},
     {TppEquip.EQP_WP_EX_sr_000,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sr04_default.mtar"},
     {TppEquip.EQP_WP_West_sm_016,"/Assets/tpp/motion/mtar/equip/chimera/assemble/sm01_asm.mtar"},

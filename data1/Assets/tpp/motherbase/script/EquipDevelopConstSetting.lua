@@ -1,23 +1,23 @@
 --EquipDevelopConstSetting.lua
 --From https://github.com/NuLLxD/MGSVLUA
---TppMotherBaseManagement.RegCstDev 
---{ 
---   p00=50071, //Item ID 
---   p01=TppEquip.EQP_WP_Com_sg_020_FL, //Asset name 
---   p02=TppMbDev.EQP_DEV_TYPE_Shotgun, //Asset type 
---   p03=0, //Prerequisite Item ID 
---   p04=0, //Specialist requirement (handgun specialist, cybernetics specialist, etc) 
---   p05=65535, //Required flag (set 0 to disable check) - 65535, TppMotherBaseManagementConst.DESIGN_2000, 
---   p06="name_wp_4040", //Item name (displayed in iDroid) 
---   p07="info_wp_4040", //Item description (displayed in iDroid) 
---   p08="/Assets/tpp/ui/texture/EquipIcon/npc/ui_wp_com_sg_020_alp", //Item picture (displayed in iDroid) 
---   p09=TppMbDev.EQP_DEV_GROUP_WEAPON_180, //Item group (tool/item/skin/etc) 
+--TppMotherBaseManagement.RegCstDev
+--{
+--   p00=50071, //Item ID
+--   p01=TppEquip.EQP_WP_Com_sg_020_FL, //Asset name
+--   p02=TppMbDev.EQP_DEV_TYPE_Shotgun, //Asset type
+--   p03=0, //Prerequisite Item ID
+--   p04=0, //Specialist requirement (handgun specialist, cybernetics specialist, etc)
+--   p05=65535, //Required flag (set 0 to disable check) - 65535, TppMotherBaseManagementConst.DESIGN_2000,
+--   p06="name_wp_4040", //Item name (displayed in iDroid)
+--   p07="info_wp_4040", //Item description (displayed in iDroid)
+--   p08="/Assets/tpp/ui/texture/EquipIcon/npc/ui_wp_com_sg_020_alp", //Item picture (displayed in iDroid)
+--   p09=TppMbDev.EQP_DEV_GROUP_WEAPON_180, //Item group (tool/item/skin/etc)
 --   p30="real_wp_4040", //Base item --tex long name?
---   p31=0, //??? (boolean) 
---   p32=0, //??? (boolean 
---   p33=0, //??? (boolean) 
---   p34=0, //??? (boolean) 
---   p35=0 //Equippable by security staff (boolean) 
+--   p31=0, //??? (boolean)
+--   p32=0, //??? (boolean
+--   p33=0, //??? (boolean)
+--   p34=0, //??? (boolean)
+--   p35=0 //Equippable by security staff (boolean)
 --}
 
 --name,description,long name: \Assets\tpp\lang\ui\tpp_weapon.eng.lng2
@@ -15333,6 +15333,46 @@ TppMotherBaseManagement.RegCstDev{
   p09=TppMbDev.EQP_DEV_GROUP_OTHER_124,
   p10="ability_1103",
   p30="name_mb_38043",
+  p31=0,
+  p32=0,
+  p33=0,
+  p34=0,
+  p35=0,
+  p36=0
+}
+--RETAILPATCH 1080 added
+TppMotherBaseManagement.RegCstDev{
+  p00=1093,
+  p01=TppEquip.EQP_WP_EX_hg_000_G01,
+  p02=TppMbDev.EQP_DEV_TYPE_Handgun,
+  p03=1092,
+  p04=0,
+  p05=65535,
+  p06="name_wp_1092",
+  p07="info_wp_1092",
+  p08="/Assets/tpp/ui/texture/EquipIcon/weapon/ui_wp_hg12_00_10_alp",
+  p09=TppMbDev.EQP_DEV_GROUP_WEAPON_010,
+  p30="real_wp_1092",
+  p31=0,
+  p32=0,
+  p33=0,
+  p34=0,
+  p35=0,
+  p36=0
+}
+--RETAILPATCH 1080 added
+TppMotherBaseManagement.RegCstDev{
+  p00=1094,
+  p01=TppEquip.EQP_WP_EX_hg_000_G02,
+  p02=TppMbDev.EQP_DEV_TYPE_Handgun,
+  p03=1093,
+  p04=0,
+  p05=65535,
+  p06="name_wp_1092",
+  p07="info_wp_1092",
+  p08="/Assets/tpp/ui/texture/EquipIcon/weapon/ui_wp_hg12_00_10_alp",
+  p09=TppMbDev.EQP_DEV_GROUP_WEAPON_010,
+  p30="real_wp_1092",
   p31=0,
   p32=0,
   p33=0,

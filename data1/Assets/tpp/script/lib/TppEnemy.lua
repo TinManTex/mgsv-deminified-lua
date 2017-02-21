@@ -924,7 +924,7 @@ function this.GetSoldierSubType(soldierId,soldierType)
     return"DD_PW"
   end
 
-  if TppMission.IsFOBMission(missionCode)or (missionCode==30050 and (InfMain.IsDDEquip(missionCode) or InfMain.IsDDBodyEquip(missionCode))) then--tex added ismbplay
+  if TppMission.IsFOBMission(missionCode) then
     return"DD_FOB"
   end
   local soldierSubType=nil
@@ -1002,7 +1002,7 @@ function this._CreateDDWeaponIdTable(developedEquipGradeTable,soldierEquipGrade,
         local developRank=TppMotherBaseManagement.GetEquipDevelopRank(developId)
 
         local overrideDeveloped=false--tex>
-        if InfMain.IsDDEquip() and Ivars.allowUndevelopedDDEquip:Is(0) then        
+        if InfMain.IsDDEquip() and Ivars.allowUndevelopedDDEquip:Is(0) then
           --tex WORKAROUND developedEquipGradeTable is zeroed if mission is not motherbase
           if TppMotherBaseManagement.IsEquipDevelopedFromDevelopID{equipDevelopID=developId} then
             overrideDeveloped=true
@@ -2216,77 +2216,77 @@ function this.ChangeLifeState(stateInfo)
     return"Cannot get gameObjectId. targetName = "..tostring(targetName)
   end
 end
-function this.SetSneakRoute(e,s,t,i)
-  if not e then
+function this.SetSneakRoute(gameId,route,point,isRelaxed)
+  if not gameId then
     return
   end
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+  if IsTypeString(gameId)then
+    gameId=GameObject.GetGameObjectId(gameId)
   end
-  t=t or 0
-  local r=false
-  if Tpp.IsTypeTable(i)then
-    r=i.isRelaxed
+  point=point or 0
+  local isRelaxed=false
+  if Tpp.IsTypeTable(isRelaxed)then
+    isRelaxed=isRelaxed.isRelaxed
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetSneakRoute",route=s,point=t,isRelaxed=r})
+  if gameId~=NULL_ID then
+    SendCommand(gameId,{id="SetSneakRoute",route=route,point=point,isRelaxed=isRelaxed})
   end
 end
-function this.UnsetSneakRoute(e)
-  if not e then
+function this.UnsetSneakRoute(soldierId)
+  if not soldierId then
     return
   end
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetSneakRoute",route=""})
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetSneakRoute",route=""})
   end
 end
-function this.SetCautionRoute(e,i,t,r)
-  if not e then
+function this.SetCautionRoute(soldierId,route,point,r)
+  if not soldierId then
     return
   end
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  t=t or 0
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetCautionRoute",route=i,point=t})
+  point=point or 0
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetCautionRoute",route=route,point=point})
   end
 end
-function this.UnsetCautionRoute(e)
-  if not e then
+function this.UnsetCautionRoute(soldierId)
+  if not soldierId then
     return
   end
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetCautionRoute",route=""})
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetCautionRoute",route=""})
   end
 end
-function this.SetAlertRoute(e,i,t,r)
-  if not e then
+function this.SetAlertRoute(soldierId,route,point,r)
+  if not soldierId then
     return
   end
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  t=t or 0
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetAlertRoute",enabled=true,route=i,point=t})
+  point=point or 0
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetAlertRoute",enabled=true,route=route,point=point})
   end
 end
-function this.UnsetAlertRoute(e)
-  if not e then
+function this.UnsetAlertRoute(soldierId)
+  if not soldierId then
     return
   end
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetAlertRoute",enabled=false,route=""})
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetAlertRoute",enabled=false,route=""})
   end
 end
 function this.RegistRoutePointMessage(e)
@@ -2296,13 +2296,13 @@ function this.RegistRoutePointMessage(e)
   mvars.ene_routePointMessage=mvars.ene_routePointMessage or{}
   mvars.ene_routePointMessage.main=mvars.ene_routePointMessage.main or{}
   mvars.ene_routePointMessage.sequence=mvars.ene_routePointMessage.sequence or{}
-  local n={}
-  n[StrCode32"GameObject"]=Tpp.StrCode32Table(e.messages)
-  local n=(Tpp.MakeMessageExecTable(n))[StrCode32"GameObject"]
-  local e=e.sequenceName
-  if e then
-    mvars.ene_routePointMessage.sequence[e]=mvars.ene_routePointMessage.sequence[e]or{}
-    Tpp.MergeTable(mvars.ene_routePointMessage.sequence[e],n,true)
+  local messages={}
+  messages[StrCode32"GameObject"]=Tpp.StrCode32Table(e.messages)
+  local n=(Tpp.MakeMessageExecTable(messages))[StrCode32"GameObject"]
+  local sequenceName=e.sequenceName
+  if sequenceName then
+    mvars.ene_routePointMessage.sequence[sequenceName]=mvars.ene_routePointMessage.sequence[sequenceName]or{}
+    Tpp.MergeTable(mvars.ene_routePointMessage.sequence[sequenceName],n,true)
   else
     Tpp.MergeTable(mvars.ene_routePointMessage.main,n,true)
   end
@@ -2327,67 +2327,67 @@ function this.ChangeRouteSets(t,a)
   mvars.ene_routeSetsPriority={}
   mvars.ene_routeSetsFixedShiftChange={}
   this.UpdateRouteSet(mvars.ene_routeSetsDefine)
-  local t={{{"old","immediately"},{"new","immediately"}}}
+  local schedule={{{"old","immediately"},{"new","immediately"}}}
   for e,a in pairs(mvars.ene_cpList)do
     SendCommand(e,{id="ChangeRouteSets"})
-    SendCommand(e,{id="ShiftChange",schedule=t})
+    SendCommand(e,{id="ShiftChange",schedule=schedule})
   end
 end
 function this.InitialRouteSetGroup(e)
-  local t=GetGameObjectId(e.cpName)
-  local o=e.groupName
+  local cpId=GetGameObjectId(e.cpName)
+  local groupName=e.groupName
   if not IsTypeTable(e.soldierList)then
     return
   end
-  local i={}
-  for n,e in pairs(e.soldierList)do
-    local e=GetGameObjectId(e)
-    if e~=NULL_ID then
-      i[n]=e
+  local soldiers={}
+  for n,soldierName in pairs(e.soldierList)do
+    local soldierId=GetGameObjectId(soldierName)
+    if soldierId~=NULL_ID then
+      soldiers[n]=soldierId
     end
   end
-  if t==NULL_ID then
+  if cpId==NULL_ID then
     return
   end
-  SendCommand(t,{id="AssignSneakRouteGroup",soldiers=i,group=o})
+  SendCommand(cpId,{id="AssignSneakRouteGroup",soldiers=soldiers,group=groupName})
 end
-function this.RegisterHoldTime(e,n)
-  local e=GetGameObjectId(e)
-  if e==NULL_ID then
+function this.RegisterHoldTime(soldierName,holdTime)
+  local soldierId=GetGameObjectId(soldierName)
+  if soldierId==NULL_ID then
     return
   end
-  mvars.ene_holdTimes[e]=n
+  mvars.ene_holdTimes[soldierId]=holdTime
 end
-function this.ChangeHoldTime(n,t)
-  local n=GetGameObjectId(n)
-  if n==NULL_ID then
+function this.ChangeHoldTime(soldierName,holdTime)
+  local soldierId=GetGameObjectId(soldierName)
+  if soldierId==NULL_ID then
     return
   end
-  mvars.ene_holdTimes[n]=t
+  mvars.ene_holdTimes[soldierId]=holdTime
   this.MakeShiftChangeTable()
 end
-function this.RegisterSleepTime(e,n)
-  local e=GetGameObjectId(e)
-  if e==NULL_ID then
+function this.RegisterSleepTime(soldierName,sleepTime)
+  local soldierId=GetGameObjectId(soldierName)
+  if soldierId==NULL_ID then
     return
   end
-  mvars.ene_sleepTimes[e]=n
+  mvars.ene_sleepTimes[soldierId]=sleepTime
 end
-function this.ChangeSleepTime(n,t)
-  local n=GetGameObjectId(n)
-  if n==NULL_ID then
+function this.ChangeSleepTime(soldierName,sleepTime)
+  local soldierId=GetGameObjectId(soldierName)
+  if soldierId==NULL_ID then
     return
   end
-  mvars.ene_sleepTimes[n]=t
+  mvars.ene_sleepTimes[soldierId]=sleepTime
   this.MakeShiftChangeTable()
 end
-function this.NoShifhtChangeGruopSetting(e,n)
-  local e=GetGameObjectId(e)
-  if e==NULL_ID then
+function this.NoShifhtChangeGruopSetting(soldierName,n)
+  local soldierId=GetGameObjectId(soldierName)
+  if soldierId==NULL_ID then
     return
   end
-  mvars.ene_noShiftChangeGroupSetting[e]=mvars.ene_noShiftChangeGroupSetting[e]or{}
-  mvars.ene_noShiftChangeGroupSetting[e][StrCode32(n)]=true
+  mvars.ene_noShiftChangeGroupSetting[soldierId]=mvars.ene_noShiftChangeGroupSetting[soldierId]or{}
+  mvars.ene_noShiftChangeGroupSetting[soldierId][StrCode32(n)]=true
 end
 function this.RegisterCombatSetting(t)
   local function i(t,e)
@@ -2403,13 +2403,13 @@ function this.RegisterCombatSetting(t)
   if not IsTypeTable(t)then
     return
   end
-  for n,e in pairs(t)do
+  for cpName,e in pairs(t)do
     if e.USE_COMMON_COMBAT and mvars.loc_locationCommonCombat then
-      if mvars.loc_locationCommonCombat[n]then
+      if mvars.loc_locationCommonCombat[cpName]then
         if e.combatAreaList then
-          e.combatAreaList=i(e.combatAreaList,mvars.loc_locationCommonCombat[n].combatAreaList)
+          e.combatAreaList=i(e.combatAreaList,mvars.loc_locationCommonCombat[cpName].combatAreaList)
         else
-          e=mvars.loc_locationCommonCombat[n]
+          e=mvars.loc_locationCommonCombat[cpName]
         end
       end
     end
@@ -2417,51 +2417,51 @@ function this.RegisterCombatSetting(t)
       for t,e in pairs(e.combatAreaList)do
         for t,e in pairs(e)do
           if e.guardTargetName and e.locatorSetName then
-            TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=n,locatorSetName=e.guardTargetName}
-            TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=n,locatorSetName=e.locatorSetName}
+            TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=cpName,locatorSetName=e.guardTargetName}
+            TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=cpName,locatorSetName=e.locatorSetName}
           end
         end
       end
-      local t={type="TppCommandPost2"}
-      local e={id="SetCombatArea",cpName=n,combatAreaList=e.combatAreaList}
-      GameObject.SendCommand(t,e)
+      local type={type="TppCommandPost2"}
+      local command={id="SetCombatArea",cpName=cpName,combatAreaList=e.combatAreaList}
+      GameObject.SendCommand(type,command)
     else
-      for t,e in ipairs(e)do
-        TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=n,locatorSetName=e}
+      for t,locatorSetName in ipairs(e)do
+        TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=cpName,locatorSetName=locatorSetName}
       end
     end
   end
 end
-function this.SetEnable(e)
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+function this.SetEnable(soldierId)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetEnabled",enabled=true})
-  end
-end
-function this.SetDisable(e,t)
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
-  end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetEnabled",enabled=false,noAssignRoute=t})
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetEnabled",enabled=true})
   end
 end
-function this.SetEnableRestrictNotice(e)
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+function this.SetDisable(soldierId,noAssignRoute)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetRestrictNotice",enabled=true})
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetEnabled",enabled=false,noAssignRoute=noAssignRoute})
   end
 end
-function this.SetDisableRestrictNotice(e)
-  if IsTypeString(e)then
-    e=GameObject.GetGameObjectId(e)
+function this.SetEnableRestrictNotice(soldierId)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
   end
-  if e~=NULL_ID then
-    SendCommand(e,{id="SetRestrictNotice",enabled=false})
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetRestrictNotice",enabled=true})
+  end
+end
+function this.SetDisableRestrictNotice(soldierId)
+  if IsTypeString(soldierId)then
+    soldierId=GameObject.GetGameObjectId(soldierId)
+  end
+  if soldierId~=NULL_ID then
+    SendCommand(soldierId,{id="SetRestrictNotice",enabled=false})
   end
 end
 function this.RealizeParasiteSquad()
@@ -2469,9 +2469,9 @@ function this.RealizeParasiteSquad()
     return
   end
   for t,soldierName in pairs(mvars.ene_parasiteSquadList)do
-    local e=GetGameObjectId("TppParasite2",soldierName)
-    if e~=NULL_ID then
-      SendCommand(e,{id="Realize"})
+    local gameId=GetGameObjectId("TppParasite2",soldierName)
+    if gameId~=NULL_ID then
+      SendCommand(gameId,{id="Realize"})
     end
   end
 end
@@ -2480,9 +2480,9 @@ function this.UnRealizeParasiteSquad()
     return
   end
   for t,soldierName in pairs(mvars.ene_parasiteSquadList)do
-    local e=GetGameObjectId("TppParasite2",soldierName)
-    if e~=NULL_ID then
-      SendCommand(e,{id="Unrealize"})
+    local gameId=GetGameObjectId("TppParasite2",soldierName)
+    if gameId~=NULL_ID then
+      SendCommand(gameId,{id="Unrealize"})
     end
   end
 end
@@ -2679,11 +2679,11 @@ function this.DeclareSVars(missionTable)
     nil
   }
   if Vehicle.svars then
-    local e=Vehicle.instanceCountMax
+    local instanceCount=Vehicle.instanceCountMax
     if mvars.ene_vehicleDefine and mvars.ene_vehicleDefine.instanceCount then
-      e=mvars.ene_vehicleDefine.instanceCount
+      instanceCount=mvars.ene_vehicleDefine.instanceCount
     end
-    Tpp.ApendArray(svarList,Vehicle.svars{instanceCount=e})
+    Tpp.ApendArray(svarList,Vehicle.svars{instanceCount=instanceCount})
   end
   return svarList
 end
@@ -3207,21 +3207,22 @@ function this.SetCommonCpGroups()
   end
 end
 function this.SetCpGroups()
-  local t={type="TppCommandPost2"}
-  local e={id="SetCpGroups",cpGroups=mvars.ene_cpGroups}
-  SendCommand(t,e)
+  local type={type="TppCommandPost2"}
+  local command={id="SetCpGroups",cpGroups=mvars.ene_cpGroups}
+  SendCommand(type,command)
 end
-function this.RegistVehicleSettings(vehicleSettings)--missionTable.enemy.vehicleSettings ORPHANED: VERIFY:
+--IN: missionTable.enemy.vehicleSettings ORPHANED: VERIFY:
+function this.RegistVehicleSettings(vehicleSettings)
   if not IsTypeTable(vehicleSettings)then
     return
-end
-mvars.ene_vehicleSettings=vehicleSettings
-local instanceCount=0
-for e,e in pairs(vehicleSettings)do
-  instanceCount=instanceCount+1
-end
-mvars.ene_vehicleDefine=mvars.ene_vehicleDefine or{}
-mvars.ene_vehicleDefine.instanceCount=instanceCount
+  end
+  mvars.ene_vehicleSettings=vehicleSettings
+  local instanceCount=0
+  for e,e in pairs(vehicleSettings)do
+    instanceCount=instanceCount+1
+  end
+  mvars.ene_vehicleDefine=mvars.ene_vehicleDefine or{}
+  mvars.ene_vehicleDefine.instanceCount=instanceCount
 end
 --NMC vehicleSpawnList = *_enemy.lua .VEHICLE_SPAWN_LIST
 function this.SpawnVehicles(vehicleSpawnList)
@@ -3300,16 +3301,17 @@ end
 function this.GetCpIntelTrapTable()
   return mvars.ene_cpIntelTrapTable
 end
-function this.GetCurrentRouteSetType(routeTypeStr32,phase,r)
-  local SetForTime=function(n,timeOfDay)
+function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
+  local SetForTime=function(cpId,timeOfDay)
     if not timeOfDay then
       timeOfDay=TppClock.GetTimeOfDayIncludeMidNight()
     end
     local e="sneak"..("_"..timeOfDay)
-    if n then
-      local n=not next(mvars.ene_routeSets[n].sneak_midnight)
+    if cpId then
+      local n=not next(mvars.ene_routeSets[cpId].sneak_midnight)
       if e=="sneak_midnight"and n then
-        e="sneak_night"end
+        e="sneak_night"
+      end
     end
     return e
   end
@@ -3329,31 +3331,31 @@ function this.GetCurrentRouteSetType(routeTypeStr32,phase,r)
       return"sleep"
     end
     if phase==this.PHASE.SNEAK then
-      routeSetType=SetForTime(r,routeSetType)
+      routeSetType=SetForTime(cpId,routeSetType)
     else
       routeSetType="caution"
     end
   else
     if phase==this.PHASE.SNEAK then
-      routeSetType=SetForTime(r)
+      routeSetType=SetForTime(cpId)
     else
       routeSetType="caution"end
   end
   return routeSetType
 end
-function this.GetPrioritizedRouteTable(e,n,t,r)
-  local i={}
-  local a=t[e]
+function this.GetPrioritizedRouteTable(cpId,routeSets,routeSetsPriority,sysPhase)
+  local routeList={}
+  local a=routeSetsPriority[cpId]
   if not IsTypeTable(a)then
     return
   end
   if mvars.ene_funcRouteSetPriority then
-    i=mvars.ene_funcRouteSetPriority(e,n,t,r)
+    routeList=mvars.ene_funcRouteSetPriority(cpId,routeSets,routeSetsPriority,sysPhase)
   else
     local t=0
     for a,e in ipairs(a)do
-      if n[e]then
-        local e=#n[e]
+      if routeSets[e]then
+        local e=#routeSets[e]
         if e>t then
           t=e
         end
@@ -3362,11 +3364,11 @@ function this.GetPrioritizedRouteTable(e,n,t,r)
     local e=1
     for r=1,t do
       for a,t in ipairs(a)do
-        local n=n[t]
+        local n=routeSets[t]
         if n then
           local n=n[r]
           if n and Tpp.IsTypeTable(n)then
-            i[e]=n
+            routeList[e]=n
             e=e+1
           end
         end
@@ -3374,52 +3376,52 @@ function this.GetPrioritizedRouteTable(e,n,t,r)
     end
     for r=1,t do
       for a,t in ipairs(a)do
-        local n=n[t]
+        local n=routeSets[t]
         if n then
           local n=n[r]
           if n and not Tpp.IsTypeTable(n)then
-            i[e]=n
+            routeList[e]=n
             e=e+1
           end
         end
       end
     end
   end
-  return i
+  return routeList
 end
-function this.RouteSelector(cpId,i,a)
-  local t=mvars.ene_routeSets[cpId]
-  if t==nil then
+function this.RouteSelector(cpId,i,sysPhase)
+  local routeSets=mvars.ene_routeSets[cpId]
+  if routeSets==nil then
     return{"dummyRoute"}
   end
-  if a==StrCode32"immediately"then
+  if sysPhase==StrCode32"immediately"then
     if i==StrCode32"old"then
-      local t=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
-      return this.GetPrioritizedRouteTable(cpId,mvars.ene_routeSetsTemporary[cpId][t],mvars.ene_routeSetsPriorityTemporary)
+      local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      return this.GetPrioritizedRouteTable(cpId,mvars.ene_routeSetsTemporary[cpId][currentRouteSetType],mvars.ene_routeSetsPriorityTemporary)
     else
-      local a=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
-      return this.GetPrioritizedRouteTable(cpId,t[a],mvars.ene_routeSetsPriority)
+      local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      return this.GetPrioritizedRouteTable(cpId,routeSets[currentRouteSetType],mvars.ene_routeSetsPriority)
     end
   end
-  if a==StrCode32"SYS_Sneak"then
-    local i=this.GetCurrentRouteSetType(nil,this.PHASE.SNEAK,cpId)
-    return this.GetPrioritizedRouteTable(cpId,t[i],mvars.ene_routeSetsPriority,a)
+  if sysPhase==StrCode32"SYS_Sneak"then
+    local sneakRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.SNEAK,cpId)
+    return this.GetPrioritizedRouteTable(cpId,routeSets[sneakRouteSetType],mvars.ene_routeSetsPriority,sysPhase)
   end
-  if a==StrCode32"SYS_Caution"then
-    local i=this.GetCurrentRouteSetType(nil,this.PHASE.CAUTION,cpId)
-    return this.GetPrioritizedRouteTable(cpId,t[i],mvars.ene_routeSetsPriority,a)
+  if sysPhase==StrCode32"SYS_Caution"then
+    local cautionRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.CAUTION,cpId)
+    return this.GetPrioritizedRouteTable(cpId,routeSets[cautionRouteSetType],mvars.ene_routeSetsPriority,sysPhase)
   end
-  local i=this.GetCurrentRouteSetType(i,this.GetPhaseByCPID(cpId),cpId)
-  local a=t[i][a]
+  local currentRouteSetType=this.GetCurrentRouteSetType(i,this.GetPhaseByCPID(cpId),cpId)
+  local a=routeSets[currentRouteSetType][sysPhase]
   if a then
     return a
   else
-    if i=="hold"then
-      local a=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
-      return this.GetPrioritizedRouteTable(cpId,t[a],mvars.ene_routeSetsPriority)
+    if currentRouteSetType=="hold"then
+      local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      return this.GetPrioritizedRouteTable(cpId,routeSets[currentRouteSetType],mvars.ene_routeSetsPriority)
     else
-      local a=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
-      return this.GetPrioritizedRouteTable(cpId,t[a],mvars.ene_routeSetsPriority)
+      local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      return this.GetPrioritizedRouteTable(cpId,routeSets[currentRouteSetType],mvars.ene_routeSetsPriority)
     end
   end
 end
@@ -4393,24 +4395,24 @@ function this.SpawnTakingOverHostage(n)
     this._SpawnTakingOverHostage(n-1,t)
   end
 end
-function this._SpawnTakingOverHostage(t,e)
-  local e=GetGameObjectId(e)
-  if e==NULL_ID then
+function this._SpawnTakingOverHostage(t,hostageName)
+  local hostageId=GetGameObjectId(hostageName)
+  if hostageId==NULL_ID then
     return
   end
   if t<gvars.ene_takingOverHostageCount then
-    local i=gvars.ene_takingOverHostageStaffIdsUpper[infoIndex]--RETAILBUG: orphaned
-    local a=gvars.ene_takingOverHostageStaffIdsLower[infoIndex]
-    SendCommand(e,{id="SetStaffId",divided=true,staffId=i,staffId2=a})
+    local staffId=gvars.ene_takingOverHostageStaffIdsUpper[infoIndex]--RETAILBUG: orphaned
+    local staffId2=gvars.ene_takingOverHostageStaffIdsLower[infoIndex]
+    SendCommand(hostageId,{id="SetStaffId",divided=true,staffId=staffId,staffId2=staffId2})
     if TppMission.IsMissionStart()then
-      SendCommand(e,{id="SetEnabled",enabled=true})
-      local a=Vector3(gvars.ene_takingOverHostagePositions[t*3],gvars.ene_takingOverHostagePositions[t*3+1],gvars.ene_takingOverHostagePositions[t*3+2])
-      SendCommand(e,{id="Warp",position=a})
-      SendCommand(e,{id="SetFaceId",faceId=gvars.ene_takingOverHostageFaceIds[t]})
-      SendCommand(e,{id="SetKeepFlagValue",keepFlagValue=gvars.ene_takingOverHostageFlags[t]})
+      SendCommand(hostageId,{id="SetEnabled",enabled=true})
+      local position=Vector3(gvars.ene_takingOverHostagePositions[t*3],gvars.ene_takingOverHostagePositions[t*3+1],gvars.ene_takingOverHostagePositions[t*3+2])
+      SendCommand(hostageId,{id="Warp",position=position})
+      SendCommand(hostageId,{id="SetFaceId",faceId=gvars.ene_takingOverHostageFaceIds[t]})
+      SendCommand(hostageId,{id="SetKeepFlagValue",keepFlagValue=gvars.ene_takingOverHostageFlags[t]})
     end
   else
-    SendCommand(e,{id="SetEnabled",enabled=false})
+    SendCommand(hostageId,{id="SetEnabled",enabled=false})
   end
 end
 function this.SetIgnoreTakingOverHostage(e)

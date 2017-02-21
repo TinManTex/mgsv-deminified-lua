@@ -656,7 +656,7 @@ function fovaSetupFuncs.Afghan(n,missionId)
   --tex>wildcard soviet boddies
   if InfMain.IsWildCardEnabled(missionId) then
     InfMain.WildCardFova(bodies)
-  
+
     for n,bodyId in pairs(InfMain.wildCardBodiesAfgh)do
       local entry={bodyId,MAX_REALIZED_COUNT}
       table.insert(bodies,entry)
@@ -742,7 +742,7 @@ function fovaSetupFuncs.Africa(n,missionId)
   --tex> wildcard pf bodies
   if InfMain.IsWildCardEnabled(missionId) then
     InfMain.WildCardFova(bodies)
-   
+
     for n,bodyId in pairs(InfMain.wildCardBodiesMafr)do
       local entry={bodyId,MAX_REALIZED_COUNT}
       table.insert(bodies,entry)
@@ -975,11 +975,12 @@ function fovaSetupFuncs.Mb(n,missionId)
         {18,MAX_REALIZED_COUNT,MAX_REALIZED_COUNT,0}
       }
       table.insert(faces,{TppEnemyFaceId.dds_balaclava6,MAX_REALIZED_COUNT,MAX_REALIZED_COUNT,0})
-    elseif missionId==10030 then--Mission: Diamond Dogs
+      --Mission: Diamond Dogs
+    elseif missionId==10030 then
       for a,e in ipairs(this.S10030_FaceIdList)do
         table.insert(faces,{e,1,1,0})
-    end
-    table.insert(faces,{TppEnemyFaceId.dds_balaclava0,this.S10030_useBalaclavaNum,this.S10030_useBalaclavaNum,0})
+      end
+      table.insert(faces,{TppEnemyFaceId.dds_balaclava0,this.S10030_useBalaclavaNum,this.S10030_useBalaclavaNum,0})
     else
       for a=0,35 do
         table.insert(faces,{a,MAX_REALIZED_COUNT,MAX_REALIZED_COUNT,0})
@@ -1041,6 +1042,7 @@ function fovaSetupFuncs.Mb(n,missionId)
 
   --tex> dd suit SetExtendPartsInfo
   if InfMain.IsDDBodyEquip(missionId) then
+
     --tex CULL only female uses extendparts
     --    local bodyInfo=InfMain.GetCurrentDDBodyInfo()
     --    if bodyInfo then
@@ -1423,6 +1425,7 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
   end
   --tex set bodyid >
   if InfMain.IsDDBodyEquip(vars.missionCode) then
+
     local isFemale=IsFemale(faceId)
     local bodyInfo=InfMain.GetCurrentDDBodyInfo(isFemale)
     if bodyInfo then
@@ -1437,21 +1440,22 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
         bodyId=bodyId[math.random(#bodyId)]
       end
 
+
+      local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
       if bodyId==0 or bodyId==nil then--tex dont set body, rely on GetBodyId
-        local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
         local soldierType=TppEnemy.GetSoldierType(soldierId)
         local subTypeName=TppEnemy.GetSoldierSubType(soldierId,soldierType)
+        powerSettings=powerSettings or {}
         bodyId=TppEnemy.GetBodyId(soldierId,soldierType,subTypeName,powerSettings)
         --InfMenu.DebugPrint("bodyid:".. tostring(bodyId))--DEBUG
       end
-
 
       if bodyInfo.isArmor then
         TppEnemy.AddPowerSetting(soldierId,{"ARMOR"})
       end
 
-      if bodyInfo.helmetOnly then--tex TODO: handle this on the config level?
-        local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
+      --tex TODO: handle this on the config level?
+      if bodyInfo.helmetOnly then
         if powerSettings then
           powerSettings.GAS_MASK=nil
           powerSettings.NVG=nil
@@ -1471,22 +1475,24 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
         --        TppEnemy.AddPowerSetting(soldierId,{"NVG"})
         --      end
       end
-    end
 
-    local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
-
-    --tex PATCHUP there's no heads with nvg and no helmet/greentop
-    if powerSettings and powerSettings.NVG then
-      if bodyInfo and not bodyInfo.noDDHeadgear then
-        --powerSettings.HELMET=true
-        TppEnemy.AddPowerSetting(soldierId,{"HELMET"})
+      --tex PATCHUP there's no heads with nvg and no helmet/greentop
+      if powerSettings and powerSettings.NVG then
+        if bodyInfo and not bodyInfo.noDDHeadgear then
+          --powerSettings.HELMET=true
+          TppEnemy.AddPowerSetting(soldierId,{"HELMET"})
+        end
       end
+      --if IsDDBodyEquip<
     end
 
-    if Ivars.mbDDHeadGear:Is(0) then
-      powerSettings.HELMET=nil
-      powerSettings.GAS_MASK=nil
-      powerSettings.NVG=nil
+    if Ivars.mbDDHeadGear:Is(0) then    
+      local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
+      if powerSettings then
+        powerSettings.HELMET=nil
+        powerSettings.GAS_MASK=nil
+        powerSettings.NVG=nil
+      end
     end
 
     --tex -v-gasmask trumps force head-^- like vanilla RETHINK
@@ -1501,8 +1507,10 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
     --    end--<
 
     if Ivars.mbDDHeadGear:Is(1) then
-      local wantHeadgear = useBalaclava or powerSettings.HELMET or powerSettings.GAS_MASK or powerSettings.NVG
+      local powerSettings=mvars.ene_soldierPowerSettings[soldierId]
+      local wantHeadgear = useBalaclava or powerSettings and (powerSettings.HELMET or powerSettings.GAS_MASK or powerSettings.NVG)
       if wantHeadgear and bodyInfo and not bodyInfo.noDDHeadgear then
+        powerSettings=powerSettings or {}
         local validHeadGearIds=InfMain.GetHeadGearForPowers(powerSettings,faceId,bodyInfo.hasHelmet)
         if #validHeadGearIds>0 then
           local rnd=math.random(#validHeadGearIds)--tex random seed management outside the function since it's called in a loop
@@ -1682,11 +1690,12 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
   local isNoKillMode=InfMain.GetMbsClusterSecurityIsNoKillMode()--tex was TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
   local uavType=TppUav.DEVELOP_LEVEL_LMG_0
   local setUav=false
-  local isNLUav=false
-  local lethalUavType=0
-  local nonLethalUavType=0
-  local sleepUavType=0
-  local defaultUavType=100
+  local isNLUav=false  
+  local defaultUavType=100--RETAILPATCH 1080, following was 0, now defaultUavType
+  local lethalUavType=defaultUavType
+  local nonLethalUavType=defaultUavType
+  local sleepUavType=defaultUavType
+
   --ORPHAN:
   --  local r=7
   --  local r=4

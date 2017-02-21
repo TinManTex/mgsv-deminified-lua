@@ -405,7 +405,9 @@ TppEquip.ReloadEquipParameterTables2{
     {TppEquip.WP_SP_hg_020,TppEquip.RC_10001,TppEquip.BA_10001,TppEquip.AM_SP_hg_020,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,3},
     {TppEquip.WP_SP_sm_010,TppEquip.RC_20225,TppEquip.BA_20225,TppEquip.AM_SP_sm_010,TppEquip.SK_20203,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,3},
     {TppEquip.WP_SP_sg_010,TppEquip.RC_40042,TppEquip.BA_40042,TppEquip.AM_SP_sg_010,TppEquip.SK_40001,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,3},
-    {TppEquip.WP_EX_hg_000,TppEquip.RC_EX_hg_000,TppEquip.BA_None,TppEquip.AM_EX_hg_000,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_10004,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,9},
+    {TppEquip.WP_EX_hg_000,TppEquip.RC_EX_hg_000,TppEquip.BA_None,TppEquip.AM_EX_hg_000,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_10004,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,7},--RETAILPATCH 1080 last param was 9
+    {TppEquip.WP_EX_hg_000_G01,TppEquip.RC_EX_hg_000,TppEquip.BA_None,TppEquip.AM_EX_hg_000_1,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_10004,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,8},--RETAILPATCH 1080 added
+    {TppEquip.WP_EX_hg_000_G02,TppEquip.RC_EX_hg_000,TppEquip.BA_None,TppEquip.AM_EX_hg_000_2,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_10004,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,9},--RETAILPATCH 1080 added
     {TppEquip.WP_EX_gl_000,TppEquip.RC_EX_gl_000,TppEquip.BA_None,TppEquip.AM_EX_gl_000,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_50003,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,9},
     {TppEquip.WP_EX_sr_000,TppEquip.RC_EX_sr_000,TppEquip.BA_None,TppEquip.AM_EX_sr_000,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_60406,TppEquip.ST_60004,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,9},
     {TppEquip.WP_West_sm_016,TppEquip.RC_20105,TppEquip.BA_20103,TppEquip.AM_20106,TppEquip.SK_20106,TppEquip.MZ_None,TppEquip.MO_20204,TppEquip.ST_20104,TppEquip.ST_None,TppEquip.UB_20105,TppEquip.LT_None,TppEquip.LT_None,6},
@@ -1328,7 +1330,9 @@ TppEquip.ReloadEquipParameterTables2{
     {TppEquip.AM_SP_hg_020,TppEquip.EQP_AM_SP_hg_020,7,63,TppEquip.BL_Hg114Auto},
     {TppEquip.AM_SP_sm_010,TppEquip.EQP_AM_SP_sm_010,20,220,TppEquip.BL_Hg9x19mm},
     {TppEquip.AM_SP_sg_010,TppEquip.EQP_AM_SP_sg_010,2,36,TppEquip.BL_12GA00Back},
-    {TppEquip.AM_EX_hg_000,TppEquip.EQP_AM_EX_hg_000,2,25,TppEquip.BL_EX_hg_000},
+    {TppEquip.AM_EX_hg_000,TppEquip.EQP_AM_EX_hg_000,2,8,TppEquip.BL_EX_hg_000},--RETAILPATCH 1080 was 25,TppEquip.BL_EX_hg_000},
+    {TppEquip.AM_EX_hg_000_1,TppEquip.EQP_AM_EX_hg_000,2,12,TppEquip.BL_EX_hg_000},--RETAILPATCH 1080 added
+    {TppEquip.AM_EX_hg_000_2,TppEquip.EQP_AM_EX_hg_000,2,16,TppEquip.BL_EX_hg_000},--RETAILPATCH 1080 added
     {TppEquip.AM_EX_gl_000,TppEquip.EQP_AM_EX_gl_000,1,14,TppEquip.BL_EX_gl_000},
     {TppEquip.AM_EX_sr_000,TppEquip.EQP_AM_EX_sr_000,10,40,TppEquip.BL_EX_sr_000}
   },
