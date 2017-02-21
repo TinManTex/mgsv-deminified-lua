@@ -405,10 +405,12 @@ function this.IsUsingBlackSuperReinforce()
   return mvars.revenge_revengeConfig.BLACK_SUPER_REINFORCE
 end
 function this.GetReinforceCount()
-  --  if not Ivars.reinforceCount:IsDefault() then--tex>--CULL
-  --    return Ivars.reinforceCount:Get()
-  --  end--<
-
+  if Ivars.forceReinforceRequest:Is(1) then--tex>
+    local doCustom=Ivars.revengeMode:Is"CUSTOM" or Ivars.revengeModeForMissions:Is"CUSTOM" or Ivars.revengeModeForMb:Is"CUSTOM"--tex TODO: a proper check
+    if not doCustom then
+      mvars.revenge_revengeConfig.REINFORCE_COUNT=99
+    end
+  end--<
   local count=mvars.revenge_revengeConfig.REINFORCE_COUNT
   if count then
     return count+0
@@ -913,7 +915,7 @@ end
 function this._SetUiParameters()
   local doCustom=Ivars.revengeMode:Is"CUSTOM" or Ivars.revengeModeForMissions:Is"CUSTOM" or Ivars.revengeModeForMb:Is"CUSTOM"--tex>
   if doCustom then
-    InfMain.SetCustomRevengeUiParameters()
+    InfRevenge.SetCustomRevengeUiParameters()
     return
   end--<
 
@@ -1156,18 +1158,18 @@ function this.CanUseReinforceHeli()
   return not GameObject.DoesGameObjectExistWithTypeName"TppEnemyHeli"
 end
 function this.SelectReinforceType()
-  if mvars.reinforce_reinforceType==TppReinforceBlock.REINFORCE_TYPE.HELI then
-    --InfMenu.DebugPrint("SelectReinforceType already heli")
+  if mvars.reinforce_reinforceType==TppReinforceBlock.REINFORCE_TYPE.HELI then--tex why? for quest helis?
+    --    InfMenu.DebugPrint("SelectReinforceType already heli")--DEBUG
     return TppReinforceBlock.REINFORCE_TYPE.HELI
   end
   if not this.IsUsingSuperReinforce()then
-    --InfMenu.DebugPrint("SelectReinforceType not superreinforce")
+    --    InfMenu.DebugPrint("SelectReinforceType not superreinforce, REINFORCE_TYPE.NONE")--DEBUG
     return TppReinforceBlock.REINFORCE_TYPE.NONE
   end
   local reinforceVehicleTypes={}
   local canuseReinforceVehicle=this.CanUseReinforceVehicle()
   if canuseReinforceVehicle and Ivars.forceSuperReinforce:Is()>0 then--tex
-    canuseReinforceVehicle=not(vars.missionCode==TppDefine.SYS_MISSION_ID.AFGH_FREE or vars.missionCode==TppDefine.SYS_MISSION_ID.MAFR_FREE)--tex TODO: can't use reinforce vehicle in free mode till I figure out why it doesn't work vs missions
+    canuseReinforceVehicle=not(vars.missionCode==TppDefine.SYS_MISSION_ID.AFGH_FREE or vars.missionCode==TppDefine.SYS_MISSION_ID.MAFR_FREE)--tex TODO: can't use reinforce vehicle in free mode, reinforce request doesnt fire (VERIFY, I think I can't remember if it's not at all or if it's super rare/inconsistant compared to missions) and forcing reinforce to get around it works for helis but breaks vehicles
   end--
   local canUseReinforceHeli=this.CanUseReinforceHeli() and mvars.revenge_isEnabledSuperReinforce--tex added isEnabledSuper, which is only set by quest heli and shouldnt stop other vehicle
   if canuseReinforceVehicle then
@@ -1191,7 +1193,7 @@ function this.SelectReinforceType()
     return TppReinforceBlock.REINFORCE_TYPE.NONE
   end
   local randomVehicleType=math.random(1,#reinforceVehicleTypes)
-  --InfMenu.DebugPrint("SelectReinforceType randomVehicleType: "..TppReinforceBlock.REINFORCE_TYPE_NAME[reinforceVehicleTypes[randomVehicleType]+1])--DEBUG
+  --  InfMenu.DebugPrint("SelectReinforceType randomVehicleType: "..TppReinforceBlock.REINFORCE_TYPE_NAME[reinforceVehicleTypes[randomVehicleType]+1])--DEBUG
   return reinforceVehicleTypes[randomVehicleType]
 end
 function this.ApplyPowerSettingsForReinforce(soldierIds)
@@ -1261,7 +1263,7 @@ function this._CreateRevengeConfig(revengeTypes)
   --tex>customrevengeconfig
   local doCustom=Ivars.revengeMode:Is"CUSTOM" or Ivars.revengeModeForMissions:Is"CUSTOM" or Ivars.revengeModeForMb:Is"CUSTOM"
   if doCustom then
-    revengeConfig=InfMain.CreateCustomRevengeConfig()
+    revengeConfig=InfRevenge.CreateCustomRevengeConfig()
     for powerType,setting in pairs(revengeConfig)do
       mvars.ene_missionRequiresPowerSettings[powerType]=setting
     end
@@ -1829,7 +1831,7 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   local originalWeaponSettings={}
   local sumBalance=0
   local numBalance=0
-  numBalance,sumBalance,originalWeaponSettings=InfMain.GetSumBalance(balanceWeaponTypes,revengeConfigCp,totalSoldierCount,originalWeaponSettings)
+  numBalance,sumBalance,originalWeaponSettings=InfRevenge.GetSumBalance(balanceWeaponTypes,revengeConfigCp,totalSoldierCount,originalWeaponSettings)
 
   --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG>
   --      local ins=InfInspect.Inspect(originalWeaponSettings)
@@ -1838,7 +1840,7 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
 
   if numBalance>0 and sumBalance>Ivars.balanceWeaponPowers.balanceWeaponsThreshold then
     local reservePercent=0--tex TODO: reserve some for assault? or handle that
-    revengeConfigCp=InfMain.BalancePowers(numBalance,reservePercent,originalWeaponSettings,revengeConfigCp)
+    revengeConfigCp=InfRevenge.BalancePowers(numBalance,reservePercent,originalWeaponSettings,revengeConfigCp)
   end
 
   if smgForced then
@@ -1867,12 +1869,12 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
       "GAS_MASK",
     }
 
-    numBalance,sumBalance,originalHeadGearSettings=InfMain.GetSumBalance(balanceGearTypes,revengeConfigCp,totalSoldierCount,originalHeadGearSettings)
+    numBalance,sumBalance,originalHeadGearSettings=InfRevenge.GetSumBalance(balanceGearTypes,revengeConfigCp,totalSoldierCount,originalHeadGearSettings)
   end
 
   if (Ivars.balanceHeadGear:Is(1) and sumBalance>Ivars.balanceHeadGear.balanceHeadGearThreshold) then--tex> only need to balance if oversubscribed
     local reservePercent=0
-    revengeConfigCp=InfMain.BalancePowers(numBalance,reservePercent,originalHeadGearSettings,revengeConfigCp)
+    revengeConfigCp=InfRevenge.BalancePowers(numBalance,reservePercent,originalHeadGearSettings,revengeConfigCp)
   end--<
 
   local unfulfilledPowers={}--tex>
@@ -2245,6 +2247,9 @@ function this._OnReinforceRespawn(soldierIds)
     TppEnemy.AddPowerSetting(soldierIds,{})
     o50050_enemy.AssignAndSetupRespawnSoldier(soldierIds)
   else
+    --    InfMenu.DebugPrint"_OnReinforceRespawn"--tex DEBUGNOW>
+    --    local ins=InfInspect.Inspect(soldierIds)
+    --    InfMenu.DebugPrint(ins)--<
     this.ApplyPowerSettingsForReinforce{soldierIds}
   end
 end

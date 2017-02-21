@@ -1,7 +1,7 @@
-local e={}
-local o=Fox.StrCode32
-local t={}
-e.DEBUG_strCode32List={
+local this={}
+local StrCode32=Fox.StrCode32
+local RENsomeTable={}
+this.DEBUG_strCode32List={
 "Trap",
 "Enter",
 "Stay",
@@ -295,19 +295,19 @@ e.DEBUG_strCode32List={
 "OnChangeLargeBlockState",
 "OnChangeSmallBlockState"
 }
-function e.DEBUG_RegisterStrcode32invert(e)
+function this.DEBUG_RegisterStrcode32invert(e)
   local n={}
   for i,e in pairs(e)do
-    n[o(e)]=e
+    n[StrCode32(e)]=e
   end
-  t=n
+  RENsomeTable=n
 end
-function e.DEBUG_RegisterStrcode32invertByString(e)
-  t[o(e)]=e
+function this.DEBUG_RegisterStrcode32invertByString(e)
+  RENsomeTable[StrCode32(e)]=e
 end
-function e.DEBUG_StrCode32ToString(e)
-  if t[e]then
-    return t[e]
+function this.DEBUG_StrCode32ToString(e)
+  if RENsomeTable[e]then
+    return RENsomeTable[e]
   end
 end
-return e
+return this

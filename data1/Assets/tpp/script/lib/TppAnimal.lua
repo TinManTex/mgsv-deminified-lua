@@ -183,7 +183,8 @@ function this.OnActivateQuest(t)
         end
       end
       if n.birdList then
-        this.SetBird(n.birdList)a=true
+        this.SetBird(n.birdList)
+        a=true
       end
     end
   end

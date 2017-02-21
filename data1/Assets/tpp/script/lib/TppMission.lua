@@ -1914,17 +1914,19 @@ function this.MessagesWhileLoading()
       TppMovie.DoMessage(e,"onEnd")
     end}}}
 end
-local f=StrCode32"FallDeath"local u=StrCode32"Suicide"function this.OnPlayerDead(s,n)
+local fallDeath=StrCode32"FallDeath"
+local suicide=StrCode32"Suicide"
+function this.OnPlayerDead(playerId,deathTypeStr32)
   if not TppNetworkUtil.IsHost()then
     return
   end
-  local i=this.IsFOBMission(vars.missionCode)
-  if(not i)or TppPlayer.IsSneakPlayerInFOB(s)then
-    if n==f then
+  local isFobMission=this.IsFOBMission(vars.missionCode)
+  if(not isFobMission)or TppPlayer.IsSneakPlayerInFOB(playerId)then
+    if deathTypeStr32==fallDeath then
       mvars.mis_isGameOverReasonSuicide=true
       this.ReserveGameOver(TppDefine.GAME_OVER_TYPE.PLAYER_FALL_DEAD,TppDefine.GAME_OVER_RADIO.PLAYER_DEAD)
     else
-      if n==u then
+      if deathTypeStr32==suicide then
         mvars.mis_isGameOverReasonSuicide=true
       end
       this.ReserveGameOver(TppDefine.GAME_OVER_TYPE.PLAYER_DEAD,TppDefine.GAME_OVER_RADIO.PLAYER_DEAD)
@@ -1933,8 +1935,8 @@ local f=StrCode32"FallDeath"local u=StrCode32"Suicide"function this.OnPlayerDead
     svars.mis_fobDefenceGameOver=TppDefine.FOB_DEFENCE_GAME_OVER_TYPE.PLAYER_DEAD
   end
 end
-function this.OnEndMissionPreparation(n,clusterId)
-  mvars.mis_selectedDeployTime=n
+function this.OnEndMissionPreparation(deployTime,clusterId)
+  mvars.mis_selectedDeployTime=deployTime
   if gvars.mis_nextMissionCodeForEmergency==0 then
     local missionStartRoute
     if gvars.heli_missionStartRoute==0 then
@@ -2706,7 +2708,7 @@ function this.AbortMissionByMenu()
     TppSoundDaemon.PostEvent"env_wormhole_out"
     this.ReserveGameOver(TppDefine.GAME_OVER_TYPE.FOB_ABORT,TppDefine.GAME_OVER_RADIO.OUT_OF_MISSION_AREA)
   else
-    if gvars.mis_isStartFromHelispace then
+    if gvars.mis_isStartFromHelispace or Ivars.mis_isGroundStart:Is(1) then--tex added mis_isGroundStart
       this.AbortForRideOnHelicopter()
     elseif gvars.mis_isStartFromFreePlay then
       this.AbortForOutOfMissionArea()
@@ -2772,7 +2774,7 @@ end
 function this.GameOverAbortMission()
   if gvars.mis_isStartFromHelispace then
     this.GameOverAbortForRideOnHelicopter()
-  elseif gvars.mis_isStartFromFreePlay then
+  elseif gvars.mis_isStartFromFreePlay or Ivars.mis_isGroundStart:Is(1) then--tex added mis_isGroundStart
     this.GameOverAbortForOutOfMissionArea()
   else
     this.GameOverAbortForRideOnHelicopter()

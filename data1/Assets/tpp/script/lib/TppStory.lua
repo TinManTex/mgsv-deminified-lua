@@ -1504,8 +1504,8 @@ function this.Init(missionTable)
   this.UpdateStorySequence{updateTiming="OnMissionStart"}
 end
 this.SetUpStorySequenceTable()
-function this.UpdateStorySequence(t)
-  if not Tpp.IsTypeTable(t)then
+function this.UpdateStorySequence(params)
+  if not Tpp.IsTypeTable(params)then
     return
   end
   if TppMission.IsFOBMission(vars.missionCode)or TppMission.IsFOBMission(TppMission.GetNextMissionCodeForEmergency())then
@@ -1514,27 +1514,27 @@ function this.UpdateStorySequence(t)
   if(gvars.str_storySequence==TppDefine.STORY_SEQUENCE.CLEARD_ENDRESS_PROXY_WAR)and(not TppSave.CanSaveMbMangementData())then
     return
   end
-  local n
-  local i=t.updateTiming
-  local r=t.isInGame
-  this._UpdateS11050OpenFlag(storySequence)
-  if i=="BeforeBuddyBlockLoad"or i=="OnMissionClear"then
-    this._UpdateS10260OpenFlag(storySequence)
+  local updateSequence
+  local updateTiming=params.updateTiming
+  local isInGame=params.isInGame
+  this._UpdateS11050OpenFlag(storySequence)--RETAILBUG: undefined, non-bug, function doesnt take any params anyway
+  if updateTiming=="BeforeBuddyBlockLoad"or updateTiming=="OnMissionClear"then
+    this._UpdateS10260OpenFlag(storySequence)--RETAILBUG: undefined, non-bug, function doesnt take any params anyway
   end
-  if i=="OnMissionClear"then
-    local t=t.missionId
-    n=this.UpdateStorySequenceOnMissionClear(t)
+  if updateTiming=="OnMissionClear"then
+    local missionId=params.missionId
+    updateSequence=this.UpdateStorySequenceOnMissionClear(missionId)
   else
     local t=this.GetCurrentStorySequenceTable()
-    if(t and t.updateTiming)and t.updateTiming[i]then
-      n=this._UpdateStorySequence()
+    if(t and t.updateTiming)and t.updateTiming[updateTiming]then
+      updateSequence=this._UpdateStorySequence()
     end
   end
-  if n and r then
-    TppMission.ExecuteSystemCallback("OnUpdateStorySequenceInGame",n)
+  if updateSequence and isInGame then
+    TppMission.ExecuteSystemCallback("OnUpdateStorySequenceInGame",updateSequence)
   end
-  if n then
-    if next(n)then
+  if updateSequence then
+    if next(updateSequence)then
       gvars.mis_isExistOpenMissionFlag=true
     end
     local e=this.GetCurrentStorySequence()
@@ -1542,30 +1542,30 @@ function this.UpdateStorySequence(t)
       gvars.continueTipsCount=1
     end
   end
-  return n
+  return updateSequence
 end
-function this.UpdateStorySequenceOnMissionClear(n)
-  for t,e in pairs(TppDefine.SYS_MISSION_ID)do
-    if(n==e)then
+function this.UpdateStorySequenceOnMissionClear(missionId)
+  for t,id in pairs(TppDefine.SYS_MISSION_ID)do
+    if(missionId==id)then
       return
     end
   end
-  local t=TppDefine.MISSION_ENUM[tostring(n)]
-  if not t then
+  local missionEnum=TppDefine.MISSION_ENUM[tostring(missionId)]
+  if not missionEnum then
     return
   end
-  if gvars.str_missionOpenFlag[t]==false then
+  if gvars.str_missionOpenFlag[missionEnum]==false then
     return
   end
-  this.UpdateMissionCleardFlag(n)
+  this.UpdateMissionCleardFlag(missionId)
   this.DecreaseElapsedMissionClearCount()
   this.UpdateDemoFlagQuietWishGoMission()
-  if n~=10050 then--RETAILPATCH: 1060
+  if missionId~=10050 then--RETAILPATCH: 1060
     this.ResetCounterReunionQuiet()
   end--
-  local e=this._UpdateStorySequence()
+  local updateStorySequence=this._UpdateStorySequence()
   TppTerminal.AcquirePrivilegeStaff()
-  return e
+  return updateStorySequence
 end
 function this._UpdateS11050OpenFlag()
   local n=this.GetCurrentStorySequence()
@@ -1581,29 +1581,30 @@ function this._UpdateS10260OpenFlag()
   end
 end
 function this._UpdateStorySequence()
-  local n=this.GetCurrentStorySequence()
-  if n>=TppDefine.STORY_SEQUENCE.STORY_FINISH then
+  local currentSequence=this.GetCurrentStorySequence()
+  if currentSequence>=TppDefine.STORY_SEQUENCE.STORY_FINISH then
     return
   end
-  local i,t
+  local nextStorySequence,storySequenceTable
   local r
   repeat
-    t=this.GetStorySequenceTable(n)
-    if t==nil then
+    storySequenceTable=this.GetStorySequenceTable(currentSequence)
+    if storySequenceTable==nil then
       return
     end
-    local t=this.CheckNeedProceedStorySequence(t)
-    if not t then
+    local needProceedSequence=this.CheckNeedProceedStorySequence(storySequenceTable)
+    if not needProceedSequence then
       break
     end
-    i=this.ProceedStorySequence()n=this.GetCurrentStorySequence()
-    if n<TppDefine.STORY_SEQUENCE.STORY_FINISH then
+    nextStorySequence=this.ProceedStorySequence()
+    currentSequence=this.GetCurrentStorySequence()
+    if currentSequence<TppDefine.STORY_SEQUENCE.STORY_FINISH then
       r=false
     else
       r=true
     end
-  until(r or next(i))
-  return i
+  until(r or next(nextStorySequence))
+  return nextStorySequence
 end
 function this.CheckNeedProceedStorySequence(n)
   local t={}
@@ -1640,9 +1641,9 @@ function this.CheckNeedProceedStorySequence(n)
 end
 function this.ProceedStorySequence()
   this.IncrementStorySequence()
-  local n=this.GetCurrentStorySequence()
-  local n=this.GetStorySequenceTable(n)
-  if n==nil then
+  local currentSequence=this.GetCurrentStorySequence()
+  local storySequenceTable=this.GetStorySequenceTable(currentSequence)
+  if storySequenceTable==nil then
     return
   end
   local i={}
@@ -1655,17 +1656,17 @@ function this.ProceedStorySequence()
       this.MissionOpen(t)
     end
   end
-  if n.main then
-    t(n.main,n.defaultClose)
+  if storySequenceTable.main then
+    t(storySequenceTable.main,storySequenceTable.defaultClose)
   end
-  if n.flag then
-    for i,e in pairs(n.flag)do
-      t(e,n.defaultClose)
+  if storySequenceTable.flag then
+    for i,e in pairs(storySequenceTable.flag)do
+      t(e,storySequenceTable.defaultClose)
     end
   end
-  if n.sub then
-    for i,e in pairs(n.sub)do
-      t(e,n.defaultClose)
+  if storySequenceTable.sub then
+    for i,e in pairs(storySequenceTable.sub)do
+      t(e,storySequenceTable.defaultClose)
     end
   end
   for e,e in pairs(i)do

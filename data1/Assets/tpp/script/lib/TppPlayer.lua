@@ -1053,8 +1053,8 @@ function this.SetSearchTarget(targetGameObjectName,gameObjectType,name,skeletonN
   end
   Player.AddSearchTarget(searchTarget)
 end
-function this.IsSneakPlayerInFOB(e)
-  if e==0 then
+function this.IsSneakPlayerInFOB(playerIndex)
+  if playerIndex==0 then
     return true
   else
     return false
@@ -1421,27 +1421,29 @@ function this.FOBPlayMissionClearCameraOnFoot(l)
       this.FOBRequestMissionClearMotion()
     end
   end
-  local r={"SKL_004_HEAD","SKL_002_CHEST"}
-  local t={Vector3(0,.1,0),Vector3(0,-.05,0)}
-  local n={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
-  local a=Vector3(0,0,-4.5)
-  local e=.3
+  local skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
+  local skeletonCenterOffsets={Vector3(0,.1,0),Vector3(0,-.05,0)}
+  local skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
+  local offsetPos=Vector3(0,0,-4.5)
+  local interpTimeAtStart=.3
   local i
-  local o=false
+  local callSeOfCameraInterp=false
   if l==1 then
-    r={"SKL_004_HEAD","SKL_002_CHEST"}
-    t={Vector3(0,.25,0),Vector3(0,-.05,0)}
-    n={Vector3(.1,.125,.1),Vector3(.1,.125,.1)}
-    a=Vector3(0,0,-1)e=.3
+    skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
+    skeletonCenterOffsets={Vector3(0,.25,0),Vector3(0,-.05,0)}
+    skeletonBoundings={Vector3(.1,.125,.1),Vector3(.1,.125,.1)}
+    offsetPos=Vector3(0,0,-1)
+    interpTimeAtStart=.3
     i=1
-    o=true
+    callSeOfCameraInterp=true
   else
-    r={"SKL_004_HEAD","SKL_002_CHEST"}
-    t={Vector3(0,.15,0),Vector3(0,-.05,0)}
-    n={Vector3(.1,.125,.1),Vector3(.1,.125,.1)}
-    a=Vector3(0,0,-1.5)e=3
+    skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
+    skeletonCenterOffsets={Vector3(0,.15,0),Vector3(0,-.05,0)}
+    skeletonBoundings={Vector3(.1,.125,.1),Vector3(.1,.125,.1)}
+    offsetPos=Vector3(0,0,-1.5)
+    interpTimeAtStart=3
   end
-  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=4,followDelayTime=.1,candidateRots={{-10,170},{-10,-170}},skeletonNames=r,skeletonCenterOffsets=t,skeletonBoundings=n,offsetPos=a,focalLength=28,aperture=1.875,timeToSleep=20,interpTimeAtStart=e,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=o}
+  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=4,followDelayTime=.1,candidateRots={{-10,170},{-10,-170}},skeletonNames=skeletonNames,skeletonCenterOffsets=skeletonCenterOffsets,skeletonBoundings=skeletonBoundings,offsetPos=offsetPos,focalLength=28,aperture=1.875,timeToSleep=20,interpTimeAtStart=interpTimeAtStart,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=callSeOfCameraInterp}
   return i
 end
 function this.PlayMissionAbortCamera()
@@ -1732,7 +1734,14 @@ function this.Init(missionTable)
       vars.playerCameraRotation[1]=initialCameraRotation[2]
     end
   end
-  if gvars.s10240_isPlayedFuneralDemo then
+  
+  local blackDiamond=true--tex>
+  if Ivars.enableFovaMod:Is(1) then
+  local fovaTable,fovaDescription,noBlackDiamond=InfFova.GetCurrentFovaTable()
+  blackDiamond=not noBlackDiamond
+  end--<
+  
+  if gvars.s10240_isPlayedFuneralDemo and blackDiamond then--tex added nodiamond
     Player.SetUseBlackDiamondEmblem(true)
   else
     Player.SetUseBlackDiamondEmblem(false)
@@ -1795,7 +1804,7 @@ end
 
 function this.SetSelfSubsistenceOnHardMission()--tex heavily reworked, see below for original
   local isActual=TppMission.IsActualSubsistenceMission()
-  if isActual and (Ivars.ospWeaponProfile:Is"DEFAULT" or Ivars.ospWeaponProfile:Is"CUSTOM") then
+  if isActual and Ivars.ospWeaponProfile:Is"DEFAULT" or (Ivars.primaryWeaponOsp:Is(1) and Ivars.secondaryWeaponOsp:Is(1) and Ivars.tertiaryWeaponOsp:Is(1)) then
     Ivars.ospWeaponProfile:Set("PURE",true,true)--tex don't want to save due to normal subsistence missions
   end
 

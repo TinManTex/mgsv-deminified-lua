@@ -226,18 +226,20 @@ local function ToStrCode32(e)
   end
   return nil
 end
-function this.FadeIn(o,a,i,n)
-  local t=ToStrCode32(a)
-  if n then
-    mvars.ui_onEndFadeInExceptGameStatus=n.exceptGameStatus
+--IN: pretty much the only parms I can see is exceptGameStatus
+function this.FadeIn(fadeSpeed,fadeInName,scdDemoID,parms)
+  local fadeInNameStr32=ToStrCode32(fadeInName)
+  if parms then
+    mvars.ui_onEndFadeInExceptGameStatus=parms.exceptGameStatus
   elseif mvars.ui_onEndFadeInOverrideExceptGameStatus then
     mvars.ui_onEndFadeInExceptGameStatus=mvars.ui_onEndFadeInOverrideExceptGameStatus
   else
     mvars.ui_onEndFadeInExceptGameStatus=nil
   end
   TppSoundDaemon.ResetMute"Outro"
-  CallFadeIn(o,t,i)
+  CallFadeIn(fadeSpeed,fadeInNameStr32,scdDemoID)
   this.EnableGameStatusOnFadeInStart()
+  InfMain.OnFadeInDirect()--tex
 end
 function this.OverrideFadeInGameStatus(status)
   mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary=status
@@ -974,7 +976,7 @@ function this.Init()
         table.insert(pauseMenuItems,6,GamePauseMenu.RECORDS_ITEM)
       end
       if Ivars.abortMenuItemControl:Is(0) then--tex added switch
-        if TppMission.IsStartFromHelispace()then
+        if TppMission.IsStartFromHelispace() or Ivars.mis_isGroundStart:Is(1) then--tex added mis_isGroundStart
           table.insert(pauseMenuItems,3,GamePauseMenu.ABORT_MISSION_RETURN_TO_ACC)
         end
         if TppMission.IsStartFromFreePlay()then
@@ -1143,28 +1145,28 @@ function this.EnableGameStatusOnFadeInStart()
     }
 end
 function this.EnableGameStatusOnFade()
-  local except,n
+  local exceptGameStatus,onEndInExceptGameStatus
   if IsTypeTable(mvars.ui_onEndFadeInExceptGameStatus)then
-    n=mvars.ui_onEndFadeInExceptGameStatus
+    onEndInExceptGameStatus=mvars.ui_onEndFadeInExceptGameStatus
   elseif IsTypeTable(mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary)then
-    n=mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary
+    onEndInExceptGameStatus=mvars.ui_onEndFadeInOverrideExceptGameStatusTemporary
   else
     if TppDemo.IsNotPlayable()then
-      except=except or{}
+      exceptGameStatus=exceptGameStatus or{}
       for uiName,statusType in pairs(TppDefine.UI_STATUS_TYPE_ALL)do
-        except[uiName]=false
+        exceptGameStatus[uiName]=false
       end
-      except.PauseMenu=nil
-      except.InfoTypingText=nil
+      exceptGameStatus.PauseMenu=nil
+      exceptGameStatus.InfoTypingText=nil
     end
   end
-  if n then
-    except={}
-    for n,i in pairs(n)do
-      except[n]=i
+  if onEndInExceptGameStatus then
+    exceptGameStatus={}
+    for k,v in pairs(onEndInExceptGameStatus)do
+      exceptGameStatus[k]=v
     end
   end
-  Tpp.SetGameStatus{target="all",enable=true,except=except,scriptName="TppUI.lua"}
+  Tpp.SetGameStatus{target="all",enable=true,except=exceptGameStatus,scriptName="TppUI.lua"}
 end
 function this._RegisterDefaultLandPoint()
   local DEFAULT_DROP_ROUTE=TppDefine.DEFAULT_DROP_ROUTE

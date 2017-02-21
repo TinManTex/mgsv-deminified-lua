@@ -31,7 +31,8 @@ function this.Messages()
     nil
   }
 end
-function this.Enable(gameObjectName,visibleArea,goalType,viewType,randomRange,setImportant,setNew,mapRadioName,langId,goalLangId,setInterrogation)
+--NMC: radiusLevel- 0-9, randomLevel matches
+function this.Enable(gameObjectName,radiusLevel,goalType,viewType,randomLevel,setImportant,setNew,mapRadioName,langId,goalLangId,setInterrogation)
   local gameId
   if Tpp.IsTypeString(gameObjectName)then
     gameId=GetGameObjectId(gameObjectName)
@@ -46,20 +47,20 @@ function this.Enable(gameObjectName,visibleArea,goalType,viewType,randomRange,se
   if(not this._CanSetMarker(gameId))then
     return
   end
-  visibleArea=visibleArea or 0
+  radiusLevel=radiusLevel or 0
   goalType=goalType or"moving"
   viewType=viewType or"map"
-  randomRange=randomRange or 9
-  if(type(visibleArea)~="number")then
+  randomLevel=randomLevel or 9
+  if(type(radiusLevel)~="number")then
     return
   end
-  if(visibleArea<0 or visibleArea>9)then
+  if(radiusLevel<0 or radiusLevel>9)then
     return
   end
-  if(type(randomRange)~="number")then
+  if(type(randomLevel)~="number")then
     return
   end
-  if(randomRange<0 or randomRange>9)then
+  if(randomLevel<0 or randomLevel>9)then
     return
   end
   local goalType=this.GoalTypes[goalType]
@@ -71,7 +72,7 @@ function this.Enable(gameObjectName,visibleArea,goalType,viewType,randomRange,se
     return
   end
   TppMarker2System.EnableMarker{gameObjectId=gameId,viewLayer=viewLayer}
-  local markerGoalType={gameObjectId=gameId,radiusLevel=visibleArea,goalType=goalType,randomLevel=randomRange}
+  local markerGoalType={gameObjectId=gameId,radiusLevel=radiusLevel,goalType=goalType,randomLevel=randomLevel}
   TppMarker2System.SetMarkerGoalType(markerGoalType)
   if setImportant~=nil then
     local markerImportant={gameObjectId=gameId,isImportant=setImportant}
@@ -130,7 +131,19 @@ end
 function this.SetUpSearchTarget(searchTargetInfos)
   if IsTypeTable(searchTargetInfos)then
     for a,searchTarget in pairs(searchTargetInfos)do
-      mvars.mar_searchTargetPrePareList[searchTarget.gameObjectName]={gameObjectName=searchTarget.gameObjectName,gameObjectType=searchTarget.gameObjectType,messageName=searchTarget.messageName,skeletonName=searchTarget.skeletonName,offSet=searchTarget.offSet,targetFox2Name=searchTarget.targetFox2Name,doDirectionCheck=searchTarget.doDirectionCheck,objectives=searchTarget.objectives,func=searchTarget.func,notImportant=searchTarget.notImportant,wideCheckRange=searchTarget.wideCheckRange}
+      mvars.mar_searchTargetPrePareList[searchTarget.gameObjectName]={
+        gameObjectName=searchTarget.gameObjectName,
+        gameObjectType=searchTarget.gameObjectType,
+        messageName=searchTarget.messageName,
+        skeletonName=searchTarget.skeletonName,
+        offSet=searchTarget.offSet,
+        targetFox2Name=searchTarget.targetFox2Name,
+        doDirectionCheck=searchTarget.doDirectionCheck,
+        objectives=searchTarget.objectives,
+        func=searchTarget.func,
+        notImportant=searchTarget.notImportant,
+        wideCheckRange=searchTarget.wideCheckRange
+      }
     end
   end
 end
@@ -264,75 +277,75 @@ function this.IsExistMarkerLocatorSystem()
     return false
   end
 end
-function this._OnSearchTarget(a,t,s)
-  if not mvars.mar_searchTargetList[a]then
+function this._OnSearchTarget(gameId,t,s)
+  if not mvars.mar_searchTargetList[gameId]then
     return
   end
-  if this._IsCheckSVarsSearchTarget(a,"mar_searchTargeIsFound")then
+  if this._IsCheckSVarsSearchTarget(gameId,"mar_searchTargeIsFound")then
     return
   end
-  if not this._IsCheckSVarsSearchTarget(a,"mar_searchTargeEnable")then
+  if not this._IsCheckSVarsSearchTarget(gameId,"mar_searchTargeEnable")then
     return
   end
   for n=0,TppDefine.SEARCH_TARGET_COUNT-1 do
-    local r=this._GetStrCode32SearchTargetName(a)
+    local r=this._GetStrCode32SearchTargetName(gameId)
     if svars.mar_searchTargetName[n]==r then
-      if mvars.mar_searchTargetList[a].objectives==nil then
+      if mvars.mar_searchTargetList[gameId].objectives==nil then
         local isImportant
-        if mvars.mar_searchTargetList[a].notImportant then
+        if mvars.mar_searchTargetList[gameId].notImportant then
           isImportant=false
         else
           isImportant=true
         end
-        this.Enable(mvars.mar_searchTargetList[a].gameObjectName,0,"moving","map_and_world_only_icon",0,isImportant,true)
+        this.Enable(mvars.mar_searchTargetList[gameId].gameObjectName,0,"moving","map_and_world_only_icon",0,isImportant,true)
       else
         local e={}
-        if IsTypeTable(mvars.mar_searchTargetList[a].objectives)then
-          e=mvars.mar_searchTargetList[a].objectives
+        if IsTypeTable(mvars.mar_searchTargetList[gameId].objectives)then
+          e=mvars.mar_searchTargetList[gameId].objectives
         else
-          table.insert(e,mvars.mar_searchTargetList[a].objectives)
+          table.insert(e,mvars.mar_searchTargetList[gameId].objectives)
         end
         TppMission.UpdateObjective{objectives=e}
       end
-      if mvars.mar_searchTargetList[a].func then
-        mvars.mar_searchTargetList[a].func(t,a,s)
+      if mvars.mar_searchTargetList[gameId].func then
+        mvars.mar_searchTargetList[gameId].func(t,gameId,s)
       end
       TppSoundDaemon.PostEvent"sfx_s_enemytag_main_tgt"
-      this._CallSearchTargetEnabledRadio(a)
+      this._CallSearchTargetEnabledRadio(gameId)
       svars.mar_searchTargeIsFound[n]=true
       return
     end
   end
 end
-function this._GetStrCode32SearchTargetName(a)
-  for r,e in pairs(mvars.mar_searchTargetList)do
-    local e=e.gameObjectName
-    if a==GetGameObjectId(e)then
-      return StrCode32(e)
+function this._GetStrCode32SearchTargetName(gameId)
+  for r,targetInfo in pairs(mvars.mar_searchTargetList)do
+    local targetNane=targetInfo.gameObjectName
+    if gameId==GetGameObjectId(targetNane)then
+      return StrCode32(targetNane)
     end
   end
   return nil
 end
-function this._IsCheckSVarsSearchTargetName(e)
-  local a=StrCode32(e)
+function this._IsCheckSVarsSearchTargetName(targetName)
+  local targetNameStr32=StrCode32(targetName)
   for e=0,TppDefine.SEARCH_TARGET_COUNT-1 do
-    if svars.mar_searchTargetName[e]==a then
+    if svars.mar_searchTargetName[e]==targetNameStr32 then
       return true
     end
   end
   return false
 end
-function this._IsCheckSVarsSearchTarget(a,r)
+function this._IsCheckSVarsSearchTarget(a,svarName)
   local n=this._GetStrCode32SearchTargetName(a)
   if n==nil then
     return false
   end
   for a=0,TppDefine.SEARCH_TARGET_COUNT-1 do
     local e=false
-    if r==nil then
+    if svarName==nil then
       e=true
     else
-      e=svars[r][a]
+      e=svars[svarName][a]
     end
     if svars.mar_searchTargetName[a]==n and e then
       return true
@@ -357,8 +370,8 @@ function this._CallMarkerRadio(gameId)
     TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.SEARCH_TARGET_ENABLED)
   end
 end
-function this._CallSearchTargetEnabledRadio(a)
-  if not this._IsRadioTarget(a)then
+function this._CallSearchTargetEnabledRadio(gameId)
+  if not this._IsRadioTarget(gameId)then
     return
   end
   TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.SEARCH_TARGET_ENABLED)
@@ -371,9 +384,9 @@ function this._IsRadioTarget(gameId)
   end
   return true
 end
-function this._CanSetMarker(e)
-  if Tpp.IsVehicle(e)then
-    return TppEnemy.IsVehicleAlive(e)
+function this._CanSetMarker(gameId)
+  if Tpp.IsVehicle(gameId)then
+    return TppEnemy.IsVehicleAlive(gameId)
   else
     return true
   end
