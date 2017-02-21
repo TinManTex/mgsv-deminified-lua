@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppMain.lua
 local this={}
 local ApendArray=Tpp.ApendArray
 local n=Tpp.DEBUG_StrCode32ToString
@@ -176,6 +177,9 @@ function this.OnAllocate(missionTable)--NMC: via mission_main.lua, is called in 
         ApendArray(missionSvars,TppSequence.MakeSVarsTable(module.saveVarsList))
       end
     end
+    if OnlineChallengeTask then--RETAILPATCH 1090>
+      ApendArray(missionSvars,OnlineChallengeTask.DeclareSVars())
+    end--<
     ApendArray(allSvars,missionSvars)
     TppScriptVars.DeclareSVars(allSvars)
     TppScriptVars.SetSVarsNotificationEnabled(false)
@@ -345,6 +349,9 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
       _G[lib].Init(missionTable)
     end
   end
+  if OnlineChallengeTask then--RETAILPATCH 1090>
+    OnlineChallengeTask.Init()
+  end--<
   if missionTable.enemy then
     if GameObject.DoesGameObjectExistWithTypeName"TppSoldier2"then
       GameObject.SendCommand({type="TppSoldier2"},{id="CreateFaceIdList"})
@@ -595,7 +602,7 @@ local function LoadingPositionFromHeliSpace(nextIsFreeMission,isFreeMission)
       TppPlayer.SetMissionStartPosition(mvars.mis_helicopterMissionStartPosition,0)
     end
     --tex start on foot >
-    local groundStartPosition=InfLZ.groundStartPositions[gvars.heli_missionStartRoute]
+    local groundStartPosition=InfLZ.GetGroundStartPosition(vars.missionCode,gvars.heli_missionStartRoute)
     local isAssaultLz=mvars.ldz_assaultDropLandingZoneTable[gvars.heli_missionStartRoute]
     local startOnFoot=groundStartPosition and InfMain.IsStartOnFoot(vars.missionCode,isAssaultLz)
     local isMbFree=TppMission.IsMbFreeMissions(vars.missionCode) and (nextIsFreeMission or isFreeMission)
@@ -652,7 +659,7 @@ local function LoadingPositionToFree()
     TppMission.ResetIsStartFromFreePlay()
   end--^
   if HasHeliRoute() then--tex startOnFoot zoo/ward transfer>
-    local groundStartPosition=InfLZ.groundStartPositions[gvars.heli_missionStartRoute]
+    local groundStartPosition=InfLZ.GetGroundStartPosition(vars.missionCode,gvars.heli_missionStartRoute)
     local isAssaultLz=mvars.ldz_assaultDropLandingZoneTable[gvars.heli_missionStartRoute]
     local startOnFoot=groundStartPosition and InfMain.IsStartOnFoot(vars.missionCode,isAssaultLz)
     if startOnFoot then
@@ -804,6 +811,9 @@ function this.OnReload(missionTable)
       missionTable[name]._messageExecTable=Tpp.MakeMessageExecTable(entry.Messages())
     end
   end
+  if OnlineChallengeTask then--RETAILPATCH 1090>
+    OnlineChallengeTask.OnReload()
+  end--<
   if missionTable.enemy then
     if IsTypeTable(missionTable.enemy.routeSets)then
       TppClock.UnregisterClockMessage"ShiftChangeAtNight"
@@ -890,6 +900,9 @@ function this.OnMessage(n,sender,messageId,arg0,arg1,arg2,arg3)
     local strLogText=l
     DoMessage(messageExecTable[n],CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   end
+  if OnlineChallengeTask then--RETAILPATCH 1090>
+    OnlineChallengeTask.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,l)
+  end--<
   if mvars.loc_locationCommonTable then
     mvars.loc_locationCommonTable.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,l)
   end

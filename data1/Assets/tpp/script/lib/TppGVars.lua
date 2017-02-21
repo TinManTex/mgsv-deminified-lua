@@ -277,6 +277,7 @@ this.DeclareGVarsTable={
   {name="ui_isTipsGuidShownInThisGame",arraySize=TppDefine.MAX_TIPS_GUIDE_SHOWN_ONCE,type=TppScriptVars.TYPE_BOOL,value=false,save=false,category=TppScriptVars.CATEGORY_MISSION},
   {name="ui_isControlGuideShownOnce",arraySize=TppDefine.MAX_CONTROL_GUIDE_SHOWN_ONCE,type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
   {name="ui_isControlGuidShownInThisGame",arraySize=TppDefine.MAX_CONTROL_GUIDE_SHOWN_ONCE,type=TppScriptVars.TYPE_BOOL,value=false,save=false,category=TppScriptVars.CATEGORY_MISSION},
+  {name="localOnlineChallengeTaskVersion",type=TppScriptVars.TYPE_INT32,value=0,save=true,category=TppScriptVars.CATEGORY_MB_MANAGEMENT},--RETAILPATCH 1090
   {name="dbg_forceMaster",type=TppScriptVars.TYPE_BOOL,value=false,save=false},
   {name="dbg_autoMissionOpenClearCheck",type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
   nil

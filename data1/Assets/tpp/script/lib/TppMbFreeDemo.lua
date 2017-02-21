@@ -929,9 +929,9 @@ function this.DisableOcelot()
     GameObject.SendCommand(gameId,command)
   end
 end
-function this.ChangeBlock(t,l)
+function this.ChangeBlock(t,demoName)
   local t=this.demoBlockList[t]
-  local o=this.demoBlockList[l]
+  local o=this.demoBlockList[demoName]
   local n=#t~=#o
   if not n then
     for e=1,#t do
@@ -944,34 +944,36 @@ function this.ChangeBlock(t,l)
     end
   end
   if n then
-    local t=f30050_demo.GetDemoPlayCluster(l)
-    local t=TppDefine.CLUSTER_DEFINE[t]
+    local clusterName=f30050_demo.GetDemoPlayCluster(demoName)
+    local t=TppDefine.CLUSTER_DEFINE[clusterName]
     f30050_sequence.RegisterFovaFpk(t)
-    this.UpdatePackList(l)
-    TppScriptBlock.LoadDemoBlock(l,true)
+    this.UpdatePackList(demoName)
+    TppScriptBlock.LoadDemoBlock(demoName,true)
   end
 end
-function this.GetNextDemo(l)
-  local t=nil
-  local e=this.demoOptions[l]
-  if e and e.GetNextDemoNameOrNil then
-    t=e.GetNextDemoNameOrNil()
+function this.GetNextDemo(demoName)
+  local nextDemo=nil
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions and demoOptions.GetNextDemoNameOrNil then
+    nextDemo=demoOptions.GetNextDemoNameOrNil()
   end
-  return t
+  return nextDemo
 end
-function this.GetDemoPlayCluster(n)
-  local t="Command"local l="plnt0"local e=this.demoOptions[n]
-  if e and e.clusterName then
-    t=e.clusterName
+function this.GetDemoPlayCluster(demoName)
+  local clusterName="Command"
+  local plntName="plnt0"
+  local demoOptions=this.demoOptions[demoName]
+  if demoOptions and demoOptions.clusterName then
+    clusterName=demoOptions.clusterName
   end
-  if e and e.plntName then
-    l=e.plntName
+  if demoOptions and demoOptions.plntName then
+    plntName=demoOptions.plntName
   end
-  return t,l
+  return clusterName,plntName
 end
-function this.HasPlant(t)
-  local e,t=this.GetDemoPlayCluster(t)
-  return mtbs_cluster.HasPlant(e,t)
+function this.HasPlant(demoName)
+  local clusterName,plntName=this.GetDemoPlayCluster(demoName)
+  return mtbs_cluster.HasPlant(clusterName,plntName)
 end
 function this.GetDemoTime(demoName)
   local time=nil

@@ -256,7 +256,7 @@ this.RESOURCE_INFORMATION_TABLE={
 }
 --DEBUGNOW TODO scaling in this.AddPickedUpResourceToTempBuffer (the resource add function) and TppPlayer.OnPickUpCollection (the display) would probably be better if you want runtime adjust
 --for collectionType,info in pairs(this.RESOURCE_INFORMATION_TABLE)do
---  if string.find(info.resourceName, "Poster") then 
+--  if string.find(info.resourceName, "Poster") then
 --  else
 --    info.count=info.count*10
 --  end
@@ -1249,6 +1249,7 @@ function this.OnFultonSoldier(gameId,a,a,staffId,recoveredByHeli,fultonedPlayer)
     end
     PlayRecord.RegistPlayRecord"SOLDIER_RESCUE"
     Tpp.IncrementPlayData"totalRescueCount"
+    TppUI.UpdateOnlineChallengeTask{detectType=2,diff=1}--RETAILPATCH 1090
   end
   this.AddTempStaffFulton{staffId=staff,gameObjectId=gameId,tempStaffStatus=tempStaffStatus,fultonedPlayer=fultonedPlayer}
 end
@@ -1278,6 +1279,7 @@ function this.OnFultonHostage(gameId,n,n,staffId,recoveredByHeli,fultonedPlayer)
     if isFemale then
       TppTrophy.Unlock(31)
     end
+    TppUI.UpdateOnlineChallengeTask{detectType=3,diff=1}--RETAILPATCH 1090
   end
   this.AddTempStaffFulton{staffId=staff,gameObjectId=gameId,tempStaffStatus=tempStaffStatus,fultonedPlayer=fultonedPlayer}
 end
@@ -1287,6 +1289,9 @@ function this.OnFultonVehicle(vehicleId,a,a,resourceId,a,playerIndex)
     return
   end
   this.AddTempResource(resourceId,nil,playerIndex)
+  if OnlineChallengeTask then--RETAILPATCH 1090>
+    OnlineChallengeTask.UpdateOnFultonVehicle(vehicleId)
+  end--<
 end
 function this.OnFultonContainer(gameId,t,n,staffOrResourceId,M,playerIndex,RENAMEmysterypatchvar)
   if mvars.trm_isSkipAddResourceToTempBuffer then
@@ -1345,10 +1350,12 @@ function this.OnFultonBuddy(gameId,t,t,t,buddyType,t)
   end
 end
 function this.OnFultonEnemyWalkerGear(gameId,n,n,resourceId,n,n)
-  if mvars.trm_isSkipAddResourceToTempBuffer then
+  local isMbInvasion=vars.missionCode==30050 and Ivars.mbNonStaff:Is(1) and Ivars.enableWalkerGearsMB:Is(1)--tex allow walker fulton
+  if mvars.trm_isSkipAddResourceToTempBuffer and not isMbInvasion then--tex added invasion bypass
     return
   end
   this.AddTempResource(resourceId)
+  TppUI.UpdateOnlineChallengeTask{detectType=8,diff=1}--RETAILPATCH 1090
 end
 function this.OnFultonAnimal(gameId,animalId)
   if mvars.trm_isSkipAddResourceToTempBuffer then

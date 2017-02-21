@@ -102,6 +102,7 @@ this.requires={
   "/Assets/tpp/script/lib/InfHelicopter.lua",
   "/Assets/tpp/script/lib/InfNPC.lua",
   "/Assets/tpp/script/lib/InfNPCHeli.lua",
+  "/Assets/tpp/script/lib/InfWalkerGear.lua",
   "/Assets/tpp/script/lib/InfInterrogation.lua",
   "/Assets/tpp/script/lib/InfSoldierParams.lua",
   "/Assets/tpp/script/lib/InfInspect.lua",
@@ -140,9 +141,9 @@ function this.Enum(nameTable)
 end
 
 function this.IsMaster()
-do
-  return true
-end
+  do
+    return true
+  end
 end
 function this.IsQARelease()
   return(Fox.GetDebugLevel()==Fox.DEBUG_LEVEL_QA_RELEASE)
@@ -406,7 +407,7 @@ function this.SetGameStatus(status)
         TppGameStatus.Reset(scriptName,gameStatusName)
       end
     end
-    for uiName,statusType in pairs(TppDefine.UI_STATUS_TYPE_ALL)do    
+    for uiName,statusType in pairs(TppDefine.UI_STATUS_TYPE_ALL)do
       local t=target[uiName]
       local unsetUiSetting=mvars.ui_unsetUiSetting
       if (Ivars.disableHeadMarkers:Is(1) and uiName=="HeadMarker") or (Ivars.disableWorldMarkers:Is(1) and uiName=="WorldMarker")then--tex> bit of a kludge implementation, but lua doesnt support continue in for loops--TODO more testing
@@ -739,69 +740,72 @@ end
 function this.PatchDlcCheckCoroutine(p1,p2,p3,p4)--RETAILPATCH 1070 reworked
   if p4==nil then
     p4=PatchDlc.PATCH_DLC_TYPE_MGO_DATA
-  end
-  local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=true,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=true}
-  if not n[p4]then
-    Fox.Hungup"Invalid dlc type."return false
-  end
-  local function RENf1(e)
-  end
-  local function RENf2()
-    if TppUiCommand.IsShowPopup()then
-      TppUiCommand.ErasePopup()
-      while TppUiCommand.IsShowPopup()do
-        RENf1"waiting popup closed..."
-        coroutine.yield()
-      end
-    end
-  end
-  local function RENf3()
-    while TppSave.IsSaving()do
-      RENf1"waiting saving end..."
+end
+local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=true,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=true}
+if not n[p4]then
+  Fox.Hungup"Invalid dlc type."return false
+end
+local function RENf1(e)
+end
+local function RENf2()
+  if TppUiCommand.IsShowPopup()then
+    TppUiCommand.ErasePopup()
+    while TppUiCommand.IsShowPopup()do
+      RENf1"waiting popup closed..."
       coroutine.yield()
     end
-  end
-  RENf3()
-  PatchDlc.StartCheckingPatchDlc(p4)
-  if PatchDlc.IsCheckingPatchDlc()then
-    if not p3 then
-      RENf2()
-      local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=5100,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=5150}
-      local e=n[p4]
-      TppUiCommand.SetPopupType"POPUP_TYPE_NO_BUTTON_NO_EFFECT"
-      TppUiCommand.ShowErrorPopup(e)
-    end
-    while PatchDlc.IsCheckingPatchDlc()do
-      RENf1"waiting checking PatchDlc end..."
-      coroutine.yield()
-      TppUI.ShowAccessIconContinue()
-    end
-  end
-  RENf2()
-  if PatchDlc.DoesExistPatchDlc(p4)then
-    if p1 then
-      p1()
-    end
-    return true
-  else
-    if p2 then
-      p2()
-    end
-    return false
   end
 end
+local function RENf3()
+  while TppSave.IsSaving()do
+    RENf1"waiting saving end..."
+    coroutine.yield()
+  end
+end
+RENf3()
+PatchDlc.StartCheckingPatchDlc(p4)
+if PatchDlc.IsCheckingPatchDlc()then
+  if not p3 then
+    RENf2()
+    local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=5100,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=5150}
+    local e=n[p4]
+    TppUiCommand.SetPopupType"POPUP_TYPE_NO_BUTTON_NO_EFFECT"
+    TppUiCommand.ShowErrorPopup(e)
+  end
+  while PatchDlc.IsCheckingPatchDlc()do
+    RENf1"waiting checking PatchDlc end..."
+    coroutine.yield()
+    TppUI.ShowAccessIconContinue()
+  end
+end
+RENf2()
+if PatchDlc.DoesExistPatchDlc(p4)then
+  if p1 then
+    p1()
+  end
+  return true
+else
+  if p2 then
+    p2()
+  end
+  return false
+end
+end
 function this.IsPatchDlcValidPlatform(n)--RETAILPATCH 1070
-  local e={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]={PS3=true,PS4=true},[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]={Xbox360=true,PS3=true,PS4=true}}
-  local e=e[n]
-  if not e then
-    Fox.Hungup"Invalid dlc type."return false
-  end
-  local n=Fox.GetPlatformName()
-  if e[n]then
-    return true
-  else
-    return false
-  end
+  local e={
+    [PatchDlc.PATCH_DLC_TYPE_MGO_DATA]={Xbox360=true,PS3=true,PS4=true},--RETAILPATCH 1090 X360 added
+    [PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]={Xbox360=true,PS3=true,PS4=true}
+  }
+local e=e[n]
+if not e then
+  Fox.Hungup"Invalid dlc type."return false
+end
+local n=Fox.GetPlatformName()
+if e[n]then
+  return true
+else
+  return false
+end
 end--<
 function this.ClearDidCancelPatchDlcDownloadRequest()
   if(vars.didCancelPatchDlcDownloadRequest==1)then

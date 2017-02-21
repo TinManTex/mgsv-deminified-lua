@@ -466,6 +466,10 @@ function this.QARELEASE_DEBUG_Init()
   e.AddDebugMenu("LuaSystem","setFobForGPU","bool",mvars.qaDebug,"setFobForGPU")
   mvars.qaDebug.showEventTask=false
   e.AddDebugMenu("LuaUI","showEventTask","bool",mvars.qaDebug,"showEventTask")
+  mvars.qaDebug.showOnlineChallengeTask=0--RETAILPATCH 1090
+  e.AddDebugMenu("LuaUI","showOnlineChallengeTask","int32",mvars.qaDebug,"showOnlineChallengeTask")
+  mvars.qaDebug.showOnTaskVersion=false
+  e.AddDebugMenu("LuaUI","showOnTaskVersion","bool",mvars.qaDebug,"showOnTaskVersion")--<
 end
 function this.QAReleaseDebugUpdate()
   local svars=svars
@@ -619,6 +623,49 @@ function this.QAReleaseDebugUpdate()
       end
     end
   end
+  --RETAILPATCH 1090>
+  if(mvars.qaDebug.showOnlineChallengeTask>0)then
+    Print(newContext,{.5,.5,1},"LuaUI ShowOnlineChallengeTask")
+    if not OnlineChallengeTask then
+      Print(newContext,"OnlineChallengeTask.lua is not loaded now. Go to mission!")
+    elseif TppGameMode.GetUserMode()~=TppGameMode.U_KONAMI_LOGIN then
+      Print(newContext,"Now off-line mode, please connect online!")
+    elseif not mvars.ui_onlineChallengeTaskDefine then
+      Print(newContext,"Not defined online challenge task!")
+    else
+      local t=mvars.qaDebug.debugOnlineChallengeTaskMissionList[mvars.qaDebug.showOnlineChallengeTask]
+      if not t then
+        mvars.qaDebug.showOnlineChallengeTask=0
+        return
+      end
+      local function i(n,o)
+        local t
+        if TppChallengeTask.IsCompletedOnlineTask(o)then
+          t=" o "
+          else
+          t=" x "
+          end
+        local s=n[o]and n[o].detectType
+        if s then
+          local r=mvars.qaDebug.debugOnlineChallengeTaskTextTable and mvars.qaDebug.debugOnlineChallengeTaskTextTable[s]
+          if not r then
+            r="threshold is"end
+          Print(newContext,string.format("   Task %02d : [%s] %s %06.2f : ( Current %06.2f )",o,t,r,n[o].threshold,OnlineChallengeTask.GetCurrentTaskValue(o)))
+        end
+      end
+      Print(newContext,string.format("missionCode = %05d",t))
+      for a=0,23 do
+        local e=mvars.ui_onlineChallengeTaskDefine
+        if e[a]and(e[a].missionCode==t)then
+          i(e,a,true)
+        end
+      end
+    end
+  end
+  if mvars.qaDebug.showOnTaskVersion then
+    Print(newContext,{.5,.5,1},"LuaUI ShowOnlineChallengeTaskVersion")Print(newContext,string.format("   ServerVersion : %d",TppNetworkUtil.GetOnlineChallengeTaskVersion()))Print(newContext,string.format("    LocalVersion : %d",gvars.localOnlineChallengeTaskVersion))
+  end
+  --<
 end
 function this.Print2D(e)
   if(e==nil)then

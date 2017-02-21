@@ -1734,13 +1734,13 @@ function this.Init(missionTable)
       vars.playerCameraRotation[1]=initialCameraRotation[2]
     end
   end
-  
+
   local blackDiamond=true--tex>
   if Ivars.enableFovaMod:Is(1) then
-  local fovaTable,fovaDescription,noBlackDiamond=InfFova.GetCurrentFovaTable()
-  blackDiamond=not noBlackDiamond
+    local fovaTable,fovaDescription,noBlackDiamond=InfFova.GetCurrentFovaTable()
+    blackDiamond=not noBlackDiamond
   end--<
-  
+
   if gvars.s10240_isPlayedFuneralDemo and blackDiamond then--tex added nodiamond
     Player.SetUseBlackDiamondEmblem(true)
   else
@@ -1928,28 +1928,32 @@ function this.MakeFultonRecoverSucceedRatio(t,_gameId,RENAMEanimalId,r,staffOrRe
     percentage=100
   end
   if TppEnemy.IsRescueTarget(gameId)then
-      percentage=100
-  end    
+    percentage=100
+  end
   if Tpp.IsHostage(gameId) then--tex>
     if Ivars.fultonHostageHandling:Is"ZERO" then
       percentage=0
-    end
-  end--< 
+  end
+  end--<
+
   --tex TODO: add own ivar
---    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck() and Tpp.IsSoldier(gameId) then--tex>
---    local soldierType=TppEnemy.GetSoldierType(gameId)
---    local soldierSubType=TppEnemy.GetSoldierSubType(gameId,soldierType)
---    if soldierSubType=="SOVIET_WILDCARD" or soldierSubType=="PF_WILDCARD" then
---      percentage=0
---    end
+--  if Tpp.IsSoldier(gameId) then --tex>
+--    if Ivars.fultonWildCardHandling:Is(1) and Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck() then
+--      local soldierType=TppEnemy.GetSoldierType(gameId)
+--      local soldierSubType=TppEnemy.GetSoldierSubType(gameId,soldierType)
+--      if soldierSubType=="SOVIET_WILDCARD" or soldierSubType=="PF_WILDCARD" then--TODO: another way to ID wildcard soldiers
+--        percentage=0
+--      end
+--  end
 --  end--<
-  if Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex> WORKAROUND something weird happening with fuledtempstaff on map exit, disabling for now
+  --DEBUGNOW WIP
+  if --[[Ivars.fultonMotherBaseHandling:Is(1) and--]] Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex>
     percentage=0
   end--<
   if Tpp.IsFultonContainer(gameId) and vars.missionCode==30050 and Ivars.mbCollectionRepop:Is(1)then--tex> more weirdness
     percentage=0
   end--<
-  
+
   local forcePercent
   if mvars.ply_forceFultonPercent then
     forcePercent=mvars.ply_forceFultonPercent[gameId]

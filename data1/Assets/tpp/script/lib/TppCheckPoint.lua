@@ -1,3 +1,4 @@
+--TppCheckPoint.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local IsTypeFunc=Tpp.IsTypeFunc
@@ -9,7 +10,7 @@ local n=GameObject.SendCommand
 local n=Tpp.DEBUG_StrCode32ToString
 local IsHelicopter=Tpp.IsHelicopter
 local IsNotAlert=Tpp.IsNotAlert
-local s=0
+local zero=0
 function this.DeclareSVars()
   return{
     {name="chk_checkPointName",arraySize=TppDefine.CHECK_POINT_MAX,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
@@ -21,22 +22,22 @@ function this.Messages()
   if not mvars.loc_locationCommonCheckPointList then
     return nil
   end
-  local n={}
-  for t,i in pairs(mvars.loc_locationCommonCheckPointList)do
-    if mvars.mis_baseList and this._DoesBaseListInclude(t)then
-      for t,i in pairs(i)do
-        local t="trap_"..i
-        local e={msg="Enter",sender=t,
+  local trapMessageTable={}
+  for areaName,checkPointNames in pairs(mvars.loc_locationCommonCheckPointList)do
+    if mvars.mis_baseList and this._DoesBaseListInclude(areaName)then
+      for i,checkPoint in pairs(checkPointNames)do
+        local trapName="trap_"..checkPoint
+        local message={msg="Enter",sender=trapName,
           func=function(n,n)
-            this.Update{checkPoint=i,trapName=t,safetyCurrentPosition=true}
+            this.Update{checkPoint=checkPoint,trapName=trapName,safetyCurrentPosition=true}
           end
         }
-        table.insert(n,e)
+        table.insert(trapMessageTable,message)
       end
-      table.insert(n,nil)
+      table.insert(trapMessageTable,nil)
     end
   end
-  return Tpp.StrCode32Table{Trap=n}
+  return Tpp.StrCode32Table{Trap=trapMessageTable}
 end
 function this.OnAllocate()
   mvars.mis_checkPointList={}
@@ -63,7 +64,7 @@ function this.Disable(n)
   this._SetEnable(n,false)
 end
 function this.Reset()
-  gvars.mis_checkPoint=s
+  gvars.mis_checkPoint=zero
 end
 function this.RegisterCheckPointList(n)
   local n=n or{}
@@ -145,22 +146,22 @@ function this.IsEnable(e)
   end
   return false
 end
-function this.Update(n)
+function this.Update(checkPointInfo)
   local checkPoint
   local ignoreAlert
   local permitHelicopter
   local atCurrentPosition
   local safetyCurrentPosition
   local trapName
-  if IsTypeString(n)then
-    checkPoint=n
-  elseif IsTypeFunc(n)then
-    checkPoint=n.checkPoint
-    ignoreAlert=n.ignoreAlert
-    permitHelicopter=n.permitHelicopter
-    atCurrentPosition=n.atCurrentPosition
-    safetyCurrentPosition=n.safetyCurrentPosition
-    trapName=n.trapName
+  if IsTypeString(checkPointInfo)then
+    checkPoint=checkPointInfo
+  elseif IsTypeFunc(checkPointInfo)then
+    checkPoint=checkPointInfo.checkPoint
+    ignoreAlert=checkPointInfo.ignoreAlert
+    permitHelicopter=checkPointInfo.permitHelicopter
+    atCurrentPosition=checkPointInfo.atCurrentPosition
+    safetyCurrentPosition=checkPointInfo.safetyCurrentPosition
+    trapName=checkPointInfo.trapName
   else
     return
   end
@@ -211,14 +212,16 @@ function this.UpdateAtCurrentPosition()
   this.Update{atCurrentPosition=true}
 end
 function this.DEBUG_Init()
-  mvars.debug.showCheckPointList=false;(nil).AddDebugMenu("LuaCheckPoint","CHK.showCheckPointList","bool",mvars.debug,"showCheckPointList")
+  mvars.debug.showCheckPointList=false
+  ;(nil).AddDebugMenu("LuaCheckPoint","CHK.showCheckPointList","bool",mvars.debug,"showCheckPointList")
 end
 function this.DebugUpdate()
   local i=(nil).NewContext()
   if mvars.debug.showCheckPointList then
     (nil).Print(i,{.5,.5,1},"TppCheckPoint: showCheckPointList")
     for o,n in pairs(mvars.mis_checkPointList)do
-      if IsTypeString(n)and this.IsEnable(n)then(nil).Print(i,{1,1,1},n)
+      if IsTypeString(n)and this.IsEnable(n)then
+      (nil).Print(i,{1,1,1},n)
       end
     end
   end
@@ -235,16 +238,16 @@ function this._SetEnable(n,o)
         end
       else
         if this._DoesBaseListInclude(n.baseName)then
-          for t,n in pairs(mvars.loc_locationCommonCheckPointList[n.baseName])do
-            this._SetEnable({checkPointName=n},o)
+          for t,checkPointName in pairs(mvars.loc_locationCommonCheckPointList[n.baseName])do
+            this._SetEnable({checkPointName=checkPointName},o)
           end
         end
       end
     end
     if n.checkPointName then
       if IsTypeFunc(n.checkPointName)then
-        for t,n in pairs(n.checkPointName)do
-          this._SetEnable({checkPointName=n},o)
+        for t,checkPointName in pairs(n.checkPointName)do
+          this._SetEnable({checkPointName=checkPointName},o)
         end
       else
         local checkpointNameStr32
@@ -302,18 +305,18 @@ function this._DoesBaseListInclude(n)
   end
   return false
 end
-function this._DoesCheckPointListInclude(e)
-  if not e then
+function this._DoesCheckPointListInclude(checkPointId)
+  if not checkPointId then
     return false
   end
   local checkPointNameStr32
-  if IsTypeString(e)then
-    checkPointNameStr32=StrCode32(e)
+  if IsTypeString(checkPointId)then
+    checkPointNameStr32=StrCode32(checkPointId)
   else
-    checkPointNameStr32=e
+    checkPointNameStr32=checkPointId
   end
-  for e=0,TppDefine.CHECK_POINT_MAX-1 do
-    if svars.chk_checkPointName[e]==checkPointNameStr32 then
+  for i=0,TppDefine.CHECK_POINT_MAX-1 do
+    if svars.chk_checkPointName[i]==checkPointNameStr32 then
       return true
     end
   end

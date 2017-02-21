@@ -163,9 +163,9 @@ this.PERSONAL_DATA_SAVE_FILE_NAME="PERSONAL_DATA"
 this.CATEGORY_MISSION_RESTARTABLE=2
 this.SAVE_FILE_INFO={
   [TppScriptVars.CATEGORY_GAME_GLOBAL]={version=107,slot=this.SAVE_SLOT.GLOBAL},--RETAILPATCH: 1006, version bump
-  [TppScriptVars.CATEGORY_MISSION]={version=112,slot=this.SAVE_SLOT.CHECK_POINT},--RETAILPATCH: 1006, version bump
+  [TppScriptVars.CATEGORY_MISSION]={version=114,slot=this.SAVE_SLOT.CHECK_POINT},--RETAILPATCH: 1090, version bump 112 to 114
   [TppScriptVars.CATEGORY_RETRY]={version=105,slot=this.SAVE_SLOT.RETRY},
-  [TppScriptVars.CATEGORY_MB_MANAGEMENT]={version=111,slot=this.SAVE_SLOT.MB_MANAGEMENT},
+  [TppScriptVars.CATEGORY_MB_MANAGEMENT]={version=112,slot=this.SAVE_SLOT.MB_MANAGEMENT},--RETAILPATCH: 1090, version bump 111 to 112
   [TppScriptVars.CATEGORY_QUEST]={version=104,slot=this.SAVE_SLOT.QUEST},
   [TppScriptVars.CATEGORY_CONFIG]={version=103,slot=this.SAVE_SLOT.CONFIG},
   [this.CATEGORY_MISSION_RESTARTABLE]={version=100,slot=this.SAVE_SLOT.CHECK_POINT_RESTARTABLE,missionStartSlot=this.SAVE_SLOT.MISSION_START},
