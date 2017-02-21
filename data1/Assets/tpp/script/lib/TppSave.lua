@@ -188,8 +188,8 @@ function this.SaveMBAndGlobal()
   this.SaveGameData(vars.missionCode)
 end
 function this.VarSaveMBAndGlobal()
-  local a=vars.missionCode
-  this.VarSaveMbMangement(a)
+  local missionCode=vars.missionCode
+  this.VarSaveMbMangement(missionCode)
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.GLOBAL,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_GAME_GLOBAL)
 end
 this.DO_RESERVE_SAVE_FUNCTION={
@@ -513,18 +513,18 @@ end
 function this.VarSaveOnlyGlobalData()
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.GLOBAL,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_GAME_GLOBAL)
 end
-function this.VarSave(a,n)
+function this.VarSave(missionCode,isMissionStart)
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.GLOBAL,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_GAME_GLOBAL)
   if gvars.usingNormalMissionSlot then
     this.SaveVarsToSlot(TppDefine.SAVE_SLOT.CHECK_POINT,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_MISSION)
-    if n then
+    if isMissionStart then
       this.SaveVarsToSlot(TppDefine.SAVE_SLOT.CHECK_POINT_RESTARTABLE,TppScriptVars.GROUP_BIT_ALL,TppDefine.CATEGORY_MISSION_RESTARTABLE)
       this.SaveVarsToSlot(TppDefine.SAVE_SLOT.MISSION_START,TppScriptVars.GROUP_BIT_ALL,TppDefine.CATEGORY_MISSION_RESTARTABLE)
     else
       this.SaveVarsToSlot(TppDefine.SAVE_SLOT.CHECK_POINT_RESTARTABLE,TppScriptVars.GROUP_BIT_ALL,TppDefine.CATEGORY_MISSION_RESTARTABLE)
     end
   end
-  if this.CanSaveMbMangementData(a)then
+  if this.CanSaveMbMangementData(missionCode)then
     this.SaveVarsToSlot(TppDefine.SAVE_SLOT.MB_MANAGEMENT,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_MB_MANAGEMENT)
   end
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.QUEST,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_QUEST)
@@ -533,8 +533,8 @@ end
 function this.VarSaveOnRetry()
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.RETRY,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_RETRY)
 end
-function this.VarSaveMbMangement(a,n)
-  if this.CanSaveMbMangementData(a)or n then
+function this.VarSaveMbMangement(missionCode,forceSave)
+  if this.CanSaveMbMangementData(missionCode)or forceSave then
     this.SaveVarsToSlot(TppDefine.SAVE_SLOT.MB_MANAGEMENT,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_MB_MANAGEMENT)
   end
 end
@@ -622,14 +622,14 @@ end
 function this.LoadPersonalDataFromSaveFile(area)
   return this.LoadFromSaveFile(TppDefine.SAVE_SLOT.PERSONAL,TppDefine.PERSONAL_DATA_SAVE_FILE_NAME,area)
 end
-function this.CheckSlotVersion(category,n,useMissionStartSlot)
+function this.CheckSlotVersion(category,slotId,useMissionStartSlot)
   local saveFileVersion=this.GetSaveFileVersion(category)
   local slot=TppDefine.SAVE_FILE_INFO[category].slot
   if useMissionStartSlot then
     slot=TppDefine.SAVE_FILE_INFO[category].missionStartSlot
   end
-  if n then
-    slot={n,slot}
+  if slotId then
+    slot={slotId,slot}
   end
   local scriptVersionFromSlot=TppScriptVars.GetScriptVersionFromSlot(slot)
   if scriptVersionFromSlot==nil then

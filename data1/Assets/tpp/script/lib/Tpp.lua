@@ -619,19 +619,19 @@ function this.IsPlayerStatusNormal()
     return false
   end
 end
-function this.AreaToIndices(area)
-  local l,t,n,r=area[1],area[2],area[3],area[4]
-  local e={}
-  for n=l,n do
-    for t=t,r do
-      table.insert(e,{n,t})
+function this.AreaToIndices(areaExtents)
+  local xMin,yMin,xMax,yMax=areaExtents[1],areaExtents[2],areaExtents[3],areaExtents[4]
+  local areaIndicies={}
+  for x=xMin,xMax do
+    for y=yMin,yMax do
+      table.insert(areaIndicies,{x,y})
     end
   end
-  return e
+  return areaIndicies
 end
-function this.CheckBlockArea(e,t,n)
-  local l,e,r,i=e[1],e[2],e[3],e[4]
-  if(((t>=l)and(t<=r))and(n>=e))and(n<=i)then
+function this.CheckBlockArea(areaExtents,blockIndexX,blockIndexY)
+  local xMin,yMin,xMax,yMax=areaExtents[1],areaExtents[2],areaExtents[3],areaExtents[4]
+  if(((blockIndexX>=xMin)and(blockIndexX<=xMax))and(blockIndexY>=yMin))and(blockIndexY<=yMax)then
     return true
   end
   return false
@@ -645,56 +645,56 @@ function this.FillBlockArea(n,e,i,t,r,l)
   end
 end
 function this.GetCurrentStageSmallBlockIndex()
-  local e=2
-  local n,t=StageBlock.GetCurrentMinimumSmallBlockIndex()
-  return(n+e),(t+e)
+  local halfBlockSize=2
+  local x,y=StageBlock.GetCurrentMinimumSmallBlockIndex()
+  return(x+halfBlockSize),(y+halfBlockSize)
 end
-function this.IsLoadedSmallBlock(n,t)
-  local l=4
-  local e,r=StageBlock.GetCurrentMinimumSmallBlockIndex()
-  local i=e+l
-  local l=e+l
-  return((e<=n and i>=n)and r<=t)and l>=t
+function this.IsLoadedSmallBlock(blockIndexX,blockIndexY)
+  local blockSize=4
+  local minX,minY=StageBlock.GetCurrentMinimumSmallBlockIndex()
+  local maxX=minX+blockSize
+  local maxY=minX+blockSize--RETAILBUG: should be minY+blockSize? but function isn't used anywhere?
+  return((minX<=blockIndexX and maxX>=blockIndexX)and minY<=blockIndexY)and maxY>=blockIndexY
 end
-function this.IsLoadedLargeBlock(e)
-  local n=StrCode32(e)
-  local e=StageBlock.GetLoadedLargeBlocks(0)
-  for t,e in pairs(e)do
-    if e==n then
+function this.IsLoadedLargeBlock(blockName)
+  local checkBlockNameStr32=StrCode32(blockName)
+  local largeBlocks=StageBlock.GetLoadedLargeBlocks(0)
+  for i,blockNameStr32 in pairs(largeBlocks)do
+    if blockNameStr32==checkBlockNameStr32 then
       return true
     end
   end
   return false
 end
 function this.GetLoadedLargeBlock()
-  local e=StageBlock.GetLoadedLargeBlocks(0)
-  for n,e in pairs(e)do
-    return e
+  local largeBlocks=StageBlock.GetLoadedLargeBlocks(0)
+  for i,blockNameStr32 in pairs(largeBlocks)do
+    return blockNameStr32
   end
   return nil
 end
-function this.GetChunkIndex(t,n)
-  local e
-  if n then
-    e=Chunk.INDEX_MGO
+function this.GetChunkIndex(locationId,isMGO)
+  local chunkIndex
+  if isMGO then
+    chunkIndex=Chunk.INDEX_MGO
   else
-    e=TppDefine.LOCATION_CHUNK_INDEX_TABLE[t]
-    if e==nil then
+    chunkIndex=TppDefine.LOCATION_CHUNK_INDEX_TABLE[locationId]
+    if chunkIndex==nil then
     end
-    return e
+    return chunkIndex
   end
-  return e
+  return chunkIndex
 end
-function this.StartWaitChunkInstallation(n)
-  Chunk.PrefetchChunk(n)
+function this.StartWaitChunkInstallation(chunkIndex)
+  Chunk.PrefetchChunk(chunkIndex)
   Chunk.SetChunkInstallSpeed(Chunk.INSTALL_SPEED_FAST)
   this.ClearChunkInstallPopupUpdateTime()
 end
 local r=1
 local n=0
 function this.ShowChunkInstallingPopup(t,l)
-  local e=Time.GetFrameTime()
-  n=n-e
+  local frameTime=Time.GetFrameTime()
+  n=n-frameTime
   if n>0 then
     return
   end
@@ -702,16 +702,16 @@ function this.ShowChunkInstallingPopup(t,l)
   if n<0 then
     n=0
   end
-  local n=Fox.GetPlatformName()
+  local platform=Fox.GetPlatformName()
   local e=Chunk.GetChunkInstallationEta(t)
-  if e and n=="PS4"then
+  if e and platform=="PS4"then
     if e>86400 then
       e=86400
     end
     TppUiCommand.SetErrorPopupParam(e)
   end
   local e=Chunk.GetChunkInstallationRate(t)
-  if e and n=="XboxOne"then
+  if e and platform=="XboxOne"then
     TppUiCommand.SetErrorPopupParam(e*1e4,"None",2)
   end
   local e

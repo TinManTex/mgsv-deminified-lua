@@ -25,10 +25,10 @@ function this.GetRandomStartSide()
     return"RIGHT_START"
   end
 end
-function this.GetTelopPosition(e,a,t)
-  local e=sideStartInfo[e][a]
-  local t=t%4+1
-  return e[t]
+function this.GetTelopPosition(mode,side,position)
+  local telopPositions=sideStartInfo[mode][side]
+  local positionIndex=position%4+1
+  return telopPositions[positionIndex]
 end
 function this.GetFirstLangId(t,e)
   if t==1 then
@@ -37,11 +37,11 @@ function this.GetFirstLangId(t,e)
     return""
   end
 end
-function this.GetLangIdTable(e)
-  if IsTable(e)then
-    return e
-  elseif IsString(e)then
-    return{e}
+function this.GetLangIdTable(entry)
+  if IsTable(entry)then
+    return entry
+  elseif IsString(entry)then
+    return{entry}
   else
     return{}
   end
@@ -77,12 +77,12 @@ function this.PostMainCharacters(characters)
   if not next(characters)then
     return
   end
-  local s=this.GetRandomStartSide()
+  local side=this.GetRandomStartSide()
   for a,n in ipairs(characters)do
     local i=this.GetFirstLangId(a,"post_starring")
-    local a=this.GetTelopPosition("CAST_MODE",s,a-1)
+    local telopPosition=this.GetTelopPosition("CAST_MODE",side,a-1)
     local e=this.GetLangIdTable(n)
-    TppUiCommand.RegistTelopCast(a,RENsomeNumber,i,e[1],e[2],e[3],e[4])
+    TppUiCommand.RegistTelopCast(telopPosition,RENsomeNumber,i,e[1],e[2],e[3],e[4])
     TppUiCommand.RegistTelopCast("PageBreak",1)
   end
 end
@@ -90,12 +90,12 @@ function this.PostGuestCharacters(a)
   if not next(a)then
     return
   end
-  local s=this.GetRandomStartSide()
+  local side=this.GetRandomStartSide()
   for a,i in ipairs(a)do
     local n=this.GetFirstLangId(a,"post_guest_characters")
-    local a=this.GetTelopPosition("CAST_MODE",s,a-1)
+    local position=this.GetTelopPosition("CAST_MODE",side,a-1)
     local e=this.GetLangIdTable(i)
-    TppUiCommand.RegistTelopCast(a,RENsomeNumber,n,e[1],e[2],e[3],e[4])
+    TppUiCommand.RegistTelopCast(position,RENsomeNumber,n,e[1],e[2],e[3],e[4])
     TppUiCommand.RegistTelopCast("PageBreak",1)
   end
 end

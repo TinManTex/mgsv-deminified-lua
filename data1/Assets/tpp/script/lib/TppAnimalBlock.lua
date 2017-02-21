@@ -64,7 +64,7 @@ end
 function this.StopAnimalBlockLoad()
   mvars.anm_stopAnimalBlockLoad=true
 end
-function this.UpdateLoadAnimalBlock(i,o)
+function this.UpdateLoadAnimalBlock(blockIndexX,blockIndexY)
   if mvars.anm_stopAnimalBlockLoad then
     return
   end
@@ -75,7 +75,7 @@ function this.UpdateLoadAnimalBlock(i,o)
   if not MAX_AREA_NUM then
     return
   end
-  local animalBlockKeyName,animalBlockAreaName=this._GetAnimalBlockAreaName(animalAreaSetting,MAX_AREA_NUM,"loadArea",i,o)
+  local animalBlockKeyName,animalBlockAreaName=this._GetAnimalBlockAreaName(animalAreaSetting,MAX_AREA_NUM,"loadArea",blockIndexX,blockIndexY)
   if animalBlockKeyName~=nil then
     mvars.animalBlockAreaName=animalBlockAreaName
     mvars.animalBlockKeyName=animalBlockKeyName
@@ -92,15 +92,15 @@ function this.GetCurrentAnimalBlockAreaName()
   end
   return name
 end
-function this._UpdateActiveAnimalBlock(a,o)
+function this._UpdateActiveAnimalBlock(blockIndexX,blockIndexY)
   local loc_locationAnimalSettingTable=mvars.loc_locationAnimalSettingTable
   local animalAreaSetting=loc_locationAnimalSettingTable.animalAreaSetting
   local MAX_AREA_NUM=loc_locationAnimalSettingTable.MAX_AREA_NUM
   if not MAX_AREA_NUM then
     return
   end
-  local t,e=this._GetAnimalBlockAreaName(animalAreaSetting,MAX_AREA_NUM,"activeArea",a,o)
-  if e~=nil then
+  local animalBlockKeyName,animalBlockAreaName=this._GetAnimalBlockAreaName(animalAreaSetting,MAX_AREA_NUM,"activeArea",blockIndexX,blockIndexY)
+  if animalBlockAreaName~=nil then
     local blockId=ScriptBlock.GetScriptBlockId(animalBlockName)
     TppScriptBlock.ActivateScriptBlockState(blockId)
   else
@@ -108,16 +108,17 @@ function this._UpdateActiveAnimalBlock(a,o)
     TppScriptBlock.DeactivateScriptBlockState(blockId)
   end
 end
-function this._GetAnimalBlockAreaName(areaSettings,maxAreaNum,areaId,n,a)
+-- RET: animalBlockKeyName,animalBlockAreaName
+function this._GetAnimalBlockAreaName(areaSettings,maxAreaNum,areaKey,blockIndexX,blockIndexY)
   --ORPHAN local o=areaSettings
   for i=1,maxAreaNum do
-    local t=areaSettings[i]
-    local e=t[areaId]
-    if CheckBlockArea(e,n,a)then
-      for a,e in ipairs(t.defines)do
+    local areaSetting=areaSettings[i]
+    local areaExtents=areaSetting[areaKey]
+    if CheckBlockArea(areaExtents,blockIndexX,blockIndexY)then
+      for a,e in ipairs(areaSetting.defines)do
         if(not Tpp.IsTypeFunc(e.conditionFunc))or(e.conditionFunc())then
           local time=TppClock.GetTime"number"
-          return e.keyList[time%#e.keyList+1],t.areaName
+          return e.keyList[time%#e.keyList+1],areaSetting.areaName
         end
       end
     end
@@ -265,21 +266,21 @@ function this._AddClockMessage(n,t,a,r)
     return
   end
   local m=r+numAnimals
-  local a=t.nightStartTime
-  if a==nil then
-    a=this.GetDefaultTimeTable(n).nightStartTime
+  local nightStartTime=t.nightStartTime
+  if nightStartTime==nil then
+    nightStartTime=this.GetDefaultTimeTable(n).nightStartTime
   end
-  local c=TppClock.ParseTimeString(a,"number")
-  local a=t.nightEndTime
-  if a==nil then
-    a=this.GetDefaultTimeTable(n).nightEndTime
+  local c=TppClock.ParseTimeString(nightStartTime,"number")
+  local nightEndTime=t.nightEndTime
+  if nightEndTime==nil then
+    nightEndTime=this.GetDefaultTimeTable(n).nightEndTime
   end
-  local i=TppClock.ParseTimeString(a,"number")
-  local t=t.timeLag
-  if t==nil then
-    t=this.GetDefaultTimeTable(n).timeLag
+  local i=TppClock.ParseTimeString(nightEndTime,"number")
+  local timeLag=t.timeLag
+  if timeLag==nil then
+    timeLag=this.GetDefaultTimeTable(n).timeLag
   end
-  local t=TppClock.ParseTimeString(t,"number")
+  local t=TppClock.ParseTimeString(timeLag,"number")
   weatherTableCount=0
   for a=r,m-1 do
     this._RegisterClockMessage(this.CLOCK_MESSAGE_AT_NIGHT_FORMAT,c,t,true,a)
@@ -298,7 +299,7 @@ function this._ChangeRouteAtTime(t,m)
     return
   end
   local l=0
-  local n=nil
+  local animalType=nil
   local r=nil
   for m,e in pairs(o)do
     local o
@@ -309,31 +310,31 @@ function this._ChangeRouteAtTime(t,m)
       o=m
       t=e
     end
-    local e=t.groupNumber or 0
-    if l<=a and a<l+e then
-      n=o
+    local groupNumber=t.groupNumber or 0
+    if l<=a and a<l+groupNumber then
+      animalType=o
       r=t
       break
     end
-    l=l+e
+    l=l+groupNumber
   end
-  if n==nil or r==nil then
+  if animalType==nil or r==nil then
     return
   end
-  local t=this._GetSetupTable(n)
+  local t=this._GetSetupTable(animalType)
   if t==nil then
     return
   end
   local a=a-l
-  local l=this._IsNightForAnimalType(n,m)
-  if n=="Bear"then
-    if l then
+  local isNight=this._IsNightForAnimalType(animalType,m)
+  if animalType=="Bear"then
+    if isNight then
       this._SetRoute(t.type,t.locatorFormat,t.nightRouteFormat,a)
     else
       this._SetRoute(t.type,t.locatorFormat,t.routeFormat,a)
     end
   else
-    if l then
+    if isNight then
       this._SetHerdRoute(t.type,t.locatorFormat,t.nightRouteFormat,a)
     else
       this._SetHerdRoute(t.type,t.locatorFormat,t.routeFormat,a)
@@ -368,7 +369,7 @@ function this.OnInitializeAnimalBlock()
     return
   end
   mvars.animalBlockScript.DidInitialized=true
-  mvars.animalBlockScript.Messages=Tpp.StrCode32Table{Block={{msg="StageBlockCurrentSmallBlockIndexUpdated",func=function(t,a)this._UpdateActiveAnimalBlock(t,a)end}}}
+  mvars.animalBlockScript.Messages=Tpp.StrCode32Table{Block={{msg="StageBlockCurrentSmallBlockIndexUpdated",func=function(x,y)this._UpdateActiveAnimalBlock(x,y)end}}}
   l_numAnimals=0
   this.weatherTable={}
   local t=mvars.loc_locationAnimalSettingTable
@@ -388,8 +389,8 @@ function this.OnInitializeAnimalBlock()
       this._InitializeCommonAnimalSetting(animalType,animalSetting,setupTable)
       this._AddClockMessage(animalType,animalSetting,setupTable,l)
       TppFreeHeliRadio.RegistAnimalOptionalRadio(animalType)
-      local e=animalSetting.groupNumber or 0
-      l=l+e
+      local groupNumber=animalSetting.groupNumber or 0
+      l=l+groupNumber
     end
   end
   local weatherTable32=Tpp.StrCode32Table{Weather=this.weatherTable}
@@ -433,17 +434,17 @@ function this.OnAllocate(missionTable)
   local blockId=GetCurrentScriptBlockId()
   TppScriptBlock.InitScriptBlockState(blockId)
   mvars.animalBlockScript=missionTable
-  local t,a=Tpp.GetCurrentStageSmallBlockIndex()
-  this._UpdateActiveAnimalBlock(t,a)
+  local blockIndexX,blockIndexY=Tpp.GetCurrentStageSmallBlockIndex()
+  this._UpdateActiveAnimalBlock(blockIndexX,blockIndexY)
   function mvars.animalBlockScript.OnMessage(e,e,e,e,e,e,e)
   end
 end
 function this.OnTerminate()
   if mvars.animalBlockScript.DidInitialized then
-    for a=0,l_numAnimals-1 do
-      local t=string.format(this.CLOCK_MESSAGE_AT_NIGHT_FORMAT,a)
+    for i=0,l_numAnimals-1 do
+      local t=string.format(this.CLOCK_MESSAGE_AT_NIGHT_FORMAT,i)
       TppClock.UnregisterClockMessage(t)
-      t=string.format(this.CLOCK_MESSAGE_AT_MORNING_FORMAT,a)
+      t=string.format(this.CLOCK_MESSAGE_AT_MORNING_FORMAT,i)
       TppClock.UnregisterClockMessage(t)
     end
   end

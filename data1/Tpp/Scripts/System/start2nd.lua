@@ -41,42 +41,4 @@ end
 if TppSystemUtility.GetCurrentGameMode()~="MGO"then
   dofile"/Assets/tpp/radio/script/RadioParameterTable.lua"
 end
---tex> modelInfo luas
-if Script.LoadLibrary then
 
-  local plpartsPacks={--tex SYNC: InfFova
-    "plparts_avatar_man",
-    "plparts_battledress",
-    "plparts_ddf_battledress",
-    "plparts_ddf_parasite",
-    "plparts_ddf_venom",
-    "plparts_ddm_battledress",
-    "plparts_ddm_parasite",
-    "plparts_ddm_venom",
-    "plparts_dd_female",
-    "plparts_dd_male",
-    "plparts_gold",
-    "plparts_gz_suit",
-    "plparts_hospital",
-    "plparts_leather",
-    "plparts_mgs1",
-    "plparts_naked",
-    "plparts_ninja",
-    "plparts_normal",
-    "plparts_normal_scarf",
-    "plparts_parasite",
-    "plparts_raiden",
-    "plparts_silver",
-    "plparts_sneaking_suit",
-    "plparts_venom",
-  }
-
-  local path="/Assets/tpp/pack/player/parts/"
-  local suffix="_modelInfo"
-  local extension=".lua"
-  local sucess, err = pcall(function()
-    for n,packName in ipairs(plpartsPacks) do
-      Script.LoadLibrary(path..packName..suffix..extension)
-    end
-  end)
-end--<

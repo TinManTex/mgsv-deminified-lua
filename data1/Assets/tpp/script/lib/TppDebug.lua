@@ -850,8 +850,8 @@ function this.DebugUpdate()
   end
   if mvars.debug.AnimalBlock then
     Print(newContext,{.5,.5,1},"LuaSystem DBG.AnimalBlock")
-    local n,t=Tpp.GetCurrentStageSmallBlockIndex()
-    Print(newContext,string.format("current block position (x,y) = (%03d, %03d)",n,t))
+    local blockIndexX,blockIndexY=Tpp.GetCurrentStageSmallBlockIndex()
+    Print(newContext,string.format("current block position (x,y) = (%03d, %03d)",blockIndexX,blockIndexY))
     Print(newContext,"Load animal block area = "..tostring(mvars.animalBlockAreaName))
     local n=ScriptBlock.GetScriptBlockId"animal_block"
     local t

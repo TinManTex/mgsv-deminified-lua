@@ -1,3 +1,4 @@
+-- TppEnemyFaceGroup.lua
 local this={}
 --see TppEnemyFaceGroupId
 function this.GetFaceGroupTable(groupId)
@@ -66,7 +67,7 @@ function this.GetFaceGroupTable(groupId)
   local AFRICA_GRP023_B={252,263,272,282,247,256,267,276}
   local AFRICA_GRP023_W={28,60,120,174,194,188,24,55,116,168,100}
   local AFRICA_GRP024_B={213,221,239,248,214,223,241,249}
-  local AFRICA_GRP024_W={183,51,7,38,59,99,109,0,31,94,104,17 6}
+  local AFRICA_GRP024_W={183,51,7,38,59,99,109,0,31,94,104,176}
   local AFRICA_GRP025_B={301,253,264,273,261,281,293,271}
   local AFRICA_GRP025_W={181,178,69,79,129,139,156,65,76,126,137,153}
   local AFRICA_GRP026_B={227,245,284,250,260,289,232,254}

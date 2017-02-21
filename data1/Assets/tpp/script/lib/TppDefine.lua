@@ -173,7 +173,7 @@ this.SAVE_FILE_INFO={
   [TppScriptVars.CATEGORY_PERSONAL]={version=100,slot=this.SAVE_SLOT.PERSONAL}
 }
 if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-  this.SAVE_FILE_INFO[TppScriptVars.CATEGORY_MGO]={version=102,slot=this.SAVE_SLOT.MGO}
+  this.SAVE_FILE_INFO[TppScriptVars.CATEGORY_MGO]={version=102,slot=this.SAVE_SLOT.MGO}--NMC this overrides CATEGORY_MISSION_RESTARTABLE
 end
 this.PROGRAM_SAVE_FILE_VERSION=TppScriptVars.GetProgramVersionTable()
 this.VARS_GROUP_GAME_DATA_ON_START_MISSION=bor(TppScriptVars.GROUP_BIT_GVARS,TppScriptVars.GROUP_BIT_VARS)

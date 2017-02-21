@@ -1,5 +1,5 @@
 -- TppEnemyBodyId.lua
---NMC: maps a friendly id (in this case something close to the fv2 name) to an enum. in Soldier2FacaAndBodyData the enum is then mapped(via bodyFova table)to the actual fv2 path and fpk (bodyFile table >
+--NMC: maps a friendly id (in this case something close to the fv2 name) to an enum. in Soldier2FacaAndBodyData the enum is then mapped(via bodyDefinition table)to the actual fv2 path and fpk (bodyFova table >
 --In a lot of cases these aren't used and the body id/index is used directly
 --and in some cases the mapping is incorrect (see note on pfs0_dds0_v00 below)
 local this={
@@ -258,7 +258,7 @@ local this={
   ish0_v00=380,
   ish0_v01=381,
   --RETAILPATCH 1.10>
-  --swimsuits
+  --swimwear
   dlf_enem0_def=382,
   dlf_enef0_def=383,
   dlf_enem1_def=384,

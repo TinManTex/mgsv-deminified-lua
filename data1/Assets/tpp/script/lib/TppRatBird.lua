@@ -15,10 +15,10 @@ function this.RegisterBird(birdList,birdFlyZoneList)
     end
   end
 end
-function this.RegisterBaseList(e)
+function this.RegisterBaseList(baseList)
   mvars.rat_bird_baseStrCodeList={}
-  for a,e in ipairs(e)do
-    mvars.rat_bird_baseStrCodeList[StrCode32(e)]=e
+  for a,blockName in ipairs(baseList)do
+    mvars.rat_bird_baseStrCodeList[StrCode32(blockName)]=blockName
   end
 end
 function this.EnableRat()
@@ -131,9 +131,9 @@ function this._Deactivate()
     this._EnableBirds(false)
   end
 end
-function this._OnChangeLargeBlockState(a,n)
-  local a=mvars.rat_bird_baseStrCodeList[a]
-  if n==StageBlock.ACTIVE then
+function this._OnChangeLargeBlockState(blockNameStr32,blockState)
+  local a=mvars.rat_bird_baseStrCodeList[blockNameStr32]
+  if blockState==StageBlock.ACTIVE then
     this._Activate(a)
   else
     this._Deactivate(a)

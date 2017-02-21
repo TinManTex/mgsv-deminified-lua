@@ -361,11 +361,11 @@ end
 function this.SetWeapons(weaponTable)
   this._SetWeapons(weaponTable,"weapons")
 end
-function this.SetInitWeapons(weaponTable)
-  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_RECUE_MILLER then
+function this.SetInitWeapons(weaponTable,noSave)--tex added noSave
+  if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_RECUE_MILLER and not noSave then--tex added noSave
     this.SaveWeaponsToUsingTemp(weaponTable)
-  end
-  this._SetWeapons(weaponTable,"initWeapons")
+end
+this._SetWeapons(weaponTable,"initWeapons")
 end
 function this._SetWeapons(weaponTable,category)
   if not IsTypeTable(weaponTable)then
@@ -445,25 +445,25 @@ function this.GetWeaponSlotInfoFromWeaponSet(weaponInfo,slotNum)
   end
   return slotType,slotNum,slotName,magazine,ammo,underBarrelAmmo
 end
-function this.SaveWeaponsToUsingTemp(n)
+function this.SaveWeaponsToUsingTemp(weaponTable)
   if gvars.ply_isUsingTempWeapons then
     return
   end
-  if not IsTypeTable(n)then
+  if not IsTypeTable(weaponTable)then
     return
   end
-  for e=0,11 do
-    gvars.ply_lastWeaponsUsingTemp[e]=TppEquip.EQP_None
+  for i=0,11 do
+    gvars.ply_lastWeaponsUsingTemp[i]=TppEquip.EQP_None
   end
-  local t
-  local a=TppDefine.WEAPONSLOT.SUPPORT_0-1
-  for r,n in pairs(n)do
-    t,a=this.GetWeaponSlotInfoFromWeaponSet(n,a)
-    if t then
-      gvars.ply_lastWeaponsUsingTemp[t]=vars.initWeapons[t]
-    elseif a>=TppDefine.WEAPONSLOT.SUPPORT_0 and a<=TppDefine.WEAPONSLOT.SUPPORT_7 then
-      local e=a-TppDefine.WEAPONSLOT.SUPPORT_0
-      gvars.ply_lastWeaponsUsingTemp[a]=vars.initSupportWeapons[e]
+  local slotType
+  local slot=TppDefine.WEAPONSLOT.SUPPORT_0-1
+  for i,weaponInfo in pairs(weaponTable)do
+    slotType,slot=this.GetWeaponSlotInfoFromWeaponSet(weaponInfo,slot)
+    if slotType then
+      gvars.ply_lastWeaponsUsingTemp[slotType]=vars.initWeapons[slotType]
+    elseif slot>=TppDefine.WEAPONSLOT.SUPPORT_0 and slot<=TppDefine.WEAPONSLOT.SUPPORT_7 then
+      local e=slot-TppDefine.WEAPONSLOT.SUPPORT_0
+      gvars.ply_lastWeaponsUsingTemp[slot]=vars.initSupportWeapons[e]
     end
   end
   gvars.ply_isUsingTempWeapons=true
@@ -648,18 +648,18 @@ function this.SupplyAllAmmoFullOnMissionFinalize()
   end
 end
 function this.SupplyWeaponAmmoFull(slot)
-  local weapons=vars.initWeapons[slot]
-  if weapons==TppEquip.EQP_None then
+  local weaponId=vars.initWeapons[slot]
+  if weaponId==TppEquip.EQP_None then
     return
   end
-  local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weapons)
+  local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weaponId)
   this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
   gvars.initAmmoInWeapons[slot]=ammoInWeapon
   this.SupplyAmmoByBulletId(altAmmoId,altDefaultAmmo)
   gvars.initAmmoSubInWeapons[slot]=altAmmoInWeapon
 end
-function this.SupplySupportWeaponAmmoFull(weapons)
-  local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weapons)
+function this.SupplySupportWeaponAmmoFull(weaponId)
+  local ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weaponId)
   this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
 end
 function this.SupplyAmmoByBulletId(ammoId,defaultAmmo)
@@ -1405,21 +1405,21 @@ function this.FOBPlayMissionClearCamera()
   end
   TimerStart("Timer_FOBStartPlayMissionClearCameraStep1",.25)
 end
-function this._FOBPlayMissionClearCamera(a)
-  this.FOBPlayCommonMissionEndCamera(this.FOBPlayMissionClearCameraOnFoot,a)
+function this._FOBPlayMissionClearCamera(camMode)
+  this.FOBPlayCommonMissionEndCamera(this.FOBPlayMissionClearCameraOnFoot,camMode)
 end
-function this.FOBPlayCommonMissionEndCamera(t,a)
-  local e
-  e=t(a)
-  if e then
-    local a="Timer_FOBStartPlayMissionClearCameraStep"..tostring(a+1)
-    TimerStart(a,e)
+function this.FOBPlayCommonMissionEndCamera(CamFunc,camMode)
+  local delay
+  delay=CamFunc(camMode)
+  if delay then
+    local timerName="Timer_FOBStartPlayMissionClearCameraStep"..tostring(camMode+1)
+    TimerStart(timerName,delay)
   end
 end
 function this.FOBRequestMissionClearMotion()
   Player.RequestToPlayDirectMotion{"missionClearMotionFob",{"/Assets/tpp/motion/SI_game/fani/bodies/snap/snapnon/snapnon_s_win_idl.gani",false,"","","",false}}
 end
-function this.FOBPlayMissionClearCameraOnFoot(l)
+function this.FOBPlayMissionClearCameraOnFoot(camMode)
   Player.SetCurrentSlot{slotType=PlayerSlotType.ITEM,subIndex=0}
   if PlayerInfo.OrCheckStatus{PlayerStatus.STAND,PlayerStatus.SQUAT,PlayerStatus.CRAWL}then
     if PlayerInfo.AndCheckStatus{PlayerStatus.CARRY}then
@@ -1437,15 +1437,15 @@ function this.FOBPlayMissionClearCameraOnFoot(l)
   local skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
   local offsetPos=Vector3(0,0,-4.5)
   local interpTimeAtStart=.3
-  local i
+  local delay
   local callSeOfCameraInterp=false
-  if l==1 then
+  if camMode==1 then
     skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
     skeletonCenterOffsets={Vector3(0,.25,0),Vector3(0,-.05,0)}
     skeletonBoundings={Vector3(.1,.125,.1),Vector3(.1,.125,.1)}
     offsetPos=Vector3(0,0,-1)
     interpTimeAtStart=.3
-    i=1
+    delay=1
     callSeOfCameraInterp=true
   else
     skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
@@ -1455,11 +1455,11 @@ function this.FOBPlayMissionClearCameraOnFoot(l)
     interpTimeAtStart=3
   end
   Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=4,followDelayTime=.1,candidateRots={{-10,170},{-10,-170}},skeletonNames=skeletonNames,skeletonCenterOffsets=skeletonCenterOffsets,skeletonBoundings=skeletonBoundings,offsetPos=offsetPos,focalLength=28,aperture=1.875,timeToSleep=20,interpTimeAtStart=interpTimeAtStart,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=callSeOfCameraInterp}
-  return i
+  return delay
 end
 function this.PlayMissionAbortCamera()
-  local e=this.SetPlayerStatusForMissionEndCamera()
-  if not e then
+  local playEndCam=this.SetPlayerStatusForMissionEndCamera()
+  if not playEndCam then
     return
   end
   TimerStart("Timer_StartPlayMissionAbortCamera",.25)
@@ -1720,6 +1720,7 @@ function this.MissionStartPlayerTypeSetting()
       vars.playerPartsType=PlayerPartsType.NORMAL
     end
   end
+  InfMain.PlayerVarsSanityCheck()--tex
 end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
@@ -1815,68 +1816,15 @@ function this.Init(missionTable)
   TppEffectUtility.SetSandWindEnable(false)
 end
 
-function this.SetSelfSubsistenceOnHardMission()--tex heavily reworked, see below for original
-  local Ivars=Ivars
-  local isActual=TppMission.IsActualSubsistenceMission()
-  if isActual then
-    --tex don't want to save due to normal subsistence missions
-    Ivars.primaryWeaponOsp:Set(1,true,true)
-    Ivars.secondaryWeaponOsp:Set(1,true,true)
-    Ivars.tertiaryWeaponOsp:Set(1,true,true)
-  elseif Ivars.inf_event:Is(0) then
-    Ivars.UpdateSettingFromGvar(Ivars.primaryWeaponOsp)
-    Ivars.UpdateSettingFromGvar(Ivars.secondaryWeaponOsp)
-    Ivars.UpdateSettingFromGvar(Ivars.tertiaryWeaponOsp) 
+function this.SetSelfSubsistenceOnHardMission()
+  if TppMission.IsActualSubsistenceMission()then--tex was IsSubsistenceMission
+    this.SetInitWeapons(TppDefine.CYPR_PLAYER_INITIAL_WEAPON_TABLE)
+    this.SetInitItems(TppDefine.CYPR_PLAYER_INITIAL_ITEM_TABLE)
+    this.RegisterTemporaryPlayerType{partsType=PlayerPartsType.NORMAL,camoType=PlayerCamoType.OLIVEDRAB,handEquip=TppEquip.EQP_HAND_NORMAL,faceEquipId=0}
   end
-
-  if Ivars.ospWeaponProfile:Is()>0 or isActual then
-    this.SetInitWeapons(Ivars.primaryWeaponOsp:GetTable())
-    this.SetInitWeapons(Ivars.secondaryWeaponOsp:GetTable())
-    this.SetInitWeapons(Ivars.tertiaryWeaponOsp:GetTable())
-  end
-
-  if isActual or Ivars.clearSupportItems:Is(1) then
-    this.SetInitWeapons(Ivars.clearSupportItems.settingsTable)
-  end
-  if isActual or Ivars.clearItems:Is(1) then
-    this.SetInitItems(Ivars.clearItems.settingsTable)
-  end
-
-  if isActual or Ivars.setSubsistenceSuit:Is(1) then
-    local playerSettings={partsType=PlayerPartsType.NORMAL,camoType=PlayerCamoType.OLIVEDRAB,handEquip=TppEquip.EQP_HAND_NORMAL,faceEquipId=0}
-    this.RegisterTemporaryPlayerType(playerSettings)
-  end
-  if isActual or Ivars.setDefaultHand:Is(1) then
-    mvars.ply_isExistTempPlayerType=true
-    mvars.ply_tempPlayerHandEquip={handEquip=TppEquip.EQP_HAND_NORMAL}
-  end
-  if Ivars.disableFulton:Is(1) then
-    vars.playerDisableActionFlag=vars.playerDisableActionFlag+PlayerDisableAction.FULTON--tex RETRY:, may have to replace instances with a SetPlayerDisableActionFlag if this doesn't stick
-  end
-
-  if Ivars.handLevelProfile:Is()>0 then
-    for i, itemIvar in ipairs(Ivars.handLevelProfile.ivarTable()) do
-      --TODO: check against developed
-      --local currentLevel=Player.GetItemLevel(equip)
-      Player.SetItemLevel(itemIvar.equipId,itemIvar.setting)
-    end
-  end
-
-  if Ivars.fultonLevelProfile:Is()>0 then
-    for i, itemIvar in ipairs(Ivars.fultonLevelProfile.ivarTable()) do
-      --TODO: check against developed
-      --REF local currentLevel=Player.GetItemLevel(equip)
-      Player.SetItemLevel(itemIvar.equipId,itemIvar.setting)
-    end
-  end
+  
+  InfMain.SetSubsistenceSettings()--tex
 end
---function e.SetSelfSubsistenceOnHardMission()--tex ORIG:
---  if TppMission.IsSubsistenceMission()then
---    e.SetInitWeapons(TppDefine.CYPR_PLAYER_INITIAL_WEAPON_TABLE)
---    e.SetInitItems(TppDefine.CYPR_PLAYER_INITIAL_ITEM_TABLE)
---    e.RegisterTemporaryPlayerType{partsType=PlayerPartsType.NORMAL,camoType=PlayerCamoType.OLIVEDRAB,handEquip=TppEquip.EQP_HAND_NORMAL,faceEquipId=0}
---  end
---end
 function this.OnReload()
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
@@ -1968,9 +1916,10 @@ function this.MakeFultonRecoverSucceedRatio(t,_gameId,RENAMEanimalId,r,staffOrRe
   --  end
   --  end--<
   --WIP
-  if --[[Ivars.fultonMotherBaseHandling:Is(1) and--]] Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex>
-    percentage=0
-  end--<
+  --DEBUGNOW
+--  if --[[Ivars.fultonMotherBaseHandling:Is(1) and--]] Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex>
+--    percentage=0
+--  end--<
   if Tpp.IsFultonContainer(gameId) and vars.missionCode==30050 and Ivars.mbCollectionRepop:Is(1)then--tex> more weirdness
     percentage=0
   end--<
@@ -2102,6 +2051,9 @@ function this.OnPickUpCollection(playerId,resourceId,resourceType,langId)
   local resourceCount
   if TppTerminal.RESOURCE_INFORMATION_TABLE[resourceType]and TppTerminal.RESOURCE_INFORMATION_TABLE[resourceType].count then
     resourceCount=TppTerminal.RESOURCE_INFORMATION_TABLE[resourceType].count
+    if not Ivars.resourceAmountScale:IsDefault() then--tex>
+      resourceCount=resourceCount*(Ivars.resourceAmountScale:Get()/100)
+    end--<
   end
   if TppCollection.IsHerbByType(resourceType)then
     local gameId=GameObject.GetGameObjectIdByIndex("TppBuddyDog2",0)

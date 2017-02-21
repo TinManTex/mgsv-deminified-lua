@@ -677,7 +677,7 @@ function this._SetUpRevengeMine()
         --        end
         for i,locatorName in ipairs(mineLocatorList)do
           TppPlaced.SetEnableByLocatorName(locatorName,enable)
-      end
+        end
       end
       --NMC I don't understand why the double pass for _EnableDecoy
       local decoyLocatorList=mineField.decoyLocatorList
@@ -693,7 +693,7 @@ function this._SetUpRevengeMine()
         --        --ORPHAN if enable then
         --          RENsomeBool=false
         --        end
-  end
+      end
     end
   end
 end
@@ -1309,7 +1309,7 @@ function this._CreateRevengeConfig(revengeTypes)
   local doCustom=Ivars.IsForMission("revengeMode","CUSTOM")
   if doCustom then
     revengeConfig=InfRevenge.CreateCustomRevengeConfig()
-    
+
     for powerType,setting in pairs(revengeConfig)do
       mvars.ene_missionRequiresPowerSettings[powerType]=setting
     end
@@ -1399,7 +1399,140 @@ function this._CreateRevengeConfig(revengeTypes)
   return revengeConfig
 end
 --INPUT: mvars.revenge_revengeConfig < _CreateRevengeConfig
-function this._AllocateResources(config)
+--tex REWORKED
+this.weaponRevengeStrengths={
+  HANDGUN="STRONG_WEAPON",
+  SMG="STRONG_WEAPON",
+  ASSAULT="STRONG_WEAPON",
+  SNIPER="STRONG_SNIPER",
+  SHOTGUN="STRONG_WEAPON",
+  MG="STRONG_WEAPON",
+  MISSILE="STRONG_MISSILE",
+  SHIELD="STRONG_WEAPON",
+}
+local NORMAL="NORMAL"
+local STRONG="STRONG"
+function this.GetWeaponStrengths(revengeConfig)
+  local weaponStrengths={}
+  for weaponName,strengthKey in pairs(this.weaponRevengeStrengths)do
+    if revengeConfig[strengthKey] then
+      weaponStrengths[weaponName]=STRONG
+    else
+      weaponStrengths[weaponName]=NORMAL
+    end
+  end
+  return weaponStrengths
+end
+
+local weaponTypes={
+  "SNIPER",
+  "SHOTGUN",
+  "MG",
+  "SMG",
+  "ASSAULT",
+  "SHIELD",
+  "MISSILE",
+}
+
+function this._AllocateResourcesNEW(config)--DEBUGNOW WIP
+  mvars.revenge_loadedEquip={}
+  local missionRequiresSettings=mvars.ene_missionRequiresPowerSettings
+  local loadWeaponIds={}
+  local nullId=NULL_ID
+  local defaultSoldierType=TppEnemy.GetSoldierType(nullId)
+  local defaultSubType=TppEnemy.GetSoldierSubType(nullId)
+  local weaponIdTable=TppEnemy.GetWeaponIdTable(defaultSoldierType,defaultSubType)
+  if weaponIdTable==nil then
+    TppEnemy.weaponIdTable.DD={NORMAL={HANDGUN=TppEquip.EQP_WP_West_hg_010,ASSAULT=TppEquip.EQP_WP_West_ar_040}}
+    weaponIdTable=TppEnemy.weaponIdTable.DD
+  end
+  local disablePowerSettings=mvars.ene_disablePowerSettings
+  local missionId=TppMission.GetMissionID()
+  local useAllWeapons=true
+  if this.CANNOT_USE_ALL_WEAPON_MISSION[missionId]then
+    useAllWeapons=false
+  end
+  --tex>
+  if (Ivars.disableMissionsWeaponRestriction:Is(1) and vars.missionCode~=30050)or(Ivars.disableMotherbaseWeaponRestriction:Is(1) and vars.missionCode==30050) then--WIP
+    useAllWeapons=true
+  end--<
+  local restrictWeaponTable={}
+  if not useAllWeapons then
+    if not config.SHIELD or config.MISSILE then
+      if not missionRequiresSettings.SHIELD then
+        restrictWeaponTable.SHIELD=true
+        disablePowerSettings.SHIELD=true
+      end
+    else
+      if not missionRequiresSettings.MISSILE then
+        restrictWeaponTable.MISSILE=true
+        disablePowerSettings.MISSILE=true
+      end
+    end
+    if defaultSoldierType~=EnemyType.TYPE_DD then
+      if config.SHOTGUN then
+        if not missionRequiresSettings.MG then
+          restrictWeaponTable.MG=true
+          disablePowerSettings.MG=true
+        end
+      else
+        if not missionRequiresSettings.SHOTGUN then
+          restrictWeaponTable.SHOTGUN=true
+          disablePowerSettings.SHOTGUN=true
+        end
+      end
+    end
+  end
+  for powerType,n in pairs(missionRequiresSettings)do
+    restrictWeaponTable[powerType]=nil
+    disablePowerSettings[powerType]=nil
+  end
+
+  weaponIdTable.STRONG=weaponIdTable.STRONG or weaponIdTable.NORMAL
+  local weaponStrengths=this.GetWeaponStrengths(mvars.revenge_revengeConfig)--tex
+  for i,weaponName in ipairs(weaponTypes)do
+    if disablePowerSettings[weaponName]then
+    elseif restrictWeaponTable[weaponName]then
+    else
+      local weaponStrength=weaponStrengths[weaponName]
+      local weaponId=weaponIdTable[weaponStrength][weaponName] or weaponIdTable.NORMAL[weaponName]
+      if Tpp.IsTypeTable(weaponId)then
+        for i,weaponId in ipairs(weaponId)do
+          loadWeaponIds[weaponId]=true
+        end
+      else
+        loadWeaponIds[weaponId]=true
+      end
+      mvars.revenge_loadedEquip[weaponName]=weaponId 
+    end
+  end
+
+  do
+    local primary,secondary,tertiary=TppEnemy.GetWeaponId(NULL_ID,{})
+    TppSoldier2.SetDefaultSoldierWeapon{primary=primary,secondary=secondary,tertiary=tertiary}
+  end
+  local equipLoadTable={}
+  for weaponId,bool in pairs(loadWeaponIds)do
+    table.insert(equipLoadTable,weaponId)
+  end
+  if missionId==10080 or missionId==11080 then
+    table.insert(equipLoadTable,TppEquip.EQP_WP_Wood_ar_010)
+  end
+  if TppEquip.RequestLoadToEquipMissionBlock then
+    TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
+    --tex> TODO: pare it down to actual used
+    if Ivars.enableWildCardFreeRoam:Is(1) and Ivars.enableWildCardFreeRoam:MissionCheck(missionId) then
+      local equipLoadTable={}
+      for weaponType,weaponId in pairs(TppEnemy.weaponIdTable.WILDCARD.NORMAL)do
+        table.insert(equipLoadTable,weaponId)
+      end
+      TppEquip.RequestLoadToEquipMissionBlock(equipLoadTable)
+    end--<
+  end
+end
+--ORIG 
+function this._AllocateResources(config)--DEBUGNOW
+--function this._AllocateResources(config)
   mvars.revenge_loadedEquip={}
   local missionRequiresSettings=mvars.ene_missionRequiresPowerSettings
   local loadWeaponIds={}
@@ -1505,7 +1638,15 @@ function this._AllocateResources(config)
   end
   local equipLoadTable={}
   for weaponId,bool in pairs(loadWeaponIds)do
-    table.insert(equipLoadTable,weaponId)
+    --tex>
+    if Tpp.IsTypeTable(weaponId) then
+      for i,weaponId in ipairs(weaponId)do
+        table.insert(equipLoadTable,weaponId)
+      end
+    else
+    --<
+      table.insert(equipLoadTable,weaponId)
+    end
   end
   if missionId==10080 or missionId==11080 then
     table.insert(equipLoadTable,TppEquip.EQP_WP_Wood_ar_010)

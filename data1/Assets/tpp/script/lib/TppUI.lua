@@ -888,12 +888,12 @@ end
 function this.LoadAndWaitUiDefaultBlock()
   TppUiCommand.LoadUiDefaultBlock()
   local e=0
-  local n,i=0,25
-  local e=false
-  e=not TppUiCommand.IsTppUiReady()
-  while e and(n<i)do
-    e=not TppUiCommand.IsTppUiReady()
-    n=n+Time.GetFrameTime()
+  local frameTime,maxFrameTime=0,25
+  local notReady=false
+  notReady=not TppUiCommand.IsTppUiReady()
+  while notReady and(frameTime<maxFrameTime)do
+    notReady=not TppUiCommand.IsTppUiReady()
+    frameTime=frameTime+Time.GetFrameTime()
     coroutine.yield()
   end
 end

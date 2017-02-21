@@ -446,6 +446,30 @@ this.weaponIdTable={
       ASSAULT=TppEquip.EQP_WP_East_ar_020}
   }
 }
+--tex TABLESETUP>
+this.allNoDups={}
+for soldierType,weaponTable in pairs(this.weaponIdTable)do
+  for strength,weapons in pairs(weaponTable)do
+    this.allNoDups[strength]=this.allNoDups[strength] or {}
+    for weaponName,weaponId in pairs(weapons)do
+      this.allNoDups[strength][weaponName]=this.allNoDups[strength][weaponName] or {}
+      this.allNoDups[strength][weaponName][weaponId]=true
+    end
+  end
+end
+local all={}
+for strength,weapons in pairs(this.allNoDups)do
+  all[strength]=all[strength] or {}
+  for weaponName,weaponIds in pairs(weapons)do
+    all[strength][weaponName]=all[strength][weaponName] or {}
+    for weaponId,bool in pairs(weaponIds)do
+      table.insert(all[strength][weaponName],weaponId)
+    end
+  end
+end
+this.allNoDups=nil
+this.weaponIdTable.ALL=all
+--<
 this.gunLightWeaponIds={
   [TppEquip.EQP_WP_Com_sg_011]=TppEquip.EQP_WP_Com_sg_011_FL,
   [TppEquip.EQP_WP_Com_sg_020]=TppEquip.EQP_WP_Com_sg_020_FL,
@@ -992,6 +1016,10 @@ end
 function this.GetWeaponIdTable(soldierType,soldierSubType)
   --ORPHAN local n={}
   local weaponIdTable={}
+  
+--  if true then--DEBUGNOW
+--  return this.weaponIdTable.ALL--DEBUGNOW
+--  end--DEBUGNOW
 
   if InfMain.IsDDEquip() then--tex>
     return this.weaponIdTable.DD
@@ -1024,6 +1052,80 @@ function this.GetWeaponIdTable(soldierType,soldierSubType)
   end
   return weaponIdTable
 end
+--tex REWORKED
+local weaponTypes={
+  primary={
+    "SNIPER",
+    "SHOTGUN",
+    "MG",
+    "SMG",
+    "ASSAULT",  
+  },
+  tertiary={
+   "SHIELD",
+   "MISSILE",
+  },
+}
+--tex functionally equivalent to original, but heavier performance wise lol, but eh, I felt like refactoring
+--and it makes choosing final weapon ids from a table in IH easier
+--DEBUGNOW WIP
+function this.GetWeaponIdNEW(soldierId,config)
+ return InfInspect.TryFunc(function(soldierId,config)--DEBUGNOW
+  local soldierType=this.GetSoldierType(soldierId)
+  local soldierSubType=this.GetSoldierSubType(soldierId,soldierType)
+  local missionCode=TppMission.GetMissionID()
+  if(missionCode==10080 or missionCode==11080)and soldierType==EnemyType.TYPE_CHILD then
+    return TppEquip.EQP_WP_Wood_ar_010,TppEquip.EQP_WP_West_hg_010,nil
+  end
+  local weaponIdTable=this.GetWeaponIdTable(soldierType,soldierSubType)
+  if weaponIdTable==nil then
+    return nil,nil,nil
+  end
+  
+  weaponIdTable.STRONG=weaponIdTable.STRONG or weaponIdTable.NORMAL
+
+  local weaponStrengths=TppRevenge.GetWeaponStrengths(mvars.revenge_revengeConfig)
+
+  local weapons={
+    primary=weaponIdTable[weaponStrengths.ASSAULT].ASSAULT,
+    secondary=weaponIdTable[weaponStrengths.HANDGUN].HANDGUN,
+    tertiary=TppEquip.EQP_None,
+  }
+  
+  for slotName,weaponTypes in pairs(weaponTypes) do
+    for i,weaponName in ipairs(weaponTypes)do
+      if config[weaponName] then
+        local weaponStrength=weaponStrengths[weaponName]
+        weapons[slotName]=weaponIdTable[weaponStrength][weaponName] or weaponIdTable.NORMAL[weaponName]
+      end
+    end
+  end
+  
+  --tex> WIP DEBUGNOW
+  for slotName,weaponId in pairs(weapons)do
+    if Tpp.IsTypeTable(weaponId) then
+      --if not rando then--DEBUGNOW
+      weaponId=weaponId[1]
+      --else
+      --weaponId=weaponId[math.random(#weaponId)]
+    end
+  end
+  --<
+  
+  for slotName,weaponId in pairs(weapons)do
+    if weaponId==nil then
+      weaponId=TppEquip.EQP_None
+    end
+  end
+  
+  if config.GUN_LIGHT then
+    local gunWithLight=this.gunLightWeaponIds[weapons.primary]
+    weapons.primary=gunWithLight or weapons.primary
+  end
+  return weapons.primary,weapons.secondary,weapons.tertiary
+  end,soldierId,config)--DEBUGNOW
+end
+--ORIG
 function this.GetWeaponId(soldierId,config)
   local primary,secondary,tertiary
   local soldierType=this.GetSoldierType(soldierId)
@@ -2666,28 +2768,28 @@ function this.RestoreOnMissionStart2()
       end
     end
   end
-  for e=0,mvars.ene_maxSoldierStateCount-1 do
-    svars.solName[e]=0
-    svars.solState[e]=0
-    svars.solFlagAndStance[e]=0
-    svars.solWeapon[e]=0
-    svars.solLocation[e*4+0]=0
-    svars.solLocation[e*4+1]=0
-    svars.solLocation[e*4+2]=0
-    svars.solLocation[e*4+3]=0
-    svars.solMarker[e]=0
-    svars.solFovaSeed[e]=0
-    svars.solFaceFova[e]=INVALID_FOVA_FACE
-    svars.solBodyFova[e]=INVALID_FOVA_BODY
-    svars.solCp[e]=0
-    svars.solCpRoute[e]=GsRoute.ROUTE_ID_EMPTY
-    svars.solScriptSneakRoute[e]=GsRoute.ROUTE_ID_EMPTY
-    svars.solScriptCautionRoute[e]=GsRoute.ROUTE_ID_EMPTY
-    svars.solScriptAlertRoute[e]=GsRoute.ROUTE_ID_EMPTY
-    svars.solRouteNodeIndex[e]=0
-    svars.solRouteEventIndex[e]=0
-    svars.solTravelName[e]=0
-    svars.solTravelStepIndex[e]=0
+  for i=0,mvars.ene_maxSoldierStateCount-1 do
+    svars.solName[i]=0
+    svars.solState[i]=0
+    svars.solFlagAndStance[i]=0
+    svars.solWeapon[i]=0
+    svars.solLocation[i*4+0]=0
+    svars.solLocation[i*4+1]=0
+    svars.solLocation[i*4+2]=0
+    svars.solLocation[i*4+3]=0
+    svars.solMarker[i]=0
+    svars.solFovaSeed[i]=0
+    svars.solFaceFova[i]=INVALID_FOVA_FACE
+    svars.solBodyFova[i]=INVALID_FOVA_BODY
+    svars.solCp[i]=0
+    svars.solCpRoute[i]=GsRoute.ROUTE_ID_EMPTY
+    svars.solScriptSneakRoute[i]=GsRoute.ROUTE_ID_EMPTY
+    svars.solScriptCautionRoute[i]=GsRoute.ROUTE_ID_EMPTY
+    svars.solScriptAlertRoute[i]=GsRoute.ROUTE_ID_EMPTY
+    svars.solRouteNodeIndex[i]=0
+    svars.solRouteEventIndex[i]=0
+    svars.solTravelName[i]=0
+    svars.solTravelStepIndex[i]=0
   end
   for e=0,TppDefine.DEFAULT_SOLDIER_OPTION_VARS_COUNT-1 do
     svars.solOptName[e]=0
@@ -5691,27 +5793,27 @@ function this._RestoreOnMissionStart_Hostage()
 end
 function this._RestoreOnMissionStart_Hostage2()
   if TppHostage2.SetSVarsKeyNames2 then
-    local n=EnemyFova.INVALID_FOVA_VALUE
-    local t=EnemyFova.INVALID_FOVA_VALUE
-    for e=0,TppDefine.DEFAULT_HOSTAGE_STATE_COUNT-1 do
-      svars.hosName[e]=0
-      svars.hosState[e]=0
-      svars.hosFlagAndStance[e]=0
-      svars.hosWeapon[e]=0
-      svars.hosLocation[e*4+0]=0
-      svars.hosLocation[e*4+1]=0
-      svars.hosLocation[e*4+2]=0
-      svars.hosLocation[e*4+3]=0
-      svars.hosMarker[e]=0
-      svars.hosFovaSeed[e]=0
-      svars.hosFaceFova[e]=n
-      svars.hosBodyFova[e]=t
-      svars.hosScriptSneakRoute[e]=GsRoute.ROUTE_ID_EMPTY
-      svars.hosRouteNodeIndex[e]=0
-      svars.hosRouteEventIndex[e]=0
-      svars.hosOptParam1[e]=0
-      svars.hosOptParam2[e]=0
-      svars.hosRandomSeed[e]=0
+    local INVALID_FOVA_FACE=EnemyFova.INVALID_FOVA_VALUE
+    local INVALID_FOVA_BODY=EnemyFova.INVALID_FOVA_VALUE
+    for i=0,TppDefine.DEFAULT_HOSTAGE_STATE_COUNT-1 do
+      svars.hosName[i]=0
+      svars.hosState[i]=0
+      svars.hosFlagAndStance[i]=0
+      svars.hosWeapon[i]=0
+      svars.hosLocation[i*4+0]=0
+      svars.hosLocation[i*4+1]=0
+      svars.hosLocation[i*4+2]=0
+      svars.hosLocation[i*4+3]=0
+      svars.hosMarker[i]=0
+      svars.hosFovaSeed[i]=0
+      svars.hosFaceFova[i]=INVALID_FOVA_FACE
+      svars.hosBodyFova[i]=INVALID_FOVA_BODY
+      svars.hosScriptSneakRoute[i]=GsRoute.ROUTE_ID_EMPTY
+      svars.hosRouteNodeIndex[i]=0
+      svars.hosRouteEventIndex[i]=0
+      svars.hosOptParam1[i]=0
+      svars.hosOptParam2[i]=0
+      svars.hosRandomSeed[i]=0
     end
   end
 end

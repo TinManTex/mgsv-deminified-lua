@@ -254,7 +254,7 @@ this.RESOURCE_INFORMATION_TABLE={
   [TppCollection.TYPE_POSTER_MOE_V]={resourceName="Poster1005",count=1},
   [TppCollection.TYPE_POSTER_MOE_H]={resourceName="Poster1006",count=1}
 }
---DEBUGNOW TODO scaling in this.AddPickedUpResourceToTempBuffer (the resource add function) and TppPlayer.OnPickUpCollection (the display) would probably be better if you want runtime adjust
+--CULL
 --for collectionType,info in pairs(this.RESOURCE_INFORMATION_TABLE)do
 --  if string.find(info.resourceName, "Poster") then
 --  else
@@ -1551,6 +1551,9 @@ function this.AddPickedUpResourceToTempBuffer(resourceType,langId)
   end
   local resourceName=this.RESOURCE_INFORMATION_TABLE[resourceType].resourceName
   local resourceCount=this.RESOURCE_INFORMATION_TABLE[resourceType].count
+  if not Ivars.resourceAmountScale:IsDefault() then--tex> --DEBUGNOW
+    resourceCount=resourceCount*(Ivars.resourceAmountScale:Get()/100)
+  end--<
   if TppCollection.IsHerbByType(resourceType)then
     local getHerbRate=Player.GetRateOfGettingHarb()
     resourceCount=resourceCount*getHerbRate
