@@ -237,11 +237,15 @@ end
 function this.GetMissionStartHelicopterRoute()
   return gvars.heli_missionStartRoute
 end
-
+local heliColors={
+  [TppDefine.ENEMY_HELI_COLORING_TYPE.DEFAULT]={pack="",fova=""},
+  [TppDefine.ENEMY_HELI_COLORING_TYPE.BLACK]={pack="/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_blk.fpk",fova="/Assets/tpp/fova/mecha/sbh/sbh_ene_blk.fv2"},
+  [TppDefine.ENEMY_HELI_COLORING_TYPE.RED]={pack="/Assets/tpp/pack/fova/mecha/sbh/sbh_ene_red.fpk",fova="/Assets/tpp/fova/mecha/sbh/sbh_ene_red.fv2"}
+}
 function this.GetEnemyColoringPack(heliColoringType)
-  return InfMain.heliColors[heliColoringType].pack
+  return heliColors[heliColoringType].pack
 end
 function this.SetEnemyColoring(heliColoringType)
-  SendCommand({type="TppEnemyHeli",index=0},{id="SetColoring",coloringType=heliColoringType,fova=InfMain.heliColors[heliColoringType].fova})
+  SendCommand({type="TppEnemyHeli",index=0},{id="SetColoring",coloringType=heliColoringType,fova=heliColors[heliColoringType].fova})
 end
 return this

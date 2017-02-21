@@ -2533,7 +2533,23 @@ function this.OnAllocate(missionTable)
   end
   if TppHostage2 then
     if TppHostage2.SetSVarsKeyNames2 then
-      TppHostage2.SetSVarsKeyNames2{name="hosName",state="hosState",flagAndStance="hosFlagAndStance",weapon="hosWeapon",location="hosLocation",marker="hosMarker",fovaSeed="hosFovaSeed",faceFova="hosFaceFova",bodyFova="hosBodyFova",scriptSneakRoute="hosScriptSneakRoute",routeNodeIndex="hosRouteNodeIndex",routeEventIndex="hosRouteEventIndex",optionalParam1Name="hosOptParam1",optionalParam2Name="hosOptParam2",randomSeed="hosRandomSeed"}
+      TppHostage2.SetSVarsKeyNames2{
+        name="hosName",
+        state="hosState",
+        flagAndStance="hosFlagAndStance",
+        weapon="hosWeapon",
+        location="hosLocation",
+        marker="hosMarker",
+        fovaSeed="hosFovaSeed",
+        faceFova="hosFaceFova",
+        bodyFova="hosBodyFova",
+        scriptSneakRoute="hosScriptSneakRoute",
+        routeNodeIndex="hosRouteNodeIndex",
+        routeEventIndex="hosRouteEventIndex",
+        optionalParam1Name="hosOptParam1",
+        optionalParam2Name="hosOptParam2",
+        randomSeed="hosRandomSeed"
+      }
     end
   end
   mvars.ene_disablePowerSettings={}
@@ -2690,21 +2706,21 @@ end
 function this.ResetSoldier2CommonBlockPackageLabel()
   gvars.ene_soldier2CommonPackageLabelIndex=TppDefine.DEFAULT_SOLIDER2_COMMON_PACKAGE
 end
-function this.RegisterSoldier2CommonMotionPackagePath(n)
-  local t=TppDefine.SOLIDER2_COMMON_PACK[n]
-  local a=TppDefine.SOLIDER2_COMMON_PACK_PREREQUISITES[n]
-  if t then
-    if IsTypeString(n)then
-      gvars.ene_soldier2CommonPackageLabelIndex=StrCode32(n)
+function this.RegisterSoldier2CommonMotionPackagePath(packageLabel)
+  local commonSoldierPack=TppDefine.SOLIDER2_COMMON_PACK[packageLabel]
+  local commonSoldierPackPreReqs=TppDefine.SOLIDER2_COMMON_PACK_PREREQUISITES[packageLabel]
+  if commonSoldierPack then
+    if IsTypeString(packageLabel)then
+      gvars.ene_soldier2CommonPackageLabelIndex=StrCode32(packageLabel)
     else
-      gvars.ene_soldier2CommonPackageLabelIndex=n
+      gvars.ene_soldier2CommonPackageLabelIndex=packageLabel
     end
   else
-    t=TppDefine.SOLIDER2_COMMON_PACK.default
-    a=TppDefine.SOLIDER2_COMMON_PACK_PREREQUISITES.default
+    commonSoldierPack=TppDefine.SOLIDER2_COMMON_PACK.default
+    commonSoldierPackPreReqs=TppDefine.SOLIDER2_COMMON_PACK_PREREQUISITES.default
     this.ResetSoldier2CommonBlockPackageLabel()
   end
-  TppSoldier2CommonBlockController.SetPackagePathWithPrerequisites{path=t,prerequisites=a}
+  TppSoldier2CommonBlockController.SetPackagePathWithPrerequisites{path=commonSoldierPack,prerequisites=commonSoldierPackPreReqs}
 end
 function this.IsRequiredToLoadSpecialSolider2CommonBlock()
   if StrCode32(mvars.ene_soldier2CommonBlockPackageLabel)~=TppDefine.DEFAULT_SOLIDER2_COMMON_PACKAGE then
@@ -2737,18 +2753,18 @@ end
 function this.UnloadSoldier2CommonBlock()
   TppSoldier2CommonBlockController.SetPackagePathWithPrerequisites{}
 end
-function this.SetMaxSoldierStateCount(e)
-  if Tpp.IsTypeNumber(e)and(e>0)then
-    mvars.ene_maxSoldierStateCount=e
+function this.SetMaxSoldierStateCount(maxStateCount)
+  if Tpp.IsTypeNumber(maxStateCount)and(maxStateCount>0)then
+    mvars.ene_maxSoldierStateCount=maxStateCount
   end
 end
 function this.RestoreOnMissionStart2()
-  local t=0
-  local a=0
+  local INVALID_FOVA_FACE=0
+  local INVALID_FOVA_BODY=0
   if EnemyFova~=nil then
     if EnemyFova.INVALID_FOVA_VALUE~=nil then
-      t=EnemyFova.INVALID_FOVA_VALUE
-      a=EnemyFova.INVALID_FOVA_VALUE
+      INVALID_FOVA_FACE=EnemyFova.INVALID_FOVA_VALUE
+      INVALID_FOVA_BODY=EnemyFova.INVALID_FOVA_VALUE
     end
   end
   local n=0
@@ -2772,8 +2788,8 @@ function this.RestoreOnMissionStart2()
     svars.solLocation[e*4+3]=0
     svars.solMarker[e]=0
     svars.solFovaSeed[e]=0
-    svars.solFaceFova[e]=t
-    svars.solBodyFova[e]=a
+    svars.solFaceFova[e]=INVALID_FOVA_FACE
+    svars.solBodyFova[e]=INVALID_FOVA_BODY
     svars.solCp[e]=0
     svars.solCpRoute[e]=GsRoute.ROUTE_ID_EMPTY
     svars.solScriptSneakRoute[e]=GsRoute.ROUTE_ID_EMPTY
@@ -2811,6 +2827,7 @@ function this.RestoreOnMissionStart2()
   end
   this._RestoreOnMissionStart_Hostage2()
   for e=0,TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT-1 do
+    --NMC another casualty of optimisation I guess, TppEnemyHeli only saves/restores to non array unlike the other gameobject types, even though it's clearly originally set up the same
     svars.enemyHeliName=0
     svars.enemyHeliLocation[0]=0
     svars.enemyHeliLocation[1]=0
@@ -2825,6 +2842,21 @@ function this.RestoreOnMissionStart2()
     svars.enemyHeliRouteEventIndex=0
     svars.enemyHeliMarker=0
     svars.enemyHeliLife=0
+    --tex what it should be :/
+    --    svars.enemyHeliName[e]=0
+    --    svars.enemyHeliLocation[e*4+0]=0
+    --    svars.enemyHeliLocation[e*4+1]=0
+    --    svars.enemyHeliLocation[e*4+2]=0
+    --    svars.enemyHeliLocation[e*4+3]=0
+    --    svars.enemyHeliCp[e]=0
+    --    svars.enemyHeliFlag[e]=0
+    --    svars.enemyHeliSneakRoute[e]=0
+    --    svars.enemyHeliCautionRoute[e]=0
+    --    svars.enemyHeliAlertRoute[e]=0
+    --    svars.enemyHeliRouteNodeIndex[e]=0
+    --    svars.enemyHeliRouteEventIndex[e]=0
+    --    svars.enemyHeliMarker[e]=0
+    --    svars.enemyHeliLife[e]=0
   end
   for e=0,TppDefine.MAX_SECURITY_CAMERA_COUNT-1 do
     svars.securityCameraCp[e]=0
@@ -2842,9 +2874,17 @@ function this.RestoreOnContinueFromCheckPoint2()
     SendCommand(e,{id="RestoreFromSVars"})
   end
   this._RestoreOnContinueFromCheckPoint_Hostage2()
-  if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
-    local typeHeli={type="TppEnemyHeli"}
-    SendCommand(typeHeli,{id="RestoreFromSVars"})
+  --tex WORKAROUND added bypass, save/RestoreFromSVars only saves one heli,
+  --this leaves one heli consistantly in a broken state with non stop lostcontrol sounds,
+  --a manual restore command will stop that, but leave it unresponsive to setting route
+  --a manual unrealize will fix that, but may just send it into an actual lostcontrol
+  --others may be flying, but with the lostcontrol sounds
+  --see NMC note in RestoreOnMissionStart2 for more
+  if not InfMain.IvarsEnabledForMission(InfNPCHeli.heliEnableIvars) then
+    if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
+      local typeHeli={type="TppEnemyHeli"}
+      SendCommand(typeHeli,{id="RestoreFromSVars"})
+    end
   end
   if GameObject.GetGameObjectIdByIndex("TppVehicle2",0)~=NULL_ID then
     SendCommand({type="TppVehicle2"},{id="RestoreFromSVars"})
@@ -2882,8 +2922,11 @@ function this.StoreSVars(_markerOnly)
     SendCommand(tppSoldier,{id="StoreToSVars",markerOnly=markerOnly})
   end
   this._StoreSVars_Hostage(markerOnly)
-  if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
-    SendCommand({type="TppEnemyHeli"},{id="StoreToSVars"})
+  --tex WORKAROUND added bypass, see restore
+  if not InfMain.IvarsEnabledForMission(InfNPCHeli.heliEnableIvars) then
+    if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
+      SendCommand({type="TppEnemyHeli"},{id="StoreToSVars"})
+    end
   end
   if GameObject.GetGameObjectIdByIndex("TppVehicle2",0)~=NULL_ID then
     SendCommand({type="TppVehicle2"},{id="StoreToSVars"})
@@ -5533,9 +5576,9 @@ end
 function this.GetDDSuit()
   local eventArmor=TppDefine.FOB_EVENT_ID_LIST.ARMOR
 
-  local eventId=TppServerManager.GetEventId()
-  for a,n in ipairs(eventArmor)do
-    if eventId==n then
+  local currentEventId=TppServerManager.GetEventId()
+  for n,eventId in ipairs(eventArmor)do
+    if currentEventId==eventId then
       return this.FOB_PF_SUIT_ARMOR
     end
   end
@@ -5551,9 +5594,9 @@ function this.GetDDSuit()
 end
 function this.IsHostageEventFOB()
   local eventIdList=TppDefine.FOB_EVENT_ID_LIST.HOSTAGE
-  local eventId=TppServerManager.GetEventId()
-  for t,e in ipairs(eventIdList)do
-    if eventId==e then
+  local currentEventId=TppServerManager.GetEventId()
+  for n,eventId in ipairs(eventIdList)do
+    if currentEventId==eventId then
       return true
     end
   end
@@ -5561,9 +5604,9 @@ function this.IsHostageEventFOB()
 end
 function this.IsZombieEventFOB()--RETAILPATCH 1070>
   local eventIdList=TppDefine.FOB_EVENT_ID_LIST.ZOMBIE
-  local eventId=TppServerManager.GetEventId()
-  for t,e in ipairs(eventIdList)do
-    if eventId==e then
+  local currentEventId=TppServerManager.GetEventId()
+  for n,eventId in ipairs(eventIdList)do
+    if currentEventId==eventId then
       return true
     end
   end
@@ -5571,9 +5614,9 @@ function this.IsZombieEventFOB()--RETAILPATCH 1070>
 end
 function this.IsParasiteMetalEventFOB()
   local eventIdList=TppDefine.FOB_EVENT_ID_LIST.PARASITE_METAL
-  local eventId=TppServerManager.GetEventId()
-  for t,e in ipairs(eventIdList)do
-    if eventId==e then
+  local currentEventId=TppServerManager.GetEventId()
+  for n,eventId in ipairs(eventIdList)do
+    if currentEventId==eventId then
       return true
     end
   end
@@ -5777,31 +5820,32 @@ function this._RestoreOnMissionStart_Hostage2()
   end
 end
 function this._StoreSVars_Hostage(markerOnly)
-  local e={"TppHostage2","TppHostageUnique","TppHostageUnique2","TppHostageKaz","TppOcelot2","TppHuey2","TppCodeTalker2","TppSkullFace2","TppMantis2"}
+  local hostageObjectTypes={"TppHostage2","TppHostageUnique","TppHostageUnique2","TppHostageKaz","TppOcelot2","TppHuey2","TppCodeTalker2","TppSkullFace2","TppMantis2"}
   if TppHostage2.SetSVarsKeyNames2 then
-    for t,e in ipairs(e)do
+    for t,e in ipairs(hostageObjectTypes)do
       if GameObject.GetGameObjectIdByIndex(e,0)~=NULL_ID then
         SendCommand({type=e},{id="ReadyToStoreToSVars"})
       end
     end
   end
-  for i,e in ipairs(e)do
-    if GameObject.GetGameObjectIdByIndex(e,0)~=NULL_ID then
-      SendCommand({type=e},{id="StoreToSVars",markerOnly=markerOnly})
+  for i,type in ipairs(hostageObjectTypes)do
+    if GameObject.GetGameObjectIdByIndex(type,0)~=NULL_ID then
+      SendCommand({type=type},{id="StoreToSVars",markerOnly=markerOnly})
     end
   end
 end
-function this._DoRoutePointMessage(r,o,s,i)
-  local n=mvars.ene_routePointMessage
-  if not n then
+function this._DoRoutePointMessage(arg2,arg1,arg0,arg3)
+  local routePointMessage=mvars.ene_routePointMessage
+  if not routePointMessage then
     return
   end
-  local t=TppSequence.GetCurrentSequenceName()
-  local a=n.sequence[t]
-  local t=""if a then
-    this.ExecuteRoutePointMessage(a,r,o,s,i,t)
+  local currentSequenceName=TppSequence.GetCurrentSequenceName()
+  local RENsomesequenceMessageTable=routePointMessage.sequence[currentSequenceName]
+  local strLogText=""
+  if RENsomesequenceMessageTable then
+    this.ExecuteRoutePointMessage(RENsomesequenceMessageTable,arg2,arg1,arg0,arg3,strLogText)
   end
-  this.ExecuteRoutePointMessage(n.main,r,o,s,i,t)
+  this.ExecuteRoutePointMessage(routePointMessage.main,arg2,arg1,arg0,arg3,strLogText)
 end
 function this.ExecuteRoutePointMessage(n,arg2,arg1,arg0,arg3,strLogText)
   local messageIdRecievers=n[arg3]

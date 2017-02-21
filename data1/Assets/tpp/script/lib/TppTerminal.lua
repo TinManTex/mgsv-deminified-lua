@@ -48,7 +48,7 @@ this.parasiteSquadFultonResouceId={
 }
 this.MOTHER_BASE_SECTION_LIST={"Combat","BaseDev","Spy","Medical","Security","Hospital","Prison","Separation"}
 local MBMConst=TppMotherBaseManagementConst or{}
-local E={
+local sectionFunctionIdTable={
   Combat={
     DispatchSoldier=MBMConst.SECTION_FUNC_ID_COMBAT_DEPLOY,
     DispatchFobDefence=MBMConst.SECTION_FUNC_ID_COMBAT_DEFENCE},
@@ -291,25 +291,25 @@ function this.UpdateGMP(info)
     end
   end
 end
-function this.CorrectGMP(e)
+function this.CorrectGMP(gmpInfo)
   if not TppMotherBaseManagement.CorrectGmp then
     return
   end
-  if not IsTypeTable(e)then
+  if not IsTypeTable(gmpInfo)then
     return
   end
-  local e=e.gmp
-  if not e then
-    return e
+  local gmp=gmpInfo.gmp
+  if not gmp then
+    return gmp
   end
-  return TppMotherBaseManagement.CorrectGmp{gmp=e}
+  return TppMotherBaseManagement.CorrectGmp{gmp=gmp}
 end
-function this.ClearStaffNewIcon(a,n,e,t)
+function this.ClearStaffNewIcon(isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission)
   if TppMission.IsEmergencyMission()then
     return
   end
-  if a or n then
-    if(not e)and(not t)then
+  if isHeliSpace or isFreeMission then
+    if(not nextIsHeliSpace)and(not nextIsFreeMission)then
       TppMotherBaseManagement.ClearAllStaffNew()
     end
   end
@@ -369,19 +369,19 @@ function this.VarSaveMbMissionStartSyncEnd()
     TppSave.VarSaveMbMangement()
   end
 end
-function this.AcquireKeyItem(n)
-  local t=n.dataBaseId
-  local a=n.isShowAnnounceLog
-  local n=n.pushReward
-  if(TppMotherBaseManagement.IsGotDataBase{dataBaseId=t}==false)then
-    TppMotherBaseManagement.DirectAddDataBase{dataBaseId=t,isNew=true}
-    if a then
-      local e=this.keyItemAnnounceLogTable[t]
-      if e then
-        TppUI.ShowAnnounceLog("find_keyitem",e)
+function this.AcquireKeyItem(params)
+  local dataBaseId=params.dataBaseId
+  local isShowAnnounceLog=params.isShowAnnounceLog
+  local pushReward=params.pushReward
+  if(TppMotherBaseManagement.IsGotDataBase{dataBaseId=dataBaseId}==false)then
+    TppMotherBaseManagement.DirectAddDataBase{dataBaseId=dataBaseId,isNew=true}
+    if isShowAnnounceLog then
+      local announce=this.keyItemAnnounceLogTable[dataBaseId]
+      if announce then
+        TppUI.ShowAnnounceLog("find_keyitem",announce)
       end
-    elseif n then
-      local langId=this.keyItemRewardTable[t]
+    elseif pushReward then
+      local langId=this.keyItemRewardTable[dataBaseId]
       if langId then
         TppReward.Push{category=TppScriptVars.CATEGORY_MB_MANAGEMENT,langId=langId,rewardType=TppReward.TYPE.KEY_ITEM}
       end
@@ -392,8 +392,8 @@ function this.ReserveHelicopterSoundOnMissionGameEnd()
   mvars.trm_needHeliSoundOnAddStaffsFromTempBuffer=true
 end
 function this.AddVolunteerStaffs()
-  local e=TppStory.GetCurrentStorySequence()
-  if e<TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE then
+  local storySequence=TppStory.GetCurrentStorySequence()
+  if storySequence<TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE then
     return
   end
   local noAddStaffMissions={[10010]=true,[10030]=true,[10240]=true,[10280]=true,[30050]=true,[30150]=true,[30250]=true,[50050]=true}
@@ -416,56 +416,56 @@ function this.AddVolunteerStaffs()
     TppMotherBaseManagement.AddMinimumSecurityStaffs()
   end
 end
-function this.UnSetUsageRestriction(t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_REWORD,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DEVELOP,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_STAFF,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_COMBAT,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_EXPANTION,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_SECURITY,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_RESOURCE,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_PFRATING,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_CASSETTE,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_CUSTOM,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_F,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_N,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_SIDEOPSLIST,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_LOCATION,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_RETURNMB,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_DROP,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_BUDDY,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_ATTACK,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_HELI,t)
+function this.UnSetUsageRestriction(enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_REWORD,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DEVELOP,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_STAFF,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_COMBAT,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_EXPANTION,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_SECURITY,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_RESOURCE,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_PFRATING,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_CASSETTE,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_CUSTOM,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_F,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_N,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_SIDEOPSLIST,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_LOCATION,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_RETURNMB,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_DROP,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_BUDDY,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_ATTACK,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_HELI,enable)
 end
-function this.UnSetUsageRestrictionOnFOB(t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_REWORD,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DEVELOP,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_STAFF,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_COMBAT,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_EXPANTION,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_SECURITY,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_RESOURCE,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_PFRATING,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_CASSETTE,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_CUSTOM,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_F,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_N,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_SIDEOPSLIST,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_CHALLENGE,t)--RETAILPATCH 1070 added
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_LOCATION,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_RETURNMB,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_DROP,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_BUDDY,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_ATTACK,t)
-  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_HELI,t)
+function this.UnSetUsageRestrictionOnFOB(enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_REWORD,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DEVELOP,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_STAFF,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_COMBAT,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_EXPANTION,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_BASE_SECURITY,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_RESOURCE,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_PFRATING,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_DB_CASSETTE,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MBM_CUSTOM,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_F,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_EMERGENCIE_N,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_SIDEOPSLIST,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_CHALLENGE,enable)--RETAILPATCH 1070 added
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_LOCATION,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_RETURNMB,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_DROP,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_BUDDY,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_ATTACK,enable)
+  TppUiCommand.SetMbTopMenuItemActive(this.MBDVCMENU.MSN_HELI,enable)
 end
-function this.SetDevelpedByDevelopIdList(e)
-  for t,e in ipairs(e)do
-    TppMotherBaseManagement.SetEquipDeveloped{equipDevelopID=e}
+function this.SetDevelpedByDevelopIdList(developedIdList)
+  for t,equipDevelopID in ipairs(developedIdList)do
+    TppMotherBaseManagement.SetEquipDeveloped{equipDevelopID=equipDevelopID}
   end
 end
 function this.IsNeedPlayPandemicTutorialRadio()
@@ -532,17 +532,17 @@ function this.FinishPandemicEvent()
   end
 end
 function this.UpdatePandemicEventBingoCount()
-  local e,t=TppMotherBaseManagement.GetPandemicBingoCount()
+  local pandemicBingoCount,pandemicRestCount=TppMotherBaseManagement.GetPandemicBingoCount()
   gvars.trm_lastPandemicBingoCount=gvars.trm_currentPandemicBingoCount
-  gvars.trm_currentPandemicBingoCount=e
-  gvars.trm_currentPandemicRestCount=t
+  gvars.trm_currentPandemicBingoCount=pandemicBingoCount
+  gvars.trm_currentPandemicRestCount=pandemicRestCount
 end
 function this.GetPandemicBingoCount()
-  local e=gvars.trm_lastPandemicBingoCount
-  if e<1 then
-    e=1
+  local lastPandemicBingoCount=gvars.trm_lastPandemicBingoCount
+  if lastPandemicBingoCount<1 then
+    lastPandemicBingoCount=1
   end
-  local t=gvars.trm_currentPandemicBingoCount/e
+  local t=gvars.trm_currentPandemicBingoCount/lastPandemicBingoCount
   local e=gvars.trm_currentPandemicBingoCount+gvars.trm_currentPandemicRestCount
   if e<1 then
     e=1
@@ -583,15 +583,15 @@ function this.AcquirePrivilegeStaff()
   local currentStorySequence=TppStory.GetCurrentStorySequence()
   for group,conditions in pairs(privilegeStaff)do
     if conditions.storySequence<=currentStorySequence then
-      local a=true
-      local n=conditions.missionList
-      if n then
-        local e=TppStory.GetClearedMissionCount(n)
-        if e<conditions.proceedCount then
-          a=false
+      local aquireStaff=true
+      local missionList=conditions.missionList
+      if missionList then
+        local clearedMissionCount=TppStory.GetClearedMissionCount(missionList)
+        if clearedMissionCount<conditions.proceedCount then
+          aquireStaff=false
         end
       end
-      if a then
+      if aquireStaff then
         for n,t in ipairs(conditions.privilegeNameList)do
           this.AcquireGzPrivilege(t,this._AcquireGzPrivilegeStaff)
         end
@@ -672,10 +672,10 @@ function this.AcquireDlcItemKeyItem()
     return true
   end
   local function funcRemove(a,e)--RETAILPATCH: 1060
-    local a=Fox.GetPlatformName()
-    local daraBaseId=dlcList[e]
-    if a=="Xbox360"or a=="XboxOne"then
-      if((daraBaseId==NULL_ID.EXTRA_4025)or(daraBaseId==NULL_ID.EXTRA_4003))or(daraBaseId==NULL_ID.EXTRA_4008)then
+    local platform=Fox.GetPlatformName()
+    local dataBaseId=dlcList[e]
+    if platform=="Xbox360"or platform=="XboxOne"then
+      if((dataBaseId==NULL_ID.EXTRA_4025)or(dataBaseId==NULL_ID.EXTRA_4003))or(dataBaseId==NULL_ID.EXTRA_4008)then
         return false
       end
     end
@@ -846,9 +846,9 @@ function this.Init(missionTable)
   TppUiCommand.SetTutorialMode(false)
   TppUiCommand.SetAllInvalidMbSoundControllerVoice(false)
   mvars.trm_EmblemLocatorIdTable={}
-  for e,t in pairs(this.EMBLEM_LOCATOR_TABLE)do
-    local e=TppCollection.GetUniqueIdByLocatorName(e)
-    mvars.trm_EmblemLocatorIdTable[e]=t
+  for emblemLocator,emblemName in pairs(this.EMBLEM_LOCATOR_TABLE)do
+    local emblemId=TppCollection.GetUniqueIdByLocatorName(emblemLocator)
+    mvars.trm_EmblemLocatorIdTable[emblemId]=emblemName
   end
   TppUiCommand.ClearMbDvcOpenConditionRequest()
 end
@@ -877,8 +877,8 @@ function this.Messages()
   local messages
   if cpIntelTrapTable and next(cpIntelTrapTable)then
     messages={}
-    for t,a in pairs(cpIntelTrapTable)do
-      local msg={msg="Enter",sender=a,func=function(n,n)
+    for t,sender in pairs(cpIntelTrapTable)do
+      local msg={msg="Enter",sender=sender,func=function(n,n)
         this.OnEnterCpIntelTrap(t)
         if TppSequence.IsMissionPrepareFinished()then
           this.ShowLocationAndBaseTelop()
@@ -887,7 +887,7 @@ function this.Messages()
       option={isExecMissionPrepare=true}
       }
       table.insert(messages,msg)
-      local msg={msg="Exit",sender=a,func=function(n,n)
+      local msg={msg="Exit",sender=sender,func=function(n,n)
         this.OnExitCpIntelTrap(t)
       end,
       option={isExecMissionPrepare=true}
@@ -895,7 +895,8 @@ function this.Messages()
       table.insert(messages,msg)
     end
     table.insert(messages,{msg="Enter",sender="trap_intel_afgh_waterway_cp",func=function(t,t)
-      this.SetBaseTelopName"afgh_waterWay_cp"if TppSequence.IsMissionPrepareFinished()then
+      this.SetBaseTelopName"afgh_waterWay_cp"
+      if TppSequence.IsMissionPrepareFinished()then
         this.ShowLocationAndBaseTelop()
       end
     end,
@@ -1053,7 +1054,7 @@ function this.SetUp()
   this.SetUpBuddyMBDVCMenu()
   this.SetUpCustomWeaponMBDVCMenu()
 
-  --tex reworked, disable various support menus
+  --tex> reworked, disable various support menus
   local isActual=TppMission.IsActualSubsistenceMission()
   for n, ivar in ipairs(Ivars.disableMenuIvars) do
     if isActual or ivar:Is(1) then
@@ -1066,6 +1067,7 @@ function this.SetUp()
   else
     TppUiStatusManager.UnsetStatus("Subjective","SUPPORT_NO_USE")
   end
+  --<
   --ORIG
   --  if TppMission.IsSubsistenceMission() then
   --    local dvcMenu={
@@ -1455,10 +1457,10 @@ function this.OnRecoverByHelicopterAlreadyGetPassengerList()
     end
   end
 end
-function this.CheckAddTempBuffer(e)
+function this.CheckAddTempBuffer(playerIndex)
   if TppMission.IsFOBMission(vars.missionCode)then
     if TppServerManager.FobIsSneak()then
-      if e==0 then
+      if playerIndex==0 then
         return true
       else
         return false
@@ -1478,9 +1480,9 @@ function this.AddTempStaffFulton(staffInfo)
     end
   end
 end
-function this.AddTempResource(resourceId,count,a)
-  local a=a or 0
-  if not this.CheckAddTempBuffer(a)then
+function this.AddTempResource(resourceId,count,playerIndex)
+  local playerIndex=playerIndex or 0
+  if not this.CheckAddTempBuffer(playerIndex)then
     return
   end
   local count=count or 1
@@ -1924,9 +1926,9 @@ function this.OpenAllSection()
 end
 function this.OnEstablishMissionClear()
   if(gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_FIND_THE_SECRET_WEAPON)and(TppStory.GetClearedMissionCount{10041,10044,10052,10054}>=1)then
-    local t=1
-    this.ForceStartBuildPlatform("Medical",t)
-    this.ForceStartBuildPlatform("Develop",t)
+    local clusterGrade=1
+    this.ForceStartBuildPlatform("Medical",clusterGrade)
+    this.ForceStartBuildPlatform("Develop",clusterGrade)
   end
   this.PushRewardOnMbSectionOpen()
   if this.IsBuiltAnimalPlatform()and(not gvars.trm_isPushRewardAnimalPlatform)then
@@ -2086,18 +2088,18 @@ function this._AddUniqueVolunteerStaff(uniqueTypeId,t)
   TppUiCommand.ShowBonusPopupStaff(staffId,t)
   return true
 end
-function this.ForceStartBuildPlatform(category,n)
-  local clusterGrade=TppMotherBaseManagement.GetClusterGrade{base="MotherBase",category=category}
-  if clusterGrade<n then
+function this.ForceStartBuildPlatform(category,clusterGrade)
+  local currentGrade=TppMotherBaseManagement.GetClusterGrade{base="MotherBase",category=category}
+  if currentGrade<clusterGrade then
     local buildStatus=TppMotherBaseManagement.GetClusterBuildStatus{base="MotherBase",category=category}
     if buildStatus=="Completed"then
       TppMotherBaseManagement.SetClusterSvars{base="MotherBase",category=category,grade=0,buildStatus="Building",timeMinute=0,isNew=true}
     end
   end
 end
-function this.OpenDeployMission(t)
-  for t,e in ipairs(t)do
-    TppMotherBaseManagement.SetSequentialMissionIdLimit{deployMissionId=e}
+function this.OpenDeployMission(deployMissionIds)
+  for n,deployMissionId in ipairs(deployMissionIds)do
+    TppMotherBaseManagement.SetSequentialMissionIdLimit{deployMissionId=deployMissionId}
   end
 end
 this.RewardLangIdTable={
@@ -2168,41 +2170,78 @@ function this.IsReleaseFunctionNuclearDevelop()
   end
 end
 this.SectionFuncOpenCondition={
-  Combat={DispatchSoldier=true,DispatchFobDefence=this.IsCleardRetakeThePlatform},
-  Develop={Weapon=true,SupportHelicopter=this.IsOpenMBDvcArmsMenu,Quiet=function()
-    return TppBuddyService.CanSortieBuddyType(BuddyType.QUIET)
-  end,
-  D_Dog=function()
-    return TppBuddyService.CanSortieBuddyType(BuddyType.DOG)
-  end,
-  D_Horse=this.IsOpenMBDvcArmsMenu,D_Walker=function()
-    return TppBuddyService.CanSortieBuddyType(BuddyType.WALKER_GEAR)
-  end,
-  BattleGear=function()
-    return TppBuddyService.CanSortieBuddyType(BuddyType.BATTLE_GEAR)
-  end,
-  SecurityDevice=this.IsConstructedFirstFob},
-  BaseDev={Mining=true,Processing=true,Extention=true,Construct=this.IsCleardRetakeThePlatform,NuclearDevelop=this.IsReleaseFunctionNuclearDevelop},
-  Support={Fulton=true,Supply=true,Battle=this.IsReleaseFunctionBattle,BattleArtillery=this.IsReleaseFunctionBattle,BattleSmoke=this.IsReleaseFunctionBattle,BattleSleepGas=this.IsReleaseFunctionBattle,BattleChaff=this.IsReleaseFunctionBattle,BattleWeather=this.IsReleaseFunctionBattle},
-  Spy={Information=true,Scouting=true,SearchResource=true,WeatherInformation=true},
-  Medical={Emergency=true,Treatment=true,AntiReflex=this.IsConstructedFirstFob},--RETAILPATCH: 1060 antireflex added
-  Security={BaseDefence=true,MachineDefence=this.IsConstructedFirstFob,BaseBlockade=this.IsConstructedFirstFob,SecurityInfo=this.IsConstructedFirstFob}
+  Combat={
+    DispatchSoldier=true,
+    DispatchFobDefence=this.IsCleardRetakeThePlatform
+  },
+  Develop={
+    Weapon=true,
+    SupportHelicopter=this.IsOpenMBDvcArmsMenu,
+    Quiet=function()
+      return TppBuddyService.CanSortieBuddyType(BuddyType.QUIET)
+    end,
+    D_Dog=function()
+      return TppBuddyService.CanSortieBuddyType(BuddyType.DOG)
+    end,
+    D_Horse=this.IsOpenMBDvcArmsMenu,
+    D_Walker=function()
+      return TppBuddyService.CanSortieBuddyType(BuddyType.WALKER_GEAR)
+    end,
+    BattleGear=function()
+      return TppBuddyService.CanSortieBuddyType(BuddyType.BATTLE_GEAR)
+    end,
+    SecurityDevice=this.IsConstructedFirstFob
+  },
+  BaseDev={
+    Mining=true,
+    Processing=true,
+    Extention=true,
+    Construct=this.IsCleardRetakeThePlatform,
+    NuclearDevelop=this.IsReleaseFunctionNuclearDevelop
+  },
+  Support={
+    Fulton=true,
+    Supply=true,
+    Battle=this.IsReleaseFunctionBattle,
+    BattleArtillery=this.IsReleaseFunctionBattle,
+    BattleSmoke=this.IsReleaseFunctionBattle,
+    BattleSleepGas=this.IsReleaseFunctionBattle,
+    BattleChaff=this.IsReleaseFunctionBattle,
+    BattleWeather=this.IsReleaseFunctionBattle
+  },
+  Spy={
+    Information=true,
+    Scouting=true,
+    SearchResource=true,
+    WeatherInformation=true
+  },
+  Medical={
+    Emergency=true,
+    Treatment=true,
+    AntiReflex=this.IsConstructedFirstFob--RETAILPATCH: 1060 antireflex added
+  },
+  Security={
+    BaseDefence=true,
+    MachineDefence=this.IsConstructedFirstFob,
+    BaseBlockade=this.IsConstructedFirstFob,
+    SecurityInfo=this.IsConstructedFirstFob
+  }
 }
 function this.ReleaseFunctionOfMbSection()
-  local r=TppMotherBaseManagement.OpenedSectionFunc
-  for a,t in pairs(E)do
-    for o,n in pairs(t)do
-      local t
-      if this.SectionFuncOpenCondition[a]then
-        t=this.SectionFuncOpenCondition[a][o]
+  local openedSectionFunc=TppMotherBaseManagement.OpenedSectionFunc
+  for section,sectionFunction in pairs(sectionFunctionIdTable)do
+    for n,sectionFuncId in pairs(sectionFunction)do
+      local releaseSectionFunction
+      if this.SectionFuncOpenCondition[section]then
+        releaseSectionFunction=this.SectionFuncOpenCondition[section][n]
       end
-      if(t==true)then
-        r{sectionFuncId=n,opened=true}
-      elseif t then
-        if t(a)then
-          r{sectionFuncId=n,opened=true}
+      if(releaseSectionFunction==true)then
+        openedSectionFunc{sectionFuncId=sectionFuncId,opened=true}
+      elseif releaseSectionFunction then
+        if releaseSectionFunction(section)then
+          openedSectionFunc{sectionFuncId=sectionFuncId,opened=true}
         else
-          r{sectionFuncId=n,opened=false}
+          openedSectionFunc{sectionFuncId=sectionFuncId,opened=false}
         end
       end
     end

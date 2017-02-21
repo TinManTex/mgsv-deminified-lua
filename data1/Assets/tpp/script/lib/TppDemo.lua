@@ -614,16 +614,16 @@ function this.OnReload(n)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
 function this.Update()
-  local n=mvars
+  local mvars=mvars
   local thisLocal=this--NMC: tihs pattern is used in two functions in other files. why? is it that really performant?
-  if n.dem_reservedDemoId then
-    if FindDemoBody(n.dem_reservedDemoId)then
-      if not n.dem_DoneBackGroundLoading then
-        thisLocal.ExecuteBackGroundLoad(n.dem_reservedDemoId)
+  if mvars.dem_reservedDemoId then
+    if FindDemoBody(mvars.dem_reservedDemoId)then
+      if not mvars.dem_DoneBackGroundLoading then
+        thisLocal.ExecuteBackGroundLoad(mvars.dem_reservedDemoId)
       end
     end
   end
-  thisLocal.ProcessPlayRequest(n.demo_playRequestInfo.missionBlock)
+  thisLocal.ProcessPlayRequest(mvars.demo_playRequestInfo.missionBlock)
   thisLocal.ProcessFinishWaitRequestInfo()
 end
 
@@ -817,11 +817,11 @@ function this.MakeNewPlayRequestInfo(demoFlags)
   local playRequestInfo={missionStateCheck=false,gameCameraInterpedToDemo=gameCameraInterpedToDemo,demoBlockLoaded=demoBlockLoaded,playerModelReloaded=playerModelReloaded,playerActionAllowed=playerActionAllowed,playerMoveToPosition=playerMoveToPosition,waitTextureLoadOnDemoPlay=waitTextureLoadOnDemoPlay}
   return playRequestInfo
 end
-function this.DeletePlayRequestInfo(e,n)
+function this.DeletePlayRequestInfo(demoId,n)
   if n and n.useDemoBlock then
-    mvars.demo_playRequestInfo.demoBlock[e]=nil
+    mvars.demo_playRequestInfo.demoBlock[demoId]=nil
   else
-    mvars.demo_playRequestInfo.missionBlock[e]=nil
+    mvars.demo_playRequestInfo.missionBlock[demoId]=nil
   end
 end
 function this.ProcessPlayRequest(playRequestInfoDemoBlock)
@@ -867,23 +867,23 @@ function this.AddFinishWaitRequestInfo(demoId,demoFlags,finishWaitFuncName)
       return
     end
   end
-  local demoRequestInfo
-  demoRequestInfo=mvars.demo_finishWaitRequestInfo[demoId]or{}
+  local finishWaitRequestInfo
+  finishWaitRequestInfo=mvars.demo_finishWaitRequestInfo[demoId]or{}
   if(done==true)then
     if finishWaitFuncName then
-      demoRequestInfo[finishWaitFuncName]=false
+      finishWaitRequestInfo[finishWaitFuncName]=false
     end
   else
     return
   end
-  mvars.demo_finishWaitRequestInfo[demoId]=demoRequestInfo
+  mvars.demo_finishWaitRequestInfo[demoId]=finishWaitRequestInfo
 end
 function this.ProcessFinishWaitRequestInfo()
-  local n=mvars.demo_finishWaitRequestInfo
-  if not next(n)then
+  local finishWaitRequestInfo=mvars.demo_finishWaitRequestInfo
+  if not next(finishWaitRequestInfo)then
     return
   end
-  for demoId,n in pairs(n)do
+  for demoId,n in pairs(finishWaitRequestInfo)do
     local canFinishPlay=this.CanFinishPlay(demoId,n)
     if canFinishPlay then
       local demoName=mvars.dem_invDemoList[demoId]
@@ -958,11 +958,11 @@ function this._OnDemoDisable(demoIdStr32)
     mvars.dem_playedList[demoName]=nil
   end
 end
-function this._DoMessage(n,a)
-  if((mvars.dem_demoFuncs==nil or mvars.dem_demoFuncs[n]==nil)or mvars.dem_demoFuncs[n][a]==nil)then
+function this._DoMessage(demoName,functionName)
+  if((mvars.dem_demoFuncs==nil or mvars.dem_demoFuncs[demoName]==nil)or mvars.dem_demoFuncs[demoName][functionName]==nil)then
     return
   end
-  mvars.dem_demoFuncs[n][a]()
+  mvars.dem_demoFuncs[demoName][functionName]()
 end
 this.mtbsPriorityFuncList={
   TheGreatEscapeLiquid=function()

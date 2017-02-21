@@ -1,34 +1,34 @@
 local this={}
-local n=Fox.StrCode32
-local d=2
-function this.RegisterRat(a,e)
-  mvars.rat_bird_ratList=a
-  mvars.rat_bird_ratRouteList=e
+local StrCode32=Fox.StrCode32
+local maxBirds=2
+function this.RegisterRat(ratList,ratRouteList)
+  mvars.rat_bird_ratList=ratList
+  mvars.rat_bird_ratRouteList=ratRouteList
 end
-function this.RegisterBird(a,e)
-  mvars.rat_bird_birdList=a
-  mvars.rat_bird_flyZoneList=e
+function this.RegisterBird(birdList,birdFlyZoneList)
+  mvars.rat_bird_birdList=birdList
+  mvars.rat_bird_flyZoneList=birdFlyZoneList
   if mvars.rat_bird_birdType then
-    for a,e in ipairs(mvars.rat_bird_birdList)do
-      e.birdType=mvars.rat_bird_birdType
+    for n,birdInfo in ipairs(mvars.rat_bird_birdList)do
+      birdInfo.birdType=mvars.rat_bird_birdType
     end
   end
 end
 function this.RegisterBaseList(e)
   mvars.rat_bird_baseStrCodeList={}
   for a,e in ipairs(e)do
-    mvars.rat_bird_baseStrCodeList[n(e)]=e
+    mvars.rat_bird_baseStrCodeList[StrCode32(e)]=e
   end
 end
 function this.EnableRat()
   mvars.rat_bird_enableRat=true
 end
-function this.EnableBird(e)
-  if e==nil then
+function this.EnableBird(birdType)
+  if birdType==nil then
     return
   end
   mvars.rat_bird_enableBird=true
-  mvars.rat_bird_birdType=e
+  mvars.rat_bird_birdType=birdType
 end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
@@ -63,14 +63,14 @@ function this._WarpRats(e)
     end
   end
 end
-function this._EnableRats(n)
+function this._EnableRats(enabled)
   if not mvars.rat_bird_ratList then
     return
   end
-  for a,e in ipairs(mvars.rat_bird_ratList)do
-    local a={type="TppRat",index=0}
-    local e={id="SetEnabled",name=e,ratIndex=0,enabled=n}
-    GameObject.SendCommand(a,e)
+  for n,name in ipairs(mvars.rat_bird_ratList)do
+    local tppRatId={type="TppRat",index=0}
+    local command={id="SetEnabled",name=name,ratIndex=0,enabled=enabled}
+    GameObject.SendCommand(tppRatId,command)
   end
 end
 function this._WarpBird(e)
@@ -78,37 +78,37 @@ function this._WarpBird(e)
     return
   end
   for r,a in ipairs(mvars.rat_bird_birdList)do
-    local n={type=a.birdType,index=0}
+    local birdTypeTppObject={type=a.birdType,index=0}
     local e=mvars.rat_bird_flyZoneList[e][r]
     if e then
       local r={id="ChangeFlyingZone",name=a.name,center=e.center,radius=e.radius,height=e.height}
-      GameObject.SendCommand(n,r)
-      local r=nil
+      GameObject.SendCommand(birdTypeTppObject,r)
+      local command=nil
       if e.ground then
-        for t=0,d do
-          if e.ground[t+1]then
-            r={id="SetLandingPoint",birdIndex=t,name=a.name,groundPos=e.ground[t+1]}
-            GameObject.SendCommand(n,r)
+        for birdIndex=0,maxBirds do
+          if e.ground[birdIndex+1]then
+            command={id="SetLandingPoint",birdIndex=birdIndex,name=a.name,groundPos=e.ground[birdIndex+1]}
+            GameObject.SendCommand(birdTypeTppObject,command)
           end
         end
       elseif e.perch then
-        for t=0,d do
-          if e.perch[t+1]then
-            r={id="SetLandingPoint",birdIndex=t,name=a.name,perchPos=e.perch[t+1]}
+        for birdIndex=0,maxBirds do
+          if e.perch[birdIndex+1]then
+            command={id="SetLandingPoint",birdIndex=birdIndex,name=a.name,perchPos=e.perch[birdIndex+1]}
           end
-          GameObject.SendCommand(n,r)
+          GameObject.SendCommand(birdTypeTppObject,command)
         end
       end
-      local e={id="SetAutoLanding",name=a.name}
-      GameObject.SendCommand(n,e)
+      local command={id="SetAutoLanding",name=a.name}
+      GameObject.SendCommand(birdTypeTppObject,command)
     end
   end
 end
-function this._EnableBirds(a)
-  for n,e in ipairs(mvars.rat_bird_birdList)do
-    local n={type=e.birdType,index=0}
-    local e={id="SetEnabled",name=e.name,birdIndex=i,enabled=a}
-    GameObject.SendCommand(n,e)
+function this._EnableBirds(enabled)
+  for n,birdInfo in ipairs(mvars.rat_bird_birdList)do
+    local tppBirdTypeId={type=birdInfo.birdType,index=0}
+    local command={id="SetEnabled",name=birdInfo.name,birdIndex=i,enabled=enabled}--RETAILBUG: birdindex not defined, I assume it's the index of rat_bird_birdList but not sure, the equivalent for rats just sets 0 
+    GameObject.SendCommand(tppBirdTypeId,command)
   end
 end
 function this._Activate(a)
