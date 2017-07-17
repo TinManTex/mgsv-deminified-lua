@@ -1,10 +1,10 @@
 local this={}
-local n=Fox.StrCode32
-local n=Tpp.IsTypeTable
+local StrCode32=Fox.StrCode32
+local IsTypeTable=Tpp.IsTypeTable
 local GetGameObjectId=GameObject.GetGameObjectId
-local n=GameObject.NULL_ID
-local n=GameObject.SendCommand
-local n=Tpp.DEBUG_StrCode32ToString
+local NULL_ID=GameObject.NULL_ID
+local SendCommand=GameObject.SendCommand
+--ORPHAN local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
 function this._EnableMarkerIcon(markerName,radius,langId)
   TppMarker.Enable(markerName,radius,"none","map_only_icon",0,false,true)
   if langId~=nil then

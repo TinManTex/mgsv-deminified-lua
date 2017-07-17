@@ -1,3 +1,4 @@
+-- gr_init_dx11.lua
 GrTools:EnableTextureStreaming()
 GrTools:SetTexturePackLoadConditioningEnable(true)
 GrTools.SetDefaultTextureLoadPath"tmp/"
@@ -20,20 +21,20 @@ GrTools.SetTerrainMaterialTexture(12,"/Assets/fox/environ/terrain_def_tex/source
 GrTools.SetTerrainMaterialTexture(13,"/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain13_bsm.ftex","/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain00_nrm.ftex","/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain00_srm.ftex")
 GrTools.SetTerrainMaterialTexture(14,"/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain14_bsm.ftex","/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain00_nrm.ftex","/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain00_srm.ftex")
 GrTools.SetTerrainMaterialTexture(15,"/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain15_bsm.ftex","/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain00_nrm.ftex","/Assets/fox/environ/terrain_def_tex/sourceimages/initterrain00_srm.ftex")
-local e=true
+local setGen8RenderingMode=true
 if not AssetConfiguration.IsDiscOrHddImage()then
-  e=AssetConfiguration.GetConfigurationFromAssetManager"EnableWindowsDX11Texture"
+  setGen8RenderingMode=AssetConfiguration.GetConfigurationFromAssetManager"EnableWindowsDX11Texture"
 end
-GrTools.SetGen8RenderingMode(e)
-local r=true
-local i=true
-local e=true
+GrTools.SetGen8RenderingMode(setGen8RenderingMode)
+local isEnableDebugPrint=true
+local isEnableDebug2D=true
+local isEnableDebugPrimitive=true
 if Preference then
-  local n=Preference.GetPreferenceEntity"DebugDrawSetting"
-  if not Entity.IsNull(n)then
-    r=n.isEnableDebugPrint
-    i=n.isEnableDebug2D
-    e=n.isEnableDebugPrimitive
+  local debugDrawSetting=Preference.GetPreferenceEntity"DebugDrawSetting"
+  if not Entity.IsNull(debugDrawSetting)then
+    isEnableDebugPrint=debugDrawSetting.isEnableDebugPrint
+    isEnableDebug2D=debugDrawSetting.isEnableDebug2D
+    isEnableDebugPrimitive=debugDrawSetting.isEnableDebugPrimitive
   end
 end
 GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK",priority=0})
@@ -84,16 +85,16 @@ if GrPluginDebugView then
   GrRenderPlugin.AddPlugin(GrPluginDebugView{pluginName="DEBUGVIEW",priority=3e3})
 end
 if(GrPluginDebugPrimitive~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW",priority=3050,isActive=e})
+  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW",priority=3050,isActive=isEnableDebugPrimitive})
 end
 if GrPluginPrimitiveDebug then
-  GrRenderPlugin.AddPlugin(GrPluginPrimitiveDebug{pluginName="PRIMITIVE_DEBUG",priority=3100,isActive=e,isEnableResolveRenderBuffer=false})
+  GrRenderPlugin.AddPlugin(GrPluginPrimitiveDebug{pluginName="PRIMITIVE_DEBUG",priority=3100,isActive=isEnableDebugPrimitive,isEnableResolveRenderBuffer=false})
 end
 if GrPluginModelDebug then
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG",priority=3300})
 end
 if(GrPluginDebug2D~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D",priority=3400,isActive=i})
+  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D",priority=3400,isActive=isEnableDebug2D})
 end
 if Editor then
   GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK_WIRE",priority=0,execMode="wireframe"})
@@ -107,11 +108,11 @@ if Editor then
   GrRenderPlugin.AddPlugin(GrPluginCloneWireframe{pluginName="CLONE_WIRE",priority=15,execMode="wireframe"})
   GrRenderPlugin.AddPlugin(GrPluginTerrainWireframe{pluginName="TERRAIN_WIRE",priority=20,execMode="wireframe"})
   if(GrPluginDebugPrimitive~=nil)then
-    GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_WIRE",priority=3200,execMode="wireframe",isActive=e})
+    GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_WIRE",priority=3200,execMode="wireframe",isActive=isEnableDebugPrimitive})
   end
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG_WIRE",priority=3300,execMode="wireframe"})
   if(GrPluginDebug2D~=nil)then
-    GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_WIRE",priority=3400,execMode="wireframe",isActive=i})
+    GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_WIRE",priority=3400,execMode="wireframe",isActive=isEnableDebug2D})
   end
   GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK_PSEUDO",priority=0,execMode="pseudoshade"})
   GrRenderPlugin.AddPlugin(GrPluginModelSetup{pluginName="MODEL_SETUP_PSEUDO",priority=1,execMode="pseudoshade"})
@@ -123,11 +124,11 @@ if Editor then
   GrRenderPlugin.AddPlugin(GrPluginModelPseudoshade{pluginName="MODEL_PSEUDO",priority=10,execMode="pseudoshade"})
   GrRenderPlugin.AddPlugin(GrPluginTerrainPseudeShade{pluginName="TERRAIN_PSEUDO",priority=20,execMode="pseudoshade"})
   if(GrPluginDebugPrimitive~=nil)then
-    GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_PSEUDO",priority=3200,execMode="pseudoshade",isActive=e})
+    GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_PSEUDO",priority=3200,execMode="pseudoshade",isActive=isEnableDebugPrimitive})
   end
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG_PSEUDO",priority=3300,execMode="pseudoshade"})
   if(GrPluginDebug2D~=nil)then
-    GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_PSEUDO",priority=3400,execMode="pseudoshade",isActive=i})
+    GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_PSEUDO",priority=3400,execMode="pseudoshade",isActive=isEnableDebug2D})
   end
   GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK_FWD",priority=0,execMode="forward"})
   GrRenderPlugin.AddPlugin(GrPluginModelSetup{pluginName="MODEL_SETUP_FWD",priority=1,execMode="forward"})
@@ -142,11 +143,11 @@ if Editor then
   GrRenderPlugin.AddPlugin(GrPluginDecal{pluginName="DECALS_FORWARD",priority=100,parentPluginName="FORWARD",execMode="forward"})
   GrRenderPlugin.AddPlugin(GrPluginTerrain{pluginName="TERRAIN_DRAW",788,parentPluginName="FORWARD",execMode="forward"})
   if(GrPluginDebugPrimitive~=nil)then
-    GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_FWD",priority=3200,execMode="forward",isActive=e})
+    GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_FWD",priority=3200,execMode="forward",isActive=isEnableDebugPrimitive})
   end
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG_FWD",priority=3300,execMode="forward"})
   if(GrPluginDebug2D~=nil)then
-    GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_FWD",priority=3400,execMode="forward",isActive=i})
+    GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_FWD",priority=3400,execMode="forward",isActive=isEnableDebug2D})
   end
 end
 if GrGraphicsSettingManager then
@@ -160,7 +161,8 @@ if GrGraphicsSettingManager then
           {name="Low",DirectionalLightShadowResolution=1024,SpotLightLightShadowResolution=512,PointLightLightShadowResolution=1024,CascadeShadowRangeScale=1,EnableCascadeShadowBlend=0},
           {name="Medium",DirectionalLightShadowResolution=2048,SpotLightLightShadowResolution=1024,PointLightLightShadowResolution=2048,CascadeShadowRangeScale=1,EnableCascadeShadowBlend=0},
           {name="High",DirectionalLightShadowResolution=4096,SpotLightLightShadowResolution=2048,PointLightLightShadowResolution=4096,CascadeShadowRangeScale=1,EnableCascadeShadowBlend=0},
-          {name="ExtraHigh",DirectionalLightShadowResolution=8192,SpotLightLightShadowResolution=4096,PointLightLightShadowResolution=8192,CascadeShadowRangeScale=2,EnableCascadeShadowBlend=1}}},
+          {name="ExtraHigh",DirectionalLightShadowResolution=8192,SpotLightLightShadowResolution=4096,PointLightLightShadowResolution=8192,CascadeShadowRangeScale=2,EnableCascadeShadowBlend=1}
+        }},
       {settingName="PluginSphericalHarmonics",
         settingTable={
           {name="G7",DrawSphericalHarmonicsMaxCount=64,RejectionLengthBias=0},
@@ -168,7 +170,8 @@ if GrGraphicsSettingManager then
           {name="Default",DrawSphericalHarmonicsMaxCount=64,RejectionLengthBias=0},
           {name="Low",DrawSphericalHarmonicsMaxCount=64,RejectionLengthBias=0},
           {name="High",DrawSphericalHarmonicsMaxCount=96,RejectionLengthBias=0},
-          {name="ExtraHigh",DrawSphericalHarmonicsMaxCount=255,RejectionLengthBias=80}}},
+          {name="ExtraHigh",DrawSphericalHarmonicsMaxCount=255,RejectionLengthBias=80}
+        }},
       {settingName="PluginLocalLight",
         settingTable={
           {name="G7",ShadowCastingStaticLocalLightMaxCount=2,ShadowCastingDynamicLocalLightMaxCount=2,DrawLocalLightMaxCount=64,LocalLightLodLevelBias=0,LocalLightLodMinLevel=0,RejectionLengthBias=0},
@@ -176,7 +179,8 @@ if GrGraphicsSettingManager then
           {name="Default",ShadowCastingStaticLocalLightMaxCount=4,ShadowCastingDynamicLocalLightMaxCount=2,DrawLocalLightMaxCount=64,LocalLightLodLevelBias=0,LocalLightLodMinLevel=0,RejectionLengthBias=0},
           {name="Low",ShadowCastingStaticLocalLightMaxCount=2,ShadowCastingDynamicLocalLightMaxCount=2,DrawLocalLightMaxCount=64,LocalLightLodLevelBias=0,LocalLightLodMinLevel=0,RejectionLengthBias=0},
           {name="High",ShadowCastingStaticLocalLightMaxCount=4,ShadowCastingDynamicLocalLightMaxCount=2,DrawLocalLightMaxCount=64,LocalLightLodLevelBias=0,LocalLightLodMinLevel=0,RejectionLengthBias=0},
-          {name="ExtraHigh",ShadowCastingStaticLocalLightMaxCount=12,ShadowCastingDynamicLocalLightMaxCount=4,DrawLocalLightMaxCount=512,LocalLightLodLevelBias=-.5,LocalLightLodMinLevel=0,RejectionLengthBias=200}}},
+          {name="ExtraHigh",ShadowCastingStaticLocalLightMaxCount=12,ShadowCastingDynamicLocalLightMaxCount=4,DrawLocalLightMaxCount=512,LocalLightLodLevelBias=-.5,LocalLightLodMinLevel=0,RejectionLengthBias=200}
+        }},
       {settingName="PluginModel",
         settingTable={
           {name="G7",RejectionLengthBias=0},
@@ -185,7 +189,8 @@ if GrGraphicsSettingManager then
           {name="Low",RejectionLengthBias=0},
           {name="Medium",RejectionLengthBias=16},
           {name="High",RejectionLengthBias=32},
-          {name="ExtraHigh",RejectionLengthBias=128}}},
+          {name="ExtraHigh",RejectionLengthBias=128}
+        }},
       {settingName="PluginClone",
         settingTable={
           {name="G7",RejectionLengthBias=0},
@@ -194,7 +199,8 @@ if GrGraphicsSettingManager then
           {name="Low",RejectionLengthBias=0},
           {name="Medium",RejectionLengthBias=32},
           {name="High",RejectionLengthBias=64},
-          {name="ExtraHigh",RejectionLengthBias=250}}},
+          {name="ExtraHigh",RejectionLengthBias=250}
+        }},
       {settingName="TextureQualitySettings",
         settingTable={
           {name="G7",VramMBSize=700,ReduceMipmap=1},
@@ -203,7 +209,8 @@ if GrGraphicsSettingManager then
           {name="Default",VramMBSize=1800,ReduceMipmap=0},
           {name="High",VramMBSize=1800,ReduceMipmap=0},
           {name="G8E",VramMBSize=1800,ReduceMipmap=0},
-          {name="ExtraHigh",VramMBSize=3200,ReduceMipmap=0}}},
+          {name="ExtraHigh",VramMBSize=3200,ReduceMipmap=0}
+        }},
       {settingName="PluginDof",
         settingTable={
           {name="G7",EnableFilter=1,QualityType=0},
@@ -212,7 +219,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0,QualityType=0},
           {name="Low",EnableFilter=0,QualityType=0},
           {name="High",EnableFilter=1,QualityType=0},
-          {name="ExtraHigh",EnableFilter=1,QualityType=1}}},
+          {name="ExtraHigh",EnableFilter=1,QualityType=1}
+        }},
       {settingName="PluginFxaa",
         settingTable={
           {name="G7",EnableFilter=1},
@@ -221,7 +229,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0},
           {name="Low",EnableFilter=0},
           {name="High",EnableFilter=1},
-          {name="ExtraHigh",EnableFilter=1}}},
+          {name="ExtraHigh",EnableFilter=1}
+        }},
       {settingName="PluginSsao",
         settingTable={
           {name="G7",EnableFilter=1},
@@ -230,7 +239,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0},
           {name="Low",EnableFilter=0},
           {name="High",EnableFilter=1},
-          {name="ExtraHigh",EnableFilter=1}}},
+          {name="ExtraHigh",EnableFilter=1}
+        }},
       {settingName="PluginSao",
         settingTable={
           {name="G7",EnableFilter=0},
@@ -239,7 +249,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0},
           {name="Low",EnableFilter=0},
           {name="High",EnableFilter=0},
-          {name="ExtraHigh",EnableFilter=1}}},
+          {name="ExtraHigh",EnableFilter=1}
+        }},
       {settingName="PluginMotionBlur",
         settingTable={
           {name="G7",EnableFilter=0,BaseAmount=0},
@@ -248,13 +259,15 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0,BaseAmount=0},
           {name="Low",EnableFilter=0,BaseAmount=0},
           {name="High",EnableFilter=1,BaseAmount=.01},
-          {name="ExtraHigh",EnableFilter=1,BaseAmount=.01}}},
+          {name="ExtraHigh",EnableFilter=1,BaseAmount=.01}
+        }},
       {settingName="MotionBlurAmount",
         settingTable={
           {name="Off",BlurAmount=0},
           {name="Small",BlurAmount=.25},
           {name="Medium",BlurAmount=.5},
-          {name="Large",BlurAmount=1}}},
+          {name="Large",BlurAmount=1}
+        }},
       {settingName="PluginToneMap",
         settingTable={
           {name="G7",EnableBloom=1},
@@ -263,7 +276,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableBloom=0},
           {name="Low",EnableBloom=1},
           {name="High",EnableBloom=1},
-          {name="ExtraHigh",EnableBloom=1}}},
+          {name="ExtraHigh",EnableBloom=1}
+        }},
       {settingName="PluginLocalReflection",
         settingTable={
           {name="G7",EnableFilter=0,FadeOffset=0},
@@ -272,7 +286,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0,FadeOffset=0},
           {name="Low",EnableFilter=0,FadeOffset=0},
           {name="High",EnableFilter=1,FadeOffset=0},
-          {name="ExtraHigh",EnableFilter=1,FadeOffset=.9}}},
+          {name="ExtraHigh",EnableFilter=1,FadeOffset=.9}
+        }},
       {settingName="PluginSubsurfaceScatter",
         settingTable={
           {name="G7",EnableFilter=0,FadeOffset=0},
@@ -281,5 +296,8 @@ if GrGraphicsSettingManager then
           {name="Off",EnableFilter=0,FadeOffset=0},
           {name="Low",EnableFilter=0,FadeOffset=0},
           {name="High",EnableFilter=1,FadeOffset=1},
-          {name="ExtraHigh",EnableFilter=1,FadeOffset=1}}}}}
+          {name="ExtraHigh",EnableFilter=1,FadeOffset=1}
+        }}
+    }
+  }
 end

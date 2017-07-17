@@ -3,6 +3,7 @@
 local this={}
 local minuteInSeconds=60
 local hourInSeconds=60*60
+
 local weatherProbabilitiesTable={
   AFGH={
     {TppDefine.WEATHER.SUNNY,80},
@@ -28,6 +29,12 @@ local weatherDurations={
   {TppDefine.WEATHER.RAINY,1*hourInSeconds,2*hourInSeconds},
   {TppDefine.WEATHER.FOGGY,13*minuteInSeconds,20*minuteInSeconds}
 }
+--tex broken out from SetDefaultWeatherDurations>
+local extraWeatherInterval={
+  min=5*hourInSeconds,
+  max=8*hourInSeconds,
+}
+--<
 local extraWeatherProbabilitiesTable={
   AFGH={{TppDefine.WEATHER.SANDSTORM,100}},
   MAFR={{TppDefine.WEATHER.RAINY,100}},
@@ -113,7 +120,7 @@ function this.SetDefaultWeatherDurations()
   if not WeatherManager.SetExtraWeatherInterval then
     return
   end
-  WeatherManager.SetExtraWeatherInterval(5*hourInSeconds,8*hourInSeconds)
+  WeatherManager.SetExtraWeatherInterval(extraWeatherInterval.min,extraWeatherInterval.max)--tex values broken out to extraWeatherInterval
 end
 function this.SetDefaultWeatherProbabilities()
   local weatherProbabilities

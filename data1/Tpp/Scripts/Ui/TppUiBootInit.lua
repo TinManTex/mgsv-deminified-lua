@@ -1,4 +1,4 @@
-local _=SubtitlesDaemon.GetInstance()
+local subtitlesDaemon=SubtitlesDaemon.GetInstance()
 if SubtitlesCommand then
   SubtitlesCommand:SetSubFilePath"/Assets/tpp/ui/Subtitles/sub_old/"
   SubtitlesCommand:SetSubpFilePath"/Assets/tpp/ui/Subtitles/subp/"
@@ -7,7 +7,7 @@ if SubtitlesCommand then
 end
 UiCommonDataManager.Create()
 HudCommonDataManager.Create()
-local _=UiCommonDataManager.GetInstance()
+local uiCommonDataManager=UiCommonDataManager.GetInstance()
 TppUiCommand.CreateUiDependJob()
 TppUiCommand.CreateUiUpdateMarkerJob()
 TppUiCommand.CreateUiUseGrJob()

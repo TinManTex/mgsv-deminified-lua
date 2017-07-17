@@ -1,6 +1,7 @@
+-- DOBUILD: 1
 local this={}
 local StrCode32=Fox.StrCode32
-local strCode32ToString={}
+this.strCode32ToString={}--tex was local
 this.DEBUG_strCode32List={
   "Trap",
   "Enter",
@@ -300,14 +301,14 @@ function this.DEBUG_RegisterStrcode32invert(strCode32List)
   for i,someString in pairs(strCode32List)do
     newStr32ToStringTable[StrCode32(someString)]=someString
   end
-  strCode32ToString=newStr32ToStringTable
+  this.strCode32ToString=newStr32ToStringTable
 end
 function this.DEBUG_RegisterStrcode32invertByString(someString)
-  strCode32ToString[StrCode32(someString)]=someString
+  this.strCode32ToString[StrCode32(someString)]=someString
 end
 function this.DEBUG_StrCode32ToString(str32String)
-  if strCode32ToString[str32String]then
-    return strCode32ToString[str32String]
+  if this.strCode32ToString[str32String]then
+    return this.strCode32ToString[str32String]
   end
 end
 return this

@@ -245,11 +245,11 @@ function this._ChangeDeadState(type,position,rotY)
 end
 function this._RegisterWeatherTable(sender,param,func)
   this.weatherTable[weatherTableCount]={
-    msg="Clock",sender=sender,func=function(l,a)
+    msg="Clock",sender=sender,func=function(_sender,time)
       if func then
-        func(sender,a)
+        func(sender,time)
       else
-        this._ChangeRouteAtTime(sender,a)
+        this._ChangeRouteAtTime(sender,time)
       end
     end
   }
@@ -294,11 +294,11 @@ function this._AddClockMessage(n,t,a,r)
     l_numAnimals=l_numAnimals+1
   end
 end
-function this._ChangeRouteAtTime(t,m)
+function this._ChangeRouteAtTime(sender,time)
   local a=mvars.loc_locationAnimalSettingTable
   local o=a.animalTypeSetting[mvars.animalBlockKeyName]
   local a=-1
-  for e in string.gmatch(t,"%d+")do
+  for e in string.gmatch(sender,"%d+")do
     a=tonumber(e)
   end
   if a==-1 then
@@ -332,7 +332,7 @@ function this._ChangeRouteAtTime(t,m)
     return
   end
   local a=a-l
-  local isNight=this._IsNightForAnimalType(animalType,m)
+  local isNight=this._IsNightForAnimalType(animalType,time)
   if animalType=="Bear"then
     if isNight then
       this._SetRoute(t.type,t.locatorFormat,t.nightRouteFormat,a)

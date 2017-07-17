@@ -1,7 +1,7 @@
 -- DOBUILD: 1
 -- TppDemo.lua
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeTable=Tpp.IsTypeTable
 local FindDemoBody=DemoDaemon.FindDemoBody
@@ -255,9 +255,9 @@ this.FINISH_WAIT_CHECK_FUNC={
     if not mvars.dem_textureLoadWaitEndTime then
       mvars.dem_textureLoadWaitEndTime=Time.GetRawElapsedTimeSinceStartUp()+30
     end
-    local n=mvars.dem_textureLoadWaitEndTime-Time.GetRawElapsedTimeSinceStartUp()
-    local e=Mission.GetTextureLoadedRate()
-    if(e>.35)or(n<=0)then
+    local loadWaitDelta=mvars.dem_textureLoadWaitEndTime-Time.GetRawElapsedTimeSinceStartUp()
+    local textureLoadedRate=Mission.GetTextureLoadedRate()
+    if(textureLoadedRate>.35)or(loadWaitDelta<=0)then
       return true
     else
       TppUI.ShowAccessIconContinue()
@@ -284,9 +284,9 @@ this.FINISH_WAIT_CHECK_FUNC={
   end
 }
 function this.Play(demoName,demoFuncs,demoFlags)
-  InfLog.Add("TppDemo.Play "..demoName)--tex DEBUG
-  InfLog.PrintInspect(demoFuncs)
-  InfLog.PrintInspect(demoFlags)--<
+  InfCore.Log("TppDemo.Play "..demoName)--tex DEBUG
+  InfCore.PrintInspect(demoFuncs,{varName="demoFuncs"})
+  InfCore.PrintInspect(demoFlags,{varName="demoFlags"})--<
 
   local demoId=mvars.dem_demoList[demoName]
   if(demoId==nil)then
@@ -295,6 +295,12 @@ function this.Play(demoName,demoFuncs,demoFlags)
   mvars.dem_enableWaitBlockLoadOnDemoSkip=false
   mvars.dem_demoFuncs[demoName]=demoFuncs
   demoFlags=demoFlags or{}
+
+  if Ivars.forceDemoAllowAction:Is(1) then--tex>
+    demoFlags.isInGame=true
+    demoFlags.isNotAllowedPlayerAction=false
+  end--<
+
   if demoFlags.isInGame then
     if demoFlags.waitBlockLoadEndOnDemoSkip==nil then
       demoFlags.waitBlockLoadEndOnDemoSkip=false
@@ -784,11 +790,9 @@ end
 function this.AddPlayReqeustInfo(demoId,demoFlags)
   local playRequestInfo=this.MakeNewPlayRequestInfo(demoFlags)
 
-  InfLog.Add("AddPlayReqeustInfo:")--tex DEBUG>
-  InfLog.Add("demoFlags:")
-  InfLog.PrintInspect(demoFlags)
-  InfLog.Add("playRequestInfo:")
-  InfLog.PrintInspect(playRequestInfo)--<
+  InfCore.Log("AddPlayReqeustInfo:")--tex DEBUG>
+  InfCore.PrintInspect(demoFlags,{varName="demoFlags"})
+  InfCore.PrintInspect(playRequestInfo,{varName="playRequestInfo"})--<
 
   for functionName,use in pairs(playRequestInfo)do
     local requestStart=true
@@ -860,11 +864,11 @@ function this.ProcessPlayRequest(playRequestInfoDemoBlock)
   if not next(playRequestInfoDemoBlock)then
     return
   end
-  InfLog.Add"ProcessPlayRequest:"--tex DEBUG>
-  InfLog.PrintInspect(playRequestInfoDemoBlock)--<
+  InfCore.Log"ProcessPlayRequest:"--tex DEBUG>
+  InfCore.PrintInspect(playRequestInfoDemoBlock,{varName="playRequestInfoDemoBlock"})--<
   for demoId,startCheckFunctions in pairs(playRequestInfoDemoBlock)do
     local canStartPlay=this.CanStartPlay(demoId,startCheckFunctions)
-    InfLog.Add(demoId.." canStartPlay:"..tostring(canStartPlay))
+    InfCore.Log(demoId.." canStartPlay:"..tostring(canStartPlay))
     if canStartPlay then
       if not IsDemoPaused()then
         if not IsPlayingDemoId(demoId)then
@@ -882,7 +886,7 @@ function this.CanStartPlay(demoId,startCheckFuncions)
   for funcName,funcPasses in pairs(startCheckFuncions)do
     if funcPasses==false then
       local checkPassed=this.PLAY_REQUEST_START_CHECK_FUNC[funcName](demoId)
-      InfLog.Add("CanStartPlay "..demoId.." check "..funcName.." "..tostring(checkPassed))--tex DEBUG
+      InfCore.Log("CanStartPlay "..demoId.." check "..funcName.." "..tostring(checkPassed))--tex DEBUG
       if checkPassed then
         startCheckFuncions[funcName]=true
       else
@@ -947,7 +951,7 @@ function this.CanFinishPlay(demoId,t)
   return canFinishPlay
 end
 function this._Play(demoName,demoId)
-  InfLog.AddFlow("TppDemo._Play "..demoName.." "..demoId)--tex DEBUG
+  InfCore.LogFlow("TppDemo._Play "..demoName.." "..demoId)--tex DEBUG
   mvars.dem_playedList[demoName]=true
   this.ClearReserveInTheBackGround()
   DemoDaemon.Play(demoId)

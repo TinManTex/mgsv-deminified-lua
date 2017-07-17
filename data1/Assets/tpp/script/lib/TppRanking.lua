@@ -249,7 +249,7 @@ end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.OnNeutralize(gameId,sourceId,neutralizeType,neutralizeCause)
+function this.OnNeutralize(gameId,attackerId,neutralizeType,neutralizeCause)
   if neutralizeType==NeutralizeType.HOLDUP then
     PlayRecord.RegistPlayRecord"PLAYER_HOLDUP"
   end

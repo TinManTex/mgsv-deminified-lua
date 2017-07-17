@@ -15,13 +15,14 @@ TppPadOperatorUtility={
     TppPadOperatorUtility.RegisterPlayerMaskSettings{registerName="OpenPresetRadio",masks={exceptSetting=false,buttonNames={"PL_SQUAT","PL_ACTION","PL_RELOAD","PL_PICKUP_WEAPON"}}}
     TppPadOperatorUtility.RegisterPlayerMaskSettings{registerName="CameraOnly",masks={exceptSetting=true,buttonNames={},stickNames={"PL_STICK_R"}}}
   end,
-    SetStickMapping=function(t,a)
+  SetStickMapping=function(t,a)
     local e=Ch.FindCharacters"Player"
     local e=e.array[1]
     local e=e:FindPluginByName"PadOperator"
     e.leftStickMappingRate=t
     e.rightStickMappingRate=a
-    end,SetLeftStickMapping=function(e)
+  end,
+  SetLeftStickMapping=function(e)
     local t=Ch.FindCharacters"Player"
     local t=t.array[1]
     local t=t:FindPluginByName"PadOperator"

@@ -309,21 +309,21 @@ function this.IsRideHelicopter()
   end
   return false
 end
-function this.OnIconFultonShown(E,T,n)
-  local T=GameObject.GetTypeIndex(T)
-  if this.FultonTipsGuideMatchTable[T]then
-    if T~=TppGameObject.GAME_OBJECT_TYPE_FULTONABLE_CONTAINER then
-      this.DispGuide(this.FultonTipsGuideMatchTable[T],this.DISPLAY_OPTION.TIPS)
+function this.OnIconFultonShown(gameId,targetObjectId,isContainer,isNuclear)
+  local typeIndex=GameObject.GetTypeIndex(targetObjectId)
+  if this.FultonTipsGuideMatchTable[typeIndex]then
+    if typeIndex~=TppGameObject.GAME_OBJECT_TYPE_FULTONABLE_CONTAINER then
+      this.DispGuide(this.FultonTipsGuideMatchTable[typeIndex],this.DISPLAY_OPTION.TIPS)
     else
-      if n==1 then
-        this.DispGuide(this.FultonTipsGuideMatchTable[T],this.DISPLAY_OPTION.TIPS)
+      if isContainer==1 then
+        this.DispGuide(this.FultonTipsGuideMatchTable[typeIndex],this.DISPLAY_OPTION.TIPS)
       end
     end
   end
 end
-function this.OnVehicleDrive(n,T)
-  local T=GameObject.SendCommand(T,{id="GetVehicleType"})
-  if this.AttackVehicleTable[T]then
+function this.OnVehicleDrive(n,vehicleId)
+  local vehicleType=GameObject.SendCommand(vehicleId,{id="GetVehicleType"})
+  if this.AttackVehicleTable[vehicleType]then
     this.DispGuide("ATTACK_VEHICLE_SHOOT",this.DISPLAY_OPTION.CONTROL)
     this.DispGuide("ATTACK_VEHICLE_CAMERA",this.DISPLAY_OPTION.CONTROL)
   end
@@ -364,8 +364,8 @@ local UnkFunc1IsSomeEquipId=function(findEquipId)
   end
 end
 --msg output PlayerHoldWeapon arg0: 687, arg1: 1, arg2: 1, arg3: 0, 
-function this.OnPlayerHoldWeapon(equipId,equipType,unk3HasGunLight,unk4IsSheild)
-  if unk4IsSheild==1 then
+function this.OnPlayerHoldWeapon(equipId,equipType,hasGunLight,isSheild)
+  if isSheild==1 then
     this.DispGuide("SHIELD",this.DISPLAY_OPTION.CONTROL)
   end
   if equipType==TppEquip.EQP_TYPE_Sniper then
@@ -374,21 +374,21 @@ function this.OnPlayerHoldWeapon(equipId,equipType,unk3HasGunLight,unk4IsSheild)
   if UnkFunc1IsSomeEquipId(equipId)then
     this.DispGuide("TRANQUILIZER",this.DISPLAY_OPTION.TIPS)
   end
-  if unk3HasGunLight==1 then
+  if hasGunLight==1 then
     this.DispGuide("GUN_LIGHT",this.DISPLAY_OPTION.TIPS)
   end
 end
 function this.OnPlayerUseBoosterScope()
   this.DispGuide("BOOSTER_SCOPE",this.DISPLAY_OPTION.CONTROL)
 end
-function this.OnEquipItem(e,e)
+function this.OnEquipItem(playerId,equpId)
 end
-function this.OnEquipHudClosed(n,weapons,T)
-  if T==TppEquip.EQP_TYPE_Throwing then
+function this.OnEquipHudClosed(unk1,weaponId,equipType)
+  if equipType==TppEquip.EQP_TYPE_Throwing then
     this.DispGuide("THROW_EQUIP",this.DISPLAY_OPTION.TIPS)
-  elseif T==TppEquip.EQP_TYPE_Placed then
-    local T=TppEquip.GetSupportWeaponTypeId(weapons)
-    if T==TppEquip.SWP_TYPE_CaptureCage then
+  elseif equipType==TppEquip.EQP_TYPE_Placed then
+    local supportId=TppEquip.GetSupportWeaponTypeId(weaponId)
+    if supportId==TppEquip.SWP_TYPE_CaptureCage then
       this.DispGuide("ANIMAL_CAGE",this.DISPLAY_OPTION.TIPS)
     end
   else
@@ -398,7 +398,7 @@ function this.OnEquipHudClosed(n,weapons,T)
     local altAmmoId
     local altAmmoInWeapon
     local altDefaultAmmo
-    ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weapons)
+    ammoId,ammoInWeapon,defaultAmmo,altAmmoId,altAmmoInWeapon,altDefaultAmmo=TppEquip.GetAmmoInfo(weaponId)
     if ammoId~=0 and altAmmoId~=0 then
       this.DispGuide("UNDER_BARREL",this.DISPLAY_OPTION.TIPS_CONTROL)
     end
@@ -436,8 +436,8 @@ function this.StartInvestigate(n,T,n)
   end
   this.PlayTutorialRadioOnly("f1000_rtrg4450",{delayTime="long"})
 end
-function this.EndInvestigate(n,T,n)
-  if T==0 then
+function this.EndInvestigate(cpId,unk2,unk3)
+  if unk2==0 then
     return
   end
   this.PlayTutorialRadioOnly("f1000_rtrg4460",{delayTime="long"})
@@ -465,9 +465,9 @@ function this.DispGuide_PhatomCigar(T)
     this.DispGuide(T,this.DISPLAY_OPTION.TIPS)
   end
 end
-function this.DispGuide_Weather(T)
-  if this.WeatherTipsGuideMatchTable[T]then
-    this.DispGuide(this.WeatherTipsGuideMatchTable[T],this.DISPLAY_OPTION.TIPS)
+function this.DispGuide_Weather(weatherType)
+  if this.WeatherTipsGuideMatchTable[weatherType]then
+    this.DispGuide(this.WeatherTipsGuideMatchTable[weatherType],this.DISPLAY_OPTION.TIPS)
   end
 end
 function this.DispGuide_Comufrage()
@@ -512,13 +512,13 @@ function this.SetEnemyHeliMessageWithinRange()
     GameObject.SendCommand(e,{id="SetMessagePlayerIsWithinRange",name="CheckRange400",enabled=true,range=400})
   end
 end
-function this.OnIconSwitchShown(i,E,T,n)
-  local T=TppGimmick.GetGimmickID(E,T,n)
-  if not T then
+function this.OnIconSwitchShown(i,gimickGameId,locatorNameHash,dataSetNameHash)
+  local gimmickId=TppGimmick.GetGimmickID(gimickGameId,locatorNameHash,dataSetNameHash)
+  if not gimmickId then
     return
   end
-  local T=mvars.gim_connectPowerCutAreaTable[T]
-  if T then
+  local powerCutArea=mvars.gim_connectPowerCutAreaTable[gimmickId]
+  if powerCutArea then
     this.DispGuide("ELECTRICITY",this.DISPLAY_OPTION.TIPS)
   end
 end

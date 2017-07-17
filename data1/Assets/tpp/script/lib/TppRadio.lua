@@ -334,7 +334,7 @@ end
 function this.GetCommonRadioDelay(radioName)
   return mvars.rad_commonRadioDelayTable[radioName]
 end
-function this.CheckRadioGroupIsCommonRadio(radioNameStrCode,a)
+function this.CheckRadioGroupIsCommonRadio(radioNameStrCode,commonRadioEnum)
   local commonRadioName=this.GetPlayCommonTargetRadio(TppDefine.COMMON_RADIO.CALL_SUPPROT_BUDDY)
   if not commonRadioName then
     return

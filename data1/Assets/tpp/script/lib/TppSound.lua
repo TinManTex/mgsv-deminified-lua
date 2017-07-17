@@ -1,7 +1,7 @@
 -- TppSound.lua
 local this={}
 local StrCode32=Fox.StrCode32
-local n=Tpp.IsTypeFunc
+local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeTable=Tpp.IsTypeTable
 local IsTypeString=Tpp.IsTypeString
 local IsTypeNumber=Tpp.IsTypeNumber
@@ -17,31 +17,31 @@ this.ResultRankJingle[TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED]="Set_Switch_bgm_
 this.afghCommonEsacapeBgm={bgm_escape={start="Play_bgm_afgh_mission_escape",finish="Stop_bgm_afgh_mission_escape"}}
 this.mafrCommonEsacapeBgm={bgm_escape={start="Play_bgm_mafr_mission_escape",finish="Stop_bgm_mafr_mission_escape"}}
 this.commonHeliStartBgm={bgm_heliStart={start="Play_bgm_mission_start",finish="Stop_bgm_mafr_mission_escape"}}
-function this.SetSceneBGM(a)
+function this.SetSceneBGM(bgmName)
   if not IsTypeTable(mvars.snd_bgmList)then
     return
   end
-  local n=mvars.snd_bgmList[a]
-  if not n then
+  local bgmInfo=mvars.snd_bgmList[bgmName]
+  if not bgmInfo then
     return
   end
   local currentSceneBgmSetting=this.GetCurrentSceneBgmSetting()
   if currentSceneBgmSetting and currentSceneBgmSetting.finish then
     TppMusicManager.PostSceneSwitchEvent(currentSceneBgmSetting.finish)
   end
-  if n.start then
+  if bgmInfo.start then
     svars.snd_bgmSwitchNameHash=0
-    svars.snd_bgmNameHash=StrCode32(a)
+    svars.snd_bgmNameHash=StrCode32(bgmName)
     TppMusicManager.StartSceneMode()
-    TppMusicManager.PlaySceneMusic(n.start)
+    TppMusicManager.PlaySceneMusic(bgmInfo.start)
   end
 end
-function this.SetSceneBGMSwitch(e)
-  if not mvars.snd_bgmSwitchTable[e]then
+function this.SetSceneBGMSwitch(bgmSwitchName)
+  if not mvars.snd_bgmSwitchTable[bgmSwitchName]then
     return
   end
-  svars.snd_bgmSwitchNameHash=StrCode32(e)
-  TppMusicManager.PostSceneSwitchEvent(e)
+  svars.snd_bgmSwitchNameHash=StrCode32(bgmSwitchName)
+  TppMusicManager.PostSceneSwitchEvent(bgmSwitchName)
 end
 function this.StopSceneBGM()
   local currentSceneBgmSetting=this.GetCurrentSceneBgmSetting()
@@ -54,19 +54,19 @@ function this.StopSceneBGM()
   this.HaltSceneBGM()
 end
 function this.RestoreSceneBGM()
-  local n,s=this.GetCurrentSceneBgmSetting()
+  local n,postBgmName=this.GetCurrentSceneBgmSetting()
   if not n then
     return
   end
-  local i=n.start
+  local startBgm=n.start
   if n.restore then
-    s=n.restore
+    postBgmName=n.restore
   end
-  if i then
+  if startBgm then
     TppMusicManager.StartSceneMode()
-    TppMusicManager.PlaySceneMusic(i)
-    if s then
-      TppMusicManager.PostSceneSwitchEvent(s)
+    TppMusicManager.PlaySceneMusic(startBgm)
+    if postBgmName then
+      TppMusicManager.PostSceneSwitchEvent(postBgmName)
     end
   else
     this.HaltSceneBGM()
@@ -148,8 +148,8 @@ function this.OnAllocate(missionTable)
     mvars.snd_bgmList={}
     mvars.snd_bgmList.bgm_heliStart={start="Play_bgm_sideop_start",finish="Stop_bgm_sideop_start"}
   end
-  local a={[30150]=true,[30250]=true}
-  if a[vars.missionCode]then
+  local outerMtbsMissions={[30150]=true,[30250]=true}
+  if outerMtbsMissions[vars.missionCode]then
     mvars.snd_bgmList={}
     mvars.snd_bgmList.bgm_heliStart={start="Play_bgm_mtbs_free_start",finish="Stop_bgm_mtbs_free_start"}
   end
@@ -169,13 +169,13 @@ function this.OnAllocate(missionTable)
     end
     mvars.snd_bgmList.bgm_heliStart=mvars.snd_bgmList.bgm_heliStart or this.commonHeliStartBgm.bgm_heliStart
     mvars.snd_bgmSwitchTable={}
-    for n,e in pairs(mvars.snd_bgmList)do
-      local e=e.switch
-      if IsTypeTable(e)then
-        for n,e in ipairs(e)do
-          local n=StrCode32(e)
-          mvars.snd_bgmSwitchTable[n]=e
-          mvars.snd_bgmSwitchTable[e]=n
+    for bgmType,bgmInfo in pairs(mvars.snd_bgmList)do
+      local switchInfo=bgmInfo.switch
+      if IsTypeTable(switchInfo)then
+        for i,bgmName in ipairs(switchInfo)do
+          local bgmNameStr32=StrCode32(bgmName)
+          mvars.snd_bgmSwitchTable[bgmNameStr32]=bgmName
+          mvars.snd_bgmSwitchTable[bgmName]=bgmNameStr32
         end
       end
     end
@@ -183,6 +183,7 @@ function this.OnAllocate(missionTable)
   if IsTypeString(missionTable.sound.missionStartTelopJingleName)then
     mvars.snd_missionStartTelopJingleName=missionTable.sound.missionStartTelopJingleName
   end
+  --NMC: doesn't seem to be used?
   if IsTypeTable(missionTable.sound.noRestorePhaseBGMList)then
     mvars.snd_noRestorePhaseBGM={}
     for n,e in ipairs(missionTable.sound.noRestorePhaseBGMList)do
@@ -225,36 +226,36 @@ end
 function this.GetCurrentSceneBgmSetting()
   local snd_bgmNameHash=svars.snd_bgmNameHash
   local snd_bgmSwitchNameHash=svars.snd_bgmSwitchNameHash
-  local e
-  local i,n
+  local _bgmType
+  local _bgmInfo,_bgmSwitchName
   if snd_bgmNameHash>0 then
-    for n,a in pairs(mvars.snd_bgmList)do
-      if snd_bgmNameHash==StrCode32(n)then
-        e=n
-        i=a
+    for bgmType,bgmInfo in pairs(mvars.snd_bgmList)do
+      if snd_bgmNameHash==StrCode32(bgmType)then
+        _bgmType=bgmType
+        _bgmInfo=bgmInfo
         break
       end
     end
-    if not e then
+    if not _bgmType then
       return
     end
   end
-  if e and snd_bgmSwitchNameHash>0 then
-    local switch=mvars.snd_bgmList[e].switch
+  if _bgmType and snd_bgmSwitchNameHash>0 then
+    local switch=mvars.snd_bgmList[_bgmType].switch
     if switch then
-      for i,e in pairs(switch)do
-        if snd_bgmSwitchNameHash==StrCode32(e)then
-          n=e
+      for i,bgmSwitchName in pairs(switch)do
+        if snd_bgmSwitchNameHash==StrCode32(bgmSwitchName)then
+          _bgmSwitchName=bgmSwitchName
           break
         end
       end
-      if not n then
+      if not _bgmSwitchName then
       end
     else
       return
     end
   end
-  return i,n
+  return _bgmInfo,_bgmSwitchName
 end
 function this.SetMuteOnLoading()
   TppSoundDaemon.SetMute"Loading"

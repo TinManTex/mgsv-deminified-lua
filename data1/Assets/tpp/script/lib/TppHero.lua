@@ -1,6 +1,6 @@
 -- DOBUILD: 1
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local Code32Table=Tpp.Code32Table
 local SendCommand=GameObject.SendCommand
 local band=bit.band
@@ -201,14 +201,14 @@ function this.GetFobServerParameter(_name)
   end
   return parameter,name
 end
-function this.SetHeroicPoint(n)
-  local e,n=this.GetFobServerParameter(n)
-  if e<0 then
-    TppMotherBaseManagement.SubHeroicPoint{heroicPoint=-e}
-  elseif e>0 then
-    TppMotherBaseManagement.AddHeroicPoint{heroicPoint=e}
+function this.SetHeroicPoint(points)
+  local _points,n=this.GetFobServerParameter(points)
+  if _points<0 then
+    TppMotherBaseManagement.SubHeroicPoint{heroicPoint=-_points}
+  elseif _points>0 then
+    TppMotherBaseManagement.AddHeroicPoint{heroicPoint=_points}
   end
-  return e
+  return _points
 end
 function this.SetOgrePoint(ogrePoint)
   local amount,n=this.GetFobServerParameter(ogrePoint)
@@ -239,6 +239,29 @@ function this.SetAndAnnounceHeroicOgrePoint(pointTable,downLangId,upLangId)
   if TppMission.IsFOBMission(vars.missionCode)and(vars.fobSneakMode==FobMode.MODE_SHAM)then
     return
   end
+  --tex KLUDGE, rather than checking multiple calls to this, TODO better > 
+  --ASSUMPTION all calls to SetAndAnnounceHeroicOgrePoint with mbstaff_died wrapped in isDD check >
+  local Ivars=Ivars    --tex TODO: better
+  if downLangId=="mbstaff_died" then
+    if Ivars.customSoldierTypeFREE:Is()>0 and Ivars.customSoldierTypeFREE:MissionCheck() then
+      return
+    end
+    if Ivars.customSoldierTypeMB_ALL:Is()>0 and Ivars.customSoldierTypeMB_ALL:MissionCheck() then
+      if Ivars.mbHostileSoldiers:Is(0) then
+        return
+      end
+    end
+    if Ivars.customSoldierFemaleTypeMB_ALL:Is()>0 and Ivars.customSoldierFemaleTypeMB_ALL:MissionCheck() then
+      if Ivars.mbHostileSoldiers:Is(0) then
+        return
+      end
+    end
+    if Ivars.enableWildCardFreeRoam:Is()>0 and Ivars.enableWildCardFreeRoam:MissionCheck() then
+      return
+    end
+  end
+  --<
+
   this.SetHeroicPoint(pointTable.heroicPoint)
   this.AnnounceHeroicPoint(pointTable,downLangId,upLangId)
   this.SetOgrePoint(pointTable.ogrePoint)
@@ -249,10 +272,10 @@ end
 function this.MissionAbort()
   this.SetHeroicPoint(this.MISSION_ABORT.heroicPoint)
 end
-function this.MissionClear(n)
-  local n=this.MISSION_CLEAR[TppDefine.MISSION_CLEAR_RANK_LIST[n]].heroicPoint
-  this.SetHeroicPoint(n)
-  svars.her_missionHeroPoint=n
+function this.MissionClear(rank)
+  local clearPoints=this.MISSION_CLEAR[TppDefine.MISSION_CLEAR_RANK_LIST[rank]].heroicPoint
+  this.SetHeroicPoint(clearPoints)
+  svars.her_missionHeroPoint=clearPoints
 end
 function this.SetFirstMissionClearHeroPoint()
   if TppStory.IsMissionCleard(vars.missionCode)==false then
@@ -263,30 +286,30 @@ function this.AnnounceFirstMissionClearHeroPoint()
   if mvars.her_reserveFirstMissionClear then
   end
 end
-function this.AnnounceVehicleBroken(o)
-  local n=SendCommand(o,{id="GetVehicleType"})
-  local n=this.VEHICLE_BROKEN[n]
-  if n then
+function this.AnnounceVehicleBroken(vehicleId)
+  local vehicleType=SendCommand(vehicleId,{id="GetVehicleType"})
+  local hAndOPoints=this.VEHICLE_BROKEN[vehicleType]
+  if hAndOPoints then
     PlayRecord.RegistPlayRecord"VEHICLE_DESTROY"
     Tpp.IncrementPlayData"totalBreakVehicleCount"
-    this.SetAndAnnounceHeroicOgrePoint(n)
+    this.SetAndAnnounceHeroicOgrePoint(hAndOPoints)
   end
 end
-function this.AnnounceBreakGimmick(n,i,i,o)
-  if not Tpp.IsLocalPlayer(o)then
+function this.AnnounceBreakGimmick(gimmickId,locatorS32,unk2,destroyerId)
+  if not Tpp.IsLocalPlayer(destroyerId)then
     return
   end
-  local n=GetTypeIndex(n)
-  local n=this.BREAK_GIMMICK[n]
-  if n then
+  local gimmickType=GetTypeIndex(gimmickId)
+  local hAndOPoints=this.BREAK_GIMMICK[gimmickType]
+  if hAndOPoints then
     Tpp.IncrementPlayData"totalBreakPlacedGimmickCount"
-    this.SetAndAnnounceHeroicOgrePoint(n)
+    this.SetAndAnnounceHeroicOgrePoint(hAndOPoints)
   end
 end
-function this.AnnounceBreakGimmickByGimmickType(n)
-  local n=this.BREAK_GIMMICK_BY_TYPE[n]
-  if n then
-    this.SetAndAnnounceHeroicOgrePoint(n)
+function this.AnnounceBreakGimmickByGimmickType(gimmickType)
+  local hAndOPoints=this.BREAK_GIMMICK_BY_TYPE[gimmickType]
+  if hAndOPoints then
+    this.SetAndAnnounceHeroicOgrePoint(hAndOPoints)
   end
 end
 function this.OnHelicopterLostControl(gameId,attackerId)
@@ -305,41 +328,41 @@ function this.OnHelicopterLostControl(gameId,attackerId)
     TppUI.UpdateOnlineChallengeTask{detectType=27,diff=1}--RETAILPATCH 1090
   end
 end
-function this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(i,o)
-  local n
-  if o then
-    n="outpost_neutralize"
+function this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(hAndOPoints,isBase)
+  local upLangId
+  if isBase then
+    upLangId="outpost_neutralize"
   else
-    n="guradpost_neutralize"
+    upLangId="guradpost_neutralize"
   end
-  this.SetAndAnnounceHeroicOgrePoint(i,nil,n)
+  this.SetAndAnnounceHeroicOgrePoint(hAndOPoints,nil,upLangId)
 end
 function this.SetAndAnnounceHeroicOgrePointForQuestClear(rank)
-  local pointTable=this.QUEST_CLEAR[rank]
-  if pointTable then
-    this.SetAndAnnounceHeroicOgrePoint(pointTable)
+  local hAndOPoints=this.QUEST_CLEAR[rank]
+  if hAndOPoints then
+    this.SetAndAnnounceHeroicOgrePoint(hAndOPoints)
   end
 end
-function this.HorseRided(n)
-  if not Tpp.IsLocalPlayer(n)then
+function this.HorseRided(playerIndex)
+  if not Tpp.IsLocalPlayer(playerIndex)then
     return
   end
   this.SetAndAnnounceHeroicOgrePoint(this.HORSE_RIDED)
 end
-function this.OnBreakPlaced(o,n,t,i)
+function this.OnBreakPlaced(playerIndex,equipId,index,isPlayerPlaced)
   if vars.missionCode==50050 then
     return
   end
-  if not Tpp.IsLocalPlayer(o)then
+  if not Tpp.IsLocalPlayer(playerIndex)then
     return
   end
-  if i==1 then
+  if isPlayerPlaced==1 then
     return
   end
-  if TppPlayer.IsDecoy(n)then
+  if TppPlayer.IsDecoy(equipId)then
     this.SetAndAnnounceHeroicOgrePoint(this.BREAK_DECOY,nil,"disposal_decoy")
   end
-  if TppPlayer.IsMine(n)then
+  if TppPlayer.IsMine(equipId)then
     Tpp.IncrementPlayData"totalMineRemoveCount"
     this.SetAndAnnounceHeroicOgrePoint(this.BREAK_MINE,nil,"disposal_mine")
   end
@@ -379,11 +402,11 @@ end
 function this.Messages()
   return Tpp.StrCode32Table{
     GameObject={
-      {msg="Holdup",func=function(o)
-        if o then
-          if not SendCommand(o,{id="IsDoneHoldup"})then
+      {msg="Holdup",func=function(gameId)
+        if gameId then
+          if not SendCommand(gameId,{id="IsDoneHoldup"})then
             this.SetAndAnnounceHeroicOgrePoint(this.ENEMY_HOLD_UP)
-            SendCommand(o,{id="SetDoneHoldup"})
+            SendCommand(gameId,{id="SetDoneHoldup"})
           end
         end
       end},
@@ -520,15 +543,15 @@ function this.Messages()
           this.OnHelicopterLostControl(gameId,attackerId)
         end
       end},
-      {msg="CommandPostAnnihilated",func=function(cpId,o,i)
-        local o=false
+      {msg="CommandPostAnnihilated",func=function(cpId,unk1,unk2)
+        local isDominationTarget=false
         if mvars.ene_cpList then
           local cpName=mvars.ene_cpList[cpId]
-          o=TppTrophy.DOMINATION_TARGET_CP_NAME_LIST[cpName]
+          isDominationTarget=TppTrophy.DOMINATION_TARGET_CP_NAME_LIST[cpName]
         end
-        if i==0 then
+        if unk2==0 then
           if TppEnemy.IsBaseCp(cpId)then
-            if o then
+            if isDominationTarget then
               PlayRecord.RegistPlayRecord"BASE_SUPPRESSION"
               this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(this.ON_ANNIHILATE_BASE,true)
               TppTrophy.Unlock(18)
@@ -538,7 +561,7 @@ function this.Messages()
             end
             TppEmblem.AcquireOnCommandPostAnnihilated(cpId)
           elseif TppEnemy.IsOuterBaseCp(cpId)then
-            if o then
+            if isDominationTarget then
               this.SetAndAnnounceHeroicOgrePointForAnnihilateCp(this.ON_ANNIHILATE_OUTER_BASE,false)
               TppChallengeTask.RequestUpdate"ENEMY_BASE"--RETAILPATCH 1070
               Tpp.IncrementPlayData"totalAnnihilateOutPostCount"
@@ -552,10 +575,10 @@ function this.Messages()
           local locationName=TppLocation.GetLocationName()
           if locationName=="afgh"or locationName=="mafr"then
             local cpName=mvars.ene_cpList[cpId]
-            local i=TppCommandPost2.SetCpDominated{cpName=cpName,type=locationName}
+            local unk3=TppCommandPost2.SetCpDominated{cpName=cpName,type=locationName}
             local dominatedCpCount=TppCommandPost2.GetDominatedCpCount{type=locationName}
             local targetDominatedCpCount=TppTrophy.DOMINATION_TARGET_CP_COUNT[locationName]
-            if i then
+            if unk3 then
             end
             if dominatedCpCount==targetDominatedCpCount then
               local trophyIds={afgh=19,mafr=20}

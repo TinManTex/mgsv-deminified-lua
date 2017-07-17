@@ -1,13 +1,15 @@
 -- DOBUILD: 1
 -- TppDefine.lua
 -- tex modfying some values via other modules
-InfLog.Add"Load TppDefine.lua"--tex --DEBUG
+InfCore.Log"Load TppDefine.lua"--tex --DEBUG
 local this={}
 
-local StrCode32=Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local bnot=bit.bnot
 local band,bor,bxor=bit.band,bit.bor,bit.bxor
 
+--NMC GOTCHA TppDefine.Enum indexed from 0, Tpp.Enum indexed from one.
+--GOTCHA pulls via pairs, so could use a non array table TODO review in light of this
 function this.Enum(enumNames)
   if type(enumNames)~="table"then
     return
@@ -190,6 +192,7 @@ this.LOCATION_ID={
   SAND_AFGH=91,SAND_MAFR=92,SAND_MTBS=95,
   sand_afgh=91,sand_mafr=92,sand_mtbs=95
 }
+--DEBUGNOW see what requires this, fallback to some default instead of nil?
 this.LOCATION_CHUNK_INDEX_TABLE={
   [this.LOCATION_ID.AFGH]=Chunk.INDEX_AFGH,
   [this.LOCATION_ID.MAFR]=Chunk.INDEX_MAFR,
@@ -292,6 +295,22 @@ this.NO_HELICOPTER_MISSION_START_POSITION={
   [10240]={-162.75,1.092,-2097.899},
   [10280]={-39.127,106.175,-1719.5}
 }
+--tex shifted from loadPositionFuncs[TppDefine.MISSION_LOAD_TYPE.MISSION_FINALIZE] >
+this.NO_BOX_MISSION_START_POSITION={
+  [10020]={1449.3460693359,339.18698120117,1467.4300537109,-104},
+  [10050]={-1820.7060546875,349.78659057617,-146.44400024414,139},
+  [10070]={-792.00512695313,537.3740234375,-1381.4598388672,136},
+  [10080]={-439.28802490234,-20.472593307495,1336.2784423828,-151},
+  [10140]={499.91635131836,13.07358455658,1135.1315917969,79},
+  [10150]={-1732.0286865234,543.94067382813,-2225.7587890625,162},
+  [10260]={-1260.0454101563,298.75305175781,1325.6383056641,51}
+}
+this.NO_BOX_MISSION_START_POSITION[11050]=this.NO_BOX_MISSION_START_POSITION[10050]
+this.NO_BOX_MISSION_START_POSITION[11080]=this.NO_BOX_MISSION_START_POSITION[10080]
+this.NO_BOX_MISSION_START_POSITION[11140]=this.NO_BOX_MISSION_START_POSITION[10140]
+this.NO_BOX_MISSION_START_POSITION[10151]=this.NO_BOX_MISSION_START_POSITION[10150]
+this.NO_BOX_MISSION_START_POSITION[11151]=this.NO_BOX_MISSION_START_POSITION[10150]
+--<
 this.EMERGENCY_MISSION_LIST={10115,50050}
 this.EMERGENCY_MISSION_ENUM=this.Enum(this.EMERGENCY_MISSION_LIST)
 this.LOCATION_HAVE_MISSION_LIST={
@@ -466,7 +485,10 @@ this.SOLIDER2_COMMON_PACK={
   s10151_ending="/Assets/tpp/pack/mission2/story/s10151/s10151_ending_npc.fpk"
 }
 for name,packPath in pairs(this.SOLIDER2_COMMON_PACK)do
-  this.SOLIDER2_COMMON_PACK[StrCode32(name)]=packPath
+  --RETAILBUG since it's working-in-place it eventually hits the strcode keys it added earlier, no actual probem, but added fix to stop my intercepted StrCode32 function from complaining
+  if type(name)~="number" then--tex dont work on the strcoded keys that have been added
+    this.SOLIDER2_COMMON_PACK[StrCode32(name)]=packPath
+  end
 end
 this.DEFAULT_SOLIDER2_COMMON_PACKAGE=StrCode32"default"
 this.SOLIDER2_COMMON_PACK_PREREQUISITES={s10150_special={"mission_block"},s10151_special={"mission_block"},s10151_ending={"mission_block"}}
@@ -1464,4 +1486,5 @@ this.DEFAULT_DROP_ROUTE={
 this.DIRECTION_ZOOM_IN_CAMERA_ZOOM_INTERP_TIME=1
 this.DIRECTION_ZOOM_IN_CAMERA_ROTATION_INTERP_TIME=1
 this.ENEMY_HELI_COLORING_TYPE={DEFAULT=0,BLACK=1,RED=2}
+InfCore.LogFlow"TppDefine.lua done"
 return this

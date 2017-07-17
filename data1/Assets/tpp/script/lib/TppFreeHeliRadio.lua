@@ -32,7 +32,7 @@ end
 function this.Messages()
   return StrCode32Table{
     Player={
-      {msg="CalcFultonPercent",func=function(unk1,gameId,unk2,unk3,staffOrResourceId)
+      {msg="CalcFultonPercent",func=function(unk1,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId)
         if Tpp.IsSoldier(gameId)then
           local radioName="f2000_rtrg0040"
           if(not TppRadio.IsPlayed(radioName)and TppRadio.IsPlayed"f2000_oprg0210")and(not TppStory.IsMissionCleard(10040))then
@@ -86,10 +86,10 @@ function this.Messages()
     MotherBaseManagement={{msg="UpdatedPandemic",func=this.UpdatePandemicEvent}},
     Terminal={{msg="MbDvcActCloseTop",func=function()end}},
     Weather={
-      {msg="Clock",sender="ChangeDayToNight",func=function(n,n)
+      {msg="Clock",sender="ChangeDayToNight",func=function(sender,time)
         this.RegistNvgOptionRadio()
       end},
-      {msg="Clock",sender="ChangeNightToDay",func=function(n,n)
+      {msg="Clock",sender="ChangeNightToDay",func=function(sender,time)
         this.UnregistNvgOptionRadio()
       end},
       {msg="ChangeWeathre",func=function(i)--RETAILBUG: typo

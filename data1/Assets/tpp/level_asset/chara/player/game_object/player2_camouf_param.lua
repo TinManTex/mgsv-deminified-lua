@@ -1,7 +1,7 @@
---player2_comouf_param.lua
+--player2_camouf_param.lua
 --RETAILPATCH 1090 various additions
 local this={}
---tex from CantStoptheBipBop
+--tex from CantStoptheBipBop:
 --https://forums.nexusmods.com/index.php?/topic/4691080-mgsvtpp-plethora-of-new-camos-found/page-2
 --For the camo stuff I can just give you a quick rundown of it, along with my notes. 
 --The gist is each string of numbers between curly braces sets what surfaces and objects contribute to your camo index when wearing a uniform. 
@@ -30,7 +30,8 @@ local this={}
 --
 --Notes for what parameters are named and named outfits in the camouflage lua file
 --https://mega.nz/#F!KhJRkLRb!Vw_BNsAUrWaAwXg0hOyagw
----
+
+--actual assigment of material to index is in chunk2.dat/Assets/tpp/pack/location/afgh/pack_common/afgh_common.fpkd/Assets/tpp/level/location/afgh/block_common/afgh_common_terrainMaterial.fox / mafr etc, materialIndex key
 --
 --g = greenery
 --s = sand/soil
@@ -44,89 +45,197 @@ local this={}
 ----surface cat|fatigue name|PlayerCamoType.
 --from RecoilMaterialTable.lua for symbol order
 --82 material types
---    "MTR_IRON_A",
---    "MTR_IRON_B",
---    "MTR_IRON_C",
---    "MTR_IRON_D",
---    "MTR_IRON_E",
---    "MTR_IRON_F",
---    "MTR_IRON_G",
---    "MTR_IRON_M",
---    "MTR_IRON_N",
---    "MTR_IRON_W",
---    "MTR_PIPE_A",
---    "MTR_PIPE_B",
---    "MTR_PIPE_S",
---    "MTR_TIN_A",
---    "MTR_FENC_A",
---    "MTR_FENC_B",
---    "MTR_FENC_F",
---    "MTR_CONC_A",
---    "MTR_CONC_B",
---    "MTR_BRIC_A",
---    "MTR_PLAS_A",
---    "MTR_PLAS_B",
---    "MTR_PLAS_W",
---    "MTR_PAPE_A",
---    "MTR_PAPE_B",
---    "MTR_PAPE_C",
---    "MTR_PAPE_D",
---    "MTR_RUBB_A",
---    "MTR_RUBB_B",
---    "MTR_CLOT_A",
---    "MTR_CLOT_B",
---    "MTR_CLOT_C",
---    "MTR_CLOT_D",
---    "MTR_CLOT_E",
---    "MTR_GLAS_A",
---    "MTR_GLAS_B",
---    "MTR_GLAS_C",
---    "MTR_VINL_A",
---    "MTR_VINL_W",
---    "MTR_TILE_A",
---    "MTR_TLRF_A",
---    "MTR_ALRM_A",
---    "MTR_COPS_A",
---    "MTR_COPS_B",
---    "MTR_BRIR_A",
---    "MTR_BLOD_A",
---    "MTR_SOIL_A",
---    "MTR_SOIL_B",
---    "MTR_SOIL_C",
---    "MTR_SOIL_D",
---    "MTR_SOIL_E",
---    "MTR_SOIL_F",
---    "MTR_SOIL_G",
---    "MTR_SOIL_H",
---    "MTR_SOIL_R",
---    "MTR_SOIL_W",
---    "MTR_GRAV_A",
---    "MTR_SAND_A",
---    "MTR_SAND_B",
---    "MTR_SAND_C",
---    "MTR_LEAF",
---    "MTR_RLEF",
---    "MTR_RLEF_B",
---    "MTR_WOOD_A",
---    "MTR_WOOD_B",
---    "MTR_WOOD_C",
---    "MTR_WOOD_D",
---    "MTR_WOOD_G",
---    "MTR_WOOD_M",
---    "MTR_WOOD_W",
---    "MTR_FWOD_A",
---    "MTR_PLNT_A",
---    "MTR_ROCK_A",
---    "MTR_ROCK_B",
---    "MTR_ROCK_P",
---    "MTR_MOSS_A",
---    "MTR_TURF_A",
---    "MTR_WATE_A",
---    "MTR_WATE_B",
---    "MTR_WATE_C",
---    "MTR_AIR_A",
---    "MTR_NONE_A",
---
+--tex>
+this.materialTypeNames={
+    "MTR_IRON_A",
+    "MTR_IRON_B",
+    "MTR_IRON_C",
+    "MTR_IRON_D",
+    "MTR_IRON_E",
+    "MTR_IRON_F",
+    "MTR_IRON_G",
+    "MTR_IRON_M",
+    "MTR_IRON_N",
+    "MTR_IRON_W",
+    "MTR_PIPE_A",
+    "MTR_PIPE_B",
+    "MTR_PIPE_S",
+    "MTR_TIN_A",
+    "MTR_FENC_A",
+    "MTR_FENC_B",
+    "MTR_FENC_F",
+    "MTR_CONC_A",
+    "MTR_CONC_B",
+    "MTR_BRIC_A",
+    "MTR_PLAS_A",
+    "MTR_PLAS_B",
+    "MTR_PLAS_W",
+    "MTR_PAPE_A",
+    "MTR_PAPE_B",
+    "MTR_PAPE_C",
+    "MTR_PAPE_D",
+    "MTR_RUBB_A",
+    "MTR_RUBB_B",
+    "MTR_CLOT_A",
+    "MTR_CLOT_B",
+    "MTR_CLOT_C",
+    "MTR_CLOT_D",
+    "MTR_CLOT_E",
+    "MTR_GLAS_A",
+    "MTR_GLAS_B",
+    "MTR_GLAS_C",
+    "MTR_VINL_A",
+    "MTR_VINL_W",
+    "MTR_TILE_A",
+    "MTR_TLRF_A",
+    "MTR_ALRM_A",
+    "MTR_COPS_A",
+    "MTR_COPS_B",
+    "MTR_BRIR_A",
+    "MTR_BLOD_A",
+    "MTR_SOIL_A",
+    "MTR_SOIL_B",
+    "MTR_SOIL_C",
+    "MTR_SOIL_D",
+    "MTR_SOIL_E",
+    "MTR_SOIL_F",
+    "MTR_SOIL_G",
+    "MTR_SOIL_H",
+    "MTR_SOIL_R",
+    "MTR_SOIL_W",
+    "MTR_GRAV_A",
+    "MTR_SAND_A",
+    "MTR_SAND_B",
+    "MTR_SAND_C",
+    "MTR_LEAF",
+    "MTR_RLEF",
+    "MTR_RLEF_B",
+    "MTR_WOOD_A",
+    "MTR_WOOD_B",
+    "MTR_WOOD_C",
+    "MTR_WOOD_D",
+    "MTR_WOOD_G",
+    "MTR_WOOD_M",
+    "MTR_WOOD_W",
+    "MTR_FWOD_A",
+    "MTR_PLNT_A",
+    "MTR_ROCK_A",
+    "MTR_ROCK_B",
+    "MTR_ROCK_P",
+    "MTR_MOSS_A",
+    "MTR_TURF_A",
+    "MTR_WATE_A",
+    "MTR_WATE_B",
+    "MTR_WATE_C",
+    "MTR_AIR_A",
+    "MTR_NONE_A",
+}
+this.materialTypes=Tpp.Enum(this.materialTypeNames)
+
+--tex could just use InfFova.playerCamoTypes, but having here so it doesnt have that dependancy
+this.playerCamoTypes={
+  "OLIVEDRAB",--0
+  "SPLITTER",--1
+  "SQUARE",--2
+  "TIGERSTRIPE",--3
+  "GOLDTIGER",--4
+  "FOXTROT",--5
+  "WOODLAND",--6
+  "WETWORK",--7
+  "ARBANGRAY",--8
+  "ARBANBLUE",--9
+  "SANDSTORM",--10
+  "REALTREE",--11 --does not set
+  "INVISIBLE",--12 --does not set
+  "BLACK",--13
+  "SNEAKING_SUIT_GZ",--14 --avatar
+  "SNEAKING_SUIT_TPP",--15
+  "BATTLEDRESS",--16
+  "PARASITE",--17
+  "NAKED",--18 --shows as last set (SNAKE)
+  "LEATHER",--19 --avatar
+  "SOLIDSNAKE",--20
+  "NINJA",--21
+  "RAIDEN",--22
+  "HOSPITAL",--23
+  "GOLD",--24--avatar
+  "SILVER",--25 --avatar
+  "PANTHER",--26 --shows as last set (SNAKE)
+  "AVATAR_EDIT_MAN",--27 --OFF--just part of upper body that fits the zoomed cam, lel
+  "MGS3",--28
+  "MGS3_NAKED",--29
+  "MGS3_SNEAKING",--30
+  "MGS3_TUXEDO",--31 --not DD_FEMALE
+  "EVA_CLOSE",--32 dd_fem, also works on avatar/snake but they dont have right head lol
+  "EVA_OPEN",--33
+  "BOSS_CLOSE",--34
+  "BOSS_OPEN",--35
+
+  "C23",--36,WOODLAND FLECK
+  "C24",--37,AMBUSH
+  "C27",--38,SOLUM
+  "C29",--39,DEAD LEAF
+  "C30",--40,LICHEN
+  "C35",--41,STONE
+  "C38",--42,PARASITE MIST
+  "C39",--43,OLD ROSE
+  "C42",--44,BRICK RED
+  "C46",--45,IRON BLUE
+  "C49",--46,STEEL GREY
+  "C52",--47,TSELINOYARSK
+  "C16",--48,NIGHT SPLITTER
+  "C17",--49,RAIN
+  "C18",--50,GREEN TIGER STRIPE
+  "C19",--51,BIRCH LEAF
+  "C20",--52,DESERT AMBUSH
+  "C22",--53,DARK LEAF FLECK
+  "C25",--54,NIGHT BUSH
+  "C26",--55,GRASS
+  "C28",--56,RIPPLE
+  "C31",--57,CITRULLUS
+  "C32",--58,DIGITAL BUSH
+  "C33",--59,ZEBRA
+  "C36",--60,DESERT SAND
+  "C37",--61,STEEL KHAKI
+  "C40",--62,DARK RUBBER
+  "C41",--63,GRAY
+  "C43",--64,CAMOFLAGE YELLOW
+  "C44",--65,CAMOFLAGE GREEN
+  "C45",--66,IRON GREEN
+  "C47",--67,LIGHT RUBBER
+  "C48",--68,RED RUST
+  "C50",--69,STEEL GREEN
+  "C51",--70,STEEL ORANGE
+  "C53",--71,MUD
+  "C54",--72,STEEL BLUE
+  "C55",--73,DARK RUST
+  "C56",--74,CITRULLUS TWO-TONE
+  "C57",--75,GOLD TIGER STRIPE TWO-TONE
+  "C58",--76,BIRCH LEAF TWO-TONE
+  "C59",--77,STONE TWO-TONE
+  "C60",--78,KHAKI URBAN TWO-TONE
+
+  "SWIMWEAR_C00",--79,OLIVEDRAB
+  "SWIMWEAR_C01",--80,TIGERSTRIPE
+  "SWIMWEAR_C02",--81,GOLDTIGER
+  "SWIMWEAR_C03",--82,FOXTROT
+  "SWIMWEAR_C05",--83,WETWORK
+  "SWIMWEAR_C06",--84,SPLITTER
+  "SWIMWEAR_C38",--85,PARASITE MIST
+  "SWIMWEAR_C39",--86,OLD ROSE
+  "SWIMWEAR_C44",--87,CAMOFLAGE GREEN
+  "SWIMWEAR_C46",--88,IRON BLUE
+  "SWIMWEAR_C48",--89,RED RUST
+  "SWIMWEAR_C53",--90,MUD
+}
+this.camoTypes=Tpp.Enum(this.playerCamoTypes)
+
+--tex example usage
+--local camoType=this.camoTypes.SWIMWEAR_C00
+--local materialType=this.materialTypes.MTR_WOOD_A
+--local camoMaterialValue=this.cammoTable[camoType][materialType]
+--<
+
 --https://forums.nexusmods.com/index.php?/topic/4789390-any-way-to-check-player-ground-collisions-and-illumination/
 --As in, if you're standing on a soil texture that falls under "MTR_SOIL_B", then you'd get a camo bonus if you're wearing desert fox or a sand/greenery fatigue. 
 --afgh_common_terrainMaterial.fox2 seems to be the file that sets what player2_camouf_param.lua variable each texture/model falls under, 
@@ -229,6 +338,6 @@ this.camoTable={
 }
 
 Player.InitCamoufTable(this.camoTable)
-this.camoTable=nil--tex clear if not runtime analysis
+--this.camoTable=nil--tex clear if not runtime analysis
 
 return this

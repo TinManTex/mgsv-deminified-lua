@@ -1,12 +1,13 @@
+--TppPlayer2CallbackScript.lua
 TppPlayer2CallbackScript={
-  StartCameraAnimation=function(e,t,r,n,n,n,n,n,a,n,n)
-    TppPlayer2CallbackScript._StartCameraAnimation(e,t,a,true,false,r,false,true)
+  StartCameraAnimation=function(e,t,r,n,n,n,n,n,fileSet,n,n)
+    TppPlayer2CallbackScript._StartCameraAnimation(e,t,fileSet,true,false,r,false,true)
   end,
-  StartCameraAnimationNoRecover=function(e,t,a,n,n,n,n,n,r,n,n)
-    TppPlayer2CallbackScript._StartCameraAnimation(e,t,r,false,false,a,true)
+  StartCameraAnimationNoRecover=function(e,t,a,n,n,n,n,n,fileSet,n,n)
+    TppPlayer2CallbackScript._StartCameraAnimation(e,t,fileSet,false,false,a,true)
   end,
-  StartCameraAnimationNoRecoverNoCollsion=function(t,r,e,n,n,n,n,n,a,n,n)
-    TppPlayer2CallbackScript._StartCameraAnimation(t,r,a,false,true,e)
+  StartCameraAnimationNoRecoverNoCollsion=function(t,r,e,n,n,n,n,n,fileSet,n,n)
+    TppPlayer2CallbackScript._StartCameraAnimation(t,r,fileSet,false,true,e)
   end,
   StartCameraAnimationForSnatchWeapon=function(e,e,e,e,e,e,e,e,e,e,e)
   end,
@@ -15,8 +16,8 @@ TppPlayer2CallbackScript={
   end,
   StartCureDemoEffectStart=function(e,e,e,e,e,e,e,e,e,e,e)
   end,
-  SetCameraNoise=function(t,t,t,t,t,e,a,t,t,t,t)
-    TppPlayer2CallbackScript._SetCameraNoise(e,e,a)
+  SetCameraNoise=function(t,t,t,t,t,level,time,t,t,t,t)
+    TppPlayer2CallbackScript._SetCameraNoise(level,level,time)
   end,
   SetCameraNoiseLadder=function(e,e,e,e,e,e,e,e,e,e,e)
     TppPlayer2CallbackScript._SetCameraNoise(.2,.2,.1)
@@ -43,28 +44,28 @@ TppPlayer2CallbackScript={
     TppPlayer2CallbackScript._SetCameraNoise(.3,.3,.1)
   end,
   SetCameraNoiseStepDown=function(e,e,e,e,e,t,e,e,e,e,e)
-    local a=0
-    local e=0
+    local levelX=0
+    local levelY=0
     if(t>0)then
-      a=t
-      e=t*.25
+      levelX=t
+      levelY=t*.25
     else
-      a=.225
-      e=.057
+      levelX=.225
+      levelY=.057
     end
-    TppPlayer2CallbackScript._SetCameraNoise(a,e,.11)
+    TppPlayer2CallbackScript._SetCameraNoise(levelX,levelY,.11)
   end,
   SetCameraNoiseStepJumpEnd=function(a,a,a,a,a,e,a,a,a,a,a)
-    local a=0
-    local t=0
+    local levelX=0
+    local levelY=0
     if(e>0)then
-      a=e
-      t=e*.25
+      levelX=e
+      levelY=e*.25
     else
-      a=.225
-      t=.057
+      levelX=.225
+      levelY=.057
     end
-    TppPlayer2CallbackScript._SetCameraNoise(a,t,.2)
+    TppPlayer2CallbackScript._SetCameraNoise(levelX,levelY,.2)
   end,
   SetCameraNoiseStepJumpToElude=function(e,e,e,e,e,e,e,e,e,e,e)
     TppPlayer2CallbackScript._SetCameraNoise(.4,.4,.4)
@@ -76,11 +77,11 @@ TppPlayer2CallbackScript={
     TppPlayer2CallbackScript._SetCameraNoise(.5,.5,.4)
   end,
   SetCameraNoiseEndCarry=function(e,e,e,e,e,e,e,e,e,e,e)
-    local r=.25
-    local t=.25
-    local e=.15
-    local a=.05
-    Player.RequestToSetCameraNoise{levelX=r,levelY=t,time=e,decayRate=a}
+    local levelX=.25
+    local levelY=.25
+    local time=.15
+    local decayRate=.05
+    Player.RequestToSetCameraNoise{levelX=levelX,levelY=levelY,time=time,decayRate=decayRate}
   end,
   SetCameraNoiseOnMissileFire=function(e,e,e,e,e,e,e,e,e,e,e)
     local levelX=.5

@@ -17,9 +17,9 @@ function this.Messages()
       end}
     },
     GameObject={
-      {msg="Carried",func=function(a,r)
+      {msg="Carried",func=function(gameId,r)
         if r==0 then
-          this._OnSearchTarget(a,nil,"Carried")
+          this._OnSearchTarget(gameId,nil,"Carried")
         end
       end},
       {msg="Restraint",func=function(a,r)
@@ -201,10 +201,10 @@ function this.SetQuestMarker(targetNameOrId)
   end
 end
 function this.SetQuestMarkerGimmick(gimmickId)
-  local a,gimmickId=TppGimmick.GetGameObjectId"q40010_cntn001"
-  if gimmickId==NULL_ID then
+  local ret,gameId=TppGimmick.GetGameObjectId"q40010_cntn001"
+  if gameId==NULL_ID then
   else
-    local markerInfo={gameObjectId=gimmickId,isImportant=true,isQuestImportant=true}
+    local markerInfo={gameObjectId=gameId,isImportant=true,isQuestImportant=true}
     TppMarker2System.SetMarkerImportant(markerInfo)
   end
 end

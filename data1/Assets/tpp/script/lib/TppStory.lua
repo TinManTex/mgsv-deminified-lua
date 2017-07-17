@@ -1,6 +1,6 @@
 -- DOBUILD: 1
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 this.storySequenceTable={}
 this.storySequenceTable_Master={
   {main="s10010"},
@@ -1406,67 +1406,71 @@ function this.IsMissionCleard(missionCode)
   end
 end
 function this.CheckAllMissionCleared()
-  local r=true
-  local t=true
-  local n=true
-  local i=true
-  local a=true
-  local s=true
+  local allCleared=true
+  local allSCleared=true
+  local normalCleared=true
+  local normalSCleared=true
+  local hardCleared=true
+  local hardSCleared=true
   for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
     local missingNumberEnum=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
     if not missingNumberEnum then
       local missionCode=tonumber(missionCodeStr)
       if(not gvars.str_missionClearedFlag[enum])then
         if TppDefine.HARD_MISSION_ENUM[missionCodeStr]then
-          a=false
+          hardCleared=false
         else
-          n=false
+          normalCleared=false
         end
-        r=false
+        allCleared=false
       end
-      local n=true
-      local r={[10240]=true,[10115]=true,[10030]=true}
-      if r[missionCode]then
-        n=false
+      local doSClearCheck=true
+      local notRequireSRankMissions={[10240]=true,[10115]=true,[10030]=true}
+      if notRequireSRankMissions[missionCode]then
+        doSClearCheck=false
       end
-      if n and(TppResult.GetBestRank(missionCode)~=TppDefine.MISSION_CLEAR_RANK.S)then
+      if doSClearCheck and(TppResult.GetBestRank(missionCode)~=TppDefine.MISSION_CLEAR_RANK.S)then
         if TppDefine.HARD_MISSION_ENUM[missionCodeStr]then
-          s=false
+          hardSCleared=false
         else
-          i=false
+          normalSCleared=false
         end
-        t=false
+        allSCleared=false
       end
     end
   end
-  return r,t,n,i,a,s
+  return allCleared,allSCleared,normalCleared,normalSCleared,hardCleared,hardSCleared
 end
 function this.CalcAllMissionClearedCount()
-  local e=0
-  local n=0
+  local completedCount=0
+  local totalCount=0
   for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
     local missingNumberEnum=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
-    if not missingNumberEnum then
+    local isIHMission=InfMission.missionInfo[tonumber(missionCodeStr)] and Ivars.ihMissionsPercentageCount:Is(0)--tex skip IH missions depending on ivar
+    if not missingNumberEnum and not isIHMission then--tex added isIHMission
       local missionCode=tonumber(missionCodeStr)
       if(gvars.str_missionClearedFlag[enum])then
-        e=e+1
+        completedCount=completedCount+1
       end
-      n=n+1
+      totalCount=totalCount+1
     end
   end
-  return e,n
+  return completedCount,totalCount
 end
 function this.CalcAllMissionTaskCompletedCount()
-  local e=0
-  local n=0
-  for missionCodeStr,i in pairs(TppDefine.MISSION_ENUM)do
+  local completedCount=0
+  local totalCount=0
+  for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
     local missingNumberEnum=TppDefine.MISSING_NUMBER_MISSION_ENUM[missionCodeStr]
-    if not missingNumberEnum then
-      local t=tonumber(missionCodeStr)e=e+TppUI.GetTaskCompletedNumber(t)
-      n=n+TppUI.GetMaxMissionTask(t)
+    local isIHMission=InfMission.missionInfo[tonumber(missionCodeStr)] and Ivars.ihMissionsPercentageCount:Is(0)--tex skip IH missions depending on ivar
+    if not missingNumberEnum and not isIHMission then--tex added isIHMission
+      local missionCode=tonumber(missionCodeStr)
+      completedCount=completedCount+TppUI.GetTaskCompletedNumber(missionCode)
+      local maxMissionTask=TppUI.GetMaxMissionTask(missionCode) or 0--tex return 0 instead of nil
+      totalCount=totalCount+maxMissionTask
     end
   end
-  return e,n
+  return completedCount,totalCount
 end
 function this.UpdateMissionCleardFlag(missionCode)
   local missionEnum=TppDefine.MISSION_ENUM[tostring(missionCode)]
@@ -1485,19 +1489,19 @@ end
 function this.GetStorySequenceName(index)
   return TppDefine.STORY_SEQUENCE_LIST[index+1]
 end
-function this.GetStorySequenceTable(n)
-  return this.storySequenceTable[n+1]
+function this.GetStorySequenceTable(storySequence)
+  return this.storySequenceTable[storySequence+1]
 end
 function this.GetCurrentStorySequenceTable()
-  local n=this.GetCurrentStorySequence()
-  local e=this.GetStorySequenceTable(n)
-  return e
+  local currentSequence=this.GetCurrentStorySequence()
+  local sequenceTable=this.GetStorySequenceTable(currentSequence)
+  return sequenceTable
 end
 function this.IsMainMission()
-  for e,n in pairs(this.storySequenceTable)do
+  for i,sequence in pairs(this.storySequenceTable)do
     local missionCode=0
-    if n.main then
-      missionCode=TppMission.ParseMissionName(n.main)
+    if sequence.main then
+      missionCode=TppMission.ParseMissionName(sequence.main)
     end
     if missionCode==vars.missionCode then
       return true
@@ -1506,22 +1510,22 @@ function this.IsMainMission()
   return false
 end
 function this.GetOpenMissionCount()
-  local e=0
+  local totalOpen=0
   for n=0,TppDefine.MISSION_COUNT_MAX do
     if gvars.str_missionOpenFlag[n]then
-      e=e+1
+      totalOpen=totalOpen+1
     end
   end
-  return e
+  return totalOpen
 end
-function this.GetClearedMissionCount(t)
-  local n=0
-  for i,r in ipairs(t)do
-    if this.IsMissionCleard(t[i])==true then
-      n=n+1
+function this.GetClearedMissionCount(missionList)
+  local totalCleared=0
+  for i,missionCode in ipairs(missionList)do
+    if this.IsMissionCleard(missionList[i])==true then
+      totalCleared=totalCleared+1
     end
   end
-  return n
+  return totalCleared
 end
 function this.GetElapsedMissionEventName(enum)
   return TppDefine.ELAPSED_MISSION_EVENT_LIST[enum+1]
@@ -1728,6 +1732,7 @@ function this.UpdateStorySequence(params)
       gvars.continueTipsCount=1
     end
   end
+  InfMission.OpenMissions()--tex WORKAROUND story system too much of a hassle at the moment DEBUGNOW 
   return updateSequence
 end
 function this.UpdateStorySequenceOnMissionClear(missionId)
@@ -1833,13 +1838,13 @@ function this.ProceedStorySequence()
   if storySequenceTable==nil then
     return
   end
-  local i={}
+  local nextStorySequence={}
   local function t(missionCodeName,t)
     local r=t or{}
     local missionCode=TppMission.ParseMissionName(missionCodeName)
     this.PermitMissionOpen(missionCode)
     if not r[missionCodeName]then
-      table.insert(i,missionCodeName)
+      table.insert(nextStorySequence,missionCodeName)
       this.MissionOpen(missionCode)
     end
   end
@@ -1856,9 +1861,9 @@ function this.ProceedStorySequence()
       t(e,storySequenceTable.defaultClose)
     end
   end
-  for e,e in pairs(i)do
+  for e,e in pairs(nextStorySequence)do
   end
-  return i
+  return nextStorySequence
 end
 function this.CompleteAllMissionCleared()
   if not gvars.str_isAllMissionCleared then
@@ -1943,7 +1948,7 @@ function this.RequestLoseQuiet()
   end
 end
 function this.CanArrivalLiquidInMB()
-  if Ivars.mbShowEli:Is(1) and not InfGameEvent.IsMbEvent() then return true end--tex added mbshow
+  if Ivars.mbShowEli:Is(1) and not InfMain.IsMbEvent() then return true end--tex added mbshow
   local e=this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA
   local n=not TppDemo.IsPlayedMBEventDemo"TheGreatEscapeLiquid"
   return e and n
@@ -1957,7 +1962,7 @@ function this.HueyHasKantokuGrass()
   return this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_METALLIC_ARCHAEA
 end
 function this.CanArrivalCodeTalkerInMB()
-  return this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_CODE_TALKER or (Ivars.mbShowCodeTalker:Is(1)and not InfGameEvent.IsMbEvent())--tex added mbshow
+  return this.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_CODE_TALKER or (Ivars.mbShowCodeTalker:Is(1)and not InfMain.IsMbEvent())--tex added mbshow
 end
 function this.CanArrivalDDogInMB()
   local e=TppBuddyService.CanSortieBuddyType(BuddyType.DOG)

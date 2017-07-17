@@ -1,7 +1,7 @@
 -- DOBUILD: 1
 -- TppClock.lua
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local t=(1/60)/60
 local c=1/60
 local hour=60*60
@@ -94,7 +94,7 @@ function this.SetTimeFromHelicopterSpace(deployTime,fromLocation,toLocation)
   this.AddTimeFromHelicopterSpace(fromLocation,toLocation)
 end
 function this.AddTimeFromHelicopterSpace(fromLocation,toLocation)
-  local idLocationChange
+  local changedLocation
   local function IsToMotherBase(locationCode)
     if(locationCode==50)or(locationCode==55)then
       return true
@@ -104,15 +104,15 @@ function this.AddTimeFromHelicopterSpace(fromLocation,toLocation)
   end
   if fromLocation~=toLocation then
     if IsToMotherBase(fromLocation)and IsToMotherBase(toLocation)then
-      idLocationChange=false
+      changedLocation=false
     else
-      idLocationChange=true
+      changedLocation=true
     end
   else
-    idLocationChange=false
+    changedLocation=false
   end
   local addTime
-  if idLocationChange then
+  if changedLocation then
     addTime=6
   else
     addTime=1

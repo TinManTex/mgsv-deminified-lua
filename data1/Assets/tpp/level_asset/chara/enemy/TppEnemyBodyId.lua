@@ -1,4 +1,4 @@
--- TppEnemyBodyId.lua
+--TppEnemyBodyId.lua
 --NMC: maps a friendly id (in this case something close to the fv2 name) to an enum. in Soldier2FacaAndBodyData the enum is then mapped(via bodyDefinition table)to the actual fv2 path and fpk (bodyFova table >
 --In a lot of cases these aren't used and the body id/index is used directly
 --and in some cases the mapping is incorrect (see note on pfs0_dds0_v00 below)
@@ -76,14 +76,17 @@ local this={
   ddr0_main0_v00=146,
   ddr0_main0_v01=147,
   ddr0_main0_v02=148,
+  
   ddr0_main1_v00=149,
   ddr0_main1_v01=150,
   ddr0_main1_v02=151,
   ddr0_main1_v03=152,
   ddr0_main1_v04=153,
+  
   ddr1_main0_v00=154,
   ddr1_main0_v01=155,
   ddr1_main0_v02=156,
+  
   ddr1_main1_v00=157,
   ddr1_main1_v01=158,
   ddr1_main1_v02=159,
@@ -97,8 +100,10 @@ local this={
   
   ddr0_main0_v03=166,
   ddr0_main0_v04=167,
+  
   ddr0_main1_v05=168,
   ddr0_main1_v06=169,
+  
   dds3_main0_v02=170,
   dds8_main0_v02=171,
   

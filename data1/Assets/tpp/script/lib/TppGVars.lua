@@ -180,7 +180,7 @@ this.DeclareGVarsTable={
   {name="res_headShotCount",type=TppScriptVars.TYPE_UINT32,arraySize=(TppDefine.PLAYSTYLE_HISTORY_MAX+1),value=0,save=true,category=TppScriptVars.CATEGORY_MISSION},
   {name="res_isStealth",type=TppScriptVars.TYPE_BOOL,arraySize=(TppDefine.PLAYSTYLE_HISTORY_MAX+1),value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
   {name="res_isPerfectStealth",type=TppScriptVars.TYPE_BOOL,arraySize=(TppDefine.PLAYSTYLE_HISTORY_MAX+1),value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
-  {name="ui_isTaskLastComleted",arraySize=#TppDefine.MISSION_LIST*TppDefine.MAX_MISSION_TASK_COUNT,type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
+  {name="ui_isTaskLastComleted",arraySize=#TppDefine.MISSION_LIST*TppDefine.MAX_MISSION_TASK_COUNT,type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},--tex DEBUGNOW will shift size depenting on mission list
   {name="rev_revengeRandomValue",type=TppScriptVars.TYPE_UINT32,arraySize=1,value=4934224,save=true,category=TppScriptVars.CATEGORY_MISSION_RESTARTABLE},
   {name="rev_revengeLv",type=TppScriptVars.TYPE_UINT8,arraySize=TppRevenge.REVENGE_TYPE.MAX,value=0,save=true,category=TppScriptVars.CATEGORY_MISSION_RESTARTABLE},
   {name="rev_revengePoint",type=TppScriptVars.TYPE_UINT16,arraySize=TppRevenge.REVENGE_TYPE.MAX,value=0,save=true,category=TppScriptVars.CATEGORY_MISSION_RESTARTABLE},
@@ -283,7 +283,7 @@ this.DeclareGVarsTable={
   nil
 }
 Tpp.ApendArray(this.DeclareGVarsTable,Ivars.DeclareVars())--tex
-TppScriptVars.DeclareGVars(this.DeclareGVarsTable)    
+TppScriptVars.DeclareGVars(this.DeclareGVarsTable)
 if Fox.GetPlatformName()=="PS3"then
   this.DeclareGVarsTable=nil
 end
