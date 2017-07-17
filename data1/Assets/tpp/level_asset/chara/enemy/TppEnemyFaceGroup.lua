@@ -134,7 +134,7 @@ function this.GetFaceGroupTable(groupId)
     AFRICA_GRP018_W,
     AFRICA_GRP019_B,
     AFRICA_GRP019_W,
-      AFRICA_GRP020_B,
+    AFRICA_GRP020_B,
     AFRICA_GRP020_W,
     AFRICA_GRP021_B,
     AFRICA_GRP021_W,

@@ -138,8 +138,8 @@ function this.OnEndExceptionDialogForMgoInvitationAccept()
   if TppSave.IsSaving()then
     return this.PROCESS_STATE.SUSPEND
   end
-  local n=TppUiCommand.GetPopupSelect()
-  if n==Popup.SELECT_OK then
+  local select=TppUiCommand.GetPopupSelect()
+  if select==Popup.SELECT_OK then
     PatchDlc.StartCheckingPatchDlc()
     if PatchDlc.IsCheckingPatchDlc()then
       local n=this.GetCurrentGameMode()

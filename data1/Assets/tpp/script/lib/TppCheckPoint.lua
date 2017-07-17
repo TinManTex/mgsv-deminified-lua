@@ -8,7 +8,7 @@ local IsTypeString=Tpp.IsTypeString
 --local GetGameObjectId=GameObject.GetGameObjectId
 --local NULL_ID=GameObject.NULL_ID
 --local SendCommand=GameObject.SendCommand
---local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
+--ORPHAN local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
 local IsHelicopter=Tpp.IsHelicopter
 local IsNotAlert=Tpp.IsNotAlert
 local zero=0
@@ -24,12 +24,12 @@ function this.Messages()
     return nil
   end
   local trapMessageTable={}
-  for areaName,checkPointNames in pairs(mvars.loc_locationCommonCheckPointList)do
-    if mvars.mis_baseList and this._DoesBaseListInclude(areaName)then
+  for baseName,checkPointNames in pairs(mvars.loc_locationCommonCheckPointList)do
+    if mvars.mis_baseList and this._DoesBaseListInclude(baseName)then
       for i,checkPoint in pairs(checkPointNames)do
         local trapName="trap_"..checkPoint
         local message={msg="Enter",sender=trapName,
-          func=function(n,n)
+          func=function(trap,gameId)
             this.Update{checkPoint=checkPoint,trapName=trapName,safetyCurrentPosition=true}
           end
         }
@@ -74,10 +74,10 @@ function this.RegisterCheckPointList(checkPointList)
     this._RegisterCheckPoint(checkPointName)
   end
   if IsTypeFunc(mvars.mis_baseList)then
-    for t,n in pairs(mvars.mis_baseList)do
-      if mvars.loc_locationCommonCheckPointList and mvars.loc_locationCommonCheckPointList[n]then
-        for t,n in pairs(mvars.loc_locationCommonCheckPointList[n])do
-          this._RegisterCheckPoint(n)
+    for i,baseName in pairs(mvars.mis_baseList)do
+      if mvars.loc_locationCommonCheckPointList and mvars.loc_locationCommonCheckPointList[baseName]then
+        for j,checkpointName in pairs(mvars.loc_locationCommonCheckPointList[baseName])do
+          this._RegisterCheckPoint(checkpointName)
         end
       end
     end
@@ -90,17 +90,17 @@ function this.SetCheckPointPosition()
   if mvars.mis_checkPointList==nil then
     return
   end
-  local n
-  for t,e in pairs(mvars.mis_checkPointList)do
-    if StrCode32(e)==gvars.mis_checkPoint then
-      n=e
+  local currentCheckPoint
+  for i,checkPointName in pairs(mvars.mis_checkPointList)do
+    if StrCode32(checkPointName)==gvars.mis_checkPoint then
+      currentCheckPoint=checkPointName
       break
     end
   end
-  if n==nil then
+  if currentCheckPoint==nil then
     return
   end
-  local pos,rotY=this.GetCheckPointLocator(n)
+  local pos,rotY=this.GetCheckPointLocator(currentCheckPoint)
   if pos then
     TppPlayer.SetInitialPosition(pos,rotY)
   end
@@ -218,12 +218,12 @@ function this.DEBUG_Init()
   ;(nil).AddDebugMenu("LuaCheckPoint","CHK.showCheckPointList","bool",mvars.debug,"showCheckPointList")
 end
 function this.DebugUpdate()
-  local i=(nil).NewContext()
+  local newContext=(nil).NewContext()
   if mvars.debug.showCheckPointList then
-    (nil).Print(i,{.5,.5,1},"TppCheckPoint: showCheckPointList")
-    for o,n in pairs(mvars.mis_checkPointList)do
-      if IsTypeString(n)and this.IsEnable(n)then
-      (nil).Print(i,{1,1,1},n)
+    (nil).Print(newContext,{.5,.5,1},"TppCheckPoint: showCheckPointList")
+    for i,checkPointName in pairs(mvars.mis_checkPointList)do
+      if IsTypeString(checkPointName)and this.IsEnable(checkPointName)then
+      (nil).Print(newContext,{1,1,1},checkPointName)
       end
     end
   end
@@ -240,7 +240,7 @@ function this._SetEnable(enableInfo,enable)
         end
       else
         if this._DoesBaseListInclude(enableInfo.baseName)then
-          for t,checkPointName in pairs(mvars.loc_locationCommonCheckPointList[enableInfo.baseName])do
+          for i,checkPointName in pairs(mvars.loc_locationCommonCheckPointList[enableInfo.baseName])do
             this._SetEnable({checkPointName=checkPointName},enable)
           end
         end

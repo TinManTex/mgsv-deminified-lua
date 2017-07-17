@@ -12,8 +12,88 @@ this.RANK_BASE_SCORE_10040={S=2e4,A=18e3,B=14e3,C=1e4,D=6e3,E=0}
 this.RANK_BASE_SCORE_10130={S=5e4,A=45e3,B=35e3,C=25e3,D=2e4,E=0}
 this.RANK_BASE_SCORE_10140={S=1e5,A=8e4,B=65e3,C=5e4,D=35e3,E=0}
 this.RANK_BASE_GMP={S=28e3,A=23400,B=2e4,C=18e3,D=13500,E=9999}
-this.COMMON_SCORE_PARAM={noReflexBonus=1e4,noAlertBonus=5e3,noKillBonus=5e3,noRetryBonus=5e3,perfectStealthNoKillBonus=2e4,noTraceBonus=1e5,firstSpecialBonus=5e3,secondSpecialBonus=5e3,alertCount={valueToScoreRatio=-5e3},rediscoveryCount={valueToScoreRatio=-500},takeHitCount={valueToScoreRatio=-100},tacticalActionPoint={valueToScoreRatio=1e3},hostageCount={valueToScoreRatio=5e3},markingCount={valueToScoreRatio=30},interrogateCount={valueToScoreRatio=150},headShotCount={valueToScoreRatio=1e3},neutralizeCount={valueToScoreRatio=200}}
-this.MISSION_GUARANTEE_GMP={[10010]=nil,[10020]=8e4,[10030]=nil,[10036]=9e4,[10043]=1e5,[10033]=1e5,[10040]=11e4,[10041]=11e4,[10044]=12e4,[10052]=12e4,[10054]=13e4,[10050]=13e4,[10070]=13e4,[10080]=15e4,[10082]=15e4,[10086]=15e4,[10090]=17e4,[10195]=17e4,[10091]=17e4,[10100]=17e4,[10110]=17e4,[10121]=17e4,[10115]=19e4,[10120]=19e4,[10085]=19e4,[10200]=19e4,[10211]=19e4,[10081]=19e4,[10130]=21e4,[10140]=21e4,[10150]=21e4,[10151]=21e4,[10045]=21e4,[10093]=25e4,[10156]=26e4,[10171]=28e4,[10240]=3e5,[10260]=6e5,[10280]=nil,[11043]=3e5,[11054]=42e4,[11082]=5e5,[11090]=5e5,[11033]=4e5,[11050]=52e4,[11140]=6e5,[11080]=6e5,[11121]=68e4,[11130]=68e4,[11044]=68e4,[11151]=82e4,[11041]=19e4,[11085]=35e4,[11036]=15e4,[11091]=31e4,[11195]=31e4,[11211]=35e4,[11200]=35e4,[11171]=43e4,[11115]=35e4,[10230]=23e4}
+this.COMMON_SCORE_PARAM={
+  noReflexBonus=1e4,
+  noAlertBonus=5e3,
+  noKillBonus=5e3,
+  noRetryBonus=5e3,
+  perfectStealthNoKillBonus=2e4,
+  noTraceBonus=1e5,
+  firstSpecialBonus=5e3,
+  secondSpecialBonus=5e3,
+  alertCount={valueToScoreRatio=-5e3},
+  rediscoveryCount={valueToScoreRatio=-500},
+  takeHitCount={valueToScoreRatio=-100},
+  tacticalActionPoint={valueToScoreRatio=1e3},
+  hostageCount={valueToScoreRatio=5e3},
+  markingCount={valueToScoreRatio=30},
+  interrogateCount={valueToScoreRatio=150},
+  headShotCount={valueToScoreRatio=1e3},
+  neutralizeCount={valueToScoreRatio=200}
+}
+this.MISSION_GUARANTEE_GMP={
+  [10010]=nil,
+  [10020]=8e4,
+  [10030]=nil,
+  [10036]=9e4,
+  [10043]=1e5,
+  [10033]=1e5,
+  [10040]=11e4,
+  [10041]=11e4,
+  [10044]=12e4,
+  [10052]=12e4,
+  [10054]=13e4,
+  [10050]=13e4,
+  [10070]=13e4,
+  [10080]=15e4,
+  [10082]=15e4,
+  [10086]=15e4,
+  [10090]=17e4,
+  [10195]=17e4,
+  [10091]=17e4,
+  [10100]=17e4,
+  [10110]=17e4,
+  [10121]=17e4,
+  [10115]=19e4,
+  [10120]=19e4,
+  [10085]=19e4,
+  [10200]=19e4,
+  [10211]=19e4,
+  [10081]=19e4,
+  [10130]=21e4,
+  [10140]=21e4,
+  [10150]=21e4,
+  [10151]=21e4,
+  [10045]=21e4,
+  [10093]=25e4,
+  [10156]=26e4,
+  [10171]=28e4,
+  [10240]=3e5,
+  [10260]=6e5,
+  [10280]=nil,
+  [11043]=3e5,
+  [11054]=42e4,
+  [11082]=5e5,
+  [11090]=5e5,
+  [11033]=4e5,
+  [11050]=52e4,
+  [11140]=6e5,
+  [11080]=6e5,
+  [11121]=68e4,
+  [11130]=68e4,
+  [11044]=68e4,
+  [11151]=82e4,
+  [11041]=19e4,
+  [11085]=35e4,
+  [11036]=15e4,
+  [11091]=31e4,
+  [11195]=31e4,
+  [11211]=35e4,
+  [11200]=35e4,
+  [11171]=43e4,
+  [11115]=35e4,
+  [10230]=23e4
+}
 this.MISSION_TASK_LIST={
   [10010]={0,1},
   [10020]={0,1,2,3,4,5},
@@ -154,14 +234,14 @@ function this.SetSpecialBonusMaxCount(e)
   end
 end
 function this._CompleteBonus(isCompleteSvar,bonusTask)
-  local t=true
+  local isComplete=true
   if svars[isCompleteSvar]then
-    t=false
+    isComplete=false
   end
   svars[isCompleteSvar]=true
   if bonusTask then
     bonusTask.isComplete=true
-    TppUI.EnableMissionTask(bonusTask,t)
+    TppUI.EnableMissionTask(bonusTask,isComplete)
   end
 end
 function this.RegistNoMissionClearRank()
@@ -809,7 +889,7 @@ function this.DecideMissionClearRank()
   svars.bestRank=bestRank
   return svars.bestRank
 end
-function this.UpdateGmpOnMissionClear(missionCode,a,n)
+function this.UpdateGmpOnMissionClear(missionCode,clearRank,totalScore)
   local guaranteeGmp=this.MISSION_GUARANTEE_GMP[missionCode]
   if not guaranteeGmp then
     return
@@ -819,9 +899,9 @@ function this.UpdateGmpOnMissionClear(missionCode,a,n)
   end
   local guaranteedGmp=this.GetMissionGuaranteeGMP(missionCode)
   svars.gmpClear=TppTerminal.CorrectGMP{gmp=guaranteedGmp}
-  if a~=TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED then
-    local missionClearGmp=this.GetMissionClearRankGMP(a,missionCode)
-    missionClearGmp=missionClearGmp+n
+  if clearRank~=TppDefine.MISSION_CLEAR_RANK.NOT_DEFINED then
+    local missionClearGmp=this.GetMissionClearRankGMP(clearRank,missionCode)
+    missionClearGmp=missionClearGmp+totalScore
     svars.gmpOutcome=TppTerminal.CorrectGMP{gmp=missionClearGmp}
   else
     svars.gmpOutcome=0
@@ -852,24 +932,24 @@ function this.GetBestRank(missionCode)
   end
   return gvars.res_bestRank[missionEnum]
 end
-function this.GetMissionClearRankGMP(n,t)
-  local s=this.GetBestRank(t)
-  if not s then
+function this.GetMissionClearRankGMP(clearRank,missionCode)
+  local bestRank=this.GetBestRank(missionCode)
+  if not bestRank then
     return 0
   end
-  local r=this.GetRepeatPlayGMPReduceRatio(t)
-  local t=0
-  local a=#TppDefine.MISSION_CLEAR_RANK_LIST
-  for a=a,n,-1 do
-    local n=TppDefine.MISSION_CLEAR_RANK_LIST[a]
-    local e=this.RANK_BASE_GMP[n]
-    if a<s then
-      t=t+e
+  local reduceRatio=this.GetRepeatPlayGMPReduceRatio(missionCode)
+  local total=0
+  local numRanks=#TppDefine.MISSION_CLEAR_RANK_LIST
+  for i=numRanks,clearRank,-1 do
+    local rank=TppDefine.MISSION_CLEAR_RANK_LIST[i]
+    local baseGmp=this.RANK_BASE_GMP[rank]
+    if i<bestRank then
+      total=total+baseGmp
     else
-      t=t+e*r
+      total=total+baseGmp*reduceRatio
     end
   end
-  return t
+  return total
 end
 function this.GetMbMissionListParameterTable()
   local missionListParameterTable={}
@@ -967,7 +1047,7 @@ function this._SetSpecialBonusResultScore(t,i,n,r,s,o,a)
     TppUiCommand.SetResultScore("invalid","bonus",t)
     return
   end
-  local s=this.MakeMissionTaskLangId(a.taskNo)
+  local taskLangId=this.MakeMissionTaskLangId(a.taskNo)
   local a=svars[i]
   if(not svars[o])and(a==0)then
     TppUiCommand.SetResultScore("invalid","bonus",t)
@@ -979,17 +1059,17 @@ function this._SetSpecialBonusResultScore(t,i,n,r,s,o,a)
     e=a
   end
   if e==-1 then
-    TppUiCommand.SetResultScore(s,"bonus",t,e,n)
+    TppUiCommand.SetResultScore(taskLangId,"bonus",t,e,n)
   else
-    TppUiCommand.SetResultScore(s,"bonus_rate",t,e,r,n)
+    TppUiCommand.SetResultScore(taskLangId,"bonus_rate",t,e,r,n)
   end
 end
-function this.MakeMissionTaskLangId(t)
-  local e=vars.missionCode
-  if(e>=11e3)and(e<12e3)then
-    e=e-1e3
+function this.MakeMissionTaskLangId(taskNo)
+  local missionCode=vars.missionCode
+  if(missionCode>=11e3)and(missionCode<12e3)then
+    missionCode=missionCode-1e3
   end
-  return"task_mission_"..(string.format("%02d",vars.locationCode)..("_"..(tostring(e)..("_"..string.format("%02d",t)))))
+  return"task_mission_"..(string.format("%02d",vars.locationCode)..("_"..(tostring(missionCode)..("_"..string.format("%02d",taskNo)))))
 end
 function this.SaveMissionClearPlayStyleParameter()
   if svars.bestScorePerfectStealthNoKillBonusScore>0 then
@@ -1220,23 +1300,23 @@ function this.Messages()
           Tpp.IncrementPlayData"totalWalkerGearDestoryCount"
         end
       end},
-      {msg="TapHeadShotFar",func=function(t)--RETAILPATCH 1070 params added to all OnTacticalActionPoint calls-v-
-        this.OnTacticalActionPoint(t,"TapHeadShotFar")
+      {msg="TapHeadShotFar",func=function(gameId)--RETAILPATCH 1070 params added to all OnTacticalActionPoint calls-v-
+        this.OnTacticalActionPoint(gameId,"TapHeadShotFar")
       end},
-      {msg="TapRocketArm",func=function(t)
-        this.OnTacticalActionPoint(t,"TapRocketArm")
+      {msg="TapRocketArm",func=function(gameId)
+        this.OnTacticalActionPoint(gameId,"TapRocketArm")
       end},
-      {msg="TapHoldup",func=function(t)
-        this.OnTacticalActionPoint(t,"TapHoldup")
+      {msg="TapHoldup",func=function(gameId)
+        this.OnTacticalActionPoint(gameId,"TapHoldup")
       end},
-      {msg="TapCqc",func=function(t)
-        this.OnTacticalActionPoint(t,"TapCqc")
+      {msg="TapCqc",func=function(gameId)
+        this.OnTacticalActionPoint(gameId,"TapCqc")
       end},
       {msg="HeadShot",func=this.OnHeadShot},
       {msg="Neutralize",func=this.OnNeutralize},
       {msg="InterrogateSetMarker",func=this.IncrementInterrogateCount},
-      {msg="BreakGimmickBurglarAlarm",func=function(e)
-        if not Tpp.IsLocalPlayer(e)then
+      {msg="BreakGimmickBurglarAlarm",func=function(attackerId)
+        if not Tpp.IsLocalPlayer(attackerId)then
           return
         end
         Tpp.IncrementPlayData"totalBreakBurglarAlarmCount"
@@ -1244,10 +1324,10 @@ function this.Messages()
     }
   }
 end
-local t=MAX_32BIT_UINT
-local t=MAX_32BIT_UINT
-local t=true
-local a=false
+local unk1=MAX_32BIT_UINT
+local unk2=MAX_32BIT_UINT
+local unk3=true
+local unk4=false
 function this.IncrementInterrogateCount()
   Tpp.IncrementPlayData"totalInterrogateCount"
   TppChallengeTask.RequestUpdate"PLAY_RECORD"--RETAILPATCH 1070
@@ -1261,15 +1341,16 @@ function this.IncrementTakeHitCount()
   end
   if svars.oldTakeHitCount<svars.takeHitCount then
     svars.oldTakeHitCount=svars.takeHitCount
-    this.CallCountAnnounce("result_hit",svars.takeHitCount,t)
+    this.CallCountAnnounce("result_hit",svars.takeHitCount,unk3)
   end
 end
-function this.OnTacticalActionPoint(gameId,tacticalTakedownType)--RETAILPATCH 1070 tacticalTakedownType added
+--RETAILPATCH 1070 tacticalTakedownType added
+function this.OnTacticalActionPoint(gameId,tacticalTakedownType)
   if SendCommand(gameId,tacticalTakedownType,{id="IsDoneTacticalTakedown"})then
   else
     SendCommand(gameId,tacticalTakedownType,{id="SetTacticalTakedown"})
     this.AddTacticalActionPoint{isSneak=true,gameObjectId=gameId,tacticalTakeDownType=tacticalTakedownType}--RETAILPATCH 1070 params added
-end
+  end
 end
 function this.GetTacticalActionPoint(e)--RETAILPATCH 1070>
   if e then
@@ -1319,8 +1400,8 @@ function this.AddTacticalActionPoint(takedownInfo)
     end
   end
 end
-function this.CallCountAnnounce(t,a,s)
-  TppUiCommand.CallCountAnnounce(t,a,s)
+function this.CallCountAnnounce(langId,count,unk3Bool)
+  TppUiCommand.CallCountAnnounce(langId,count,unk3Bool)
 end
 this.PLAYER_CAUSE_TO_SAVE_INDEX={
   [NeutralizeCause.CQC]=1,
@@ -1345,34 +1426,35 @@ this.NPC_CAUSE_TO_SAVE_INDEX={
   [NeutralizeCause.SUPPORT_HELI]=18,
   [NeutralizeCause.ASSIST]=19}
 this.NEUTRALIZE_PLAY_STYLE_ID={7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28}
-function this.GetPlayStyleSaveIndex(n,r,a,t)
-  if a==NeutralizeType.INVALID then
+--gameId,sourceId,neutralizeType,neutralizeCause)
+function this.GetPlayStyleSaveIndex(gameId,attackerId,neutralizeType,neutralizeCause)
+  if neutralizeType==NeutralizeType.INVALID then
     return
   end
-  local n=this.NPC_CAUSE_TO_SAVE_INDEX[t]
-  if n then
-    return n
+  local saveUndex=this.NPC_CAUSE_TO_SAVE_INDEX[neutralizeCause]
+  if saveUndex then
+    return saveUndex
   end
-  if a==NeutralizeType.HOLDUP then
+  if neutralizeType==NeutralizeType.HOLDUP then
     return 0
   end
-  if Tpp.IsPlayer(r)then
-    local a={[NeutralizeCause.NO_KILL_BULLET]=true,[NeutralizeCause.HANDGUN]=true,[NeutralizeCause.SUBMACHINE_GUN]=true,[NeutralizeCause.SHOTGUN]=true,[NeutralizeCause.ASSAULT_RIFLE]=true,[NeutralizeCause.MACHINE_GUN]=true,[NeutralizeCause.SNIPER_RIFLE]=true,[NeutralizeCause.MISSILE]=true}
-    if a[t]then
+  if Tpp.IsPlayer(attackerId)then
+    local shootCauses={[NeutralizeCause.NO_KILL_BULLET]=true,[NeutralizeCause.HANDGUN]=true,[NeutralizeCause.SUBMACHINE_GUN]=true,[NeutralizeCause.SHOTGUN]=true,[NeutralizeCause.ASSAULT_RIFLE]=true,[NeutralizeCause.MACHINE_GUN]=true,[NeutralizeCause.SNIPER_RIFLE]=true,[NeutralizeCause.MISSILE]=true}
+    if shootCauses[neutralizeCause]then
       if svars.shootNeutralizeCount<MAX_32BIT_UINT then
         svars.shootNeutralizeCount=svars.shootNeutralizeCount+1
       end
     end
-    local e=this.PLAYER_CAUSE_TO_SAVE_INDEX[t]
-    if e then
-      return e
+    local saveIndex=this.PLAYER_CAUSE_TO_SAVE_INDEX[neutralizeCause]
+    if saveIndex then
+      return saveIndex
     else
       return
     end
   end
 end
-function this.OnNeutralize(gameId,sourceId,neutralizeType,neutralizeCause)
-  local playStyleSaveIndex=this.GetPlayStyleSaveIndex(gameId,sourceId,neutralizeType,neutralizeCause)
+function this.OnNeutralize(gameId,attackerId,neutralizeType,neutralizeCause)
+  local playStyleSaveIndex=this.GetPlayStyleSaveIndex(gameId,attackerId,neutralizeType,neutralizeCause)
   if not playStyleSaveIndex then
     return
   end
@@ -1418,13 +1500,13 @@ function this.OnHeadShot(gameObjectId,attackId,attackerObjectId,flag)
     end
   end
 end
-function this.IsCountUpHeadShot(t)
+function this.IsCountUpHeadShot(headshotMessageFlag)
   local countUpHeadshot=false
-  if bit.band(t,HeadshotMessageFlag.IS_JUST_UNCONSCIOUS)==HeadshotMessageFlag.IS_JUST_UNCONSCIOUS then
+  if bit.band(headshotMessageFlag,HeadshotMessageFlag.IS_JUST_UNCONSCIOUS)==HeadshotMessageFlag.IS_JUST_UNCONSCIOUS then
     if HeadshotMessageFlag.NEUTRALIZE_DONE==nil then
       countUpHeadshot=true
     else
-      if bit.band(t,HeadshotMessageFlag.NEUTRALIZE_DONE)~=HeadshotMessageFlag.NEUTRALIZE_DONE then
+      if bit.band(headshotMessageFlag,HeadshotMessageFlag.NEUTRALIZE_DONE)~=HeadshotMessageFlag.NEUTRALIZE_DONE then
         countUpHeadshot=true
       end
     end

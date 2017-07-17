@@ -102,9 +102,9 @@ end
 function this.GetSequenceNameWithIndex(sequenceId)
   local seq_sequenceNames=mvars.seq_sequenceNames
   if seq_sequenceNames then
-    local sequenceId=seq_sequenceNames[sequenceId]
-    if sequenceId then
-      return sequenceId
+    local sequenceName=seq_sequenceNames[sequenceId]
+    if sequenceName then
+      return sequenceName
     end
   end
   return""

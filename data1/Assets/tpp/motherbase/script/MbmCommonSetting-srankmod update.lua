@@ -1,5 +1,3 @@
---MbmCommonSetting.lua
---RETAILPATCH 1090
 this={}
 TppMotherBaseManagement.RegisterStaffTypePeaks{staffTypeId=1,combatRate=0,developRate=0,medicalRate=0,supportRate=0,spyRate=0,baseDevRate=0}
 TppMotherBaseManagement.RegisterStaffTypePeaks{staffTypeId=2,combatRate=100,developRate=0,medicalRate=0,supportRate=0,spyRate=0,baseDevRate=0}
@@ -138,188 +136,158 @@ TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=420,g=0,f=0,e=
 TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=427,g=0,f=0,e=3,d=6,c=11,b=25,a=35,s=20,sp=0,spp=0}
 TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=434,g=0,f=0,e=3,d=6,c=11,b=20,a=35,s=25,sp=0,spp=0}
 TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=441,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=448,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=455,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=518,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=574,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=630,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=686,g=0,f=0,e=3,d=6,c=11,b=15,a=35,s=30,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=728,g=0,f=0,e=0,d=2,c=5,b=13,a=40,s=40,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=756,g=0,f=0,e=0,d=0,c=3,b=13,a=39,s=45,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=784,g=0,f=0,e=0,d=0,c=3,b=13,a=34,s=50,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=812,g=0,f=0,e=0,d=0,c=3,b=13,a=29,s=55,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=840,g=0,f=0,e=0,d=0,c=3,b=10,a=27,s=60,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=868,g=0,f=0,e=0,d=0,c=3,b=10,a=22,s=65,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=882,g=0,f=0,e=0,d=0,c=3,b=10,a=17,s=70,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=910,g=0,f=0,e=0,d=0,c=3,b=6,a=16,s=75,sp=0,spp=0}
-TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=1050,g=0,f=0,e=0,d=0,c=0,b=3,a=17,s=80,sp=0,spp=0}--RETAILPATCH 1090
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=448,g=0,f=0,e=0,d=3,c=6,b=11,a=35,s=30,sp=15,spp=0}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=455,g=0,f=0,e=0,d=3,c=6,b=11,a=25,s=30,sp=20,spp=5}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=518,g=0,f=0,e=0,d=0,c=6,b=14,a=20,s=25,sp=25,spp=10}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=574,g=0,f=0,e=0,d=0,c=0,b=10,a=15,s=25,sp=35,spp=15}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=630,g=0,f=0,e=0,d=0,c=0,b=0,a=15,s=25,sp=40,spp=20}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=686,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=25,sp=40,spp=35}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=728,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=20,sp=30,spp=50}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=756,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=10,sp=25,spp=65}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=784,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=5,sp=25,spp=70}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=812,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=3,sp=17,spp=80}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=840,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=0,sp=15,spp=85}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=868,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=0,sp=10,spp=90}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=882,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=0,sp=5,spp=95}
+TppMotherBaseManagement.RegisterStaffBaseRankRange{totalSectionLv=910,g=0,f=0,e=0,d=0,c=0,b=0,a=0,s=0,sp=0,spp=100}
 TppMotherBaseManagement.RegisterStaffMinBaseRank{minBaseRank="G"}
-local sectionLvLines={
-  {lv=1,lineSectionPoint=43},
-  {lv=2,lineSectionPoint=84},
-  {lv=3,lineSectionPoint=134},
-  {lv=4,lineSectionPoint=193},
-  {lv=5,lineSectionPoint=262},
-  {lv=6,lineSectionPoint=339},
-  {lv=7,lineSectionPoint=426},
-  {lv=8,lineSectionPoint=522},
-  {lv=9,lineSectionPoint=627},
-  {lv=10,lineSectionPoint=742},
-  {lv=11,lineSectionPoint=865},
-  {lv=12,lineSectionPoint=998},
-  {lv=13,lineSectionPoint=1140},
-  {lv=14,lineSectionPoint=1291},
-  {lv=15,lineSectionPoint=1452},
-  {lv=16,lineSectionPoint=1621},
-  {lv=17,lineSectionPoint=1800},
-  {lv=18,lineSectionPoint=1988},
-  {lv=19,lineSectionPoint=2185},
-  {lv=20,lineSectionPoint=2392},
-  {lv=21,lineSectionPoint=2607},
-  {lv=22,lineSectionPoint=2832},
-  {lv=23,lineSectionPoint=3066},
-  {lv=24,lineSectionPoint=3309},
-  {lv=25,lineSectionPoint=3562},
-  {lv=26,lineSectionPoint=3823},
-  {lv=27,lineSectionPoint=4094},
-  {lv=28,lineSectionPoint=4374},
-  {lv=29,lineSectionPoint=4663},
-  {lv=30,lineSectionPoint=4962},
-  {lv=31,lineSectionPoint=5269},
-  {lv=32,lineSectionPoint=5586},
-  {lv=33,lineSectionPoint=5912},
-  {lv=34,lineSectionPoint=6247},
-  {lv=35,lineSectionPoint=6592},
-  {lv=36,lineSectionPoint=6945},
-  {lv=37,lineSectionPoint=7308},
-  {lv=38,lineSectionPoint=7680},
-  {lv=39,lineSectionPoint=8061},
-  {lv=40,lineSectionPoint=8452},
-  {lv=41,lineSectionPoint=8851},
-  {lv=42,lineSectionPoint=9260},
-  {lv=43,lineSectionPoint=9678},
-  {lv=44,lineSectionPoint=10105},
-  {lv=45,lineSectionPoint=10542},
-  {lv=46,lineSectionPoint=10987},
-  {lv=47,lineSectionPoint=11442},
-  {lv=48,lineSectionPoint=11906},
-  {lv=49,lineSectionPoint=12379},
-  {lv=50,lineSectionPoint=12862},
-  {lv=51,lineSectionPoint=13353},
-  {lv=52,lineSectionPoint=13854},
-  {lv=53,lineSectionPoint=14364},
-  {lv=54,lineSectionPoint=14883},
-  {lv=55,lineSectionPoint=15412},
-  {lv=56,lineSectionPoint=15949},
-  {lv=57,lineSectionPoint=16496},
-  {lv=58,lineSectionPoint=17052},
-  {lv=59,lineSectionPoint=17617},
-  {lv=60,lineSectionPoint=18192},
-  {lv=61,lineSectionPoint=18775},
-  {lv=62,lineSectionPoint=19368},
-  {lv=63,lineSectionPoint=19970},
-  {lv=64,lineSectionPoint=20581},
-  {lv=65,lineSectionPoint=21202},
-  {lv=66,lineSectionPoint=21831},
-  {lv=67,lineSectionPoint=22470},
-  {lv=68,lineSectionPoint=23118},
-  {lv=69,lineSectionPoint=24164},
-  {lv=70,lineSectionPoint=25290},
-  {lv=71,lineSectionPoint=26457},
-  {lv=72,lineSectionPoint=27666},
-  {lv=73,lineSectionPoint=28917},
-  {lv=74,lineSectionPoint=30210},
-  {lv=75,lineSectionPoint=31548},
-  {lv=76,lineSectionPoint=32929},
-  {lv=77,lineSectionPoint=34357},
-  {lv=78,lineSectionPoint=35830},
-  {lv=79,lineSectionPoint=37350},
-  {lv=80,lineSectionPoint=38918},
-  {lv=81,lineSectionPoint=40534},
-  {lv=82,lineSectionPoint=42199},
-  {lv=83,lineSectionPoint=43915},
-  {lv=84,lineSectionPoint=45681},
-  {lv=85,lineSectionPoint=47499},
-  {lv=86,lineSectionPoint=49369},
-  {lv=87,lineSectionPoint=51292},
-  {lv=88,lineSectionPoint=53268},
-  {lv=89,lineSectionPoint=55300},
-  {lv=90,lineSectionPoint=57387},
-  {lv=91,lineSectionPoint=59530},
-  {lv=92,lineSectionPoint=61730},
-  {lv=93,lineSectionPoint=63988},
-  {lv=94,lineSectionPoint=66305},
-  {lv=95,lineSectionPoint=68681},
-  {lv=96,lineSectionPoint=71116},
-  {lv=97,lineSectionPoint=73613},
-  {lv=98,lineSectionPoint=76172},
-  {lv=99,lineSectionPoint=78792},
-  {lv=100,lineSectionPoint=81425},
-  {lv=101,lineSectionPoint=84065},
-  {lv=102,lineSectionPoint=86730},
-  {lv=103,lineSectionPoint=89400},
-  {lv=104,lineSectionPoint=92084},
-  {lv=105,lineSectionPoint=94860},
-  {lv=106,lineSectionPoint=97670},
-  {lv=107,lineSectionPoint=100513},
-  {lv=108,lineSectionPoint=103386},
-  {lv=109,lineSectionPoint=106288},
-  {lv=110,lineSectionPoint=109219},
-  {lv=111,lineSectionPoint=112176},
-  {lv=112,lineSectionPoint=115159},
-  {lv=113,lineSectionPoint=118167},
-  {lv=114,lineSectionPoint=121197},
-  {lv=115,lineSectionPoint=124248},
-  {lv=116,lineSectionPoint=127320},
-  {lv=117,lineSectionPoint=130411},
-  {lv=118,lineSectionPoint=133519},
-  {lv=119,lineSectionPoint=136643},
-  {lv=120,lineSectionPoint=139783},
-  {lv=121,lineSectionPoint=142935},
-  {lv=122,lineSectionPoint=146100},
-  {lv=123,lineSectionPoint=149276},
-  {lv=124,lineSectionPoint=152462},
-  {lv=125,lineSectionPoint=155655},
-  {lv=126,lineSectionPoint=158856},
-  {lv=127,lineSectionPoint=162061},
-  {lv=128,lineSectionPoint=165272},
-  {lv=129,lineSectionPoint=168485},
-  {lv=130,lineSectionPoint=171699},
-  {lv=131,lineSectionPoint=174914},
-  {lv=132,lineSectionPoint=178140},
-  {lv=133,lineSectionPoint=181400},
-  {lv=134,lineSectionPoint=182930},--RETAILPATCH 1090>
-  {lv=135,lineSectionPoint=184460},
-  {lv=136,lineSectionPoint=185990},
-  {lv=137,lineSectionPoint=187520},
-  {lv=138,lineSectionPoint=189050},
-  {lv=139,lineSectionPoint=190750},
-  {lv=140,lineSectionPoint=192450},
-  {lv=141,lineSectionPoint=194150},
-  {lv=142,lineSectionPoint=195850},
-  {lv=143,lineSectionPoint=197550},
-  {lv=144,lineSectionPoint=199250},
-  {lv=145,lineSectionPoint=201120},
-  {lv=146,lineSectionPoint=202990},
-  {lv=147,lineSectionPoint=204860},
-  {lv=148,lineSectionPoint=206730},
-  {lv=149,lineSectionPoint=208600},
-  {lv=150,lineSectionPoint=210640},
-  {lv=151,lineSectionPoint=212510},
-  {lv=152,lineSectionPoint=214550},
-  {lv=153,lineSectionPoint=216590},
-  {lv=154,lineSectionPoint=218630},
-  {lv=155,lineSectionPoint=220670},
-  {lv=156,lineSectionPoint=222710},
-  {lv=157,lineSectionPoint=224750},
-  {lv=158,lineSectionPoint=226790},
-  {lv=159,lineSectionPoint=228830},
-  {lv=160,lineSectionPoint=230870},
-  {lv=161,lineSectionPoint=232910},
-  {lv=162,lineSectionPoint=234950},--<
+local e={
+{lv=1,lineSectionPoint=43},
+{lv=2,lineSectionPoint=84},
+{lv=3,lineSectionPoint=134},
+{lv=4,lineSectionPoint=193},
+{lv=5,lineSectionPoint=262},
+{lv=6,lineSectionPoint=339},
+{lv=7,lineSectionPoint=426},
+{lv=8,lineSectionPoint=522},
+{lv=9,lineSectionPoint=627},
+{lv=10,lineSectionPoint=742},
+{lv=11,lineSectionPoint=865},
+{lv=12,lineSectionPoint=998},
+{lv=13,lineSectionPoint=1140},
+{lv=14,lineSectionPoint=1291},
+{lv=15,lineSectionPoint=1452},
+{lv=16,lineSectionPoint=1621},
+{lv=17,lineSectionPoint=1800},
+{lv=18,lineSectionPoint=1988},
+{lv=19,lineSectionPoint=2185},
+{lv=20,lineSectionPoint=2392},
+{lv=21,lineSectionPoint=2607},
+{lv=22,lineSectionPoint=2832},
+{lv=23,lineSectionPoint=3066},
+{lv=24,lineSectionPoint=3309},
+{lv=25,lineSectionPoint=3562},
+{lv=26,lineSectionPoint=3823},
+{lv=27,lineSectionPoint=4094},
+{lv=28,lineSectionPoint=4374},
+{lv=29,lineSectionPoint=4663},
+{lv=30,lineSectionPoint=4962},
+{lv=31,lineSectionPoint=5269},
+{lv=32,lineSectionPoint=5586},
+{lv=33,lineSectionPoint=5912},
+{lv=34,lineSectionPoint=6247},
+{lv=35,lineSectionPoint=6592},
+{lv=36,lineSectionPoint=6945},
+{lv=37,lineSectionPoint=7308},
+{lv=38,lineSectionPoint=7680},
+{lv=39,lineSectionPoint=8061},
+{lv=40,lineSectionPoint=8452},
+{lv=41,lineSectionPoint=8851},
+{lv=42,lineSectionPoint=9260},
+{lv=43,lineSectionPoint=9678},
+{lv=44,lineSectionPoint=10105},
+{lv=45,lineSectionPoint=10542},
+{lv=46,lineSectionPoint=10987},
+{lv=47,lineSectionPoint=11442},
+{lv=48,lineSectionPoint=11906},
+{lv=49,lineSectionPoint=12379},
+{lv=50,lineSectionPoint=12862},
+{lv=51,lineSectionPoint=13353},
+{lv=52,lineSectionPoint=13854},
+{lv=53,lineSectionPoint=14364},
+{lv=54,lineSectionPoint=14883},
+{lv=55,lineSectionPoint=15412},
+{lv=56,lineSectionPoint=15949},
+{lv=57,lineSectionPoint=16496},
+{lv=58,lineSectionPoint=17052},
+{lv=59,lineSectionPoint=17617},
+{lv=60,lineSectionPoint=18192},
+{lv=61,lineSectionPoint=18775},
+{lv=62,lineSectionPoint=19368},
+{lv=63,lineSectionPoint=19970},
+{lv=64,lineSectionPoint=20581},
+{lv=65,lineSectionPoint=21202},
+{lv=66,lineSectionPoint=21831},
+{lv=67,lineSectionPoint=22470},
+{lv=68,lineSectionPoint=23118},
+{lv=69,lineSectionPoint=24164},
+{lv=70,lineSectionPoint=25290},
+{lv=71,lineSectionPoint=26457},
+{lv=72,lineSectionPoint=27666},
+{lv=73,lineSectionPoint=28917},
+{lv=74,lineSectionPoint=30210},
+{lv=75,lineSectionPoint=31548},
+{lv=76,lineSectionPoint=32929},
+{lv=77,lineSectionPoint=34357},
+{lv=78,lineSectionPoint=35830},
+{lv=79,lineSectionPoint=37350},
+{lv=80,lineSectionPoint=38918},
+{lv=81,lineSectionPoint=40534},
+{lv=82,lineSectionPoint=42199},
+{lv=83,lineSectionPoint=43915},
+{lv=84,lineSectionPoint=45681},
+{lv=85,lineSectionPoint=47499},
+{lv=86,lineSectionPoint=49369},
+{lv=87,lineSectionPoint=51292},
+{lv=88,lineSectionPoint=53268},
+{lv=89,lineSectionPoint=55300},
+{lv=90,lineSectionPoint=57387},
+{lv=91,lineSectionPoint=59530},
+{lv=92,lineSectionPoint=61730},
+{lv=93,lineSectionPoint=63988},
+{lv=94,lineSectionPoint=66305},
+{lv=95,lineSectionPoint=68681},
+{lv=96,lineSectionPoint=71116},
+{lv=97,lineSectionPoint=73613},
+{lv=98,lineSectionPoint=76172},
+{lv=99,lineSectionPoint=78792},
+{lv=100,lineSectionPoint=81425},
+{lv=101,lineSectionPoint=84065},
+{lv=102,lineSectionPoint=86730},
+{lv=103,lineSectionPoint=89400},
+{lv=104,lineSectionPoint=92084},
+{lv=105,lineSectionPoint=94860},
+{lv=106,lineSectionPoint=97670},
+{lv=107,lineSectionPoint=100513},
+{lv=108,lineSectionPoint=103386},
+{lv=109,lineSectionPoint=106288},
+{lv=110,lineSectionPoint=109219},
+{lv=111,lineSectionPoint=112176},
+{lv=112,lineSectionPoint=115159},
+{lv=113,lineSectionPoint=118167},
+{lv=114,lineSectionPoint=121197},
+{lv=115,lineSectionPoint=124248},
+{lv=116,lineSectionPoint=127320},
+{lv=117,lineSectionPoint=130411},
+{lv=118,lineSectionPoint=133519},
+{lv=119,lineSectionPoint=136643},
+{lv=120,lineSectionPoint=139783},
+{lv=121,lineSectionPoint=142935},
+{lv=122,lineSectionPoint=146100},
+{lv=123,lineSectionPoint=149276},
+{lv=124,lineSectionPoint=152462},
+{lv=125,lineSectionPoint=155655},
+{lv=126,lineSectionPoint=158856},
+{lv=127,lineSectionPoint=162061},
+{lv=128,lineSectionPoint=165272},
+{lv=129,lineSectionPoint=168485},
+{lv=130,lineSectionPoint=171699},
+{lv=131,lineSectionPoint=174914},
+{lv=132,lineSectionPoint=178140},
+{lv=133,lineSectionPoint=181400}
 }
-for n,sectionLvLine in pairs(sectionLvLines)do
-  TppMotherBaseManagement.RegisterSectionLvLine(sectionLvLine)
+for n,e in pairs(e)do
+TppMotherBaseManagement.RegisterSectionLvLine(e)
 end
 TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Reflex",section="Combat",rank="C",priority=98,rate=20,isLocked="false"}
 TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Ninja",section="Combat",rank="B",priority=70,rate=10,isLocked="false"}
@@ -351,24 +319,6 @@ TppMotherBaseManagement.RegisterSkillDrawingParam{skill="None",section="All",ran
 TppMotherBaseManagement.RegisterSkillDrawingParam{skill="None",section="All",rank="C",priority=254,rate=10,isLocked="false"}
 TppMotherBaseManagement.RegisterSkillDrawingParam{skill="None",section="All",rank="B",priority=253,rate=10,isLocked="false"}
 TppMotherBaseManagement.RegisterSkillDrawingParam{skill="None",section="All",rank="A",priority=252,rate=20,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Defender1",section="All",rank="B",priority=165,rate=3,isLocked="false"}--RETAILPATCH 1090>
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Defender2",section="All",rank="S",priority=185,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Defender3",section="All",rank="S++",priority=205,rate=4,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Sentry1",section="All",rank="B",priority=164,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Sentry2",section="All",rank="S",priority=184,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Sentry3",section="All",rank="S++",priority=204,rate=4,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Ranger1",section="All",rank="B",priority=163,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Ranger2",section="All",rank="S",priority=183,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Ranger3",section="All",rank="S++",priority=203,rate=4,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Medic1",section="All",rank="B",priority=162,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Medic2",section="All",rank="S",priority=182,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="Medic3",section="All",rank="S++",priority=202,rate=4,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="LiquidCarbonMissileEngineer1",section="All",rank="B",priority=161,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="LiquidCarbonMissileEngineer2",section="All",rank="S",priority=181,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="LiquidCarbonMissileEngineer3",section="All",rank="S++",priority=201,rate=4,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="InterceptorMissileEngineer1",section="All",rank="B",priority=160,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="InterceptorMissileEngineer2",section="All",rank="S",priority=180,rate=3,isLocked="false"}
-TppMotherBaseManagement.RegisterSkillDrawingParam{skill="InterceptorMissileEngineer3",section="All",rank="S++",priority=200,rate=4,isLocked="false"}--<
 TppMotherBaseManagement.SortSkillDrawingParamTable()
 TppMotherBaseManagement.RegisterQuestSkillDrawingParam{skill="Reflex",section="Combat",rank="C",priority=98,rate=20,staffTypes={2,39,40,41,47},randomRangeIds={2,3}}
 TppMotherBaseManagement.RegisterQuestSkillDrawingParam{skill="Ninja",section="Combat",rank="B",priority=70,rate=10,staffTypes={2,39,40,41,47},randomRangeIds={2,3}}
@@ -462,8 +412,8 @@ TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=43,nameLangMessageId="s
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=44,nameLangMessageId="unique_staff_Viscount",combatSectionPoint=21,developSectionPoint=40,baseDevSectionPoint=21,supportSectionPoint=21,spySectionPoint=79,medicalSectionPoint=28,skill="BigMouth",isEnmity=false,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=true,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10086}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=45,nameLangMessageId="staff_name_99_012",faceId=293,combatSectionPoint=11,developSectionPoint=19,baseDevSectionPoint=11,supportSectionPoint=12,spySectionPoint=7,medicalSectionPoint=15,skill="None",isEnmity=false,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=true,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10030}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=46,nameLangMessageId="staff_name_99_013",faceId=322,combatSectionPoint=5,developSectionPoint=15,baseDevSectionPoint=20,supportSectionPoint=13,spySectionPoint=15,medicalSectionPoint=9,skill="None",isEnmity=false,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=true,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10030}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=47,nameLangMessageId="staff_name_99_014",combatSectionPoint=25,developSectionPoint=33,baseDevSectionPoint=25,supportSectionPoint=36,spySectionPoint=47,medicalSectionPoint=20,skill="??????",isEnmity=true,moraleEnmity=8,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=48,nameLangMessageId="staff_name_99_015",combatSectionPoint=64,developSectionPoint=11,baseDevSectionPoint=20,supportSectionPoint=5,spySectionPoint=28,medicalSectionPoint=33,skill="??????",isEnmity=true,moraleEnmity=13,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=47,nameLangMessageId="staff_name_99_014",combatSectionPoint=25,developSectionPoint=33,baseDevSectionPoint=25,supportSectionPoint=36,spySectionPoint=47,medicalSectionPoint=20,skill="なし",isEnmity=true,moraleEnmity=8,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=48,nameLangMessageId="staff_name_99_015",combatSectionPoint=64,developSectionPoint=11,baseDevSectionPoint=20,supportSectionPoint=5,spySectionPoint=28,medicalSectionPoint=33,skill="なし",isEnmity=true,moraleEnmity=13,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=49,nameLangMessageId="staff_name_99_108",combatSectionPoint=32,developSectionPoint=80,baseDevSectionPoint=38,supportSectionPoint=33,spySectionPoint=42,medicalSectionPoint=11,skill="RadarEngineer",isEnmity=true,moraleEnmity=3,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=50,nameLangMessageId="staff_name_99_017",combatSectionPoint=50,developSectionPoint=20,baseDevSectionPoint=25,supportSectionPoint=31,spySectionPoint=11,medicalSectionPoint=11,skill="None",isEnmity=true,moraleEnmity=12,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=51,nameLangMessageId="staff_name_99_018",combatSectionPoint=120,developSectionPoint=30,baseDevSectionPoint=40,supportSectionPoint=20,spySectionPoint=5,medicalSectionPoint=31,skill="Grappler",isEnmity=true,moraleEnmity=15,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=true,missionId=10211}
@@ -474,7 +424,7 @@ TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=55,nameLangMessageId="s
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=56,nameLangMessageId="staff_name_99_111",combatSectionPoint=28,developSectionPoint=20,baseDevSectionPoint=7,supportSectionPoint=27,spySectionPoint=9,medicalSectionPoint=10,skill="FultonExpert",isEnmity=true,moraleEnmity=3,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10020}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=57,nameLangMessageId="staff_name_99_024",combatSectionPoint=47,developSectionPoint=16,baseDevSectionPoint=30,supportSectionPoint=16,spySectionPoint=35,medicalSectionPoint=25,skill="QuickDraw",isEnmity=true,moraleEnmity=15,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10020}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=58,nameLangMessageId="staff_name_99_025",combatSectionPoint=48,developSectionPoint=88,baseDevSectionPoint=20,supportSectionPoint=5,spySectionPoint=28,medicalSectionPoint=33,skill="ElectricSpinningEngineer",isEnmity=false,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=true,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=59,nameLangMessageId="staff_name_99_026",combatSectionPoint=13,developSectionPoint=11,baseDevSectionPoint=15,supportSectionPoint=16,spySectionPoint=48,medicalSectionPoint=11,skill="??????",isEnmity=true,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10040}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=59,nameLangMessageId="staff_name_99_026",combatSectionPoint=13,developSectionPoint=11,baseDevSectionPoint=15,supportSectionPoint=16,spySectionPoint=48,medicalSectionPoint=11,skill="なし",isEnmity=true,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10040}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=60,nameLangMessageId="staff_name_99_027",combatSectionPoint=47,developSectionPoint=31,baseDevSectionPoint=11,supportSectionPoint=20,spySectionPoint=10,medicalSectionPoint=30,skill="Study",isEnmity=true,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10040}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=61,nameLangMessageId="staff_name_99_028",combatSectionPoint=40,developSectionPoint=20,baseDevSectionPoint=20,supportSectionPoint=45,spySectionPoint=15,medicalSectionPoint=11,skill="QuickReload",isEnmity=true,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10040}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=62,nameLangMessageId="staff_name_99_118",combatSectionPoint=64,developSectionPoint=38,baseDevSectionPoint=38,supportSectionPoint=45,spySectionPoint=42,medicalSectionPoint=11,skill="Lucky",isEnmity=true,moraleEnmity=7,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=false,missionId=10044}
@@ -504,13 +454,13 @@ TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=85,nameLangMessageId="s
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=86,nameLangMessageId="staff_name_99_053",combatSectionPoint=33,developSectionPoint=35,baseDevSectionPoint=20,supportSectionPoint=5,spySectionPoint=56,medicalSectionPoint=15,skill="None",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10052}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=87,nameLangMessageId="staff_name_99_054",combatSectionPoint=11,developSectionPoint=36,baseDevSectionPoint=11,supportSectionPoint=15,spySectionPoint=20,medicalSectionPoint=11,skill="GunsmithShotGun",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10043}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=88,nameLangMessageId="staff_name_99_055",combatSectionPoint=20,developSectionPoint=32,baseDevSectionPoint=15,supportSectionPoint=20,spySectionPoint=15,medicalSectionPoint=11,skill="FultonExpert",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10043}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=89,nameLangMessageId="staff_name_99_138",combatSectionPoint=30,developSectionPoint=30,baseDevSectionPoint=30,supportSectionPoint=36,spySectionPoint=30,medicalSectionPoint=30,skill="??????",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10033}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=89,nameLangMessageId="staff_name_99_138",combatSectionPoint=30,developSectionPoint=30,baseDevSectionPoint=30,supportSectionPoint=36,spySectionPoint=30,medicalSectionPoint=30,skill="なし",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10033}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=90,nameLangMessageId="staff_name_99_057",combatSectionPoint=18,developSectionPoint=11,baseDevSectionPoint=45,supportSectionPoint=30,spySectionPoint=28,medicalSectionPoint=63,skill="Botanist",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=91,nameLangMessageId="staff_name_99_058",combatSectionPoint=30,developSectionPoint=16,baseDevSectionPoint=44,supportSectionPoint=11,spySectionPoint=30,medicalSectionPoint=50,skill="??????",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=91,nameLangMessageId="staff_name_99_058",combatSectionPoint=30,developSectionPoint=16,baseDevSectionPoint=44,supportSectionPoint=11,spySectionPoint=30,medicalSectionPoint=50,skill="なし",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10041}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=92,nameLangMessageId="staff_name_99_059",combatSectionPoint=79,developSectionPoint=30,baseDevSectionPoint=11,supportSectionPoint=30,spySectionPoint=11,medicalSectionPoint=30,skill="FultonExpert",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10044}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=93,nameLangMessageId="staff_name_99_060",combatSectionPoint=11,developSectionPoint=30,baseDevSectionPoint=26,supportSectionPoint=20,spySectionPoint=11,medicalSectionPoint=65,skill="Surgeon",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=94,nameLangMessageId="staff_name_99_061",combatSectionPoint=30,developSectionPoint=35,baseDevSectionPoint=20,supportSectionPoint=36,spySectionPoint=48,medicalSectionPoint=20,skill="??????",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=95,nameLangMessageId="staff_name_99_062",combatSectionPoint=35,developSectionPoint=11,baseDevSectionPoint=35,supportSectionPoint=48,spySectionPoint=11,medicalSectionPoint=33,skill="??????",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=94,nameLangMessageId="staff_name_99_061",combatSectionPoint=30,developSectionPoint=35,baseDevSectionPoint=20,supportSectionPoint=36,spySectionPoint=48,medicalSectionPoint=20,skill="なし",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=95,nameLangMessageId="staff_name_99_062",combatSectionPoint=35,developSectionPoint=11,baseDevSectionPoint=35,supportSectionPoint=48,spySectionPoint=11,medicalSectionPoint=33,skill="なし",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=96,nameLangMessageId="staff_name_99_139",combatSectionPoint=48,developSectionPoint=66,baseDevSectionPoint=15,supportSectionPoint=20,spySectionPoint=15,medicalSectionPoint=48,skill="CyberneticsEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=97,nameLangMessageId="staff_name_99_140",combatSectionPoint=36,developSectionPoint=48,baseDevSectionPoint=40,supportSectionPoint=30,spySectionPoint=40,medicalSectionPoint=57,skill="DrugEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10054}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=98,nameLangMessageId="staff_name_99_065",combatSectionPoint=11,developSectionPoint=90,baseDevSectionPoint=40,supportSectionPoint=30,spySectionPoint=11,medicalSectionPoint=30,skill="ElectricEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=true,missionId=10082}
@@ -520,8 +470,8 @@ TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=101,nameLangMessageId="
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=102,nameLangMessageId="staff_name_99_069",combatSectionPoint=110,developSectionPoint=50,baseDevSectionPoint=23,supportSectionPoint=30,spySectionPoint=40,medicalSectionPoint=11,skill="Reflex",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=true,missionId=10120}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=103,nameLangMessageId="staff_name_99_070",combatSectionPoint=70,developSectionPoint=128,baseDevSectionPoint=90,supportSectionPoint=50,spySectionPoint=55,medicalSectionPoint=60,skill="MonitorEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=true,langProficAfrikaans=true,missionId=10211}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=104,nameLangMessageId="staff_name_99_071",combatSectionPoint=70,developSectionPoint=80,baseDevSectionPoint=30,supportSectionPoint=55,spySectionPoint=11,medicalSectionPoint=120,skill="Surgeon",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=false,langProficAfrikaans=true,missionId=10211}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=105,nameLangMessageId="staff_name_99_072",combatSectionPoint=60,developSectionPoint=70,baseDevSectionPoint=120,supportSectionPoint=20,spySectionPoint=60,medicalSectionPoint=70,skill="??????",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=true,langProficAfrikaans=true,missionId=10211}
-TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=106,nameLangMessageId="staff_name_99_141",combatSectionPoint=120,developSectionPoint=70,baseDevSectionPoint=60,supportSectionPoint=60,spySectionPoint=70,medicalSectionPoint=20,skill="??????",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=true,langProficAfrikaans=true,missionId=10211}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=105,nameLangMessageId="staff_name_99_072",combatSectionPoint=60,developSectionPoint=70,baseDevSectionPoint=120,supportSectionPoint=20,spySectionPoint=60,medicalSectionPoint=70,skill="なし",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=true,langProficAfrikaans=true,missionId=10211}
+TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=106,nameLangMessageId="staff_name_99_141",combatSectionPoint=120,developSectionPoint=70,baseDevSectionPoint=60,supportSectionPoint=60,spySectionPoint=70,medicalSectionPoint=20,skill="なし",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=false,langProficKikongo=true,langProficAfrikaans=true,missionId=10211}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=107,nameLangMessageId="staff_name_99_074",combatSectionPoint=30,developSectionPoint=120,baseDevSectionPoint=80,supportSectionPoint=30,spySectionPoint=70,medicalSectionPoint=50,skill="ElectromagneticNetEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10045}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=108,nameLangMessageId="staff_name_99_075",combatSectionPoint=50,developSectionPoint=110,baseDevSectionPoint=30,supportSectionPoint=80,spySectionPoint=70,medicalSectionPoint=30,skill="RocketControlEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=false,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10045}
 TppMotherBaseManagement.RegisterUniqueStaff{uniqueTypeId=109,nameLangMessageId="staff_name_99_076",combatSectionPoint=30,developSectionPoint=125,baseDevSectionPoint=50,supportSectionPoint=30,spySectionPoint=70,medicalSectionPoint=80,skill="SuppressorEngineer",isEnmity=false,moraleEnmity=4,condition="Normal",badConditionWeight=3,langProficEnglish=false,langProficRussian=true,langProficPashto=true,langProficKikongo=false,langProficAfrikaans=false,missionId=10156}
@@ -746,4 +696,3 @@ TppMotherBaseManagement.RegisterCommonVolunteerStaffClearTimeParam{index=3,clear
 TppMotherBaseManagement.RegisterCommonVolunteerStaffClearTimeParam{index=4,clearTimeMinute=10,countRate=40}
 TppMotherBaseManagement.RegisterCommonVolunteerStaffClearTimeParam{index=5,clearTimeMinute=5,countRate=20}
 return this
-

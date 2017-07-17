@@ -746,4 +746,3 @@ TppMotherBaseManagement.RegisterCommonVolunteerStaffClearTimeParam{index=3,clear
 TppMotherBaseManagement.RegisterCommonVolunteerStaffClearTimeParam{index=4,clearTimeMinute=10,countRate=40}
 TppMotherBaseManagement.RegisterCommonVolunteerStaffClearTimeParam{index=5,clearTimeMinute=5,countRate=20}
 return this
-

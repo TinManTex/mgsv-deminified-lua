@@ -128,14 +128,14 @@ function this.ChangeTrapState(trapName,enable)
   end
 end
 function this.ChangeNormalTrapState(trapName,enable)
-  local e=Tpp.GetDataBodyWithIdentifier("VariableTrapIdentifier",trapName,"GeoTrap")
-  if e then
+  local dataBody=Tpp.GetDataBodyWithIdentifier("VariableTrapIdentifier",trapName,"GeoTrap")
+  if dataBody then
     TppDataUtility.SetEnableDataFromIdentifier("VariableTrapIdentifier",trapName,enable)
     return true
   end
 end
-function this.ChangeTriggerTrapState(e,a)
-  Geo.GeoLuaEnableTriggerTrap(e,a)
+function this.ChangeTriggerTrapState(trapName,enable)
+  Geo.GeoLuaEnableTriggerTrap(trapName,enable)
   return true
 end
 return this

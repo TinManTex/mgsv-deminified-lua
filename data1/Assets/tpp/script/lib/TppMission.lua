@@ -1,7 +1,7 @@
 -- DOBUILD: 1
 -- TppMission.lua
 local this={}
-local StrCode32=InfLog.StrCode32--tex was Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeTable=Tpp.IsTypeTable
 local IsTypeString=Tpp.IsTypeString
@@ -131,49 +131,49 @@ function this.UpdateObjective(objectiveInfo)
   if not IsTypeTable(mvars.mis_objectiveSetting)then
     return
   end
-  local n
+  local updateObjectiveOnHeliStart
   if TppSequence.IsHelicopterStart()then
     if not TppPlayer.IsAlreadyDropped()then
-      n=true
+      updateObjectiveOnHeliStart=true
     end
   end
   if IsTypeTable(options)then
     if options.isForceHelicopterStart then
-      n=true
+      updateObjectiveOnHeliStart=true
     end
   end
-  if n then
+  if updateObjectiveOnHeliStart then
     mvars.mis_updateObjectiveOnHelicopterStart=true
   end
-  local o=false
+  local doUpdate=false
   for n,i in pairs(mvars.mis_objectiveSetting)do
-    local n=not this.IsEnableMissionObjective(i)
-    if n then
-      n=not this.IsEnableAnyParentMissionObjective(i)
+    local isEnableAnyMissionObjective=not this.IsEnableMissionObjective(i)
+    if isEnableAnyMissionObjective then
+      isEnableAnyMissionObjective=not this.IsEnableAnyParentMissionObjective(i)
     end
-    if n then
-      o=true
+    if isEnableAnyMissionObjective then
+      doUpdate=true
       break
     end
   end
   if IsTypeTable(radio)then
-    if o then
-      if not n then
+    if doUpdate then
+      if not updateObjectiveOnHeliStart then
         mvars.mis_updateObjectiveRadioGroupName=TppRadio.GetRadioNameAndRadioIDs(radio.radioGroups)
       end
-      local e=this.GetObjectiveRadioOption(radio)
-      TppRadio.Play(radio.radioGroups,e)
+      local objectiveRadioOption=this.GetObjectiveRadioOption(radio)
+      TppRadio.Play(radio.radioGroups,objectiveRadioOption)
     end
   end
   if IsTypeTable(radioSecond)then
-    if o then
-      local e=this.GetObjectiveRadioOption(radioSecond)
-      if n then
+    if doUpdate then
+      local objectiveRadioOption=this.GetObjectiveRadioOption(radioSecond)
+      if updateObjectiveOnHeliStart then
         mvars.mis_updateObjectiveDoorOpenRadioGroups=radioSecond.radioGroups
-        mvars.mis_updateObjectiveDoorOpenRadioOptions=e
+        mvars.mis_updateObjectiveDoorOpenRadioOptions=objectiveRadioOption
       else
-        e.isEnqueue=true
-        TppRadio.Play(radioSecond.radioGroups,e)
+        objectiveRadioOption.isEnqueue=true
+        TppRadio.Play(radioSecond.radioGroups,objectiveRadioOption)
       end
     end
   end
@@ -194,17 +194,17 @@ function this.UpdateCheckPointAtCurrentPosition()
   TppCheckPoint.UpdateAtCurrentPosition()
 end
 function this.IsMatchStartLocation(missionCode)
-  local locationId=TppPackList.GetLocationNameFormMissionCode(missionCode)
+  local locationName=TppPackList.GetLocationNameFormMissionCode(missionCode)
   if TppLocation.IsAfghan()then
-    if TppDefine.LOCATION_ID[locationId]~=TppDefine.LOCATION_ID.AFGH then
+    if TppDefine.LOCATION_ID[locationName]~=TppDefine.LOCATION_ID.AFGH then
       return false
     end
   elseif TppLocation.IsMiddleAfrica()then
-    if TppDefine.LOCATION_ID[locationId]~=TppDefine.LOCATION_ID.MAFR then
+    if TppDefine.LOCATION_ID[locationName]~=TppDefine.LOCATION_ID.MAFR then
       return false
     end
   elseif TppLocation.IsMotherBase()then
-    if TppDefine.LOCATION_ID[locationId]~=TppDefine.LOCATION_ID.MTBS then
+    if TppDefine.LOCATION_ID[locationName]~=TppDefine.LOCATION_ID.MTBS then
       return false
     end
   else
@@ -218,10 +218,10 @@ end
 --tex NOTE GOTCHA these should now only be used for mission sequence scripts, otherwise just use the gvar directly
 --this is to work around mission timers/setup not triggering on start-on foot because of heli traps not triggering
 function this.IsStartFromHelispace()
-  return gvars.mis_isStartFromHelispace and Ivars.mis_isGroundStart:Is(0)--tex WORKAROUND added ivar
+  return gvars.mis_isStartFromHelispace and not igvars.mis_isGroundStart--tex WORKAROUND added ivar
 end
 function this.IsStartFromFreePlay()
-  return gvars.mis_isStartFromFreePlay or Ivars.mis_isGroundStart:Is(1)--tex WORKAROUND added ivar
+  return gvars.mis_isStartFromFreePlay or igvars.mis_isGroundStart--tex WORKAROUND added ivar
 end
 function this.AcceptMission(missionCode)
   if this.IsEmergencyMission(missionCode)then
@@ -432,7 +432,7 @@ function this.RestartMission(loadInfo)
   end
 end
 function this.ExecuteRestartMission(isReturnToMission)
-  InfLog.AddFlow("TppMission.ExecuteRestartMission")--tex
+  InfCore.LogFlow("TppMission.ExecuteRestartMission")--tex
   this.SafeStopSettingOnMissionReload()
   TppQuest.OnMissionGameEnd()
   TppPlayer.ResetInitialPosition()
@@ -517,7 +517,7 @@ function this.ReturnToMission(_loadInfo)
   this.RestartMission(loadInfo)
 end
 function this.ExecuteContinueFromCheckPoint(popupId,popupResult,RENdoMissionCallback)
-  InfLog.AddFlow("TppMission.ExecuteContinueFromCheckPoint")--tex
+  InfCore.LogFlow("TppMission.ExecuteContinueFromCheckPoint")--tex
   TppQuest.OnMissionGameEnd()
   TppWeather.OnEndMissionPrepareFunction()
   this.SafeStopSettingOnMissionReload()
@@ -869,7 +869,7 @@ function this.VarSaveForMissionAbort()
   end
 end
 function this.LoadForMissionAbort()
-  InfLog.AddFlow("TppMission.LoadForMissionAbort")--tex
+  InfCore.LogFlow("TppMission.LoadForMissionAbort")--tex
   TppUiStatusManager.SetStatus("AnnounceLog","INVALID_LOG")
   if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_ESCAPE_THE_HOSPITAL then
     this.RequestLoad(vars.missionCode,mvars.mis_abortCurrentMissionCode,mvars.mis_missionAbortLoadingOption)
@@ -907,6 +907,18 @@ function this.GameOverReturnToTitle()
   this.ExecuteMissionAbort()
 end
 function this.ReserveGameOver(gameOverType,gameOverRadio,isAborting)
+  --tex>
+  if gameOverType==TppDefine.GAME_OVER_TYPE.OUTSIDE_OF_MISSION_AREA then
+    if Ivars.disableOutOfBoundsChecks:Is(1) then
+      return false
+    end
+  end
+  if gameOverType~=TppDefine.GAME_OVER_TYPE.ABORT then
+    if Ivars.disableGameOver:Is(1) then
+      return false
+    end
+  end
+  --<
   if svars.mis_isDefiniteMissionClear then
     return false
   end
@@ -1222,7 +1234,7 @@ function this.MissionFinalize(options)
   end
 end
 function this.ExecuteMissionFinalize()
-  InfLog.AddFlow("TppMission.ExecuteMissionFinalize "..vars.missionCode)--tex
+  InfCore.LogFlow("TppMission.ExecuteMissionFinalize "..vars.missionCode)--tex
   InfMain.ExecuteMissionFinalizeTop()--tex
   local nextLocationName=TppPackList.GetLocationNameFormMissionCode(gvars.mis_nextMissionCodeForMissionClear)
   if nextLocationName then
@@ -2054,8 +2066,8 @@ function this.OnAllocate(missionTable)
   mvars.mis_isOutsideOfMissionArea=false
   mvars.mis_isOutsideOfHotZone=true
   this.MessageHandler={
-    OnMessage=function(i,s,n,t,a,o)
-      this.OnMessageWhileLoading(i,s,n,t,a,o)
+    OnMessage=function(sender,messageId,arg0,arg1,arg2,arg3)
+      this.OnMessageWhileLoading(sender,messageId,arg0,arg1,arg2,arg3)
     end
   }
   GameMessage.SetMessageHandler(this.MessageHandler,{"UI","Radio","Video","Network","Nt"})
@@ -2076,10 +2088,23 @@ function this.EnableInGameFlag(resetMute)
     mvars.mis_missionStateIsNotInGame=true
   end
 end
-function this.ExecuteSystemCallback(s,n)
-  local e=this.systemCallbacks[s]
-  if IsTypeFunc(e)then
-    return e(n)
+--tex>
+local skipLogCallBack={
+  OnUpdateWhileMissionPrepare=true,
+  OnUpdateStorySequenceInGame=true,
+}
+--<
+function this.ExecuteSystemCallback(callbackName,arg1)
+  --tex> DEBUG
+  if ivars.debugFlow then
+    if not skipLogCallBack[callbackName] then
+      InfCore.LogFlow("TppMission.ExecuteSystemCallback:"..callbackName.."("..tostring(arg1)..")")
+    end
+  end
+  --<
+  local CallBack=this.systemCallbacks[callbackName]
+  if IsTypeFunc(CallBack)then
+    return CallBack(arg1)
   end
 end
 function this.Init(missionTable)
@@ -2168,23 +2193,23 @@ function this.CheckMessageOptionWhileLoading()
   return true
 end
 function this.OnMessageWhileLoading(sender,messageId,arg0,arg1,arg2,arg3)
-  local n=Tpp.DEBUG_StrCode32ToString
+  --ORPHAN local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
   local strLogText
   Tpp.DoMessage(this.messageExecTableWhileLoading,this.CheckMessageOptionWhileLoading,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,this.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
-function this.CheckMessageOption(messages)
+function this.CheckMessageOption(messageOptions)
   local isExecMissionClear=false
   local isExecGameOver=false
   local isExecDemoPlaying=false
   local isExecMissionPrepare=false
-  if messages and IsTypeTable(messages)then
-    isExecMissionClear=messages[StrCode32"isExecMissionClear"]
-    isExecGameOver=messages[StrCode32"isExecGameOver"]
-    isExecDemoPlaying=messages[StrCode32"isExecDemoPlaying"]
-    isExecMissionPrepare=messages[StrCode32"isExecMissionPrepare"]
+  if messageOptions and IsTypeTable(messageOptions)then
+    isExecMissionClear=messageOptions[StrCode32"isExecMissionClear"]
+    isExecGameOver=messageOptions[StrCode32"isExecGameOver"]
+    isExecDemoPlaying=messageOptions[StrCode32"isExecDemoPlaying"]
+    isExecMissionPrepare=messageOptions[StrCode32"isExecMissionPrepare"]
   end
   return this.CheckMissionState(isExecMissionClear,isExecGameOver,isExecDemoPlaying,isExecMissionPrepare)
 end
@@ -2225,8 +2250,8 @@ function this.EnableAlertOutOfMissionAreaIfAlertAreaStart()
     this.EnableAlertOutOfMissionArea()
   end
 end
-function this.IgnoreAlertOutOfMissionAreaForBossQuiet(e)
-  if e==true then
+function this.IgnoreAlertOutOfMissionAreaForBossQuiet(enable)
+  if enable==true then
     mvars.mis_ignoreAlertOfMissionArea=true
   else
     mvars.mis_ignoreAlertOfMissionArea=false
@@ -2508,12 +2533,12 @@ function this.SeizeReliefVehicleOnClear()
     return
   end
   if vehicleId~=vars.playerVehicleGameObjectId then
-    local i={"Fulton","CheckFultonType"}
-    local s=this.GetMissionClearType()
-    if not this.EvaluateReliefVehicleSeizable(s)then
-      table.insert(i,"CheckFarFromPlayer")
+    local options={"Fulton","CheckFultonType"}
+    local missionClearTyoe=this.GetMissionClearType()
+    if not this.EvaluateReliefVehicleSeizable(missionClearTyoe)then
+      table.insert(options,"CheckFarFromPlayer")
     end
-    GameObject.SendCommand(vehicleId,{id="Seize",options=i})
+    GameObject.SendCommand(vehicleId,{id="Seize",options=options})
   end
 end
 function this.SeizeReliefVehicleOnForceGoToMb()
@@ -2558,13 +2583,13 @@ function this.ExecuteVehicleSaveCarryOnClear()
     if mvars.mis_orderBoxList then
       if gvars.mis_orderBoxName~=0 then
         local orderBoxName=this.FindOrderBoxName(gvars.mis_orderBoxName)
-        local boxLocPos,bosLocRot=this.GetOrderBoxLocator(orderBoxName)
+        local boxLocPos,boxLocRot=this.GetOrderBoxLocator(orderBoxName)
         if boxLocPos then
           local adjustPos=Vector3(0,-.75,1.98)
           local vBoxLocPos=Vector3(boxLocPos[1],boxLocPos[2],boxLocPos[3])
-          local adjustedPos=-Quat.RotationY(TppMath.DegreeToRadian(bosLocRot)):Rotate(adjustPos)
+          local adjustedPos=-Quat.RotationY(TppMath.DegreeToRadian(boxLocRot)):Rotate(adjustPos)
           initialPos=adjustedPos+vBoxLocPos
-          rotY=bosLocRot
+          rotY=boxLocRot
         end
       end
     end
@@ -2651,8 +2676,8 @@ function this.EstablishedGameOver()
     end
   end
 end
-function this.UpdateAtCanMissionClear(n,o)
-  if not n then
+function this.UpdateAtCanMissionClear(isOutsideOfHotZone,isOutsideOfMissionArea)
+  if not isOutsideOfHotZone then
     mvars.mis_lastOutSideOfHotZoneButAlert=nil
     StopOutsideHotzoneTimer()
     return
@@ -2660,7 +2685,7 @@ function this.UpdateAtCanMissionClear(n,o)
   local isNotAlert=IsNotAlert()
   local isPlayerStatusNormal=IsPlayerStatusNormal()
   local notHelicopter=not IsHelicopter(vars.playerVehicleGameObjectId)
-  if o then
+  if isOutsideOfMissionArea then
     if isPlayerStatusNormal and notHelicopter then
       StopOutsideHotzoneTimer()
       this.ReserveMissionClearOnOutOfHotZone()
@@ -3122,14 +3147,15 @@ function this.OnMissionGameEndFadeOutFinish2nd()
   end
   TimerStart("Timer_MissionGameEndStart2nd",.1)
 end
+--objectiveDefine=missionTable.sequence.missionObjectiveDefine
 function this.SetMissionObjectives(objectiveDefine,ojectiveTree,objectiveEnum)
   mvars.mis_missionObjectiveDefine=objectiveDefine
   mvars.mis_missionObjectiveTree=ojectiveTree
   mvars.mis_missionObjectiveEnum=objectiveEnum
   if mvars.mis_missionObjectiveTree then
     for n,e in Tpp.BfsPairs(mvars.mis_missionObjectiveTree)do
-      for e,i in pairs(e)do
-        local objectiveDefine=mvars.mis_missionObjectiveDefine[e]
+      for objectiveName,i in pairs(e)do
+        local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
         if objectiveDefine then
           objectiveDefine.parent=objectiveDefine.parent or{}
           objectiveDefine.parent[n]=true
@@ -3137,6 +3163,7 @@ function this.SetMissionObjectives(objectiveDefine,ojectiveTree,objectiveEnum)
       end
     end
   end
+  --NMC uhh, ok, there's no code after these checks so what's the point?
   if mvars.mis_missionObjectiveTree and mvars.mis_missionObjectiveEnum==nil then
     return
   end
@@ -3145,8 +3172,10 @@ function this.SetMissionObjectives(objectiveDefine,ojectiveTree,objectiveEnum)
   end
 end
 function this.OnFinishUpdateObjectiveRadio(radioGroupNameStr32)
-  if radioGroupNameStr32==StrCode32(mvars.mis_updateObjectiveRadioGroupName)then
-    this.ShowUpdateObjective(mvars.mis_objectiveSetting)
+  if mvars.mis_updateObjectiveRadioGroupName then--tex checking against mis_updateObjectiveRadioGroupName==nil so my redirected StrCode32 doesnt complain
+    if radioGroupNameStr32==StrCode32(mvars.mis_updateObjectiveRadioGroupName)then
+      this.ShowUpdateObjective(mvars.mis_objectiveSetting)
+  end
   end
 end
 --mvars.mis_objectiveSetting
@@ -3155,19 +3184,19 @@ function this.ShowUpdateObjective(objectiveSetting)
     return
   end
   local announceLogTable={}
-  for n,s in pairs(objectiveSetting)do
-    local objectiveDefine=mvars.mis_missionObjectiveDefine[s]
-    local t=not this.IsEnableMissionObjective(s)
-    if t then
-      t=(not this.IsEnableAnyParentMissionObjective(s))
+  for n,objectiveName in pairs(objectiveSetting)do
+    local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
+    local notEnabled=not this.IsEnableMissionObjective(objectiveName)
+    if notEnabled then
+      notEnabled=(not this.IsEnableAnyParentMissionObjective(objectiveName))
     end
     if objectiveDefine.packLabel then
       if not TppPackList.IsMissionPackLabelList(objectiveDefine.packLabel)then
-        t=false
+        notEnabled=false
       end
     end
-    if objectiveDefine and t then
-      this.DisableChildrenObjective(s)
+    if objectiveDefine and notEnabled then
+      this.DisableChildrenObjective(objectiveName)
       this._ShowObjective(objectiveDefine,true)
       local announceInfo={isMissionAnnounce=false,subGoalId=nil}
       if objectiveDefine.announceLog then
@@ -3177,7 +3206,7 @@ function this.ShowUpdateObjective(objectiveSetting)
         end
         announceLogTable[objectiveDefine.announceLog]=announceInfo
       end
-      this.SetMissionObjectiveEnable(s,true)
+      this.SetMissionObjectiveEnable(objectiveName,true)
     end
   end
   if next(announceLogTable)then
@@ -3218,9 +3247,9 @@ function this._ShowObjective(objectiveDefine,RENAMEbool)
     TppMarker.Enable(objectiveDefine.gameObjectName,objectiveDefine.visibleArea,objectiveDefine.goalType,objectiveDefine.viewType,objectiveDefine.randomRange,objectiveDefine.setImportant,objectiveDefine.setNew,objectiveDefine.mapRadioName,objectiveDefine.langId,objectiveDefine.goalLangId,objectiveDefine.setInterrogation)
   end
   if objectiveDefine.gimmickId then
-    local i,gameObjectName=TppGimmick.GetGameObjectId(objectiveDefine.gimmickId)
-    if i then
-      TppMarker.Enable(gameObjectName,objectiveDefine.visibleArea,objectiveDefine.goalType,objectiveDefine.viewType,objectiveDefine.randomRange,objectiveDefine.setImportant,objectiveDefine.setNew,objectiveDefine.mapRadioName,objectiveDefine.langId,objectiveDefine.goalLangId,objectiveDefine.setInterrogation)
+    local ret,gameId=TppGimmick.GetGameObjectId(objectiveDefine.gimmickId)
+    if ret then
+      TppMarker.Enable(gameId,objectiveDefine.visibleArea,objectiveDefine.goalType,objectiveDefine.viewType,objectiveDefine.randomRange,objectiveDefine.setImportant,objectiveDefine.setNew,objectiveDefine.mapRadioName,objectiveDefine.langId,objectiveDefine.goalLangId,objectiveDefine.setInterrogation)
     end
   end
   if objectiveDefine.photoId then
@@ -3260,75 +3289,75 @@ function this.RestoreShowMissionObjective()
   if not mvars.mis_missionObjectiveEnum then
     return
   end
-  for n,i in ipairs(mvars.mis_missionObjectiveEnum)do
+  for n,objectiveName in ipairs(mvars.mis_missionObjectiveEnum)do
     if not svars.mis_objectiveEnable[n]then
-      local objectiveDefine=mvars.mis_missionObjectiveDefine[i]
+      local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
       if objectiveDefine then
         this.DisableObjective(objectiveDefine)
       end
     end
   end
-  for n,i in ipairs(mvars.mis_missionObjectiveEnum)do
+  for n,objectiveName in ipairs(mvars.mis_missionObjectiveEnum)do
     if svars.mis_objectiveEnable[n]then
-      local objectiveDefine=mvars.mis_missionObjectiveDefine[i]
+      local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
       if objectiveDefine then
         this._ShowObjective(objectiveDefine,false)
       end
     end
   end
 end
-function this.SetMissionObjectiveEnable(e,n)
+function this.SetMissionObjectiveEnable(objectiveName,enable)
   if not mvars.mis_missionObjectiveEnum then
     return
   end
-  local e=mvars.mis_missionObjectiveEnum[e]
-  if not e then
+  local objectiveEnum=mvars.mis_missionObjectiveEnum[objectiveName]
+  if not objectiveEnum then
     return
   end
-  svars.mis_objectiveEnable[e]=n
+  svars.mis_objectiveEnable[objectiveEnum]=enable
 end
-function this.IsEnableMissionObjective(e)
+function this.IsEnableMissionObjective(objectiveName)
   if not mvars.mis_missionObjectiveEnum then
     return
   end
-  local e=mvars.mis_missionObjectiveEnum[e]
-  if not e then
+  local objectiveEnum=mvars.mis_missionObjectiveEnum[objectiveName]
+  if not objectiveEnum then
     return
   end
-  return svars.mis_objectiveEnable[e]
+  return svars.mis_objectiveEnable[objectiveEnum]
 end
-function this.GetParentObjectiveName(e)
-  local objectiveDefine=mvars.mis_missionObjectiveDefine[e]
+function this.GetParentObjectiveName(objectiveName)
+  local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
   if not objectiveDefine then
     return
   end
   return objectiveDefine.parent
 end
-function this.IsEnableAnyParentMissionObjective(n)
-  local objectiveDefine=mvars.mis_missionObjectiveDefine[n]
+function this.IsEnableAnyParentMissionObjective(objectiveName)
+  local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
   if not objectiveDefine then
     return
   end
   if not objectiveDefine.parent then
     return false
   end
-  local i
-  for n,s in pairs(objectiveDefine.parent)do
-    if this.IsEnableMissionObjective(n)then
+  local hasEnabled
+  for _objectiveName,s in pairs(objectiveDefine.parent)do
+    if this.IsEnableMissionObjective(_objectiveName)then
       return true
     else
-      i=this.IsEnableAnyParentMissionObjective(n)
-      if i then
+      hasEnabled=this.IsEnableAnyParentMissionObjective(_objectiveName)
+      if hasEnabled then
         return true
       end
     end
   end
   return false
 end
-function this.DisableChildrenObjective(s)
+function this.DisableChildrenObjective(objectiveName)
   local n
   for i,e in Tpp.BfsPairs(mvars.mis_missionObjectiveTree)do
-    if i==s then
+    if i==objectiveName then
       n=e
       break
     end
@@ -3336,10 +3365,10 @@ function this.DisableChildrenObjective(s)
   if not n then
     return
   end
-  for i,n in Tpp.BfsPairs(n)do
-    local objectiveDefine=mvars.mis_missionObjectiveDefine[i]
+  for objectiveName,n in Tpp.BfsPairs(n)do
+    local objectiveDefine=mvars.mis_missionObjectiveDefine[objectiveName]
     if objectiveDefine then
-      this.SetMissionObjectiveEnable(i,false)
+      this.SetMissionObjectiveEnable(objectiveName,false)
       this.DisableObjective(objectiveDefine)
     end
   end
@@ -3354,9 +3383,9 @@ function this.DisableObjective(objectiveDefine)
     TppMarker.Disable(objectiveDefine.gameObjectName,objectiveDefine.mapRadioName)
   end
   if objectiveDefine.gimmickId then
-    local n,i=TppGimmick.GetGameObjectId(objectiveDefine.gimmickId)
-    if n then
-      TppMarker.Disable(i,objectiveDefine.mapRadioName)
+    local ret,gameId=TppGimmick.GetGameObjectId(objectiveDefine.gimmickId)
+    if ret then
+      TppMarker.Disable(gameId,objectiveDefine.mapRadioName)
     end
   end
   if objectiveDefine.photoId then
@@ -3496,7 +3525,7 @@ function this.GoToEmergencyMission()
   this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.FROM_HELISPACE,nextMissionId=emergencyMissionCode,nextHeliRoute=startRoute,nextLayoutCode=mbLayoutCode,nextClusterId=clusterId}
 end
 function this.RequestLoad(nextMission,currentMission,options)
-  InfLog.AddFlow("TppMission.RequestLoad next:"..nextMission.." current:"..tostring(currentMission))--tex
+  InfCore.LogFlow("TppMission.RequestLoad next:"..nextMission.." current:"..tostring(currentMission))--tex
   if not mvars then
     return
   end
@@ -3507,7 +3536,7 @@ function this.RequestLoad(nextMission,currentMission,options)
   mvars.mis_loadRequest={nextMission=nextMission,currentMission=currentMission,options=options}
 end
 function this.LoadWithChunkCheck()
-  InfLog.AddFlow("TppMission.LoadWithChunkCheck "..vars.missionCode)--tex
+  InfCore.LogFlow("TppMission.LoadWithChunkCheck "..vars.missionCode)--tex
   local nextMission,currentMission,loadOptions=mvars.mis_loadRequest.nextMission,mvars.mis_loadRequest.currentMission,mvars.mis_loadRequest.options
   local chunkIndex=Tpp.GetChunkIndex(vars.locationCode)
   if this.IsChunkLoading(chunkIndex)then
@@ -3545,7 +3574,7 @@ function this.IsChunkLoading(chunkIndex)
   return true
 end
 function this.Load(nextMissionCode,currentMissionCode,loadSettings)
-  InfLog.AddFlow("TppMission.Load nextMissionCode:"..tostring(nextMissionCode).." currentMissionCode:"..tostring(currentMissionCode))--tex
+  InfCore.LogFlow("TppMission.Load nextMissionCode:"..tostring(nextMissionCode).." currentMissionCode:"..tostring(currentMissionCode))--tex
   InfMain.OnLoad(nextMissionCode,currentMissionCode)--tex
   local showLoadingTips
   if(loadSettings and loadSettings.showLoadingTips~=nil)then
@@ -3600,7 +3629,7 @@ function this.Load(nextMissionCode,currentMissionCode,loadSettings)
   TppUI.ShowAccessIcon()
 end
 function this.ExecuteReload()
-  InfLog.AddFlow("TppMission.ExecuteReload "..vars.missionCode)--tex
+  InfCore.LogFlow("TppMission.ExecuteReload "..vars.missionCode)--tex
   if mvars.mis_nextLocationCode then
     vars.locationCode=mvars.mis_nextLocationCode
   end

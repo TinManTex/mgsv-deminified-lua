@@ -1,6 +1,10 @@
 -- DOBUILD: 1
 --start.lua
-InfLog.AddFlow"start.lua"--tex
+InfCore.LogFlow"start.lua"--tex
+
+local dofile=InfCore.DoFile--tex allow external alternate
+local LoadLibrary=InfCore.LoadLibrary --tex allow external alternate, was Script.LoadLibrary
+
 local function yield()
   coroutine.yield()
 end
@@ -580,81 +584,71 @@ if Script.LoadLibrary then
   else
     filePath="Tpp/Scripts/Equip/EquipIdTable.lua"
   end
-  Script.LoadLibraryAsync(filePath)
-  while Script.IsLoadingLibrary(filePath)do
-    yield()
-  end
-  local e=tppOrMgoPath.."level_asset/weapon/ParameterTables/parts/EquipParameters.lua"
-  if TppEquip.IsExistFile(e)then
-    Script.LoadLibrary(e)
+  --tex>
+  local scriptPath=InfCore.paths.mod..filePath
+  if InfCore.FileExists(scriptPath) then
+    LoadLibrary(filePath)
   else
-    Script.LoadLibrary"Tpp/Scripts/Equip/EquipParameters.lua"
+    --<
+    Script.LoadLibraryAsync(filePath)
+    while Script.IsLoadingLibrary(filePath)do
+      yield()
+    end
+  end
+  local equipParameters=tppOrMgoPath.."level_asset/weapon/ParameterTables/parts/EquipParameters.lua"
+  if TppEquip.IsExistFile(equipParameters)then
+    LoadLibrary(equipParameters)
+  else
+    LoadLibrary"Tpp/Scripts/Equip/EquipParameters.lua"
   end
   yield()
-  local e=tppOrMgoPath.."level_asset/weapon/ParameterTables/parts/EquipMotionDataForChimera.lua"
-  if TppEquip.IsExistFile(e)then
-    Script.LoadLibrary(e)
+  local equipMotionChimera=tppOrMgoPath.."level_asset/weapon/ParameterTables/parts/EquipMotionDataForChimera.lua"
+  if TppEquip.IsExistFile(equipMotionChimera)then
+    LoadLibrary(equipMotionChimera)
   end
-  Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceId.lua"
-  Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyBodyId.lua"
+  LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceId.lua"
+  LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyBodyId.lua"
   if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-    Script.LoadLibrary"/Assets/mgo/level_asset/player/ParameterTables/PlayerTables.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/player/ParameterTables/PlayerProgression.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/ChimeraPartsPackageTable.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/EquipParameterTables.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/EquipConfig.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/WeaponParameterTables.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/RulesetConfig.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/SafeSpawnConfig.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/SoundtrackConfig.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/PresetRadioConfig.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/player/Stats/StatTables.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/PointOfInterestConfig.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/damage/ParameterTables/DamageParameterTables.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/EquipMotionData.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/MgoWeaponParameters.lua"
-    Script.LoadLibrary"/Assets/mgo/level_asset/config/GearConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/player/ParameterTables/PlayerTables.lua"
+    LoadLibrary"/Assets/mgo/level_asset/player/ParameterTables/PlayerProgression.lua"
+    LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/ChimeraPartsPackageTable.lua"
+    LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/EquipParameterTables.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/EquipConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/WeaponParameterTables.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/RulesetConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/SafeSpawnConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/SoundtrackConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/PresetRadioConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/player/Stats/StatTables.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/PointOfInterestConfig.lua"
+    LoadLibrary"/Assets/mgo/level_asset/damage/ParameterTables/DamageParameterTables.lua"
+    LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/EquipMotionData.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/MgoWeaponParameters.lua"
+    LoadLibrary"/Assets/mgo/level_asset/config/GearConfig.lua"
   else
+    InfCore.LogFlow"Loading parameter tables"--tex
     yield()
-    Script.LoadLibrary"Tpp/Scripts/Equip/ChimeraPartsPackageTable.lua"
+    LoadLibrary"Tpp/Scripts/Equip/ChimeraPartsPackageTable.lua"
     yield()
-    Script.LoadLibrary"/Assets/tpp/level_asset/weapon/ParameterTables/EquipParameterTables.lua"
+    LoadLibrary"/Assets/tpp/level_asset/weapon/ParameterTables/EquipParameterTables.lua"
     yield()
-    Script.LoadLibrary"/Assets/tpp/level_asset/damage/ParameterTables/DamageParameterTables.lua"
+    LoadLibrary"/Assets/tpp/level_asset/damage/ParameterTables/DamageParameterTables.lua"
     yield()
-    Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/Soldier2ParameterTables.lua"
-    Script.LoadLibrary"Tpp/Scripts/Equip/EquipMotionData.lua"
-    Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceGroupId.lua"
-    Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceGroup.lua"
+    LoadLibrary"/Assets/tpp/level_asset/chara/enemy/Soldier2ParameterTables.lua"
+    LoadLibrary"Tpp/Scripts/Equip/EquipMotionData.lua"
+    LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceGroupId.lua"
+    LoadLibrary"/Assets/tpp/level_asset/chara/enemy/TppEnemyFaceGroup.lua"
     yield()
-    --tex>
-    local InfModelRegistry=InfLog.LoadBoxed"InfModelRegistry.lua"
-    InfLog.InfModelRegistry=InfModelRegistry
-    if InfModelRegistry then
-      local commonHeadPath="/Assets/tpp/pack/fova/common_source/chara/cm_head/"
-      for i,moduleName in ipairs(InfModelRegistry.headFovaModNames)do
-        if type(moduleName)=="string"then
-          Script.LoadLibrary(commonHeadPath..moduleName..".lua")
-          if _G[moduleName] then
-            InfLog.Add("InfModelRegistry loaded module "..moduleName)
-          else
-            InfLog.Add("InfModelRegistry could not load module "..moduleName)
-          end
-        end
-      end
-    end
-    yield()
-    --<
-    Script.LoadLibrary"/Assets/tpp/level_asset/chara/enemy/Soldier2FaceAndBodyData.lua"
+    LoadLibrary"/Assets/tpp/level_asset/chara/enemy/Soldier2FaceAndBodyData.lua"
     yield()
   end
   if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-    Script.LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/RecoilMaterial/RecoilMaterialTable.lua"
+    LoadLibrary"/Assets/mgo/level_asset/weapon/ParameterTables/RecoilMaterial/RecoilMaterialTable.lua"
   else
-    Script.LoadLibrary"/Assets/tpp/level_asset/weapon/ParameterTables/RecoilMaterial/RecoilMaterialTable.lua"
+    LoadLibrary"/Assets/tpp/level_asset/weapon/ParameterTables/RecoilMaterial/RecoilMaterialTable.lua"
   end
   if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-    Script.LoadLibrary"/Assets/mgo/script/lib/Overrides.lua"
+    LoadLibrary"/Assets/mgo/script/lib/Overrides.lua"
   end
   Script.LoadLibraryAsync"/Assets/tpp/script/lib/Tpp.lua"
   while Script.IsLoadingLibrary"/Assets/tpp/script/lib/Tpp.lua"do
@@ -676,8 +670,8 @@ if Script.LoadLibrary then
     Script.LoadLibrary"/Assets/mgo/script/player/PlayerDefaults.lua"
     Script.LoadLibrary"/Assets/mgo/script/Matchmaking.lua"
   else
-    Script.LoadLibrary"/Assets/tpp/script/list/TppMissionList.lua"
-    Script.LoadLibrary"/Assets/tpp/script/list/TppQuestList.lua"
+    LoadLibrary"/Assets/tpp/script/list/TppMissionList.lua"
+    LoadLibrary"/Assets/tpp/script/list/TppQuestList.lua"
     if platformName=="PS3"then
       Script.LoadLibrary"/Assets/tpp/script/list/TppMissionPrxList.lua"
     end
@@ -687,7 +681,7 @@ yield()
 pcall(dofile,"/Assets/tpp/ui/Script/UiRegisterInfo.lua")
 yield()
 if TppSystemUtility.GetCurrentGameMode()=="TPP"then
-  Script.LoadLibrary"/Assets/tpp/level_asset/chara/player/game_object/player2_camouf_param.lua"
+  LoadLibrary"/Assets/tpp/level_asset/chara/player/game_object/player2_camouf_param.lua"
 end
 yield()
 if Editor then
@@ -746,6 +740,9 @@ TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil,{setMute=true})
 TppVarInit.InitializeOnStartTitle()
 TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
-InfLog.AddFlow"start.lua done"--tex
+InfCore.LogFlow"start.lua done"--tex
+
+
+
 
 

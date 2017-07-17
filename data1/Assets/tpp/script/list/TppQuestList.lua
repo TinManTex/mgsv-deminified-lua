@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppQuestList.lua
 local this={}
 this.questList={
   {locationId=TppDefine.LOCATION_ID.AFGH,
@@ -190,10 +191,10 @@ this.questList={
     infoList={
       {name="Mtbs_child_dog",invokeStepName="QStep_Start"},
       {name="mtbs_q42010",invokeStepName="QStep_Start"}
-      }},
+    }},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsCombat",clusterName="Combat",
     infoList={
-    {name="mtbs_q42070",invokeStepName="QStep_Start"},
+      {name="mtbs_q42070",invokeStepName="QStep_Start"},
     }},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsDevelop",clusterName="Develop",
     infoList={
@@ -206,7 +207,8 @@ this.questList={
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsSupport",clusterName="Support",infoList={{name="mtbs_q42030",invokeStepName="QStep_Start"}}},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsSpy",clusterName="Spy",infoList={{name="mtbs_q42060",invokeStepName="QStep_Start"}}},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsBaseDev",clusterName="BaseDev",infoList={{name="mtbs_q42040",invokeStepName="QStep_Start"}}},
-  {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsPaz",clusterName="MedicalPaz",infoList={{name="mtbs_q99060",invokeStepName="QStep_Start",isStory=true,isOnce=true}}}}
+  {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsPaz",clusterName="MedicalPaz",infoList={{name="mtbs_q99060",invokeStepName="QStep_Start",isStory=true,isOnce=true}}}
+}
 
 this.questPackList={
   waterway_q99010={"/Assets/tpp/pack/mission2/quest/battle/bossQuiet/qest_bossQuiet_00.fpk"},
@@ -214,8 +216,10 @@ this.questPackList={
   sovietBase_q99020={"/Assets/tpp/pack/mission2/quest/afgh/sovietBase/sovietBase_q99020.fpk"},
   sovietBase_q99030={"/Assets/tpp/pack/mission2/quest/afgh/sovietBase/sovietBase_q99030.fpk"},
   tent_q99040={"/Assets/tpp/pack/mission2/quest/afgh/tent/tent_q99040.fpk"},
-  cliffTown_q99080={"/Assets/tpp/pack/mission2/quest/afgh/cliffTown/cliffTown_q99080.fpk",
-    bodyIdList={TppDefine.QUEST_BODY_ID_LIST.Q99080_02}},
+  cliffTown_q99080={
+    "/Assets/tpp/pack/mission2/quest/afgh/cliffTown/cliffTown_q99080.fpk",
+    bodyIdList={TppDefine.QUEST_BODY_ID_LIST.Q99080_02}
+  },
   field_q30010={"/Assets/tpp/pack/mission2/quest/afgh/field/field_q30010.fpk"},
   outland_q40010={"/Assets/tpp/pack/mission2/quest/mafr/outland/outland_q40010.fpk"},
   sovietBase_q99070={"/Assets/tpp/pack/mission2/quest/afgh/sovietBase/sovietBase_q99070.fpk",
@@ -439,11 +443,11 @@ this.questPackList={
 function this.BuildQuestAreaTable(questAreaTable)
   for n,areaQuests in ipairs(this.questList)do
     for i,info in ipairs(areaQuests.infoList)do
-      questAreaTable[info.name]=areaQuests.areaName
+      local questName=info.name
+      questAreaTable[questName]=areaQuests.areaName
     end
   end
 end
-
 this.questAreaTable={}--tex TABLESETUP
 this.BuildQuestAreaTable(this.questAreaTable)
 --<

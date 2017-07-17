@@ -1,7 +1,7 @@
 -- DOBUILD: 1
 local this={}
-local StrCode32=InfLog.StrCode32--tex was Fox.StrCode32
-local breakableList={
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
+this.aacrGimmickInfo={--tex was local
   cliffTown_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/afgh/block_large/cliffTown/afgh_cliffTown_gimmick.fox2"},
   commFacility_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/afgh/block_large/commFacility/afgh_commFacility_asset.fox2"},
   enemyBase_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/afgh/block_large/enemyBase/afgh_enemyBase_gimmick.fox2"},
@@ -20,6 +20,14 @@ local breakableList={
   savannah_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/mafr/block_large/savannah/mafr_savannah_gimmick.fox2"},
   swamp_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/mafr/block_large/swamp/mafr_swamp_gimmick.fox2"}
 }
+--tex as nasanhak points out some of these var names are misleading
+--aprLandingZoneName is the lz name (which uses approach route by default), drpLandingZoneName is the drop route (fancy route from mission start)
+--routes seem to be named consistently enough so you can derive them from lz name
+--ex: lz_cliffTown_I0000|lz_cliffTown_I_0000
+--drop tag is drp - route name is lz_drp_cliffTown_I0000|rt_drp_cliffTown_I0000
+--approach tag is arp - route name is lz_commFacility_S0000|rt_apr_commFacility_S_0000 (note first section isn't tagged, only last, where drop has both tagged)
+--return tag is rtn - route name is lz_commFacility_S0000|rt_rtn_commFacility_S_0000 (as above)
+--reference to approach and return can be seen in TppLandingZoneData entity in <mission id>_heli.fox2s
 local afghanistanLZTable={}
 afghanistanLZTable.ConnectLandingZoneTable={
   cliffTown_aacr001={aprLandingZoneName={"lz_cliffTown_I0000|lz_cliffTown_I_0000"},drpLandingZoneName={"lz_drp_cliffTown_I0000|rt_drp_cliffTown_I0000"}},
@@ -111,7 +119,7 @@ middleAfricaLZTable.MissionLandingZoneTable={
 }
 
 --TABLESETUP
---tex> drp to apr
+--tex> drp/route to apr/lz
 this.assaultLzs={
   afgh={},
   mafr={},
@@ -122,18 +130,23 @@ this.missionLzs={
 }
 
 local locInfo={
-  {location="afgh",connectTable=afghanistanLZTable.ConnectLandingZoneTable,missionTable=afghanistanLZTable.MissionLandingZoneTable},
-  {location="mafr",connectTable=middleAfricaLZTable.ConnectLandingZoneTable,missionTable=middleAfricaLZTable.MissionLandingZoneTable},
+  afgh={
+    connectTable=afghanistanLZTable.ConnectLandingZoneTable,
+    missionTable=afghanistanLZTable.MissionLandingZoneTable
+  },
+  mafr={
+    connectTable=middleAfricaLZTable.ConnectLandingZoneTable,
+    missionTable=middleAfricaLZTable.MissionLandingZoneTable
+   },
 }
 
-for i=1,#locInfo do
-  local locationInfo=locInfo[i]
-  local lzTable=this.assaultLzs[locationInfo.location]
+for location,locationInfo in pairs(locInfo)do
+  local lzTable=this.assaultLzs[location]
   for aaName,lzInfo in pairs(locationInfo.connectTable) do
     lzTable[lzInfo.drpLandingZoneName[1]]=lzInfo.aprLandingZoneName[1]
   end
 
-  local lzTable=this.missionLzs[locationInfo.location]
+  local lzTable=this.missionLzs[location]
   for j=1,#locationInfo.missionTable do
     local lzInfo=locationInfo.missionTable[j]
     lzTable[lzInfo.drpLandingZoneName]=lzInfo.aprLandingZoneName
@@ -176,6 +189,7 @@ function this.OnMissionCanStart()
       this.DisableLandingZone(afghanistanLZTable.ConnectLandingZoneTable.sovietBase_aacr001,"heli")
       this.DisableLandingZone(afghanistanLZTable.ConnectLandingZoneTable.powerPlant_aacr001,"heli")
     end
+    InfQuest.DisableLandingZones()--tex
   end
 end
 function this.DisableLandingZoneForMission(missionLZTable,missionTypeCodeName)
@@ -253,8 +267,9 @@ function this.IsAssaultDropLandingZone(heliRoute)
   local drpLz=mvars.ldz_assaultDropLandingZoneTable[heliRoute]
   return drpLz
 end
+--IsAACRGimmickBroken
 function this.IsBrokenGimmick(gimmickId)
-  local gimmick=breakableList[gimmickId]
+  local gimmick=this.aacrGimmickInfo[gimmickId]
   if gimmick==nil then
     return
   end

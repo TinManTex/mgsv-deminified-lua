@@ -1,39 +1,91 @@
-local e={
-  {name="DRAW2D_UI_BASE",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+local parameterPackingTable={
+  {name="DRAW2D_UI_BASE",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_NoBase",params={"UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,0,0,0,0,0,0,0,0,0,0,0,0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60},textures={"Mask_Texture","Screen_Texture"}
+  {name="fox_2d_NoBase",
+    params={"UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,0,0,0,0,0,0,0,0,0,0,0,0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60},
+    textures={"Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyADD",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyADD",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyMUL",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyMUL",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_LodScreen",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_LodScreen",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyADD_LodScreen",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyADD_LodScreen",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyMUL_LodScreen",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyMUL_LodScreen",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_LodMask",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_LodMask",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyADD_LodMask",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyADD_LodMask",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyMUL_LodMask",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyMUL_LodMask",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_LodLayer",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_LodLayer",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_LodLayerScreen",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_LodLayerScreen",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_LodLayerMask",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_LodLayerMask",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_LodLayerMaskScreen",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_LodLayerMaskScreen",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_Basic_LyBL_CenteringScreen",params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
+  {name="fox_2d_Basic_LyBL_CenteringScreen",
+    params={"UCenter_BaseTex","VCenter_BaseTex","UShift_BaseTex","VShift_BaseTex","URepeat_BaseTex","VRepeat_BaseTex","UCenter_LayerTex","VCenter_LayerTex","UShift_LayerTex","VShift_LayerTex","URepeat_LayerTex","VRepeat_LayerTex","UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80,84,88,92,96,100,104,108},
+    textures={"Base_Texture","Layer_Texture","Mask_Texture","Screen_Texture"}
   },
-  {name="fox_2d_NoBase_LodLayerScreen",params={"UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},packing={0,0,0,0,0,0,0,0,0,0,0,0,0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60},textures={"Mask_Texture","Screen_Texture"}
-  }}
-local x={
+  {name="fox_2d_NoBase_LodLayerScreen",
+    params={"UCenter_MaskTex","VCenter_MaskTex","UShift_MaskTex","VShift_MaskTex","URepeat_MaskTex","VRepeat_MaskTex","UCenter_ScreenTex","VCenter_ScreenTex","UShift_ScreenTex","VShift_ScreenTex","URepeat_ScreenTex","VRepeat_ScreenTex","Blend_BaseTex","Blend_LayerTex","Blend_MaskTex","Blend_ScreenTex"},
+    packing={0,0,0,0,0,0,0,0,0,0,0,0,0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60},
+    textures={"Mask_Texture","Screen_Texture"}
+  }
+}
+local assignTable={
   {technique="DRAW2D_UI_BASE",type="Forward",variation="",shader="Draw2D_Ui2"},
   {technique="fox_2d_Basic_LyBL",type="Forward",variation="",shader="Draw2D_Ui2_BL"},
   {technique="fox_2d_Basic_LyADD",type="Forward",variation="",shader="Draw2D_Ui2_ADD"},
@@ -52,52 +104,61 @@ local x={
   {technique="fox_2d_NoBase",type="Forward",variation="",shader="Draw2D_Ui2_NoBase"},
   {technique="fox_2d_NoBase_LodLayerScreen",type="Forward",variation="",shader="Draw2D_Ui2_NoBase_LOD_SC"}
 }
-local a={
-  {techniqueName="fox_2d_Basic_LyBL",equations={
-    {index="0",type="float",lValue="Blend_LayerTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
-    {index="1",type="float",lValue="Blend_MaskTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
-    {index="2",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
-  },conditions={
-    {conditionFlag="4",techniqueName="fox_2d_Basic_LyBL_LodScreen"},
-    {conditionFlag="2",techniqueName="fox_2d_Basic_LyBL_LodMask"},
-    {conditionFlag="1",techniqueName="fox_2d_Basic_LyBL_LodLayer"},
-    {conditionFlag="3",techniqueName="fox_2d_Basic_LyBL_LodLayerMask"},
-    {conditionFlag="5",techniqueName="fox_2d_Basic_LyBL_LodLayerScreen"},
-    {conditionFlag="7",techniqueName="fox_2d_Basic_LyBL_LodLayerMaskScreen"}
+local techniqueReplaceInfoTable={
+  {techniqueName="fox_2d_Basic_LyBL",
+    equations={
+      {index="0",type="float",lValue="Blend_LayerTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
+      {index="1",type="float",lValue="Blend_MaskTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
+      {index="2",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
+    },
+    conditions={
+      {conditionFlag="4",techniqueName="fox_2d_Basic_LyBL_LodScreen"},
+      {conditionFlag="2",techniqueName="fox_2d_Basic_LyBL_LodMask"},
+      {conditionFlag="1",techniqueName="fox_2d_Basic_LyBL_LodLayer"},
+      {conditionFlag="3",techniqueName="fox_2d_Basic_LyBL_LodLayerMask"},
+      {conditionFlag="5",techniqueName="fox_2d_Basic_LyBL_LodLayerScreen"},
+      {conditionFlag="7",techniqueName="fox_2d_Basic_LyBL_LodLayerMaskScreen"}
+    }
+  },
+  {techniqueName="fox_2d_Basic_LyADD",
+    equations={
+      {index="0",type="float",lValue="Blend_LayerTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
+      {index="1",type="float",lValue="Blend_MaskTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
+      {index="2",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
+    },
+    conditions={
+      {conditionFlag="4",techniqueName="fox_2d_Basic_LyADD_LodScreen"},
+      {conditionFlag="2",techniqueName="fox_2d_Basic_LyADD_LodMask"},
+      {conditionFlag="1",techniqueName="fox_2d_Basic_LyBL_LodLayer"},
+      {conditionFlag="3",techniqueName="fox_2d_Basic_LyBL_LodLayerMask"},
+      {conditionFlag="5",techniqueName="fox_2d_Basic_LyBL_LodLayerScreen"},
+      {conditionFlag="7",techniqueName="fox_2d_Basic_LyBL_LodLayerMaskScreen"}
+    }
+  },
+  {techniqueName="fox_2d_Basic_LyMUL",
+    equations={
+      {index="0",type="float",lValue="Blend_LayerTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
+      {index="1",type="float",lValue="Blend_MaskTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
+      {index="2",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
+    },
+    conditions={
+      {conditionFlag="4",techniqueName="fox_2d_Basic_LyMUL_LodScreen"},
+      {conditionFlag="2",techniqueName="fox_2d_Basic_LyMUL_LodMask"},
+      {conditionFlag="1",techniqueName="fox_2d_Basic_LyBL_LodLayer"},
+      {conditionFlag="3",techniqueName="fox_2d_Basic_LyBL_LodLayerMask"},
+      {conditionFlag="5",techniqueName="fox_2d_Basic_LyBL_LodLayerScreen"},
+      {conditionFlag="7",techniqueName="fox_2d_Basic_LyBL_LodLayerMaskScreen"}
+    }
+  },
+  {techniqueName="fox_2d_NoBase",
+    equations={
+      {index="0",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
+    },
+    conditions={
+      {conditionFlag="1",techniqueName="fox_2d_NoBase_LodLayerScreen"}
+    }
   }
-},
-  {techniqueName="fox_2d_Basic_LyADD",equations={
-    {index="0",type="float",lValue="Blend_LayerTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
-    {index="1",type="float",lValue="Blend_MaskTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
-    {index="2",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
-  },conditions={
-    {conditionFlag="4",techniqueName="fox_2d_Basic_LyADD_LodScreen"},
-    {conditionFlag="2",techniqueName="fox_2d_Basic_LyADD_LodMask"},
-    {conditionFlag="1",techniqueName="fox_2d_Basic_LyBL_LodLayer"},
-    {conditionFlag="3",techniqueName="fox_2d_Basic_LyBL_LodLayerMask"},
-    {conditionFlag="5",techniqueName="fox_2d_Basic_LyBL_LodLayerScreen"},
-    {conditionFlag="7",techniqueName="fox_2d_Basic_LyBL_LodLayerMaskScreen"}
-  }
-},
-  {techniqueName="fox_2d_Basic_LyMUL",equations={
-    {index="0",type="float",lValue="Blend_LayerTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
-    {index="1",type="float",lValue="Blend_MaskTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"},
-    {index="2",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
-  },conditions={
-    {conditionFlag="4",techniqueName="fox_2d_Basic_LyMUL_LodScreen"},
-    {conditionFlag="2",techniqueName="fox_2d_Basic_LyMUL_LodMask"},
-    {conditionFlag="1",techniqueName="fox_2d_Basic_LyBL_LodLayer"},
-    {conditionFlag="3",techniqueName="fox_2d_Basic_LyBL_LodLayerMask"},
-    {conditionFlag="5",techniqueName="fox_2d_Basic_LyBL_LodLayerScreen"},
-    {conditionFlag="7",techniqueName="fox_2d_Basic_LyBL_LodLayerMaskScreen"}
-  }
-},
-  {techniqueName="fox_2d_NoBase",equations={
-    {index="0",type="float",lValue="Blend_ScreenTex",lSwizzle="0",rValue="0.0",rSwizzle="-1"}
-  },conditions={
-    {conditionFlag="1",techniqueName="fox_2d_NoBase_LodLayerScreen"}
-  }}
 }
-GrTools():SetShaderParameterPackingTable(e)
-GrTools():SetShaderAssignTable(x)
-GrTools():SetShaderTechniqueReplaceInfoTable(a)
+GrTools():SetShaderParameterPackingTable(parameterPackingTable)
+GrTools():SetShaderAssignTable(assignTable)
+GrTools():SetShaderTechniqueReplaceInfoTable(techniqueReplaceInfoTable)

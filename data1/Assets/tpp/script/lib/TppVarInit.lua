@@ -1,4 +1,4 @@
--- DOBUILD: 0
+-- DOBUILD: 1
 -- TppVarInit.lua
 local this={}
 --ORPHAN local IsTypeFunc=Tpp.IsTypeFunc
@@ -7,8 +7,9 @@ local IsTable=Tpp.IsTypeTable
 --ORPHAN local IsTypeNumber=Tpp.IsTypeNumber
 --ORPHAN local bnot=bit.bnot
 --ORPHAN local band,bor,bxor=bit.band,bit.bor,bit.bxor
+--CALLER: engine I guess, cant see any other references
 function this.StartTitle(unk1)
-   InfLog.AddFlow("TppVarInit.StartTitle "..tostring(vars.missionCode))--tex
+  InfCore.LogFlow("TppVarInit.StartTitle "..tostring(vars.missionCode))--tex
   TppSystemLua.UseAiSystem(true)
   TppSimpleGameSequenceSystem.Start()
   local function DoStart()
@@ -45,6 +46,7 @@ function this.StartTitle(unk1)
   if(actMode=="EDIT")then
     Fox.SetActMode"GAME"
   end
+  InfCore.PCallDebug(InfMain.OnStartTitle)--tex
 end
 function this.SetVarsTitleCypr()
   TppMission.VarResetOnNewMission()
@@ -68,6 +70,7 @@ function this.SetVarsTitleHeliSpace()
   TppPlayer.ResetMissionStartPosition()
 end
 function this.InitializeOnStartTitle()
+  InfCore.LogFlow("TppVarInit.InitializeOnStartTitle")--tex DEBUG
   this.InitializeOnStatingMainFrame()
   this.InitializeOnNewGameAtFirstTime()
   this.InitializeOnNewGame()
@@ -283,7 +286,7 @@ function this.ClearIsContinueFromTitle()
   gvars.isContinueFromTitle=false
 end
 function this.StartInitMission()
-  InfLog.AddFlow("TppVarInit.StartInitMission "..tostring(vars.missionCode))--tex
+  InfCore.LogFlow("TppVarInit.StartInitMission "..tostring(vars.missionCode))--tex NMC interestingly vars.missionCodes default is 10010
   TppSystemLua.UseAiSystem(true)
   TppSimpleGameSequenceSystem.Start()
   vars.locationCode=TppDefine.LOCATION_ID.INIT

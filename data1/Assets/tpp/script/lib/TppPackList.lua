@@ -58,12 +58,12 @@ function this.AddLocationCommonScriptPack(missionCode)
   end
 end
 function this.AddLocationCommonMissionAreaPack(missionCode)
-  local locationCode=TppLocation.GetLocationName()
-  if locationCode=="afgh"then
+  local locationName=TppLocation.GetLocationName()
+  if locationName=="afgh"then
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_MISSION_AREA)
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_DECOY)
-  elseif locationCode=="mafr"then
+  elseif locationName=="mafr"then
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_MISSION_AREA)
     this.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_DECOY)
@@ -173,7 +173,7 @@ end
 function this.GetLocationNameFormMissionCode(missionCode)
   local locationName
   for location,missions in pairs(TppDefine.LOCATION_HAVE_MISSION_LIST)do
-    for a,mission in pairs(missions)do
+    for i,mission in pairs(missions)do
       if mission==missionCode then
         locationName=location
         break

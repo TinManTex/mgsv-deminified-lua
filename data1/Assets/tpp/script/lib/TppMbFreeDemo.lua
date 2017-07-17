@@ -1100,17 +1100,17 @@ function this.GetForceMaleSoldierList(demoName)
   end
   return forceMaleLocator
 end
-function this.SetupEnemy(t)
-  local l=this.GetDemoPlayCluster(t)
-  local l=TppDefine.CLUSTER_DEFINE[l]+1
-  local e=this.GetSoldierListInDemo(t)
-  mtbs_enemy.SetSoldierForDemo(l,e)
+function this.SetupEnemy(demoName)
+  local clusterName=this.GetDemoPlayCluster(demoName)
+  local clusterId=TppDefine.CLUSTER_DEFINE[clusterName]+1
+  local soldierList=this.GetSoldierListInDemo(demoName)
+  mtbs_enemy.SetSoldierForDemo(clusterId,soldierList)
 end
-function this.IsBalaclava(demoName,l)
+function this.IsBalaclava(demoName,checkSoldierName)
   local demoOptions=this.demoOptions[demoName]
   if demoOptions and demoOptions.forceBalaclavaLocator then
-    for t,e in ipairs(demoOptions.forceBalaclavaLocator)do
-      if e==l then
+    for i,forcedSoldierName in ipairs(demoOptions.forceBalaclavaLocator)do
+      if forcedSoldierName==checkSoldierName then
         return true
       end
     end

@@ -1,4 +1,4 @@
--- DOBUILD: 0
+-- DOBUILD: 1
 --EquipIdTable.lua
 --RETAILPATCH 1090 various additions
 local this={}--tex made local
@@ -326,15 +326,15 @@ this.equipTable={
   {TppEquip.EQP_IT_CBox_CLB_C_G01,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/cbx/cbx0_main0_def.parts",""},
   {TppEquip.EQP_IT_CBox_LIMITED,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/cbx/cbx0_main0_def.parts",""},
   {TppEquip.EQP_IT_CBox_LIMITED_G01,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/cbx/cbx0_main0_def.parts",""},
-  {TppEquip.EQP_IT_InstantStealth,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
-  {TppEquip.EQP_IT_Pentazemin,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
-  {TppEquip.EQP_IT_Clairvoyance,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
-  {TppEquip.EQP_IT_ReflexMedicine,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
-  {TppEquip.EQP_IT_ParasiteMist,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
-  {TppEquip.EQP_IT_ParasiteCamouf,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
-  {TppEquip.EQP_IT_ParasiteHard,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
+  {TppEquip.EQP_IT_InstantStealth,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/idr/idr0_main0_def_v00.parts",""},--tex added .parts, using idroid was ""
+  {TppEquip.EQP_IT_Pentazemin,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
+  {TppEquip.EQP_IT_Clairvoyance,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
+  {TppEquip.EQP_IT_ReflexMedicine,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
+  {TppEquip.EQP_IT_ParasiteMist,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
+  {TppEquip.EQP_IT_ParasiteCamouf,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
+  {TppEquip.EQP_IT_ParasiteHard,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
   {TppEquip.EQP_IT_TimeCigarette,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/psi/psi0_main0_def.parts",""},
-  {TppEquip.EQP_IT_Stealth,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
+  {TppEquip.EQP_IT_Stealth,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/idr/idr0_main0_def_v00.parts",""},--tex added .parts, using idroid was ""
   {TppEquip.EQP_IT_Nvg,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/item/thm/Scenes/thm0_main0_def.fmdl",""},
   {TppEquip.EQP_IT_Infected,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/item/thm/Scenes/thm0_main0_def.fmdl",""},
   {TppEquip.EQP_IT_IDroid,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/idr/idr0_main0_def_v00.parts",""},

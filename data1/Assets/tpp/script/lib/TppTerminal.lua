@@ -1,6 +1,6 @@
 -- DOBUILD: 1
 local this={}
-local StrCode32=Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local IsTypeTable=Tpp.IsTypeTable
 local SendCommand=GameObject.SendCommand
 local GetGameObjectId=GameObject.GetGameObjectId
@@ -43,9 +43,9 @@ this.keyItemRewardTable={
   [TppMotherBaseManagementConst.DESIGN_3010]="key_item_3010",
   [TppMotherBaseManagementConst.DESIGN_3020]="key_item_3020"}
 this.parasiteSquadFultonResouceId={
-  [Fox.StrCode32"Cam"]={TppMotherBaseManagementConst.RESOURCE_ID_PARASITE_CAMOFLA,5},
-  [Fox.StrCode32"Fog"]={TppMotherBaseManagementConst.RESOURCE_ID_PARASITE_FOG,5},
-  [Fox.StrCode32"Metal"]={TppMotherBaseManagementConst.RESOURCE_ID_PARASITE_CURING,5}
+  [StrCode32"Cam"]={TppMotherBaseManagementConst.RESOURCE_ID_PARASITE_CAMOFLA,5},
+  [StrCode32"Fog"]={TppMotherBaseManagementConst.RESOURCE_ID_PARASITE_FOG,5},
+  [StrCode32"Metal"]={TppMotherBaseManagementConst.RESOURCE_ID_PARASITE_CURING,5}
 }
 this.MOTHER_BASE_SECTION_LIST={"Combat","BaseDev","Spy","Medical","Security","Hospital","Prison","Separation"}
 local MBMConst=TppMotherBaseManagementConst or{}
@@ -392,13 +392,24 @@ end
 function this.ReserveHelicopterSoundOnMissionGameEnd()
   mvars.trm_needHeliSoundOnAddStaffsFromTempBuffer=true
 end
+--tex was local to AddVolunteerStaffs
+this.noAddVolunteerMissions={
+  [10010]=true,
+  [10030]=true,
+  [10240]=true,
+  [10280]=true,
+  [30050]=true,
+  [30150]=true,
+  [30250]=true,
+  [50050]=true
+}
 function this.AddVolunteerStaffs()
   local storySequence=TppStory.GetCurrentStorySequence()
   if storySequence<TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE then
     return
   end
-  local noAddStaffMissions={[10010]=true,[10030]=true,[10240]=true,[10280]=true,[30050]=true,[30150]=true,[30250]=true,[50050]=true}
-  if noAddStaffMissions[vars.missionCode]then
+  
+  if this.noAddVolunteerMissions[vars.missionCode]then
     return
   end
   local isHeliSpace=TppMission.IsHelicopterSpace(vars.missionCode)
@@ -886,9 +897,10 @@ function this.DeclareSVars()
 end
 function this.Messages()
   local cpIntelTrapTable=TppEnemy.GetCpIntelTrapTable()
-  local messages
+  local trapMessages
   if cpIntelTrapTable and next(cpIntelTrapTable)then
-    messages={}
+    trapMessages={}
+    
     for cpName,sender in pairs(cpIntelTrapTable)do
       local msg={
         msg="Enter",
@@ -901,7 +913,7 @@ function this.Messages()
         end,
         option={isExecMissionPrepare=true}
       }
-      table.insert(messages,msg)
+      table.insert(trapMessages,msg)
       local msg={
         msg="Exit",
         sender=sender,
@@ -910,9 +922,10 @@ function this.Messages()
         end,
         option={isExecMissionPrepare=true}
       }
-      table.insert(messages,msg)
+      table.insert(trapMessages,msg)
     end
-    table.insert(messages,
+    
+    table.insert(trapMessages,
       {msg="Enter",
         sender="trap_intel_afgh_waterway_cp",
         func=function(t,t)
@@ -921,15 +934,17 @@ function this.Messages()
             this.ShowLocationAndBaseTelop()
           end
         end,
-        option={isExecMissionPrepare=true}})
-    table.insert(messages,
+        option={isExecMissionPrepare=true}
+        })
+    table.insert(trapMessages,
       {msg="Exit",
         sender="trap_intel_afgh_waterway_cp",
         func=function(t,t)
           this.ClearBaseTelopName()
         end,
-        option={isExecMissionPrepare=true}})
-    table.insert(messages,
+        option={isExecMissionPrepare=true}
+        })
+    table.insert(trapMessages,
       {msg="Enter",
         sender="trap_intel_afgh_ruins_cp",
         func=function(t,t)
@@ -938,15 +953,18 @@ function this.Messages()
             this.ShowLocationAndBaseTelop()
           end
         end,
-        option={isExecMissionPrepare=true}})
-    table.insert(messages,
+        option={isExecMissionPrepare=true}
+        })
+    table.insert(trapMessages,
       {msg="Exit",
         sender="trap_intel_afgh_ruins_cp",
         func=function(t,t)
           this.ClearBaseTelopName()
         end,
-        option={isExecMissionPrepare=true}})
+        option={isExecMissionPrepare=true}
+        })
   end
+  
   return Tpp.StrCode32Table{
     GameObject={
       {msg="Fulton",
@@ -998,7 +1016,7 @@ function this.Messages()
         TppUI.ShowCallSupportBuddyAnnounceLog()
       end}
     },
-    Trap=messages,
+    Trap=trapMessages,
     Network={
       {msg="NoticeSneakMotherBase",func=this.OnNoticeFobSneaked},
       {msg="NoticeSneakSupportedMotherBase",func=this.OnNoticeSupporterFobSneaked}
@@ -1229,7 +1247,7 @@ function this.IsEqualOrMoreTotalFultonCount(fultonCount)--RETAILPATCH 1070>
     return false
   end
 end--<
-function this.OnFultonSoldier(gameId,a,a,staffId,recoveredByHeli,fultonedPlayer)
+function this.OnFultonSoldier(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffId,recoveredByHeli,fultonedPlayer)
   if recoveredByHeli then
     local command={id="SetToHeliRecoveredComplete"}
     GameObject.SendCommand(gameId,command)
@@ -1263,7 +1281,8 @@ function this.OnFultonVolgin(gameId)
   end
   TppMotherBaseManagement.AddTempCorpse()
 end
-function this.OnFultonHostage(gameId,n,n,staffId,recoveredByHeli,fultonedPlayer)
+--gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex)
+function this.OnFultonHostage(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffId,recoveredByHeli,fultonedPlayer)
   local tempStaffStatus=TppMotherBaseManagement.GetTempStaffStatusFromGameObject{gameObjectId=gameId}
   local staff
   if staffId then
@@ -1297,7 +1316,7 @@ function this.OnFultonVehicle(vehicleId,a,a,resourceId,a,playerIndex)
     OnlineChallengeTask.UpdateOnFultonVehicle(vehicleId)
   end--<
 end
-function this.OnFultonContainer(gameId,t,n,staffOrResourceId,M,playerIndex,reduceThisContainer)
+function this.OnFultonContainer(gameId,locatorNameHash,dataSetNameHash,staffOrResourceId,M,playerIndex,reduceThisContainer)
   if mvars.trm_isSkipAddResourceToTempBuffer then
     return
   end
@@ -1305,13 +1324,13 @@ function this.OnFultonContainer(gameId,t,n,staffOrResourceId,M,playerIndex,reduc
     if not this.CheckAddTempBuffer(playerIndex)then
       return
     end
-    local resourceId,visual,owner=MotherBaseConstructConnector.GetContainerResourceId(t,n)
+    local resourceId,visual,owner=MotherBaseConstructConnector.GetContainerResourceId(locatorNameHash,dataSetNameHash)
     if resourceId==nil then
       resourceId=0
     end
     TppMotherBaseManagement.AddTempResource{resourceId=resourceId,count=1,visual=visual,owner=owner}
   else
-    local gimmickName=TppGimmick.GetGimmickID(gameId,t,n)
+    local gimmickName=TppGimmick.GetGimmickID(gameId,locatorNameHash,dataSetNameHash)
     if not gimmickName then
       gimmickName="commFacility_cntn001"
     end
@@ -2229,9 +2248,6 @@ function this.CanConstructFirstFob()
   return false
 end
 function this.IsConstructedFirstFob()
-  if Ivars.setFirstFobBuilt:Is(1) then--tex
-    return true
-  end--
   if TppMotherBaseManagement.IsBuiltFirstFob then
     return TppMotherBaseManagement.IsBuiltFirstFob()
   else
@@ -2347,6 +2363,7 @@ function this.ReleaseFreePlay()
   if gvars.trm_isPushRewardSeparationPlatform then
     TppUiCommand.EnableChangeLocationMenu{locationId=50,missionId=30250}
   end
+  InfMission.EnableLocationChangeMissions()--tex
 end
 function this.IsBuiltAnimalPlatform()
   local e=gvars.trm_animalRecoverHistorySize
@@ -2372,49 +2389,49 @@ function this.RemoveStaffsAfterS10240()
     TppMotherBaseManagement.RemoveStaffsS10240()
   end
 end
-function this.PickUpBluePrint(a,n)
-  local t=nil
-  if n then
-    t=n
+function this.PickUpBluePrint(reourceId,blueprintNumber)
+  local blueprintId=nil
+  if blueprintNumber then
+    blueprintId=blueprintNumber
   else
-    t=mvars.trm_bluePrintLocatorIdTable[a]
+    blueprintId=mvars.trm_bluePrintLocatorIdTable[reourceId]
   end
-  if not t then
+  if not blueprintId then
     return
   end
-  this.AddTempDataBase(t)
-  local e=this.BLUE_PRINT_LANG_ID[t]
-  TppUI.ShowAnnounceLog("get_blueprint",e)
+  this.AddTempDataBase(blueprintId)
+  local langId=this.BLUE_PRINT_LANG_ID[blueprintId]
+  TppUI.ShowAnnounceLog("get_blueprint",langId)
 end
 function this.InitializeBluePrintLocatorIdTable()
   mvars.trm_bluePrintLocatorIdTable={}
-  for e,t in pairs(this.BLUE_PRINT_LOCATOR_TABLE)do
-    local e=TppCollection.GetUniqueIdByLocatorName(e)
-    mvars.trm_bluePrintLocatorIdTable[e]=t
+  for locatorName,blueprintNumber in pairs(this.BLUE_PRINT_LOCATOR_TABLE)do
+    local uniqueId=TppCollection.GetUniqueIdByLocatorName(locatorName)
+    mvars.trm_bluePrintLocatorIdTable[uniqueId]=blueprintNumber
   end
 end
-function this.GetBluePrintKeyItemId(e)
-  return mvars.trm_bluePrintLocatorIdTable[e]
+function this.GetBluePrintKeyItemId(uniqueId)
+  return mvars.trm_bluePrintLocatorIdTable[uniqueId]
 end
-function this.PickUpEmblem(e)
-  local e=mvars.trm_EmblemLocatorIdTable[e]
-  if not e then
+function this.PickUpEmblem(emblemId)
+  local emblemName=mvars.trm_EmblemLocatorIdTable[emblemId]
+  if not emblemName then
     return
   end
-  TppEmblem.Add(e,false,true)
+  TppEmblem.Add(emblemName,false,true)
 end
 function this.EnableTerminalVoice(enable)
   mvars.trm_voiceDisabled=not enable
 end
-function this.PlayTerminalVoice(voiceName,e,t)
-  if mvars.trm_voiceDisabled and e~=false then
+function this.PlayTerminalVoice(voiceName,unk2Bool,unk3Float)
+  if mvars.trm_voiceDisabled and unk2Bool~=false then
     return
   end
-  TppUiCommand.RequestMbSoundControllerVoice(voiceName,e,t)
+  TppUiCommand.RequestMbSoundControllerVoice(voiceName,unk2Bool,unk3Float)
 end
-function this.OnFultonFailedEnd(e,t,n,a)
+function this.OnFultonFailedEnd(gameId,unk1,unk2,unk3)
   mvars.trm_fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo or{}
-  mvars.trm_fultonFaileEndInfo[e]={e,t,n,a}
+  mvars.trm_fultonFaileEndInfo[gameId]={gameId,unk1,unk2,unk3}
 end
 function this._OnFultonFailedEnd(fultonFailedInfo1,fultonFailedInfo2,fultonFailedInfo3,fultonFailedInfo4,playerIndex)
   if Tpp.IsLocalPlayer(playerIndex)then

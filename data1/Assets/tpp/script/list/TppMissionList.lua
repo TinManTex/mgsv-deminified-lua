@@ -1,28 +1,32 @@
 -- DOBUILD: 1
 -- TppMissionList.lua
 local this={}
-local locationPackTable={}
-locationPackTable[TppDefine.LOCATION_ID.INIT]={"/Assets/tpptest/pack/location/empty/empty.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.AFGH]={"/Assets/tpp/pack/location/afgh/afgh.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.MAFR]={"/Assets/tpp/pack/location/mafr/mafr.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.CYPR]={"/Assets/tpp/pack/location/cypr/cypr.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.GNTN]={"/Assets/tpp/pack/location/gntn/gntn.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.OMBS]={"/Assets/tpp/pack/location/ombs/ombs.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.MTBS]={"/Assets/tpp/pack/location/mtbs/mtbs.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.HLSP]={"/Assets/tpp/pack/location/hlsp/hlsp.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.MBQF]={"/Assets/tpp/pack/location/mbqf/mbqf.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.FLYK]={"/Assets/tpp/pack/location/flyk/flyk.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.SAND_AFGH]={"/Assets/tpp_sandbox/pack/game_core/stage/gc_afgh.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.SAND_MAFR]={"/Assets/tpp/pack/location/mafr/mafr.fpk"}
-locationPackTable[TppDefine.LOCATION_ID.SAND_MTBS]={"/Assets/tpp_sandbox/pack/game_core/stage/gc_mtbs.fpk"}
 
-local missionPackTable={}
-missionPackTable[1]={"/Assets/tpp/pack/ui/gz/gz_pause_key_setting_data.fpk","/Assets/tpp/pack/mission2/init/init.fpk"}
-missionPackTable[5]=function(missionCode)
+--tex moved from local to this
+this.locationPackTable={
+  [TppDefine.LOCATION_ID.INIT]={"/Assets/tpptest/pack/location/empty/empty.fpk"},
+  [TppDefine.LOCATION_ID.AFGH]={"/Assets/tpp/pack/location/afgh/afgh.fpk"},
+  [TppDefine.LOCATION_ID.MAFR]={"/Assets/tpp/pack/location/mafr/mafr.fpk"},
+  [TppDefine.LOCATION_ID.CYPR]={"/Assets/tpp/pack/location/cypr/cypr.fpk"},
+  [TppDefine.LOCATION_ID.GNTN]={"/Assets/tpp/pack/location/gntn/gntn.fpk"},
+  [TppDefine.LOCATION_ID.OMBS]={"/Assets/tpp/pack/location/ombs/ombs.fpk"},
+  [TppDefine.LOCATION_ID.MTBS]={"/Assets/tpp/pack/location/mtbs/mtbs.fpk"},
+  [TppDefine.LOCATION_ID.HLSP]={"/Assets/tpp/pack/location/hlsp/hlsp.fpk"},
+  [TppDefine.LOCATION_ID.MBQF]={"/Assets/tpp/pack/location/mbqf/mbqf.fpk"},
+  [TppDefine.LOCATION_ID.FLYK]={"/Assets/tpp/pack/location/flyk/flyk.fpk"},
+  [TppDefine.LOCATION_ID.SAND_AFGH]={"/Assets/tpp_sandbox/pack/game_core/stage/gc_afgh.fpk"},
+  [TppDefine.LOCATION_ID.SAND_MAFR]={"/Assets/tpp/pack/location/mafr/mafr.fpk"},
+  [TppDefine.LOCATION_ID.SAND_MTBS]={"/Assets/tpp_sandbox/pack/game_core/stage/gc_mtbs.fpk"},
+}
+
+--tex moved from local to this
+this.missionPackTable={}
+this.missionPackTable[1]={"/Assets/tpp/pack/ui/gz/gz_pause_key_setting_data.fpk","/Assets/tpp/pack/mission2/init/init.fpk"}
+this.missionPackTable[5]=function(missionCode)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/title_sequence.fpk"
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/init/title.fpk"
 end
-missionPackTable[10010]=function(missionCode)
+this.missionPackTable[10010]=function(missionCode)
   if TppPackList.IsMissionPackLabel"afterMissionClearMovie"then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_SCRIPT)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/common/title_sequence.fpk"
@@ -57,11 +61,67 @@ missionPackTable[10010]=function(missionCode)
       end
     end
     local faceTable={{636,0,0,1}}
-    local bodyTable={{300,1},{301,1},{302,1},{303,1},{304,1},{305,1},{306,1},{307,1},{308,1},{309,1},{310,1},{311,1},{312,1},{313,1},{314,1},{315,1},{316,1},{317,1},{318,1},{319,1},{320,1},{321,1},{322,1},{323,1},{324,1},{325,1},{326,1},{327,1},{328,1},{329,1},{330,1},{331,1},{332,1},{333,1},{334,1},{337,1},{338,1},{339,1},{340,1},{341,1},{342,1},{343,1},{344,1},{345,1},{346,1},{347,1},{348,1},{349,1},{380,1},{381,1}}
+    local bodyTable={
+      --patients
+      {300,1},
+      {301,1},
+      {302,1},
+      {303,1},
+      {304,1},
+      {305,1},
+      {306,1},
+      {307,1},
+      {308,1},
+      {309,1},
+      {310,1},
+      {311,1},
+      {312,1},
+      {313,1},
+      {314,1},
+      {315,1},
+      {316,1},
+      {317,1},
+      {318,1},
+      {319,1},
+      {320,1},
+      {321,1},
+      {322,1},
+      {323,1},
+      {324,1},
+      {325,1},
+      {326,1},
+      {327,1},
+      {328,1},
+      {329,1},
+      {330,1},
+      {331,1},
+      {332,1},
+      {333,1},
+      {334,1},
+      --RETAILBUG body ids not defined?
+      {337,1},
+      {338,1},
+      {339,1},
+      --nurses
+      {340,1},
+      {341,1},
+      {342,1},
+      {343,1},
+      {344,1},
+      {345,1},
+      {346,1},
+      {347,1},
+      --doctors
+      {348,1},
+      {349,1},
+      --ishmael
+      {380,1},
+      {381,1}
+    }
     TppEneFova.AddUniquePackage{type="hostage",face=faceTable,body=bodyTable}
   end
 end
-missionPackTable[10020]=function(missionCode)
+this.missionPackTable[10020]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   if TppPackList.IsMissionPackLabel"afterMissionClearMovie"then
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10020/s10020_area02.fpk"
@@ -78,7 +138,7 @@ missionPackTable[10020]=function(missionCode)
     end
   end
 end
-missionPackTable[10030]=function(missionCode)
+this.missionPackTable[10030]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_WAIT)
@@ -88,7 +148,7 @@ missionPackTable[10030]=function(missionCode)
   local body={{TppEnemyBodyId.oce0_main0_v00,1}}
   TppEneFova.AddUniquePackage{type="hostage",body=body}
 end
-missionPackTable[10033]=function(missionCode)
+this.missionPackTable[10033]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -99,7 +159,7 @@ missionPackTable[10033]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10036]=function(missionCode)
+this.missionPackTable[10036]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_LV)
@@ -109,7 +169,7 @@ missionPackTable[10036]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10040]=function(missionCode)
+this.missionPackTable[10040]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ENEMY_HELI)
@@ -124,7 +184,7 @@ missionPackTable[10040]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10041]=function(missionCode)
+this.missionPackTable[10041]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -139,7 +199,7 @@ missionPackTable[10041]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10043]=function(missionCode)
+this.missionPackTable[10043]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -147,7 +207,7 @@ missionPackTable[10043]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_TRUCK_MATERIAL)
   TppPackList.AddDefaultMissionAreaPack(missionCode)
 end
-missionPackTable[10044]=function(missionCode)
+this.missionPackTable[10044]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -162,7 +222,7 @@ missionPackTable[10044]=function(missionCode)
     end
   end
 end
-missionPackTable[10052]=function(missionCode)
+this.missionPackTable[10052]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -177,7 +237,7 @@ missionPackTable[10052]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10054]=function(missionCode)
+this.missionPackTable[10054]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -199,7 +259,7 @@ missionPackTable[10054]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10070]=function(missionCode)
+this.missionPackTable[10070]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   if TppPackList.IsMissionPackLabel"beforeMotherBaseDemo"then
@@ -228,7 +288,7 @@ missionPackTable[10070]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10070/s10070_area01.fpk"
   end
 end
-missionPackTable[10080]=function(missionCode)
+this.missionPackTable[10080]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   if TppPackList.IsMissionPackLabel"afterPumpStopDemo"then
@@ -238,7 +298,7 @@ missionPackTable[10080]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10080/s10080_area01.fpk"
   end
 end
-missionPackTable[10086]=function(missionCode)
+this.missionPackTable[10086]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
@@ -256,7 +316,7 @@ missionPackTable[10086]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10082]=function(missionCode)
+this.missionPackTable[10082]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
@@ -265,7 +325,7 @@ missionPackTable[10082]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WEST_TRUCK_ITEMBOX)
   TppPackList.AddDefaultMissionAreaPack(missionCode)
 end
-missionPackTable[10090]=function(missionCode)
+this.missionPackTable[10090]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WEST_TRUCK)
@@ -275,7 +335,7 @@ missionPackTable[10090]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WEST_WAV_MACHINE_GUN)
   TppPackList.AddDefaultMissionAreaPack(missionCode)
 end
-missionPackTable[10121]=function(missionCode)
+this.missionPackTable[10121]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ENEMY_HELI)
@@ -292,7 +352,7 @@ missionPackTable[10121]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10091]=function(missionCode)
+this.missionPackTable[10091]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.RAVEN)
@@ -310,7 +370,7 @@ missionPackTable[10091]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10100]=function(missionCode)
+this.missionPackTable[10100]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WEST_WAV)
@@ -333,7 +393,7 @@ missionPackTable[10100]=function(missionCode)
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostageUnique",hostageType="MovingChild"}
 end
-missionPackTable[10110]=function(missionCode)
+this.missionPackTable[10110]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
@@ -355,7 +415,7 @@ missionPackTable[10110]=function(missionCode)
     TppHostage2.SetUniquePartsPath{gameObjectType="TppHostageUnique",locatorName=s,parts="/Assets/tpp/parts/chara/plh/plh0_main0_def_v00.parts"}
   end
 end
-missionPackTable[10195]=function(missionCode)
+this.missionPackTable[10195]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
@@ -369,7 +429,7 @@ missionPackTable[10195]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10115]=function(missionCode)
+this.missionPackTable[10115]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddDefaultMissionAreaPack(missionCode)
@@ -387,7 +447,7 @@ missionPackTable[10115]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10120]=function(missionCode)
+this.missionPackTable[10120]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.CHILD_SOLDIER)
@@ -399,7 +459,7 @@ missionPackTable[10120]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10085]=function(missionCode)
+this.missionPackTable[10085]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
@@ -413,7 +473,7 @@ missionPackTable[10085]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(hostage2Settings)
   end
 end
-missionPackTable[10211]=function(missionCode)
+this.missionPackTable[10211]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
@@ -424,7 +484,7 @@ missionPackTable[10211]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10200]=function(missionCode)
+this.missionPackTable[10200]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.CHILD_SOLDIER)
@@ -438,7 +498,7 @@ missionPackTable[10200]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10081]=function(missionCode)
+this.missionPackTable[10081]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MAFR_HOSTAGE)
@@ -451,7 +511,7 @@ missionPackTable[10081]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10130]=function(missionCode)
+this.missionPackTable[10130]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.CODETALKER)
@@ -470,7 +530,7 @@ missionPackTable[10130]=function(missionCode)
     TppPackList.AddDefaultMissionAreaPack(missionCode)
   end
 end
-missionPackTable[10140]=function(missionCode)
+this.missionPackTable[10140]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   if TppPackList.IsMissionPackLabel"MBdemo"then
@@ -491,7 +551,7 @@ missionPackTable[10140]=function(missionCode)
     TppPackList.AddDefaultMissionAreaPack(missionCode)
   end
 end
-missionPackTable[10150]=function(missionCode)
+this.missionPackTable[10150]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.XOF_SOLDIER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
@@ -508,7 +568,7 @@ missionPackTable[10150]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10150/s10150_area01.fpk"
   end
 end
-missionPackTable[10151]=function(missionCode)
+this.missionPackTable[10151]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   if TppPackList.IsMissionPackLabel"OkbEnding"then
@@ -519,7 +579,7 @@ missionPackTable[10151]=function(missionCode)
   local p={{375,1},{376,1}}
   TppEneFova.AddUniquePackage{type="hostage",body=p}
 end
-missionPackTable[10045]=function(missionCode)
+this.missionPackTable[10045]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.AFGH_HOSTAGE)
@@ -532,7 +592,7 @@ missionPackTable[10045]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10156]=function(missionCode)
+this.missionPackTable[10156]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.RAVEN)
@@ -540,7 +600,7 @@ missionPackTable[10156]=function(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.EAST_LV)
   TppPackList.AddDefaultMissionAreaPack(missionCode)
 end
-missionPackTable[10093]=function(missionCode)
+this.missionPackTable[10093]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.WEST_LV)
@@ -551,7 +611,7 @@ missionPackTable[10093]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10171]=function(missionCode)
+this.missionPackTable[10171]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ENEMY_HELI)
@@ -566,10 +626,10 @@ missionPackTable[10171]=function(missionCode)
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[10230]=function(missionCode)
+this.missionPackTable[10230]=function(missionCode)
   TppPackList.AddDefaultMissionAreaPack(missionCode)
 end
-missionPackTable[10240]=function(missionCode)
+this.missionPackTable[10240]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   if TppPackList.IsMissionPackLabel"InQuarantineFacility"then
     TppSoldier2.DisableMarkerModelEffect()
@@ -580,7 +640,7 @@ missionPackTable[10240]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/story/s10240/s10240_area.fpk"
   end
 end
-missionPackTable[10050]=function(missionCode)
+this.missionPackTable[10050]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.QUIET)
@@ -591,7 +651,7 @@ missionPackTable[10050]=function(missionCode)
     TppPackList.AddDefaultMissionAreaPack(missionCode)
   end
 end
-missionPackTable[10260]=function(missionCode)
+this.missionPackTable[10260]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ENEMY_HELI)
@@ -600,30 +660,30 @@ missionPackTable[10260]=function(missionCode)
   TppPackList.AddMissionPack(TppHelicopter.GetEnemyColoringPack(TppDefine.ENEMY_HELI_COLORING_TYPE.BLACK))
   TppPackList.AddDefaultMissionAreaPack(missionCode)
 end
-missionPackTable[10280]=missionPackTable[10010]
-missionPackTable[11043]=missionPackTable[10043]
-missionPackTable[11041]=missionPackTable[10041]
-missionPackTable[11054]=missionPackTable[10054]
-missionPackTable[11085]=missionPackTable[10085]
-missionPackTable[11082]=missionPackTable[10082]
-missionPackTable[11090]=missionPackTable[10090]
-missionPackTable[11036]=missionPackTable[10036]
-missionPackTable[11033]=missionPackTable[10033]
-missionPackTable[11050]=missionPackTable[10050]
-missionPackTable[11091]=missionPackTable[10091]
-missionPackTable[11195]=missionPackTable[10195]
-missionPackTable[11211]=missionPackTable[10211]
-missionPackTable[11140]=missionPackTable[10140]
-missionPackTable[11200]=missionPackTable[10200]
-missionPackTable[11080]=missionPackTable[10080]
-missionPackTable[11171]=missionPackTable[10171]
-missionPackTable[11121]=missionPackTable[10121]
-missionPackTable[11115]=missionPackTable[10115]
-missionPackTable[11130]=missionPackTable[10130]
-missionPackTable[11044]=missionPackTable[10044]
-missionPackTable[11052]=missionPackTable[10052]
-missionPackTable[11151]=missionPackTable[10151]
-missionPackTable[30010]=function(missionCode)
+this.missionPackTable[10280]=this.missionPackTable[10010]
+this.missionPackTable[11043]=this.missionPackTable[10043]
+this.missionPackTable[11041]=this.missionPackTable[10041]
+this.missionPackTable[11054]=this.missionPackTable[10054]
+this.missionPackTable[11085]=this.missionPackTable[10085]
+this.missionPackTable[11082]=this.missionPackTable[10082]
+this.missionPackTable[11090]=this.missionPackTable[10090]
+this.missionPackTable[11036]=this.missionPackTable[10036]
+this.missionPackTable[11033]=this.missionPackTable[10033]
+this.missionPackTable[11050]=this.missionPackTable[10050]
+this.missionPackTable[11091]=this.missionPackTable[10091]
+this.missionPackTable[11195]=this.missionPackTable[10195]
+this.missionPackTable[11211]=this.missionPackTable[10211]
+this.missionPackTable[11140]=this.missionPackTable[10140]
+this.missionPackTable[11200]=this.missionPackTable[10200]
+this.missionPackTable[11080]=this.missionPackTable[10080]
+this.missionPackTable[11171]=this.missionPackTable[10171]
+this.missionPackTable[11121]=this.missionPackTable[10121]
+this.missionPackTable[11115]=this.missionPackTable[10115]
+this.missionPackTable[11130]=this.missionPackTable[10130]
+this.missionPackTable[11044]=this.missionPackTable[10044]
+this.missionPackTable[11052]=this.missionPackTable[10052]
+this.missionPackTable[11151]=this.missionPackTable[10151]
+this.missionPackTable[30010]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ORDER_BOX)
@@ -633,28 +693,17 @@ missionPackTable[30010]=function(missionCode)
     TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30010/f30010.fpk"
   end
 end
-missionPackTable[30020]=function(missionCode)
+this.missionPackTable[30020]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddLocationCommonMissionAreaPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.ORDER_BOX)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30020/f30020.fpk"
 end
-missionPackTable[30050]=function(missionCode)
+this.missionPackTable[30050]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.MTBS_MISSION_AREA)
 
-  --tex IsDDBodyEquip add mission packs>
-  if InfMain.IsDDBodyEquip(missionCode) then
-    local bodyInfo=InfEneFova.GetMaleDDBodyInfo()
-    if bodyInfo and bodyInfo.missionPackPath then
-      TppPackList.AddMissionPack(bodyInfo.missionPackPath)
-    end
-    local bodyInfo=InfEneFova.GetFemaleDDBodyInfo()
-    if bodyInfo and bodyInfo.missionPackPath then
-      TppPackList.AddMissionPack(bodyInfo.missionPackPath)
-    end
-  end--<
   if Ivars.mbZombies:Is(1)then--tex>
     TppSoldierFace.SetUseZombieFova{enabled=true}
   end--<
@@ -704,12 +753,12 @@ missionPackTable[30050]=function(missionCode)
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostageUnique",hostageType="Paz"}
 end
-missionPackTable[30150]=function(missionCode)
+this.missionPackTable[30150]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
   TppPackList.AddMissionPack"/Assets/tpp/pack/mission2/free/f30150/f30150.fpk"
 end
-missionPackTable[30250]=function(missionCode)
+this.missionPackTable[30250]=function(missionCode)
   TppPackList.AddLocationCommonScriptPack(missionCode)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_WAIT)
   TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.HELICOPTER)
@@ -732,22 +781,11 @@ missionPackTable[30250]=function(missionCode)
     end
   end
 
-  --tex IsDDBodyEquip add mission packs>
-  if InfMain.IsDDBodyEquip(missionCode) then
-    local bodyInfo=InfEneFova.GetMaleDDBodyInfo()
-    if bodyInfo and bodyInfo.missionPackPath then
-      TppPackList.AddMissionPack(bodyInfo.missionPackPath)
-    end
-    local bodyInfo=InfEneFova.GetFemaleDDBodyInfo()
-    if bodyInfo and bodyInfo.missionPackPath then
-      TppPackList.AddMissionPack(bodyInfo.missionPackPath)
-    end
-  end--<
   if Ivars.mbZombies:Is(1)then--tex>
     TppSoldierFace.SetUseZombieFova{enabled=true}
   end--<
 end
-missionPackTable[40010]=function(missionCode)
+this.missionPackTable[40010]=function(missionCode)
   if gvars.ini_isTitleMode then
     TppPackList.SetDefaultMissionPackLabelName()
   end
@@ -768,7 +806,7 @@ missionPackTable[40010]=function(missionCode)
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostage2",hostageType="Mob"}
 end
-missionPackTable[40020]=function(missionCode)
+this.missionPackTable[40020]=function(missionCode)
   if gvars.ini_isTitleMode then
     TppPackList.SetDefaultMissionPackLabelName()
   end
@@ -789,7 +827,7 @@ missionPackTable[40020]=function(missionCode)
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostage2",hostageType="Mob"}
 end
-missionPackTable[40050]=function(missionCode)
+this.missionPackTable[40050]=function(missionCode)
   if gvars.ini_isTitleMode then
     TppPackList.SetDefaultMissionPackLabelName()
   end
@@ -810,20 +848,20 @@ missionPackTable[40050]=function(missionCode)
   end
   TppHostage2.SetHostageType{gameObjectType="TppHostage2",hostageType="Mob"}
 end
-missionPackTable[65020]={"/Assets/tpp/pack/show/e3_2014/s65020/s65020_area.fpk","/Assets/tpp/pack/location/afgh/pack_common/afgh_script.fpk"}
-missionPackTable[65030]={"/Assets/tpp/pack/show/e3_2014/s65030/s65030_area.fpk"}
-missionPackTable[65050]={"/Assets/tpp/pack/show/e3_2014/s65050/s65050_area.fpk"}
-missionPackTable[65414]={"/Assets/tpp/pack/show/gc_2014/s65414/s65414_area.fpk"}
-missionPackTable[65060]=function(missionCode)
+this.missionPackTable[65020]={"/Assets/tpp/pack/show/e3_2014/s65020/s65020_area.fpk","/Assets/tpp/pack/location/afgh/pack_common/afgh_script.fpk"}
+this.missionPackTable[65030]={"/Assets/tpp/pack/show/e3_2014/s65030/s65030_area.fpk"}
+this.missionPackTable[65050]={"/Assets/tpp/pack/show/e3_2014/s65050/s65050_area.fpk"}
+this.missionPackTable[65414]={"/Assets/tpp/pack/show/gc_2014/s65414/s65414_area.fpk"}
+this.missionPackTable[65060]=function(missionCode)
   TppPackList.AddMissionPack"/Assets/tpp/pack/show/tgs_2014/s65060/s65060_area.fpk"
   TppPackList.AddLocationCommonScriptPack(missionCode)do
     local settings={{type="hostage",name="hos_s65060_0000",faceId=621,bodyId=111}}
     TppEneFova.AddUniqueSettingPackage(settings)
   end
 end
-missionPackTable[65415]={"/Assets/tpp/pack/show/tgs_2014/s65415/s65415_area.fpk"}
-missionPackTable[65416]={"/Assets/tpp/pack/show/tgs_2014/s65416/s65416_area.fpk"}
-missionPackTable[50050]=function(missionCode)
+this.missionPackTable[65415]={"/Assets/tpp/pack/show/tgs_2014/s65415/s65415_area.fpk"}
+this.missionPackTable[65416]={"/Assets/tpp/pack/show/tgs_2014/s65416/s65416_area.fpk"}
+this.missionPackTable[50050]=function(missionCode)
   local ddSuit=TppEnemy.GetDDSuit()
   --RETAILPATCH 1.10>
   if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
@@ -868,25 +906,27 @@ missionPackTable[50050]=function(missionCode)
   TppPackList.AddFOBLayoutPack(missionCode)
 end
 function this.GetLocationPackagePath(locationId)
-  local packPath=locationPackTable[locationId]
+  InfCore.LogFlow("TppMissionList.GetLocationPackagePath "..locationId)--tex
+  local packPath=this.locationPackTable[locationId]
   if packPath then
   end
   TppLocation.SetBuddyBlock(locationId)
+  InfCore.PrintInspect(packPath,{varName="locationPackPaths"})--tex DEBUG
   return packPath
 end
 function this.GetMissionPackagePath(missionCode)
-  InfLog.AddFlow("TppMissionList.GetMissionPackagePath "..missionCode)--tex
+  InfCore.LogFlow("TppMissionList.GetMissionPackagePath "..missionCode)--tex
   TppPackList.SetUseDdEmblemFova(missionCode)
   local packPaths
-  if missionPackTable[missionCode]==nil then
+  if this.missionPackTable[missionCode]==nil then
     packPaths=TppPackList.MakeMissionPackList(missionCode,TppPackList.MakeDefaultMissionPackList)
-  elseif Tpp.IsTypeFunc(missionPackTable[missionCode])then
-    packPaths=TppPackList.MakeMissionPackList(missionCode,missionPackTable[missionCode])
-  elseif Tpp.IsTypeTable(missionPackTable[missionCode])then
-    packPaths=missionPackTable[missionCode]
+  elseif Tpp.IsTypeFunc(this.missionPackTable[missionCode])then
+    packPaths=TppPackList.MakeMissionPackList(missionCode,this.missionPackTable[missionCode])
+  elseif Tpp.IsTypeTable(this.missionPackTable[missionCode])then
+    packPaths=this.missionPackTable[missionCode]
   end
   InfMain.AddMissionPacks(missionCode,packPaths)--tex
-
+  InfCore.PrintInspect(packPaths,{varName="missionPackPaths"})--tex DEBUG
   return packPaths
 end
 if Mission.SetLocationPackagePathFunc then

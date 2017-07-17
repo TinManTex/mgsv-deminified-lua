@@ -1,10 +1,11 @@
 -- DOBUILD: 1
 -- TppPlayer.lua
 local this={}
+local StrCode32=InfCore.StrCode32--tex
 local IsTypeFunc=Tpp.IsTypeFunc
 local IsTypeTable=Tpp.IsTypeTable
 local IsTypeString=Tpp.IsTypeString
-local StrCode32=InfLog.StrCode32--tex was Fox.StrCode32
+local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local TimerStart=GkEventTimerManager.Start
 local TimerStop=GkEventTimerManager.Stop
 local GetTypeIndex=GameObject.GetTypeIndex
@@ -362,11 +363,12 @@ end
 function this.SetWeapons(weaponTable)
   this._SetWeapons(weaponTable,"weapons")
 end
-function this.SetInitWeapons(weaponTable,noSave)--tex added noSave
+--tex added noSave
+function this.SetInitWeapons(weaponTable,noSave)
   if gvars.str_storySequence>=TppDefine.STORY_SEQUENCE.CLEARD_RECUE_MILLER and not noSave then--tex added noSave
     this.SaveWeaponsToUsingTemp(weaponTable)
-end
-this._SetWeapons(weaponTable,"initWeapons")
+  end
+  this._SetWeapons(weaponTable,"initWeapons")
 end
 function this._SetWeapons(weaponTable,category)
   if not IsTypeTable(weaponTable)then
@@ -726,8 +728,8 @@ function this.SetMaxPlacedLocatorCount()
     TppPlaced.OnAllocate{locators=mvars.ply_maxPlacedLocatorCount,svarsName="ply_placedLocatorDisabled"}
   end
 end
-function this.IsDecoy(e)
-  local supportWeaponTypeId=TppEquip.GetSupportWeaponTypeId(e)
+function this.IsDecoy(equipId)
+  local supportWeaponTypeId=TppEquip.GetSupportWeaponTypeId(equipId)
   local decoyTypes={[TppEquip.SWP_TYPE_Decoy]=true,[TppEquip.SWP_TYPE_ActiveDecoy]=true,[TppEquip.SWP_TYPE_ShockDecoy]=true}
   if decoyTypes[supportWeaponTypeId]then
     return true
@@ -735,8 +737,8 @@ function this.IsDecoy(e)
     return false
   end
 end
-function this.IsMine(e)
-  local supportWeaponTypeId=TppEquip.GetSupportWeaponTypeId(e)
+function this.IsMine(equipId)
+  local supportWeaponTypeId=TppEquip.GetSupportWeaponTypeId(equipId)
   local mineTypes={[TppEquip.SWP_TYPE_DMine]=true,[TppEquip.SWP_TYPE_SleepingGusMine]=true,[TppEquip.SWP_TYPE_AntitankMine]=true,[TppEquip.SWP_TYPE_ElectromagneticNetMine]=true}
   if mineTypes[supportWeaponTypeId]then
     return true
@@ -817,28 +819,28 @@ function this.ShowIconForIntel(e,t)
   end
   if not t then
     if Tpp.IsNotAlert()then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=StrCode32"GetIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=StrCode32"GetIntel",messageInDisplay=StrCode32"IntelIconInDisplay",messageArg=e}
     elseif trapName then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=StrCode32"NGIntel",messageInDisplay=Fox.StrCode32"IntelIconInDisplay",messageArg=e}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=StrCode32"NGIntel",messageInDisplay=StrCode32"IntelIconInDisplay",messageArg=e}
       if not TppRadio.IsPlayed(TppRadio.COMMON_RADIO_LIST[TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT])then
         TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT)
       end
     end
   end
 end
-function this.GotIntel(a)
-  local e=mvars.ply_intelFlagInfo[a]
-  if not e then
+function this.GotIntel(intelNameHash)
+  local gotIntelName=mvars.ply_intelFlagInfo[intelNameHash]
+  if not gotIntelName then
     return
   end
-  if svars[e]~=nil then
-    svars[e]=true
+  if svars[gotIntelName]~=nil then
+    svars[gotIntelName]=true
   end
-  local e=mvars.ply_intelMarkerObjectiveName[a]
-  if e then
-    local a=TppMission.GetParentObjectiveName(e)
+  local intelMarkerObjectiveName=mvars.ply_intelMarkerObjectiveName[intelNameHash]
+  if intelMarkerObjectiveName then
+    local objectiveDefine=TppMission.GetParentObjectiveName(intelMarkerObjectiveName)
     local objectives={}
-    for a,t in pairs(a)do
+    for a,t in pairs(objectiveDefine)do
       table.insert(objectives,a)
     end
     TppMission.UpdateObjective{objectives=objectives}
@@ -871,32 +873,32 @@ function this.AddTrapSettingForQuest(quest)
   mvars.ply_questStartTrapInfo[StrCode32(trapName)]=questName
   Player.AddTrapDetailCondition{trapName=trapName,condition=PlayerTrap.FINE,action=PlayerTrap.NORMAL,stance=(PlayerTrap.STAND+PlayerTrap.SQUAT),direction=direction,directionRange=directionRange}
 end
-function this.ShowIconForQuest(e,a)
-  if not IsTypeString(e)then
+function this.ShowIconForQuest(questName,questStarted)
+  if not IsTypeString(questName)then
     return
   end
-  local t
-  if mvars.ply_questStartTrapInfo and mvars.ply_questStartTrapInfo[e]then
-    t=mvars.ply_questStartTrapInfo[e].trapName
+  local trapInfo
+  if mvars.ply_questStartTrapInfo and mvars.ply_questStartTrapInfo[questName]then
+    trapInfo=mvars.ply_questStartTrapInfo[questName].trapName
   end
-  if mvars.ply_questStartFlagInfo[e]~=nil then
-    a=mvars.ply_questStartFlagInfo[e]
+  if mvars.ply_questStartFlagInfo[questName]~=nil then
+    questStarted=mvars.ply_questStartFlagInfo[questName]
   end
-  if not a then
-    Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.TRAINING,message=StrCode32"QuestStarted",messageInDisplay=Fox.StrCode32"QuestIconInDisplay",messageArg=e}
+  if not questStarted then
+    Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.TRAINING,message=StrCode32"QuestStarted",messageInDisplay=StrCode32"QuestIconInDisplay",messageArg=questName}
   end
 end
-function this.QuestStarted(a)
-  local a=mvars.ply_questNameReverse[a]
-  if mvars.ply_questStartFlagInfo[a]~=nil then
-    mvars.ply_questStartFlagInfo[a]=true
+function this.QuestStarted(questNameHash)
+  local questName=mvars.ply_questNameReverse[questNameHash]
+  if mvars.ply_questStartFlagInfo[questName]~=nil then
+    mvars.ply_questStartFlagInfo[questName]=true
   end
   this.HideIconForQuest()
 end
 function this.HideIconForQuest()
   Player.RequestToHideIcon{type=ActionIcon.ACTION,icon=ActionIcon.TRAINING}
 end
-function this.ResetIconForQuest(e)
+function this.ResetIconForQuest(iconType)
   mvars.ply_questStartFlagInfo.ShootingPractice=false
 end
 function this.AppearHorseOnMissionStart(identifier,key)
@@ -1087,41 +1089,42 @@ function this.ResetMissionEndCamera()
   Player.ResetPadMask{settingName="MissionClearCamera"}
   Player.RequestToStopCameraAnimation{}
 end
-function this.PlayCommonMissionEndCamera(i,r,s,l,t,n)
+--REF this.PlayCommonMissionEndCamera(this.PlayMissionClearCameraOnRideHorse,this.VEHICLE_MISSION_CLEAR_CAMERA,this.PlayMissionClearCameraOnWalkerGear,this.PlayMissionClearCameraOnFoot,step,unk6)
+function this.PlayCommonMissionEndCamera(HorseCamFunc,VehicleCamFuncs,WalkerGearCamFunc,MissionClearOnFootCamFunc,step,unk6)
   local playMissionClearTime
   local vehicleId=vars.playerVehicleGameObjectId
   if Tpp.IsHorse(vehicleId)then
     GameObject.SendCommand(vehicleId,{id="HorseForceStop"})
-    playMissionClearTime=i(vehicleId,t,n)
+    playMissionClearTime=HorseCamFunc(vehicleId,step,unk6)
   elseif Tpp.IsVehicle(vehicleId)then
     local vehicleType=GameObject.SendCommand(vehicleId,{id="GetVehicleType"})
     GameObject.SendCommand(vehicleId,{id="ForceStop",enabled=true})
-    local r=r[vehicleType]
-    if r then
-      playMissionClearTime=r(vehicleId,t,n)
+    local VehicleCamFunc=VehicleCamFuncs[vehicleType]
+    if VehicleCamFunc then
+      playMissionClearTime=VehicleCamFunc(vehicleId,step,unk6)
     end
   elseif(Tpp.IsPlayerWalkerGear(vehicleId)or Tpp.IsEnemyWalkerGear(vehicleId))then
     GameObject.SendCommand(vehicleId,{id="ForceStop",enabled=true})
-    playMissionClearTime=s(vehicleId,t,n)
+    playMissionClearTime=WalkerGearCamFunc(vehicleId,step,unk6)
   elseif Tpp.IsHelicopter(vehicleId)then
   else
-    playMissionClearTime=l(t,n)
+    playMissionClearTime=MissionClearOnFootCamFunc(step,unk6)
   end
   if playMissionClearTime then
-    local timerName="Timer_StartPlayMissionClearCameraStep"..tostring(t+1)
+    local timerName="Timer_StartPlayMissionClearCameraStep"..tostring(step+1)
     TimerStart(timerName,playMissionClearTime)
   end
 end
-function this._PlayMissionClearCamera(playJingle,t)
-  if playJingle==1 then
+function this._PlayMissionClearCamera(step,unk2)
+  if step==1 then
     TppMusicManager.PostJingleEvent("SingleShot","Play_bgm_common_jingle_clear")
   end
-  this.PlayCommonMissionEndCamera(this.PlayMissionClearCameraOnRideHorse,this.VEHICLE_MISSION_CLEAR_CAMERA,this.PlayMissionClearCameraOnWalkerGear,this.PlayMissionClearCameraOnFoot,playJingle,t)
+  this.PlayCommonMissionEndCamera(this.PlayMissionClearCameraOnRideHorse,this.VEHICLE_MISSION_CLEAR_CAMERA,this.PlayMissionClearCameraOnWalkerGear,this.PlayMissionClearCameraOnFoot,step,unk2)
 end
 function this.RequestMissionClearMotion()
   Player.RequestToPlayDirectMotion{"missionClearMotion",{"/Assets/tpp/motion/SI_game/fani/bodies/snap/snapnon/snapnon_f_idl7.gani",false,"","","",false}}
 end
-function this.PlayMissionClearCameraOnFoot(p,c)
+function this.PlayMissionClearCameraOnFoot(unk1,unk2)
   if PlayerInfo.AndCheckStatus{PlayerStatus.NORMAL_ACTION}then
     if PlayerInfo.OrCheckStatus{PlayerStatus.STAND,PlayerStatus.SQUAT}then
       if PlayerInfo.AndCheckStatus{PlayerStatus.CARRY}then
@@ -1141,7 +1144,7 @@ function this.PlayMissionClearCameraOnFoot(p,c)
   local callSeOfCameraInterp=false
   local timeToSleep=20
   local useLastSelectedIndex=false
-  if p==1 then
+  if unk1==1 then
     skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
     skeletonCenterOffsets={Vector3(0,0,.05),Vector3(.15,0,0)}
     skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
@@ -1149,7 +1152,7 @@ function this.PlayMissionClearCameraOnFoot(p,c)
     interpTimeAtStart=.3
     s=1
     callSeOfCameraInterp=true
-  elseif c then
+  elseif unk2 then
     skeletonNames={"SKL_004_HEAD"}
     skeletonCenterOffsets={Vector3(0,0,.05)}
     skeletonBoundings={Vector3(.1,.125,.1)}
@@ -1188,7 +1191,7 @@ function this.PlayMissionClearCameraOnFoot(p,c)
   }
   return s
 end
-function this.PlayMissionClearCameraOnRideHorse(e,c,p)
+function this.PlayMissionClearCameraOnRideHorse(unk1,unk2,unk3)
   local skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
   local skeletonCenterOffsets={Vector3(0,0,.05),Vector3(.15,0,0)}
   local skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
@@ -1198,10 +1201,10 @@ function this.PlayMissionClearCameraOnRideHorse(e,c,p)
   local callSeOfCameraInterp=false
   local timeToSleep=20
   local useLastSelectedIndex=false
-  if p then
+  if unk3 then
     timeToSleep=4
   end
-  if c==1 then
+  if unk2==1 then
     skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
     skeletonCenterOffsets={Vector3(0,-.125,.05),Vector3(.15,-.125,0)}
     skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
@@ -1249,61 +1252,61 @@ function this.PlayMissionClearCameraOnRideHorse(e,c,p)
   }
   return o
 end
-function this.PlayMissionClearCameraOnRideLightVehicle(e,l,s)
-  local t=Vector3(-.35,.6,.7)
-  local e=Vector3(0,0,-2.25)
-  local a=.2
+function this.PlayMissionClearCameraOnRideLightVehicle(unk1,unk2,unk3)
+  local offsetTarget=Vector3(-.35,.6,.7)
+  local offsetPos=Vector3(0,0,-2.25)
+  local interpTimeAtStart=.2
   local r
-  local n=false
-  local i=20
-  local o=false
-  if s then
-    i=4
+  local callSeOfCameraInterp=false
+  local timeToSleep=20
+  local useLastSelectedIndex=false
+  if unk3 then
+    timeToSleep=4
   end
-  if l==1 then
-    t=Vector3(-.35,.6,.7)
-    e=Vector3(0,0,-2.25)
-    a=.2
+  if unk2==1 then
+    offsetTarget=Vector3(-.35,.6,.7)
+    offsetPos=Vector3(0,0,-2.25)
+    interpTimeAtStart=.2
     r=.5
-    n=true
+    callSeOfCameraInterp=true
   else
-    t=Vector3(-.35,.4,.7)
-    e=Vector3(0,0,-4)
-    a=.75
-    o=true
+    offsetTarget=Vector3(-.35,.4,.7)
+    offsetPos=Vector3(0,0,-4)
+    interpTimeAtStart=.75
+    useLastSelectedIndex=true
   end
-  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=5,followDelayTime=0,candidateRots={{3,160},{3,-160}},offsetTarget=t,offsetPos=e,focalLength=28,aperture=1.875,timeToSleep=i,interpTimeAtStart=a,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=n,useLastSelectedIndex=o}
+  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=5,followDelayTime=0,candidateRots={{3,160},{3,-160}},offsetTarget=offsetTarget,offsetPos=offsetPos,focalLength=28,aperture=1.875,timeToSleep=timeToSleep,interpTimeAtStart=interpTimeAtStart,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=callSeOfCameraInterp,useLastSelectedIndex=useLastSelectedIndex}
   return r
 end
-function this.PlayMissionClearCameraOnRideTruck(e,s,l)
-  local t=Vector3(-.35,1.3,1)
-  local a=Vector3(0,0,-2)
-  local e=.2
+function this.PlayMissionClearCameraOnRideTruck(unk1,unk1,unk3)
+  local offsetTarget=Vector3(-.35,1.3,1)
+  local offsetPos=Vector3(0,0,-2)
+  local interpTimeAtStart=.2
   local n
-  local r=false
-  local o=20
-  local i=false
-  if l then
-    o=4
+  local callSeOfCameraInterp=false
+  local timeToSleep=20
+  local useLastSelectedIndex=false
+  if unk3 then
+    timeToSleep=4
   end
-  if s==1 then
-    t=Vector3(-.35,1.3,1)
-    a=Vector3(0,0,-3)
-    e=.2
+  if unk1==1 then
+    offsetTarget=Vector3(-.35,1.3,1)
+    offsetPos=Vector3(0,0,-3)
+    interpTimeAtStart=.2
     n=.5
-    r=true
+    callSeOfCameraInterp=true
   else
-    t=Vector3(-.35,1,1)
-    a=Vector3(0,0,-6)
-    e=.75
-    i=true
+    offsetTarget=Vector3(-.35,1,1)
+    offsetPos=Vector3(0,0,-6)
+    interpTimeAtStart=.75
+    useLastSelectedIndex=true
   end
-  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=5,followDelayTime=0,candidateRots={{3,160},{3,-160}},offsetTarget=t,offsetPos=a,focalLength=28,aperture=1.875,timeToSleep=o,interpTimeAtStart=e,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=r,useLastSelectedIndex=i}
+  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=5,followDelayTime=0,candidateRots={{3,160},{3,-160}},offsetTarget=offsetTarget,offsetPos=offsetPos,focalLength=28,aperture=1.875,timeToSleep=timeToSleep,interpTimeAtStart=interpTimeAtStart,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=callSeOfCameraInterp,useLastSelectedIndex=useLastSelectedIndex}
   return n
 end
-function this.PlayMissionClearCameraOnRideCommonArmoredVehicle(a,s,e,RENisQuest)
+function this.PlayMissionClearCameraOnRideCommonArmoredVehicle(unk1,unk2,unk3,RENisQuest)
   local offsetTarget=Vector3(.05,-.5,-2.2)
-  if e==1 then
+  if unk3==1 then
     offsetTarget=Vector3(.05,-.5,-2.2)
   else
     offsetTarget=Vector3(-.05,-1,0)
@@ -1317,7 +1320,7 @@ function this.PlayMissionClearCameraOnRideCommonArmoredVehicle(a,s,e,RENisQuest)
   if RENisQuest then
     timeToSleep=4
   end
-  if s==1 then
+  if unk2==1 then
     offsetPos=Vector3(0,0,-7.5)
     interpTimeAtStart=.2
     r=.5
@@ -1341,52 +1344,52 @@ function this.PlayMissionClearCameraOnRideWesternArmoredVehicle(t,n)
   return a
 end
 function this.PlayMissionClearCameraOnRideTank(e,l,i)
-  local e=Vector3(0,0,-6.5)
+  local offsetPos=Vector3(0,0,-6.5)
   local a=.2
   local n
-  local r=false
+  local callSeOfCameraInterp=false
   local o=20
-  local t=false
+  local useLastSelectedIndex=false
   if i then
     o=4
   end
   if l==1 then
-    e=Vector3(0,0,-6.5)
+    offsetPos=Vector3(0,0,-6.5)
     a=.2
     n=.5
-    r=true
+    callSeOfCameraInterp=true
   else
-    e=Vector3(0,0,-9)
+    offsetPos=Vector3(0,0,-9)
     a=.75
-    t=true
+    useLastSelectedIndex=true
   end
-  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=5,followDelayTime=0,candidateRots={{9,165},{9,-165}},offsetTarget=Vector3(0,-.85,3.25),offsetPos=e,focalLength=28,aperture=1.875,timeToSleep=o,interpTimeAtStart=a,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=r,useLastSelectedIndex=t}
+  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=5,followDelayTime=0,candidateRots={{9,165},{9,-165}},offsetTarget=Vector3(0,-.85,3.25),offsetPos=offsetPos,focalLength=28,aperture=1.875,timeToSleep=o,interpTimeAtStart=a,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=callSeOfCameraInterp,useLastSelectedIndex=useLastSelectedIndex}
   return n
 end
 function this.PlayMissionClearCameraOnWalkerGear(a,p,s)
   local n=Vector3(0,.55,.35)
   local a=Vector3(0,0,-3.65)
-  local t=.2
+  local interpTimeAtStart=.2
   local l
-  local i=false
-  local o=20
-  local r=false
+  local callSeOfCameraInterp=false
+  local timeToSleep=20
+  local useLastSelectedIndex=false
   if s then
-    o=4
+    timeToSleep=4
   end
   if p==1 then
     n=Vector3(0,.55,.35)
     a=Vector3(0,0,-3.65)
-    t=.2
+    interpTimeAtStart=.2
     l=1
-    i=true
+    callSeOfCameraInterp=true
   else
     n=Vector3(0,.4,.35)
     a=Vector3(0,0,-4.95)
-    t=3
-    r=true
+    interpTimeAtStart=3
+    useLastSelectedIndex=true
   end
-  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=3,followDelayTime=.1,candidateRots={{7,165},{7,-165}},offsetTarget=n,offsetPos=a,focalLength=28,aperture=1.875,timeToSleep=o,interpTimeAtStart=t,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=i,useLastSelectedIndex=r}
+  Player.RequestToPlayCameraNonAnimation{characterId=GameObject.GetGameObjectIdByIndex("TppPlayer2",0),isFollowPos=true,isFollowRot=true,followTime=3,followDelayTime=.1,candidateRots={{7,165},{7,-165}},offsetTarget=n,offsetPos=a,focalLength=28,aperture=1.875,timeToSleep=timeToSleep,interpTimeAtStart=interpTimeAtStart,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,callSeOfCameraInterp=callSeOfCameraInterp,useLastSelectedIndex=useLastSelectedIndex}
   return l
 end
 this.VEHICLE_MISSION_CLEAR_CAMERA={
@@ -1605,51 +1608,61 @@ function this.Messages()
       {msg="QuestIconInDisplay",func=this.OnQuestIconDisplayContinue},
       {msg="PlayerShowerEnd",func=function()
         TppUI.ShowAnnounceLog"refresh"
-      end}},
-    GameObject={{msg="RideHeli",func=this.QuietRideHeli}},
+      end}
+    },
+    GameObject={
+      {msg="RideHeli",func=this.QuietRideHeli}
+    },
     UI={
       {msg="EndFadeOut",sender="OnSelectCboxDelivery",func=this.WarpByCboxDelivery},
       {msg="EndFadeIn",sender="OnEndWarpByCboxDelivery",func=this.OnEndFadeInWarpByCboxDelivery},
       {msg="EndFadeOut",sender="EndFadeOut_StartTargetDeadCamera",func=this._SetTargetDeadCamera,option={isExecGameOver=true}},
       {msg="EndFadeOut",sender="EndFadeOut_StartTargetHeliCamera",func=this._SetTargetHeliCamera,option={isExecGameOver=true}},
       {msg="EndFadeOut",sender="EndFadeOut_StartTargetTruckCamera",func=this._SetTargetTruckCamera,option={isExecGameOver=true}}},
-    Terminal={{msg="MbDvcActSelectCboxDelivery",func=this.OnSelectCboxDelivery}},
-    Timer={{msg="Finish",sender="Timer_StartPlayMissionClearCameraStep1",func=function()
-      this._PlayMissionClearCamera(1)
-    end,
-    option={isExecMissionClear=true}},
-    {msg="Finish",sender="Timer_StartPlayMissionClearCameraStep2",func=function()
-      this._PlayMissionClearCamera(2)
-    end,
-    option={isExecMissionClear=true}},
-    {msg="Finish",sender="Timer_FOBStartPlayMissionClearCameraStep1",func=function()
-      this._FOBPlayMissionClearCamera(1)
-    end,
-    option={isExecMissionClear=true}},
-    {msg="Finish",sender="Timer_FOBStartPlayMissionClearCameraStep2",func=function()
-      this._FOBPlayMissionClearCamera(2)
-    end,
-    option={isExecMissionClear=true}},
-    {msg="Finish",sender="Timer_StartPlayMissionAbortCamera",func=this._PlayMissionAbortCamera,option={isExecGameOver=true}},
-    {msg="Finish",sender="Timer_DeliveryWarpSoundCannotCancel",func=this.OnDeliveryWarpSoundCannotCancel},
-    {msg="Finish",sender="Timer_StartGameOverCamera",func=this._StartGameOverCamera,option={isExecGameOver=true}},
-    {msg="Finish",sender="Timer_FOBWaitStandStance",func=function()
-      this.FOBRequestMissionClearMotion()
-    end,
-    option={isExecMissionClear=true}}},
-    Trap={{msg="Enter",sender="trap_TppSandWind0000",func=function()
-      TppEffectUtility.SetSandWindEnable(true)
-    end,
-    option={isExecMissionPrepare=true}},
-    {msg="Exit",sender="trap_TppSandWind0000",func=function()
-      TppEffectUtility.SetSandWindEnable(false)
-    end,
-    option={isExecMissionPrepare=true}},
-    {msg="Enter",sender="fallDeath_camera",func=function()
-      this.SetLimitFallDeadCameraOffsetPosY(-18)
-    end,
-    option={isExecMissionPrepare=true}},
-    {msg="Exit",sender="fallDeath_camera",func=this.ResetLimitFallDeadCameraOffsetPosY,option={isExecMissionPrepare=true}}}}
+    Terminal={
+      {msg="MbDvcActSelectCboxDelivery",func=this.OnSelectCboxDelivery}
+    },
+    Timer={
+      {msg="Finish",sender="Timer_StartPlayMissionClearCameraStep1",func=function()
+        this._PlayMissionClearCamera(1)
+      end,
+      option={isExecMissionClear=true}},
+      {msg="Finish",sender="Timer_StartPlayMissionClearCameraStep2",func=function()
+        this._PlayMissionClearCamera(2)
+      end,
+      option={isExecMissionClear=true}},
+      {msg="Finish",sender="Timer_FOBStartPlayMissionClearCameraStep1",func=function()
+        this._FOBPlayMissionClearCamera(1)
+      end,
+      option={isExecMissionClear=true}},
+      {msg="Finish",sender="Timer_FOBStartPlayMissionClearCameraStep2",func=function()
+        this._FOBPlayMissionClearCamera(2)
+      end,
+      option={isExecMissionClear=true}},
+      {msg="Finish",sender="Timer_StartPlayMissionAbortCamera",func=this._PlayMissionAbortCamera,option={isExecGameOver=true}},
+      {msg="Finish",sender="Timer_DeliveryWarpSoundCannotCancel",func=this.OnDeliveryWarpSoundCannotCancel},
+      {msg="Finish",sender="Timer_StartGameOverCamera",func=this._StartGameOverCamera,option={isExecGameOver=true}},
+      {msg="Finish",sender="Timer_FOBWaitStandStance",func=function()
+        this.FOBRequestMissionClearMotion()
+      end,
+      option={isExecMissionClear=true}}
+    },
+    Trap={
+      {msg="Enter",sender="trap_TppSandWind0000",func=function()
+        TppEffectUtility.SetSandWindEnable(true)
+      end,
+      option={isExecMissionPrepare=true}},
+      {msg="Exit",sender="trap_TppSandWind0000",func=function()
+        TppEffectUtility.SetSandWindEnable(false)
+      end,
+      option={isExecMissionPrepare=true}},
+      {msg="Enter",sender="fallDeath_camera",func=function()
+        this.SetLimitFallDeadCameraOffsetPosY(-18)
+      end,
+      option={isExecMissionPrepare=true}},
+      {msg="Exit",sender="fallDeath_camera",func=this.ResetLimitFallDeadCameraOffsetPosY,option={isExecMissionPrepare=true}}
+    }
+  }
   if IsTypeTable(mvars.ply_intelMarkerTrapList)and next(mvars.ply_intelMarkerTrapList)then
     messageTable[StrCode32"Trap"]=messageTable[StrCode32"Trap"]or{}
     table.insert(messageTable[StrCode32"Trap"],Tpp.StrCode32Table{msg="Enter",sender=mvars.ply_intelMarkerTrapList,func=this.OnEnterIntelMarkerTrap,option={isExecMissionPrepare=true}})
@@ -1823,7 +1836,7 @@ function this.SetSelfSubsistenceOnHardMission()
     this.SetInitItems(TppDefine.CYPR_PLAYER_INITIAL_ITEM_TABLE)
     this.RegisterTemporaryPlayerType{partsType=PlayerPartsType.NORMAL,camoType=PlayerCamoType.OLIVEDRAB,handEquip=TppEquip.EQP_HAND_NORMAL,faceEquipId=0}
   end
-  
+
   InfMain.SetSubsistenceSettings()--tex
 end
 function this.OnReload()
@@ -1917,9 +1930,9 @@ function this.MakeFultonRecoverSucceedRatio(unk1,_gameId,gimmickInstanceOrAnimal
   --  end
   --  end--<
   --WIP
---  if --[[Ivars.fultonMotherBaseHandling:Is(1) and--]] Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex>
---    percentage=0
---  end--<
+  --  if --[[Ivars.fultonMotherBaseHandling:Is(1) and--]] Ivars.mbWarGamesProfile:Is"INVASION" and vars.missionCode==30050 then--tex>
+  --    percentage=0
+  --  end--<
   if Tpp.IsFultonContainer(gameId) and vars.missionCode==30050 and Ivars.mbCollectionRepop:Is(1)then--tex> more weirdness
     percentage=0
   end--<
@@ -2183,9 +2196,9 @@ function this.WarpByCboxDelivery()
   end
   mvars.ply_deliveryWarpState=this.DELIVERY_WARP_STATE.START_WARP
   TimerStart("Timer_DeliveryWarpSoundCannotCancel",t)
-  local a={type="TppPlayer2",index=0}
-  local e={id="WarpToStation",stationId=mvars.ply_selectedCboxDeliveryUniqueId}
-  GameObject.SendCommand(a,e)
+  local gameId={type="TppPlayer2",index=0}
+  local command={id="WarpToStation",stationId=mvars.ply_selectedCboxDeliveryUniqueId}
+  GameObject.SendCommand(gameId,command)
 end
 function this.OnEndWarpByCboxDelivery()
   if mvars.ply_deliveryWarpState==this.DELIVERY_WARP_STATE.START_WARP then
@@ -2273,11 +2286,11 @@ function this.OnIntelIconDisplayContinue(a,t,t)
   local a=mvars.ply_intelNameReverse[a]
   this.ShowIconForIntel(a)
 end
-function this.OnEnterQuestTrap(a,t)
-  local a=mvars.ply_questStartTrapInfo[a]
-  this.ShowIconForQuest(a)
-  local e=mvars.ply_questStartFlagInfo[a]
-  if e~=nil and e==false then
+function this.OnEnterQuestTrap(trap,player)
+  local questName=mvars.ply_questStartTrapInfo[trap]
+  this.ShowIconForQuest(questName)
+  local questStarted=mvars.ply_questStartFlagInfo[questName]
+  if questStarted~=nil and questStarted==false then
     TppSoundDaemon.PostEvent"sfx_s_ifb_mbox_arrival"
   end
 end

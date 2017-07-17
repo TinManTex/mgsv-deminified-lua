@@ -1,5 +1,7 @@
 # mgsv-deminified-lua
 
+https://github.com/TinManTex/mgsv-deminified-lua
+
 Manually deminified mgsv lua scripts.
 
 KJP runs the files to be packed in data.dat through a minifier on a per file basis which strips all the formating and also replaces local variable names with single letter names.

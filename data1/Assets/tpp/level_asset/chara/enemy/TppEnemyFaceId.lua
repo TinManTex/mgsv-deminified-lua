@@ -1,4 +1,4 @@
---TppEnemyFaceId
+--TppEnemyFaceId.lua
 local this={
   --HMT=DD greentop
   svs_balaclava=550,  --[M][---][---][---] Balaclava

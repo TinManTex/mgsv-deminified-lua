@@ -94,7 +94,16 @@ TppSoldier2.ReloadSoldier2ParameterTables{
     sandstorm={zero=0,ss=0,hs=0,s=0,m=15,l=30,hll=60,ll=160,alert=160,special=500},
     rain={zero=0,ss=0,hs=0,s=4.5,m=15,l=30,hll=60,ll=160,alert=160,special=500}
   },
-  lifeParameterTable={maxLife=2600,maxStamina=3e3,maxLimbLife=1500,maxArmorLife=7500,maxHelmetLife=500,sleepRecoverSec=300,faintRecoverSec=50,dyingSec=60},
+  lifeParameterTable={
+    maxLife=2600,--nasanhak Life points you want enemies to have. Do not set below 550 else they will die instantly
+    maxStamina=3000,--nasanhak Stamina is purely for STN/ZZZ weapons. Everybody including the player seems to have 3,000 stamina. Set to 1 to have soldiers be easy to KO
+    maxLimbLife=1500,--nasanhak Life points for arms and legs. Do not set below 550 else they will die instantly, maxLife takes priority, so no point setting maxLimbLife above it
+    maxArmorLife=7500,--nasanhak This determines ARMORED soldier's torso health only
+    maxHelmetLife=500,--nasanhak Damage required to pop off the helmets
+    sleepRecoverSec=300,--nasanhak Set to -1 (negative one) for infinite sleep
+    faintRecoverSec=50,--nasanhak Changes to this make absolutely no difference, STN recovery times are controlled somewhere else
+    dyingSec=60--nasanhak Set to -1 to never have bleeding soldiers die
+  },  
   zombieParameterTable={highHeroicValue=1e3}
 }
 return this
