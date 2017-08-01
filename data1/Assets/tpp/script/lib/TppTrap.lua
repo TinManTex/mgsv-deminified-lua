@@ -87,11 +87,11 @@ function this.RestoreVariableTrapState()
     return
   end
   for i,trapInfo in ipairs(mvars.trp_variableTrapList)do
-    local InvisibleMeshFromIdentifier=true
+    local isForPackLabel=true
     if trapInfo.packLabel then
-      InvisibleMeshFromIdentifier=TppPackList.IsMissionPackLabelList(trapInfo.packLabel)
+      isForPackLabel=TppPackList.IsMissionPackLabelList(trapInfo.packLabel)
     end
-    if InvisibleMeshFromIdentifier then
+    if isForPackLabel then
       if svars.trp_variableTrapEnable[i]then
         this.Enable(trapInfo.name)
       else

@@ -2429,9 +2429,9 @@ function this.PlayTerminalVoice(voiceName,unk2Bool,unk3Float)
   end
   TppUiCommand.RequestMbSoundControllerVoice(voiceName,unk2Bool,unk3Float)
 end
-function this.OnFultonFailedEnd(gameId,unk1,unk2,unk3)
+function this.OnFultonFailedEnd(gameId,unk1,unk2,fultonFailedType)
   mvars.trm_fultonFaileEndInfo=mvars.trm_fultonFaileEndInfo or{}
-  mvars.trm_fultonFaileEndInfo[gameId]={gameId,unk1,unk2,unk3}
+  mvars.trm_fultonFaileEndInfo[gameId]={gameId,unk1,unk2,fultonFailedType}
 end
 function this._OnFultonFailedEnd(fultonFailedInfo1,fultonFailedInfo2,fultonFailedInfo3,fultonFailedInfo4,playerIndex)
   if Tpp.IsLocalPlayer(playerIndex)then

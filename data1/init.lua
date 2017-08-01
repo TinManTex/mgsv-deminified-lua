@@ -287,7 +287,7 @@ if SoundCoreDaemon then
   if SoundDaemon then
     SoundDaemon.Create()
     if SoundEditorDaemon then
-      local e=SoundEditorDaemon{}
+      local soundEditorDaemon=SoundEditorDaemon{}
     end
   end
 end
@@ -331,7 +331,7 @@ if Pad then
   Pad.ConfigDefaultAssigns()
 end
 if PadMapping then
-  local e=PadMapping()
+  local padMapping=PadMapping()
 end
 if ReplayService then
   ReplayService.Boot()
@@ -342,14 +342,14 @@ end
 if PhDaemon then
   PhDaemon.SetMemorySize(2560,1536,1024)
   PhDaemon.SetMaxRigidBodyNum(500)
-  local e=PhDaemon()
+  local phDaemon=PhDaemon()
 end
 if SimDaemon then
-  local e=SimDaemon()
-  e.defaultViewPort="MainViewport"
+  local simDaemon=SimDaemon()
+  simDaemon.defaultViewPort="MainViewport"
 end
 if DesDaemon then
-  local e=DesDaemon()
+  local desDaemon=DesDaemon()
 end
 if NtDaemon then
   NtDaemon.Create()
@@ -360,27 +360,27 @@ if FoxTestLuaActor then
   end
 end
 if UiDaemon then
-  local e=UiDaemon{name="UiDaemon"}
+  local uiDaemon=UiDaemon{name="UiDaemon"}
 end
 if LangDaemon then
-  local e=LangDaemon{name="LangDaemon"}
+  local langDaemon=LangDaemon{name="LangDaemon"}
 end
 if SubtitlesDaemon then
-  local e=SubtitlesDaemon{name="SubtitlesDaemon"}
+  local subtitlesDaemon=SubtitlesDaemon{name="SubtitlesDaemon"}
 end
 if SubtitlesCommand then
-  local e=SubtitlesDaemon.GetDefaultVoiceLanguage()
-  SubtitlesCommand.SetVoiceLanguage(e)
-  local e=AssetConfiguration.GetDefaultCategory"Language"
-  SubtitlesCommand.SetLanguage(e)
+  local defaultVoiceLanguage=SubtitlesDaemon.GetDefaultVoiceLanguage()
+  SubtitlesCommand.SetVoiceLanguage(defaultVoiceLanguage)
+  local defaultLanguage=AssetConfiguration.GetDefaultCategory"Language"
+  SubtitlesCommand.SetLanguage(defaultLanguage)
 end
 if PreviewDaemon then
-  local e=PreviewDaemon{}
+  local previewDaemon=PreviewDaemon{}
 end
 if EnvironmentDaemon then
-  local e=EnvironmentDaemon{}
+  local environmentDaemon=EnvironmentDaemon{}
   if WindManager then
-    local e=WindManager{}
+    local windManager=WindManager{}
   end
 end
 local platform=Fox.GetPlatformName()

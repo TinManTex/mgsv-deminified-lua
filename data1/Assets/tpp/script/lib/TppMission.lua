@@ -1980,6 +1980,7 @@ function this.GetNextMissionCodeForEmergency()
   return(mvars.mis_emergencyMissionCode or gvars.mis_nextMissionCodeForEmergency)
 end
 function this.OnAbortMissionPreparation()
+  TppPlayer.ForceChangePlayerFromOcelot()--RETAILPATCH 1.0.11
   this.SetNextMissionCodeForMissionClear(missionClearCodeNone)
   gvars.heli_missionStartRoute=0
 end

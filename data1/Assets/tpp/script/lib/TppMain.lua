@@ -310,6 +310,11 @@ function this.OnAllocate(missionTable)
     mvars.mis_baseList=missionTable.sequence.baseList
     TppCheckPoint.RegisterCheckPointList(missionTable.sequence.checkPointList)
   end
+  --RETAILPATCH 1.0.11>
+  if not TppMission.IsFOBMission(vars.missionCode)then
+    TppPlayer.ForceChangePlayerFromOcelot()
+  end
+  --<
   --end,missionTable)--DEBUG
   InfCore.LogFlow("OnAllocate Bottom "..vars.missionCode)--tex
 end

@@ -1,6 +1,6 @@
 Entity={
-  IsNull=function(n)
-    if n==nil or n==NULL then
+  IsNull=function(entity)
+    if entity==nil or entity==NULL then
       return true
     else
       return false

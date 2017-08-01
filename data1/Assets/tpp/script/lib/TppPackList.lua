@@ -148,7 +148,7 @@ function this.SetDefaultMissionPackLabelName()
   this.SetMissionPackLabelName"default"
 end
 function this.MakeMissionPackList(missionCode,missionPackList)
-  this.missionPackList={}
+  this.missionPackList={}--GOTACHA this is the sole creation defintiion of missionPackList
   if Tpp.IsTypeFunc(missionPackList)then
     missionPackList(missionCode)
   end

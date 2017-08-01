@@ -25,10 +25,10 @@ GameConfig.Reset()
 UiDaemon.SetPrefetchTexture"/Assets/tpp/ui/ModelAsset/cmn_loadmark/Pictures/cmn_loadmark_logo_mini_nmp.ftex"
 AssetConfiguration.RegisterExtensionInfo{extensions={"tetl","tmss","tmsl","tlsp","tmsu","tmsf","twpf","adm","tevt","vpc","ends","spch","mbl"},categories={"Target"}}
 if TppGameSequence and TppPhaseController then
-  local e=TppGameSequence:GetInstance()
-  e:SetPhaseController(TppPhaseController.Create())
+  local tppGameSequence=TppGameSequence:GetInstance()
+  tppGameSequence:SetPhaseController(TppPhaseController.Create())
 end
-local e=CheckpointDaemon{name="CheckpointDaemon"}
+local checkpointDaemon=CheckpointDaemon{name="CheckpointDaemon"}
 if GkNoiseSystem then
   GkNoiseSystem.InitNoiseSet"Tpp/Scripts/Noises/TppNoiseDefinitions.lua"
 end
@@ -44,17 +44,17 @@ if ChVoiceTaskOrganizer2 then
 end
 if Editor then
   if Preference then
-    local e=Preference.GetPreferenceEntity"EdRailPreference"
-    if not Entity.IsNull(e)and Fox.GetPlatformName()=="Windows"then
-      if e.railSystemScript==""then
-        e.railSystemScript="/Assets/tpp/editor_scripts/fox/rail/TppRailSystem.lua"
+    local edRailPreference=Preference.GetPreferenceEntity"EdRailPreference"
+    if not Entity.IsNull(edRailPreference)and Fox.GetPlatformName()=="Windows"then
+      if edRailPreference.railSystemScript==""then
+        edRailPreference.railSystemScript="/Assets/tpp/editor_scripts/fox/rail/TppRailSystem.lua"
       end
     end
   end
   do
-    local e=Preference.GetPreferenceEntity"EdRoutePreference"
-    if not Entity.IsNull(e)and e.characterType=="Soldier"then
-      e.characterType="Soldier2"
+    local edRoutePreference=Preference.GetPreferenceEntity"EdRoutePreference"
+    if not Entity.IsNull(edRoutePreference)and edRoutePreference.characterType=="Soldier"then
+      edRoutePreference.characterType="Soldier2"
     end
   end
   EdRouteDataNodeEvent.SetEventDefinitionPath("Soldier2","Tpp/Scripts/RouteEvents/AiRtEvSoldier2.lua")
@@ -86,10 +86,10 @@ if Editor then
   EdRouteDataNodeEvent.SetEventList"Soldier2"
   EdRouteDataEdgeEvent.SetEventList"Soldier2"
   if Preference then
-    local e=Preference.GetPreferenceEntity"EdRoutePreference"
-    if not Entity.IsNull(e)and Fox.GetPlatformName()=="Windows"then
-      if e.routeSystemScript==""then
-        e.routeSystemScript="/Assets/tpp/editor_scripts/fox/route/TppRouteSystem.lua"
+    local edRoutePreference=Preference.GetPreferenceEntity"EdRoutePreference"
+    if not Entity.IsNull(edRoutePreference)and Fox.GetPlatformName()=="Windows"then
+      if edRoutePreference.routeSystemScript==""then
+        edRoutePreference.routeSystemScript="/Assets/tpp/editor_scripts/fox/route/TppRouteSystem.lua"
       end
     end
   end
@@ -584,7 +584,7 @@ if Script.LoadLibrary then
   else
     filePath="Tpp/Scripts/Equip/EquipIdTable.lua"
   end
-  --tex>
+  --tex allow files in MGS_TPP\mod\ to override >
   local scriptPath=InfCore.paths.mod..filePath
   if InfCore.FileExists(scriptPath) then
     LoadLibrary(filePath)
@@ -689,24 +689,24 @@ if Editor then
 end
 if Game.DEBUG_AddScript then
   local ok,err=pcall(function()
-    local e=io.open("tmp/my_debug_script.lua","r")
-    if e then
-      local e=e:read"*a"
-      local t=Application.GetInstance()
-      local t=t:GetMainGame()
-      t:DEBUG_AddScript(e)
+    local debugScript=io.open("tmp/my_debug_script.lua","r")
+    if debugScript then
+      local allLines=debugScript:read"*a"
+      local application=Application.GetInstance()
+      local game=application:GetMainGame()
+      game:DEBUG_AddScript(allLines)
     end
   end)
   if not ok then
   end
 end
 if Game.DEBUG_AddScript then
-  local e=io.open("Tpp/tmp/release_test_script.lua","r")
-  if e then
-    local t=e:read"*a"
-    local e=Application.GetInstance()
-    local e=e:GetMainGame()
-    e:DEBUG_AddScript(t)
+  local releaseTest=io.open("Tpp/tmp/release_test_script.lua","r")
+  if releaseTest then
+    local allLines=releaseTest:read"*a"
+    local application=Application.GetInstance()
+    local game=application:GetMainGame()
+    game:DEBUG_AddScript(allLines)
     Script.LoadLibrary"/Assets/tpp/editor_scripts/tpp_editor_menu2.lua"
     Script.LoadLibrary"/Assets/tpp/script/entry/MissionEntry.lua"
     Script.LoadLibrary"/Assets/tpptest/script/lib/MissionTest.lua"
@@ -741,8 +741,4 @@ TppVarInit.InitializeOnStartTitle()
 TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
 InfCore.LogFlow"start.lua done"--tex
-
-
-
-
 

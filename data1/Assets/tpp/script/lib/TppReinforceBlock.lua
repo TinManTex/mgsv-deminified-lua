@@ -63,14 +63,16 @@ end
 function this.GetFpk(reinforceType,pfcType,coloringType)--NMC: basically parses REINFORCE_FPK
   local fpkTableForReinforceType=this.REINFORCE_FPK[reinforceType]
   if Tpp.IsTypeTable(fpkTableForReinforceType)then
-    local locationString=""
-    if TppLocation.IsAfghan()then
-      locationString="AFGH"
-    elseif TppLocation.IsMiddleAfrica()then
-      locationString="MAFR"
-    elseif TppLocation.IsMotherBase() or TppLocation.IsMBQF() then--tex>
-      locationString="MTBS"--<
-    end
+  local locationString=InfUtil.GetLocationName()--tex REWORKED>
+  locationString=locationString or ""
+  locationString=string.upper(locationString)
+  --ORIG
+--    local locationString=""
+--    if TppLocation.IsAfghan()then
+--      locationString="AFGH"
+--    elseif TppLocation.IsMiddleAfrica()then
+--      locationString="MAFR"
+--    end
     local fpkPath=fpkTableForReinforceType[pfcType]or fpkTableForReinforceType[locationString]
     if Tpp.IsTypeTable(fpkPath)then
       coloringType=coloringType or"_DEFAULT"
@@ -98,6 +100,7 @@ function this.GetFpk(reinforceType,pfcType,coloringType)--NMC: basically parses 
   return fpkTableForReinforceType
 end
 function this.SetUpReinforceBlock()
+  InfCore.LogFlow"TppReinforceBlock.SetUpReinforceBlock"--tex DEBUG
   mvars.reinforce_reinforceBlockName="reinforce_block"
   local hasReinforceBlock=false
   local reinforceBlockId=this.GetReinforceBlockId()
@@ -105,10 +108,9 @@ function this.SetUpReinforceBlock()
   mvars.reinforce_hasReinforceBlock=hasReinforceBlock
 
   if not mvars.reinforce_hasReinforceBlock then
-    --    InfCore.DebugPrint"not reinforce_hasReinforceBlock"--DEBUG
+    InfCore.LogFlow("reinforce_hasReinforceBlock==false, aborting")--tex DEBUG
     return
   end
-  --InfCore.DebugPrint"SetUpReinforceBlock"--DEBUG
   for n,soldierName in ipairs(this.REINFORCE_SOLDIER_NAMES)do
     this._SetEnabledSoldier(soldierName,false)
   end
@@ -119,7 +121,7 @@ function this.SetUpReinforceBlock()
   mvars.reinforce_activated=false
 end
 function this.LoadReinforceBlock(reinforceType,reinforceCpId,reinforceColoringType)
-  InfCore.Log"LoadReinforceBlock"--tex DEBUG
+  InfCore.LogFlow"TppReinforceBlock.LoadReinforceBlock"--tex DEBUG
   if mvars.reinforce_activated then
     InfCore.Log"LoadReinforceBlock reinforce_activated already true, aborting"--tex DEBUG
     return
@@ -173,6 +175,7 @@ function this.LoadReinforceBlock(reinforceType,reinforceCpId,reinforceColoringTy
   end
 end
 function this.UnloadReinforceBlock(cpId)
+  InfCore.LogFlow"TppReinforceBlock.UnloadReinforceBlock"--tex DEBUG
   if not mvars.reinforce_hasReinforceBlock then
     return
   end
@@ -189,12 +192,13 @@ function this.UnloadReinforceBlock(cpId)
   mvars.reinforce_reinforceCpId=NULL_ID
 end
 function this.StartReinforce(cpId)
+  InfCore.LogFlow("TppReinforceBlock.StartReinforce: "..tostring(cpId))--tex DEBUG
   if not mvars.reinforce_hasReinforceBlock then
-    --    InfCore.DebugPrint"StartReinforce not reinforce_hasReinforceBlock"--DEBUG
+        InfCore.Log"StartReinforce: reinforce_hasReinforceBlock==false, aborting"--tex DEBUG
     return
   end
   if mvars.reinforce_reinforceType==this.REINFORCE_TYPE.NONE then
-    --    InfCore.DebugPrint"StartReinforce REINFORCE_TYPE.NONE"--DEBUG
+    --    InfCore.Log"StartReinforce: REINFORCE_TYPE.NONE, aborting"--tex DEBUG
     return
   end
   --NMC: cpid mismatch is usually due to a quest heli aleady being set up
@@ -208,6 +212,7 @@ function this.StartReinforce(cpId)
   mvars.reinforce_activated=true
 end
 function this.FinishReinforce(cpId)
+  InfCore.LogFlow("TppReinforceBlock.FinishReinforce: "..tostring(cpId))--tex DEBUG
   if not mvars.reinforce_hasReinforceBlock then
     return
   end
@@ -278,10 +283,10 @@ function this._HasVehicle()
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.WEST_WAV_CANNON)
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.EAST_TANK)
     or mvars.reinforce_reinforceType==this.REINFORCE_TYPE.WEST_TANK then
-    --InfCore.DebugPrint("_HasVehicle reinforce_reinforceType="..mvars.reinforce_reinforceType.."="..this.REINFORCE_TYPE_NAME[mvars.reinforce_reinforceType+1] )
+    InfCore.Log("_HasVehicle reinforce_reinforceType="..mvars.reinforce_reinforceType.."="..this.REINFORCE_TYPE_NAME[mvars.reinforce_reinforceType+1] )--tex DEBUG
     return true
   end
-  --InfCore.DebugPrint("_HasVehicle false")
+  InfCore.Log("_HasVehicle false")--tex DEBUG
   return false
 end
 function this._HasHeli()
@@ -331,7 +336,7 @@ function this._SetEnabledVehicle(name,enable)
   end
 end
 function this._ActivateReinforce()
-  --InfCore.DebugPrint("_ActivateReinforce")--DEBUG
+  InfCore.LogFlow("TppReinforceBlock._ActivateReinforce")--tex DEBUG
   local hasVehicle=this._HasVehicle()
   local hasSoldier=this._HasSoldier()
   local hasHeli=this._HasHeli()
@@ -354,7 +359,7 @@ function this._ActivateReinforce()
     table.insert(reinforceSoldiers,soldier4Id)
   end
   if hasVehicle then
-    --    InfCore.DebugPrint("_ActivateReinforce hasvehicle")--DEBUG
+    InfCore.Log("_ActivateReinforce hasvehicle")--tex DEBUG
     mvars.reinforce_isEnabledVehicle=true
     this._SetEnabledVehicle(this.REINFORCE_VEHICLE_NAME,true)
     this._SetEnabledSoldier(this.REINFORCE_DRIVER_SOLDIER_NAME,true)
@@ -365,7 +370,7 @@ function this._ActivateReinforce()
     --    TppMarker.Enable(driverId,0,"moving","all",0,true,false)--tex DEBUG
   end
   if hasHeli then
-    --    InfCore.DebugPrint("_ActivateReinforce hasheli")--DEBUG
+    InfCore.Log("_ActivateReinforce hasheli")--tex DEBUG
     local heliId=GameObject.GetGameObjectId(this.REINFORCE_HELI_NAME)
     --ORPHAN local heliRoute=this._GetHeliRoute(mvars.reinforce_cpId)
     local cp=mvars.ene_cpList[mvars.reinforce_reinforceCpId]
@@ -378,11 +383,12 @@ function this._ActivateReinforce()
       TppHelicopter.SetEnemyColoring(mvars.reinforce_reinforceColoringType)
     end
   end
-  --  InfCore.DebugPrint("_ActivateReinforce >> ApplyPowerSettingsForReinforce")--DEBUG
+  InfCore.Log("_ActivateReinforce >> ApplyPowerSettingsForReinforce")--tex DEBUG
   TppRevenge.ApplyPowerSettingsForReinforce(reinforceSoldiers)
   GameObject.SendCommand({type="TppCommandPost2"},{id="SetReinforcePrepared"})
 end
 function this._DeactivateReinforce()
+  InfCore.LogFlow("TppReinforceBlock._DeactivateReinforce")--tex DEBUG
   if mvars.reinforce_isEnabledSoldiers then
     local leaveSoldiers=this._HasSoldier and Ivars.forceSuperReinforce:Is()>0--tex
     if not leaveSoldiers then--tex added check
@@ -418,7 +424,7 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
 function this._OnRequestLoadReinforce(reinforceCpId)--NMC game message "RequestLoadReinforce"
-  InfCore.Log"_OnRequestLoadReinforce"--tex DEBUG
+  InfCore.LogFlow"TppReinforceBlock._OnRequestLoadReinforce"--tex DEBUG
   local reinforceType=TppRevenge.SelectReinforceType()
   local reinforceColoringType
   if TppRevenge.IsUsingBlackSuperReinforce()then
@@ -441,11 +447,11 @@ function this._OnRequestLoadReinforce(reinforceCpId)--NMC game message "RequestL
   end
 end
 function this._OnRequestAppearReinforce(cpId)
-  --  InfCore.DebugPrint"_OnRequestAppearReinforce"--DEBUG
+  InfCore.LogFlow("TppReinforceBlock._OnRequestAppearReinforce "..tostring(cpId))--tex DEBUG
   this.StartReinforce(cpId)
 end
 function this._OnCancelReinforce(cpId)
-  --  InfCore.DebugPrint"_OnCancelReinforce"--DEBUG
+  InfCore.LogFlow("TppReinforceBlock._OnCancelReinforce "..tostring(cpId))--tex DEBUG
   if mvars.reinforce_activated then
     return
   end

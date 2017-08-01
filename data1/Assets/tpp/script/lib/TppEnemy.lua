@@ -3039,6 +3039,7 @@ function this.Init(missionTable)
         mvars.ene_lrrpNumberDefine[enum]=endEnum
       end
     end
+    --NMC cant see any instances of cpLink on a <mission>_enemy script
     if missionTable.enemy and missionTable.enemy.cpLink then
       local cpLink=missionTable.enemy.cpLink
       for e,n in pairs(cpLink)do
@@ -3477,7 +3478,7 @@ function this.GetPrioritizedRouteTable(cpId,routeSet,routeSetsPriorities,routeSe
   end
   return routeList
 end
---NMC no references to this, called from engine?
+--NMC called from engine (set up in SetUpCommandPost)
 function this.RouteSelector(cpId,routeTypeTagStr32,routeSetTagStr32)
   local routeSetForCp=mvars.ene_routeSets[cpId]
   if routeSetForCp==nil then
@@ -3840,29 +3841,39 @@ local function CloserToPlayerThanDistSqr(checkDistSqr,playerPosition,gameId)
     return true
   end
 end
---mvars.ene_lrrpNumberDefine,mvars.loc_locationCommonTravelPlans.cpLinkMatrix) IN
+--IN: afgh/mafr_travelPlans.lrrpNumberDefine,afgh/mafr_travelPlans.cpLinkMatrix)
+--OUT:
+--  afgh_waterway_cp = {
+--    afgh_bridgeNorth_ob = false,
+--    afgh_bridgeWest_ob = false,
+--...
+
+--<cpName>={
+--<cpLinked>=bool
+--...
 function this.MakeCpLinkDefineTable(lrrpNumberDefine,cpLinkMatrix)
   local cpLinkDefineTable={}
   for cpLinkIndex=1,#cpLinkMatrix do
-    local RENsomeTable=Tpp.SplitString(cpLinkMatrix[cpLinkIndex],"	")
-    local e=lrrpNumberDefine[cpLinkIndex]
-    if e then
-      cpLinkDefineTable[e]=cpLinkDefineTable[e]or{}
-      for a,i in pairs(RENsomeTable)do
-        local t=lrrpNumberDefine[a]
-        if t then
-          cpLinkDefineTable[e][t]=cpLinkDefineTable[e][t]or{}
-          local RENhasLink=false
-          if tonumber(i)>0 then
-            RENhasLink=true
+    local lrrpLinks=Tpp.SplitString(cpLinkMatrix[cpLinkIndex],"	")
+    local cpName=lrrpNumberDefine[cpLinkIndex]
+    if cpName then
+      cpLinkDefineTable[cpName]=cpLinkDefineTable[cpName]or{}
+      for i,cpLinked in pairs(lrrpLinks)do
+        local linkedCp=lrrpNumberDefine[i]
+        if linkedCp then
+          cpLinkDefineTable[cpName][linkedCp]=cpLinkDefineTable[cpName][linkedCp]or{}
+          local hasLink=false
+          if tonumber(cpLinked)>0 then
+            hasLink=true
           end
-          cpLinkDefineTable[e][t]=RENhasLink
+          cpLinkDefineTable[cpName][linkedCp]=hasLink
         end
       end
     end
   end
   return cpLinkDefineTable
 end
+--OUT: mvars.ene_travelPlans, mvars.ene_reinforcePlans
 function this.MakeReinforceTravelPlan(lrrpNumberDefine,cpLinkDefine,locationName,toCp,fromCps)
   if not Tpp.IsTypeTable(fromCps)then
     return
@@ -3998,13 +4009,14 @@ end
 --    ...
 --   },
 --}
+-- mvars.loc_locationCommonTravelPlans = afgh_travelPlans,mafr_travelplans
 function this.SetTravelPlans(travelPlans)--missionTable.enemy.travelPlans
   mvars.ene_reinforcePlans={}
   mvars.ene_travelPlans={}
   if mvars.loc_locationCommonTravelPlans then
     local locationName=TppLocation.GetLocationName()
     if locationName then
-      local lrrpNumberDefine=mvars.ene_lrrpNumberDefine
+      local lrrpNumberDefine=mvars.ene_lrrpNumberDefine--afgh/mafr_travelPlans.lrrpNumberDefine
       local cpLinkDefine=mvars.ene_cpLinkDefine
       for planName,cpPlans in pairs(travelPlans)do
         this.MakeTravelPlanTable(lrrpNumberDefine,cpLinkDefine,locationName,planName,cpPlans,this.DEFAULT_TRAVEL_HOLD_TIME)

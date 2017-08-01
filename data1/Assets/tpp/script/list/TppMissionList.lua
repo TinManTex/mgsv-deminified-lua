@@ -863,9 +863,18 @@ this.missionPackTable[65415]={"/Assets/tpp/pack/show/tgs_2014/s65415/s65415_area
 this.missionPackTable[65416]={"/Assets/tpp/pack/show/tgs_2014/s65416/s65416_area.fpk"}
 this.missionPackTable[50050]=function(missionCode)
   local ddSuit=TppEnemy.GetDDSuit()
-  --RETAILPATCH 1.10>
+  --RETAILPATCH 1.0.11>
   if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
-    TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SWIM_SUIT)
+    local swimsuitInfo=TppMotherBaseManagement.GetMbsClusterSecuritySwimSuitInfo()
+    local packPath
+    if swimsuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_1 then
+      packPath=TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SWIM_SUIT
+    elseif swimsuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_2 then
+      packPath=TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SWIM_SUIT2
+    elseif swimsuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_3 then
+      packPath=TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SWIM_SUIT3
+    end
+    TppPackList.AddMissionPack(packPath)
     --<
   elseif ddSuit==TppEnemy.FOB_DD_SUIT_SNEAKING then
     TppPackList.AddMissionPack(TppDefine.MISSION_COMMON_PACK.DD_SOLDIER_SNEAKING)
@@ -926,7 +935,7 @@ function this.GetMissionPackagePath(missionCode)
     packPaths=this.missionPackTable[missionCode]
   end
   InfMain.AddMissionPacks(missionCode,packPaths)--tex
-  InfCore.PrintInspect(packPaths,{varName="missionPackPaths"})--tex DEBUG
+  InfCore.PrintInspect(packPaths,"missionPackPaths")--tex DEBUG
   return packPaths
 end
 if Mission.SetLocationPackagePathFunc then

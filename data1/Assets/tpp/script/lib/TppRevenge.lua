@@ -2483,14 +2483,14 @@ end
 --  return false
 --end
 
-function this._OnReinforceRespawn(soldierIds)
+function this._OnReinforceRespawn(soldierId)
   if TppMission.IsFOBMission(vars.missionCode)then
-    TppEnemy.AddPowerSetting(soldierIds,{})
-    o50050_enemy.AssignAndSetupRespawnSoldier(soldierIds)
+    TppEnemy.AddPowerSetting(soldierId,{})
+    o50050_enemy.AssignAndSetupRespawnSoldier(soldierId)
   else
     --    InfCore.DebugPrint"_OnReinforceRespawn"--tex DEBUG>
     --    InfCore.PrintInspect(soldierIds)--<
-    this.ApplyPowerSettingsForReinforce{soldierIds}
+    this.ApplyPowerSettingsForReinforce{soldierId}
   end
 end
 function this._OnHeadShot(gameObjectId,attackId,attackerObjectId,flag)

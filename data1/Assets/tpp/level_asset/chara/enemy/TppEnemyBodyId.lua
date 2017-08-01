@@ -76,37 +76,37 @@ local this={
   ddr0_main0_v00=146,
   ddr0_main0_v01=147,
   ddr0_main0_v02=148,
-  
+
   ddr0_main1_v00=149,
   ddr0_main1_v01=150,
   ddr0_main1_v02=151,
   ddr0_main1_v03=152,
   ddr0_main1_v04=153,
-  
+
   ddr1_main0_v00=154,
   ddr1_main0_v01=155,
   ddr1_main0_v02=156,
-  
+
   ddr1_main1_v00=157,
   ddr1_main1_v01=158,
   ddr1_main1_v02=159,
-  
+
   dds3_main0_v01=160,
   dds5_main0_v03=161,
   dds6_main0_v00=162,
   dds6_main0_v01=163,
   dds8_main0_v00=164,
   dds8_main0_v01=165,
-  
+
   ddr0_main0_v03=166,
   ddr0_main0_v04=167,
-  
+
   ddr0_main1_v05=168,
   ddr0_main1_v06=169,
-  
+
   dds3_main0_v02=170,
   dds8_main0_v02=171,
-  
+
   dds4_enem0_def=172,
   dds4_enef0_def=173,
   dds5_enem0_def=174,
@@ -120,13 +120,13 @@ local this={
   dld0_plym0_def=182,
   dle0_plyf0_def=183,
   dle1_plyf0_def=184,
-  
+
   wss4_main0_v00=190,
   wss4_main0_v01=191,
   wss4_main0_v02=192,
   wss0_main0_v00=195,
   wss3_main0_v00=196,
-  
+
   prs2_main0_v01=200,
   prs5_main0_v01=201,
   prs3_main0_v01=202,
@@ -288,6 +288,57 @@ local this={
   dlf_enef10_def=403,
   dlf_enem11_def=404,
   dlf_enef11_def=405,
---<
+  --<
+  --RETAILPATCH 1.0.11>
+  dlg_enem0_def=406,
+  dlg_enef0_def=407,
+  dlg_enem1_def=408,
+  dlg_enef1_def=409,
+  dlg_enem2_def=410,
+  dlg_enef2_def=411,
+  dlg_enem3_def=412,
+  dlg_enef3_def=413,
+  dlg_enem4_def=414,
+  dlg_enef4_def=415,
+  dlg_enem5_def=416,
+  dlg_enef5_def=417,
+  dlg_enem6_def=418,
+  dlg_enef6_def=419,
+  dlg_enem7_def=420,
+  dlg_enef7_def=421,
+  dlg_enem8_def=422,
+  dlg_enef8_def=423,
+  dlg_enem9_def=424,
+  dlg_enef9_def=425,
+  dlg_enem10_def=426,
+  dlg_enef10_def=427,
+  dlg_enem11_def=428,
+  dlg_enef11_def=429,
+  
+  dlh_enem0_def=430,
+  dlh_enef0_def=431,
+  dlh_enem1_def=432,
+  dlh_enef1_def=433,
+  dlh_enem2_def=434,
+  dlh_enef2_def=435,
+  dlh_enem3_def=436,
+  dlh_enef3_def=437,
+  dlh_enem4_def=438,
+  dlh_enef4_def=439,
+  dlh_enem5_def=440,
+  dlh_enef5_def=441,
+  dlh_enem6_def=442,
+  dlh_enef6_def=443,
+  dlh_enem7_def=444,
+  dlh_enef7_def=445,
+  dlh_enem8_def=446,
+  dlh_enef8_def=447,
+  dlh_enem9_def=448,
+  dlh_enef9_def=449,
+  dlh_enem10_def=450,
+  dlh_enef10_def=451,
+  dlh_enem11_def=452,
+  dlh_enef11_def=453,
+  --<
 }
 return this

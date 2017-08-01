@@ -328,11 +328,11 @@ this.equipTable={
   {TppEquip.EQP_IT_CBox_LIMITED_G01,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/cbx/cbx0_main0_def.parts",""},
   {TppEquip.EQP_IT_InstantStealth,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/idr/idr0_main0_def_v00.parts",""},--tex added .parts, using idroid was ""
   {TppEquip.EQP_IT_Pentazemin,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
-  {TppEquip.EQP_IT_Clairvoyance,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
-  {TppEquip.EQP_IT_ReflexMedicine,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
-  {TppEquip.EQP_IT_ParasiteMist,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
-  {TppEquip.EQP_IT_ParasiteCamouf,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
-  {TppEquip.EQP_IT_ParasiteHard,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was "" 
+  {TppEquip.EQP_IT_Clairvoyance,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
+  {TppEquip.EQP_IT_ReflexMedicine,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
+  {TppEquip.EQP_IT_ParasiteMist,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
+  {TppEquip.EQP_IT_ParasiteCamouf,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
+  {TppEquip.EQP_IT_ParasiteHard,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/thr/tr05_main0_def_v00.parts",""},--tex added .parts (reusing SWP_Kibidango) was ""
   {TppEquip.EQP_IT_TimeCigarette,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/psi/psi0_main0_def.parts",""},
   {TppEquip.EQP_IT_Stealth,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/item/idr/idr0_main0_def_v00.parts",""},--tex added .parts, using idroid was ""
   {TppEquip.EQP_IT_Nvg,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/item/thm/Scenes/thm0_main0_def.fmdl",""},
@@ -546,9 +546,15 @@ this.equipTable={
   {TppEquip.EQP_WP_West_ms_02b,TppEquip.EQP_TYPE_Missile,TppEquip.WP_West_ms_02b,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/assemble/mis/ms02_main0_aw1_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_WP_West_ms_020.fpk"},
   {TppEquip.EQP_WP_Com_ms_029,TppEquip.EQP_TYPE_Missile,TppEquip.WP_Com_ms_029,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/mis/ms03_main0_def_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_WP_Com_ms_010.fpk"},
   {TppEquip.EQP_WP_Com_ms_02a,TppEquip.EQP_TYPE_Missile,TppEquip.WP_Com_ms_02a,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/mis/ms03_main0_def_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_WP_Com_ms_010.fpk"},
-  {TppEquip.EQP_WP_Com_ms_02b,TppEquip.EQP_TYPE_Missile,TppEquip.WP_Com_ms_02b,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/mis/ms03_main0_def_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_WP_Com_ms_010.fpk"}
+  {TppEquip.EQP_WP_Com_ms_02b,TppEquip.EQP_TYPE_Missile,TppEquip.WP_Com_ms_02b,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/mis/ms03_main0_def_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_WP_Com_ms_010.fpk"},
+  --RETAILPATCH 1.0.11>
+  {TppEquip.EQP_SWP_WormholePortal_G01,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_WormholePortal_G01,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt01_main1_def_v00.parts",""},
+  {TppEquip.EQP_SWP_WormholePortal_G02,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_WormholePortal_G02,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt01_main1_def_v00.parts",""},
+  {TppEquip.EQP_SWP_WormholePortal_G03,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_WormholePortal_G03,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt01_main1_def_v00.parts",""},
+  --<
 }
 TppEquip.ReloadEquipIdTable(this.equipTable)--tex
 
 return this
+
 

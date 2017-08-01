@@ -794,18 +794,18 @@ function this.PatchDlcCheckCoroutine(p1,p2,p3,p4)
   end
 end
 --RETAILPATCH 1070>
-function this.IsPatchDlcValidPlatform(n)
-  local e={
+function this.IsPatchDlcValidPlatform(dlcId)
+  local platformsForDlc={
     [PatchDlc.PATCH_DLC_TYPE_MGO_DATA]={Xbox360=true,PS3=true,PS4=true},--RETAILPATCH 1090 X360 added
     [PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]={Xbox360=true,PS3=true,PS4=true}
   }
-  local e=e[n]
-  if not e then
+  local platforms=platformsForDlc[dlcId]
+  if not platforms then
     Fox.Hungup"Invalid dlc type."
     return false
   end
-  local n=Fox.GetPlatformName()
-  if e[n]then
+  local platform=Fox.GetPlatformName()
+  if platforms[platform]then
     return true
   else
     return false

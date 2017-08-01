@@ -24,6 +24,32 @@ local securitySwimSuitBodies={
     TppEnemyBodyId.dlf_enef9_def,
     TppEnemyBodyId.dlf_enef10_def,
     TppEnemyBodyId.dlf_enef11_def,
+    --RETAILPATCH 1.0.11>
+    TppEnemyBodyId.dlg_enef0_def,
+    TppEnemyBodyId.dlg_enef1_def,
+    TppEnemyBodyId.dlg_enef2_def,
+    TppEnemyBodyId.dlg_enef3_def,
+    TppEnemyBodyId.dlg_enef4_def,
+    TppEnemyBodyId.dlg_enef5_def,
+    TppEnemyBodyId.dlg_enef6_def,
+    TppEnemyBodyId.dlg_enef7_def,
+    TppEnemyBodyId.dlg_enef8_def,
+    TppEnemyBodyId.dlg_enef9_def,
+    TppEnemyBodyId.dlg_enef10_def,
+    TppEnemyBodyId.dlg_enef11_def,
+    TppEnemyBodyId.dlh_enef0_def,
+    TppEnemyBodyId.dlh_enef1_def,
+    TppEnemyBodyId.dlh_enef2_def,
+    TppEnemyBodyId.dlh_enef3_def,
+    TppEnemyBodyId.dlh_enef4_def,
+    TppEnemyBodyId.dlh_enef5_def,
+    TppEnemyBodyId.dlh_enef6_def,
+    TppEnemyBodyId.dlh_enef7_def,
+    TppEnemyBodyId.dlh_enef8_def,
+    TppEnemyBodyId.dlh_enef9_def,
+    TppEnemyBodyId.dlh_enef10_def,
+    TppEnemyBodyId.dlh_enef11_def,
+  --<
   },
   male={
     TppEnemyBodyId.dlf_enem0_def,
@@ -38,6 +64,31 @@ local securitySwimSuitBodies={
     TppEnemyBodyId.dlf_enem9_def,
     TppEnemyBodyId.dlf_enem10_def,
     TppEnemyBodyId.dlf_enem11_def,
+    --RETAILPTACH 1.11
+    TppEnemyBodyId.dlg_enem0_def,
+    TppEnemyBodyId.dlg_enem1_def,
+    TppEnemyBodyId.dlg_enem2_def,
+    TppEnemyBodyId.dlg_enem3_def,
+    TppEnemyBodyId.dlg_enem4_def,
+    TppEnemyBodyId.dlg_enem5_def,
+    TppEnemyBodyId.dlg_enem6_def,
+    TppEnemyBodyId.dlg_enem7_def,
+    TppEnemyBodyId.dlg_enem8_def,
+    TppEnemyBodyId.dlg_enem9_def,
+    TppEnemyBodyId.dlg_enem10_def,
+    TppEnemyBodyId.dlg_enem11_def,
+    TppEnemyBodyId.dlh_enem0_def,
+    TppEnemyBodyId.dlh_enem1_def,
+    TppEnemyBodyId.dlh_enem2_def,
+    TppEnemyBodyId.dlh_enem3_def,
+    TppEnemyBodyId.dlh_enem4_def,
+    TppEnemyBodyId.dlh_enem5_def,
+    TppEnemyBodyId.dlh_enem6_def,
+    TppEnemyBodyId.dlh_enem7_def,
+    TppEnemyBodyId.dlh_enem8_def,
+    TppEnemyBodyId.dlh_enem9_def,
+    TppEnemyBodyId.dlh_enem10_def,
+    TppEnemyBodyId.dlh_enem11_def,
   }
 }
 --<RETAILPATCH 1.10
@@ -991,9 +1042,18 @@ mtbsFaceSetupFuncs[50050]=function(faces)
       {TppEnemyFaceId.dds_balaclava15,MAX_REALIZED_COUNT,MAX_REALIZED_COUNT,0}
     }
   end
-  --RETAILPATCH 1.10
+  --RETAILPATCH 1.0.11>
   if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
-    TppSoldier2.SetDefaultPartsPath"/Assets/tpp/parts/chara/dlf/dlf1_enem0_def_v00.parts"
+    local swimsuitInfo=TppMotherBaseManagement.GetMbsClusterSecuritySwimSuitInfo()
+    local partsPath
+    if swimsuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_1 then
+      partsPath="/Assets/tpp/parts/chara/dlf/dlf1_enem0_def_v00.parts"
+    elseif swimsuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_2 then
+      partsPath="/Assets/tpp/parts/chara/dlg/dlg1_enem0_def_v00.parts"
+    elseif swimsuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_3 then
+      partsPath="/Assets/tpp/parts/chara/dlh/dlh1_enem0_def_v00.parts"
+    end
+    TppSoldier2.SetDefaultPartsPath(partsPath)
   end
   --<
   for i,faceDef in ipairs(balaclavas)do
@@ -1185,9 +1245,18 @@ function fovaSetupFuncs.mtbs(locationName,missionId)
       else
         TppSoldier2.SetExtendPartsInfo{type=1,path="/Assets/tpp/parts/chara/dds/dds6_enef0_def_v00.parts"}
       end
-      --RETAILPATCH 1.10>
+      --RETAILPATCH 1.0.11>
       if TppMotherBaseManagement.GetMbsClusterSecurityIsEquipSwimSuit()then
-        TppSoldier2.SetExtendPartsInfo{type=1,path="/Assets/tpp/parts/chara/dlf/dlf0_enem0_def_f_v00.parts"}
+        local swimSuitInfo=TppMotherBaseManagement.GetMbsClusterSecuritySwimSuitInfo()
+        local partsPath
+        if swimSuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_1 then
+          partsPath="/Assets/tpp/parts/chara/dlf/dlf0_enem0_def_f_v00.parts"
+        elseif swimSuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_2 then
+          partsPath="/Assets/tpp/parts/chara/dlg/dlg0_enem0_def_f_v00.parts"
+        elseif swimSuitInfo==TppMotherBaseManagementConst.SWIM_SUIT_TYPE_3 then
+          partsPath="/Assets/tpp/parts/chara/dlh/dlh0_enem0_def_f_v00.parts"
+        end
+        TppSoldier2.SetExtendPartsInfo{type=1,path=partsPath}
       end
       --<
       --not M22 retake platform

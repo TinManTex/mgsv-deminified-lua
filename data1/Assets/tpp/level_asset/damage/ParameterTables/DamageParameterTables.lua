@@ -1,5 +1,5 @@
 -- DamageParameterTables.lua
---RETAILPATCH 1090 variou additions
+--RETAILPATCH 1090 various additions
 local this={}--tex made local
 --tex made local table, was just straight into TppDamage.ReloadDamageParameter
 this.DamageParameter={

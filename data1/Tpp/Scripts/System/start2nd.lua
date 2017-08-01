@@ -6,10 +6,7 @@ local dofile=InfCore.DoFile--tex allow external alternate
 local LoadLibrary=InfCore.LoadLibrary --tex allow external alternate, was Script.LoadLibrary
 
 local function YieldFrame()
-  if Mock then--tex DEBUGNOW KLUDGE
-  else--
   coroutine.yield()
-  end
 end
 dofile"/Assets/tpp/sound/scripts/motion/setup.lua"
 YieldFrame()
