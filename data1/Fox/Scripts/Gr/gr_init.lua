@@ -1,3 +1,4 @@
+--gr_init.lua
 GrTools.SetDefaultTextureLoadPath"tmp/"
 GrTools.SetReflectionTexture"/Assets/fox/effect/gr_pic/default_reflection.ftex"
 GrTools.SetMaterialTexture"/Assets/fox/effect/gr_pic/materials_alp_rgba32_nomip_nrt.ftex"
@@ -23,15 +24,15 @@ if AssetConfiguration.GetConfigurationFromAssetManager"EnableWindowsDX11Texture"
 else
   GrTools.SetGen8RenderingMode(false)
 end
-local n=true
-local i=true
-local e=true
+local isEnableDebugPrint=true
+local isEnableDebug2D=true
+local isEnableDebugPrimitive=true
 if Preference then
-  local r=Preference.GetPreferenceEntity"DebugDrawSetting"
-  if not Entity.IsNull(r)then
-    n=r.isEnableDebugPrint
-    i=r.isEnableDebug2D
-    e=r.isEnableDebugPrimitive
+  local debugDrawSetting=Preference.GetPreferenceEntity"DebugDrawSetting"
+  if not Entity.IsNull(debugDrawSetting)then
+    isEnableDebugPrint=debugDrawSetting.isEnableDebugPrint
+    isEnableDebug2D=debugDrawSetting.isEnableDebug2D
+    isEnableDebugPrimitive=debugDrawSetting.isEnableDebugPrimitive
   end
 end
 GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK",priority=0})
@@ -83,16 +84,16 @@ if(GrPluginDebugView~=nil)then
   GrRenderPlugin.AddPlugin(GrPluginDebugView{pluginName="DEBUGVIEW",priority=3e3})
 end
 if(GrPluginDebugPrimitive~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW",priority=3050,isActive=e})
+  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW",priority=3050,isActive=isEnableDebugPrimitive})
 end
 if(GrPluginPrimitiveDebug~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginPrimitiveDebug{pluginName="PRIMITIVE_DEBUG",priority=3100,isActive=e,isEnableResolveRenderBuffer=false})
+  GrRenderPlugin.AddPlugin(GrPluginPrimitiveDebug{pluginName="PRIMITIVE_DEBUG",priority=3100,isActive=isEnableDebugPrimitive,isEnableResolveRenderBuffer=false})
 end
 if(GrPluginModelDebug~=nil)then
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG",priority=3300})
 end
 if(GrPluginDebug2D~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D",priority=3400,isActive=i})
+  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D",priority=3400,isActive=isEnableDebug2D})
 end
 GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK_WIRE",priority=0,execMode="wireframe"})
 GrRenderPlugin.AddPlugin(GrPluginModelSetup{pluginName="MODEL_SETUP_WIRE",priority=1,execMode="wireframe"})
@@ -105,13 +106,13 @@ GrRenderPlugin.AddPlugin(GrPluginModelWireframe{pluginName="MODEL_WIRE",priority
 GrRenderPlugin.AddPlugin(GrPluginCloneWireframe{pluginName="CLONE_WIRE",priority=15,execMode="wireframe"})
 GrRenderPlugin.AddPlugin(GrPluginTerrainWireframe{pluginName="TERRAIN_WIRE",priority=20,execMode="wireframe"})
 if(GrPluginDebugPrimitive~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_WIRE",priority=3200,execMode="wireframe",isActive=e})
+  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_WIRE",priority=3200,execMode="wireframe",isActive=isEnableDebugPrimitive})
 end
 if(GrPluginModelDebug~=nil)then
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG_WIRE",priority=3300,execMode="wireframe"})
 end
 if(GrPluginDebug2D~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_WIRE",priority=3400,execMode="wireframe",isActive=i})
+  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_WIRE",priority=3400,execMode="wireframe",isActive=isEnableDebug2D})
 end
 GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK_PSEUDO",priority=0,execMode="pseudoshade"})
 GrRenderPlugin.AddPlugin(GrPluginModelSetup{pluginName="MODEL_SETUP_PSEUDO",priority=1,execMode="pseudoshade"})
@@ -123,13 +124,13 @@ GrRenderPlugin.AddPlugin(GrPlugin2DFrontmost{pluginName="DRAW2D_FRONTMOST_PSEUDO
 GrRenderPlugin.AddPlugin(GrPluginModelPseudoshade{pluginName="MODEL_PSEUDO",priority=10,execMode="pseudoshade"})
 GrRenderPlugin.AddPlugin(GrPluginTerrainPseudeShade{pluginName="TERRAIN_PSEUDO",priority=20,execMode="pseudoshade"})
 if(GrPluginDebugPrimitive~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_PSEUDO",priority=3200,execMode="pseudoshade",isActive=e})
+  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_PSEUDO",priority=3200,execMode="pseudoshade",isActive=isEnableDebugPrimitive})
 end
 if(GrPluginModelDebug~=nil)then
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG_PSEUDO",priority=3300,execMode="pseudoshade"})
 end
 if(GrPluginDebug2D~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_PSEUDO",priority=3400,execMode="pseudoshade",isActive=i})
+  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_PSEUDO",priority=3400,execMode="pseudoshade",isActive=isEnableDebug2D})
 end
 GrRenderPlugin.AddPlugin(GrPluginViewCallback{pluginName="VIEW_CALLBACK_FWD",priority=0,execMode="forward"})
 GrRenderPlugin.AddPlugin(GrPluginModelSetup{pluginName="MODEL_SETUP_FWD",priority=1,execMode="forward"})
@@ -144,11 +145,11 @@ GrRenderPlugin.AddPlugin(GrPluginModel{pluginName="MODEL",priority=10,parentPlug
 GrRenderPlugin.AddPlugin(GrPluginDecal{pluginName="DECALS_FORWARD",priority=100,parentPluginName="FORWARD",execMode="forward"})
 GrRenderPlugin.AddPlugin(GrPluginTerrain{pluginName="TERRAIN_DRAW",788,parentPluginName="FORWARD",execMode="forward"})
 if(GrPluginDebugPrimitive~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_FWD",priority=3200,execMode="forward",isActive=e})
+  GrRenderPlugin.AddPlugin(GrPluginDebugPrimitive{pluginName="DEBUG_DRAW_FWD",priority=3200,execMode="forward",isActive=isEnableDebugPrimitive})
 end
 if(GrPluginModelDebug~=nil)then
   GrRenderPlugin.AddPlugin(GrPluginModelDebug{pluginName="MODEL_DEBUG_FWD",priority=3300,execMode="forward"})
 end
 if(GrPluginDebug2D~=nil)then
-  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_FWD",priority=3400,execMode="forward",isActive=i})
+  GrRenderPlugin.AddPlugin(GrPluginDebug2D{pluginName="DEBUG_DRAW2D_FWD",priority=3400,execMode="forward",isActive=isEnableDebug2D})
 end

@@ -57,7 +57,7 @@ local altExtraWeatherProbabilitiesTable={
   MAFR={
     {TppDefine.WEATHER.RAINY,70},
     {TppDefine.WEATHER.FOGGY,20},
-    {TppDefine.WEATHER.SANDSTORM,10},    
+    {TppDefine.WEATHER.SANDSTORM,10},
   },
   MTBS={
     {TppDefine.WEATHER.RAINY,50},
@@ -79,14 +79,21 @@ local sandStormOrFoggy={[TppDefine.WEATHER.SANDSTORM]=true,[TppDefine.WEATHER.FO
 local userIdScript="Script"
 local userIdWeather="WeatherSystem"
 local defaultInterpTime=20
-local RENnoWeather=255
+local unkM1NoWeather=255
 function this.RequestWeather(weatherType,param1,param2)
   local interpTime,fogInfo=this._GetRequestWeatherArgs(param1,param2)
   WeatherManager.PauseNewWeatherChangeRandom(true)
   if interpTime==nil then
     interpTime=defaultInterpTime
   end
-  WeatherManager.RequestWeather{priority=WeatherManager.REQUEST_PRIORITY_NORMAL,userId=userIdScript,weatherType=weatherType,interpTime=interpTime,fogDensity=fogInfo.fogDensity,fogType=fogInfo.fogType}
+  WeatherManager.RequestWeather{
+    priority=WeatherManager.REQUEST_PRIORITY_NORMAL,
+    userId=userIdScript,
+    weatherType=weatherType,
+    interpTime=interpTime,
+    fogDensity=fogInfo.fogDensity,
+    fogType=fogInfo.fogType
+  }
 end
 function this.CancelRequestWeather(weatherType,param1,param2)
   local interpTime,fogInfo=this._GetRequestWeatherArgs(param1,param2)
@@ -95,7 +102,13 @@ function this.CancelRequestWeather(weatherType,param1,param2)
     interpTime=defaultInterpTime
   end
   if weatherType~=nil then
-    WeatherManager.RequestWeather{priority=WeatherManager.REQUEST_PRIORITY_NORMAL,userId=userIdScript,weatherType=weatherType,interpTime=interpTime,fogDensity=fogInfo.fogDensity,fogType=fogInfo.fogType}
+    WeatherManager.RequestWeather{priority=WeatherManager.REQUEST_PRIORITY_NORMAL,
+      userId=userIdScript,
+      weatherType=weatherType,
+      interpTime=interpTime,
+      fogDensity=fogInfo.fogDensity,
+      fogType=fogInfo.fogType
+    }
   end
 end
 function this.ForceRequestWeather(weatherType,param1,param2)
@@ -103,7 +116,14 @@ function this.ForceRequestWeather(weatherType,param1,param2)
   if interpTime==nil then
     interpTime=defaultInterpTime
   end
-  WeatherManager.RequestWeather{priority=WeatherManager.REQUEST_PRIORITY_FORCE,userId=userIdScript,weatherType=weatherType,interpTime=interpTime,fogDensity=fogInfo.fogDensity,fogType=fogInfo.fogType}
+  WeatherManager.RequestWeather{
+    priority=WeatherManager.REQUEST_PRIORITY_FORCE,
+    userId=userIdScript,
+    weatherType=weatherType,
+    interpTime=interpTime,
+    fogDensity=fogInfo.fogDensity,
+    fogType=fogInfo.fogType
+  }
 end
 function this.CancelForceRequestWeather(weatherType,param1,param2)
   local interpTime,fogInfo=this._GetRequestWeatherArgs(param1,param2)
@@ -112,7 +132,14 @@ function this.CancelForceRequestWeather(weatherType,param1,param2)
   end
   WeatherManager.CancelRequestWeather{priority=WeatherManager.REQUEST_PRIORITY_FORCE,userId=userIdScript}
   if weatherType~=nil then
-    WeatherManager.RequestWeather{priority=WeatherManager.REQUEST_PRIORITY_NORMAL,userId=userIdScript,weatherType=weatherType,interpTime=interpTime,fogDensity=fogInfo.fogDensity,fogType=fogInfo.fogType}
+    WeatherManager.RequestWeather{
+      priority=WeatherManager.REQUEST_PRIORITY_NORMAL,
+      userId=userIdScript,
+      weatherType=weatherType,
+      interpTime=interpTime,
+      fogDensity=fogInfo.fogDensity,
+      fogType=fogInfo.fogType
+    }
   end
 end
 function this.SetDefaultWeatherDurations()
@@ -203,14 +230,14 @@ function this.RestoreMissionStartWeather()
   vars.extraWeatherInterval=gvars.missionStartExtraWeatherInterval
   WeatherManager.RestoreFromSVars()
 end
-function this.OverrideColorCorrectionLUT(e)
-  TppColorCorrection.SetLUT(e)
+function this.OverrideColorCorrectionLUT(unk1)
+  TppColorCorrection.SetLUT(unk1)
 end
 function this.RestoreColorCorrectionLUT()
   TppColorCorrection.RemoveLUT()
 end
-function this.OverrideColorCorrectionParameter(t,e,r)
-  TppColorCorrection.SetParameter(t,e,r)
+function this.OverrideColorCorrectionParameter(unk1,unk2,unk3)
+  TppColorCorrection.SetParameter(unk1,unk2,unk3)
 end
 function this.RestoreColorCorrectionParameter()
   TppColorCorrection.RemoveParameter()
@@ -229,7 +256,7 @@ function this.RestoreFromSVars()
     end
     local extraWeatherType=vars.requestWeatherType[WeatherManager.REQUEST_PRIORITY_EXTRA]
     if sandStormOrFoggy[extraWeatherType]then
-      vars.requestWeatherType[WeatherManager.REQUEST_PRIORITY_EXTRA]=RENnoWeather
+      vars.requestWeatherType[WeatherManager.REQUEST_PRIORITY_EXTRA]=unkM1NoWeather
       vars.weatherNextTime=0
     end
   end
@@ -255,7 +282,7 @@ function this.OnEndMissionPrepareFunction()
   end
   SetDefaultReflectionTexture()
 end
---returns interpTime (integer), fogInfo (table)
+--NMC returns interpTime (integer), fogInfo (table)
 function this._GetRequestWeatherArgs(param1,param2)
   if Tpp.IsTypeTable(param1)then
     return nil,param1

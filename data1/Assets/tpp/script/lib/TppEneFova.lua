@@ -1162,7 +1162,7 @@ function fovaSetupFuncs.mtbs(locationName,missionId)
     end
 
     --tex manage body limit (see InfBodyInfo GOTCHA)
-    local maxBodies=InfMain.MAX_STAFF_NUM_ON_CLUSTER
+    local maxBodies=InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER
     local halfMax=maxBodies/2
     local maleBodyCount=0
     local femaleBodyCount=0
@@ -1297,7 +1297,7 @@ function fovaSetupFuncs.mtbsCustomBody(locationName,missionId)
   local bodies={}
   local bodyInfo=InfEneFova.GetMaleBodyInfo(missionId)
   if bodyInfo then
-    InfEneFova.SetupBodies(bodyInfo,bodies,InfMain.MAX_STAFF_NUM_ON_CLUSTER)
+    InfEneFova.SetupBodies(bodyInfo,bodies,InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER)
     if bodyInfo.partsPath then
       TppSoldier2.SetDefaultPartsPath(bodyInfo.partsPath)
     end
@@ -1305,7 +1305,7 @@ function fovaSetupFuncs.mtbsCustomBody(locationName,missionId)
 
   local bodyInfo=InfEneFova.GetFemaleBodyInfo()
   if bodyInfo then
-    InfEneFova.SetupBodies(bodyInfo,bodies,InfMain.MAX_STAFF_NUM_ON_CLUSTER)
+    InfEneFova.SetupBodies(bodyInfo,bodies,InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER)
     --tex only female uses extendparts
     if bodyInfo.partsPath then
       TppSoldier2.SetExtendPartsInfo{type=1,path=bodyInfo.partsPath}
@@ -1985,8 +1985,8 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
   local uavLevel=TppMotherBaseManagement.GetMbsUavLevel{}
   local uavSmokeLevel=TppMotherBaseManagement.GetMbsUavSmokeGrenadeLevel{}
   local uavSleepingLevel=TppMotherBaseManagement.GetMbsUavSleepingGusGrenadeLevel{}
-  local soldierEquipGrade=InfMain.GetMbsClusterSecuritySoldierEquipGrade()--tex was TppMotherBaseManagement.GetMbsClusterSecuritySoldierEquipGrade{}
-  local isNoKillMode=InfMain.GetMbsClusterSecurityIsNoKillMode()--tex was TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
+  local soldierEquipGrade=InfMainTpp.GetMbsClusterSecuritySoldierEquipGrade()--tex was TppMotherBaseManagement.GetMbsClusterSecuritySoldierEquipGrade{}
+  local isNoKillMode=InfMainTpp.GetMbsClusterSecurityIsNoKillMode()--tex was TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
   local uavType=TppUav.DEVELOP_LEVEL_LMG_0
   local setUav=false
   local isNLUav=false

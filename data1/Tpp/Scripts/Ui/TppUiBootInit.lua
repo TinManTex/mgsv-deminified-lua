@@ -51,11 +51,11 @@ local n=""
 local a=""
 local i=1
 local t=3
-local e="/Assets/tpp"
+local assetsPath="/Assets/tpp"
 if TppSystemUtility.GetCurrentGameMode()=="MGO"then
-  e="/Assets/mgo"
+  assetsPath="/Assets/mgo"
 end
-local fontPackPath=e.."/pack/ui/lang/lang_default_data_eng.fpk"
+local fontPackPath=assetsPath.."/pack/ui/lang/lang_default_data_eng.fpk"
 if languageCode=="jpn"then
   fontSystemName="FontSystem_KanjiFont"
   defFfnt="/Assets/tpp/font/font_def_jp.ffnt"
@@ -63,7 +63,7 @@ if languageCode=="jpn"then
   ffnt="/Assets/tpp/font/KanjiFont.ffnt"
   i=2
   t=3
-  fontPackPath=e.."/pack/ui/lang/lang_default_data_jpn.fpk"
+  fontPackPath=assetsPath.."/pack/ui/lang/lang_default_data_jpn.fpk"
 elseif languageCode=="eng"then
   fontSystemName="FontSystem_LatinFont"
   defFfnt="/Assets/tpp/font/font_def_ltn.ffnt"
@@ -80,7 +80,7 @@ elseif languageCode=="rus"then
   a="/Assets/tpp/font/font_def_ltn.ffnt"
   i=1
   t=3
-  fontPackPath=e.."/pack/ui/lang/lang_default_data_rus.fpk"
+  fontPackPath=assetsPath.."/pack/ui/lang/lang_default_data_rus.fpk"
 elseif languageCode=="ara"then
   fontSystemName="FontSystem_LatinFont"
   defFfnt="/Assets/tpp/font/arabia.ffnt"
@@ -88,7 +88,7 @@ elseif languageCode=="ara"then
   ffnt="/Assets/tpp/font/arabia.ffnt"
   i=1
   t=3
-  fontPackPath=e.."/pack/ui/lang/lang_default_data_ara.fpk"
+  fontPackPath=assetsPath.."/pack/ui/lang/lang_default_data_ara.fpk"
 else
   fontSystemName="FontSystem_LatinFont"
   defFfnt="/Assets/tpp/font/font_def_ltn.ffnt"

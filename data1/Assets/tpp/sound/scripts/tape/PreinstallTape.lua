@@ -1,5 +1,9 @@
+-- DOBUILD: 0 --DEBUGWIP
+--NMC referenced in exe, only GetTapeInfo seems to be called? Others are legacy?
 PreinstallTape={
+  --NMC: called during 2nd yield in start.lua, nothing seemingly related to cassets between it and prior yield, would have expected it to be during prior yeild since that's the first since TppCassetteTapeInfo.Setup() which sounds like a more likely candidate
   GetTapeInfo=function()
+    InfCore.LogFlow("PreinstallTape.GetTapeInfo:")--tex DEBUG 
     return{
       albums={
         {albumId="tp_mission_01",langId="tp_mission_01",type="PREINSTALL_MISSION_INFO"},
@@ -347,9 +351,11 @@ PreinstallTape={
     }--GetTapeInfo return
   end,--GetTapeInfo
   SetStructure=function()
+    InfCore.LogFlow("PreinstallTape.SetStructure:")--tex DEBUG
     TppMusicPlayer.SetStructure{albumNum=15,trackNum=18,downloadDirectory="/Assets/tpp/sound/scripts/tape"}
   end,
   SetMusicInfo=function()
+    InfCore.LogFlow("PreinstallTape.SetMusicInfo:")--tex DEBUG
     TppMusicPlayer.SetAlbum{albumId="tp_bgm_10",trackNum=4,type="PREINSTALL_MUSIC"}
     TppMusicPlayer.SetTrack{trackIndex=0,fileName="tp_bgm_10_01",dataTimeJp=163e3,dataTimeEn=163e3,albumId="tp_bgm_10"}
     TppMusicPlayer.SetTrack{trackIndex=1,fileName="tp_bgm_10_02",dataTimeJp=15e4,dataTimeEn=15e4,albumId="tp_bgm_10"}
@@ -385,9 +391,11 @@ PreinstallTape={
     TppMusicPlayer.SetTrack{trackIndex=0,fileName="tp_m_10040",dataTimeJp=7e4,dataTimeEn=7e4,albumId="tp_m_10040"}
   end,--SetMusicInfo
   SetStructureGz=function()
+    InfCore.LogFlow("PreinstallTape.SetStructureGz:")--tex DEBUG
     TppMusicPlayer.SetStructure{albumNum=19,trackNum=62}
   end,
   SetMusicInfoGz=function()
+    InfCore.LogFlow("PreinstallTape.SetMusicInfoGz:")--tex DEBUG
     TppMusicPlayer.SetAlbum{albumId="tp_chico_01",trackNum=1,type="PREINSTALL_TAPE"}
     TppMusicPlayer.SetTrack{trackIndex=0,fileName="tp_chico_00_01",dataTimeJp=231e3,dataTimeEn=231e3,albumId="tp_chico_01"}
     TppMusicPlayer.SetAlbum{albumId="tp_chico_02",trackNum=1,type="PREINSTALL_TAPE"}

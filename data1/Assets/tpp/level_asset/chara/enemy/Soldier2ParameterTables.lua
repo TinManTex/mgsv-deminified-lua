@@ -1,7 +1,6 @@
 -- Soldier2ParameterTables.lua
-
 local this={}
-TppSoldier2.ReloadSoldier2ParameterTables{
+this.parameterTables={
   sightFormParameter={
     contactSightForm={distance=2,verticalAngle=160,horizontalAngle=130},
     normalSightForm={distance=60,verticalAngle=60,horizontalAngle=100},
@@ -51,7 +50,7 @@ TppSoldier2.ReloadSoldier2ParameterTables{
       indis={distance=0,verticalAngle=0,horizontalAngle=0},
       dim={distance=50,verticalAngle=12,horizontalAngle=12},
       far={distance=0,verticalAngle=0,horizontalAngle=0}
-	},
+    },
     armoredVehicleSight={
       discovery={distance=20,verticalAngle=36,horizontalAngle=60},
       indis={distance=25,verticalAngle=60,horizontalAngle=100},
@@ -89,8 +88,31 @@ TppSoldier2.ReloadSoldier2ParameterTables{
     far={enemy=-310,character=0,object=70},
     bushDensityThresold=100
   },
-  hearingRangeParameter={
-    normal={zero=0,ss=4.5,hs=5.5,s=9,m=15,l=30,hll=60,ll=160,alert=160,special=500},
+  --notes from bipbop/
+  -- speed notes ignore ss (Sneak Suit)
+  hearingRangeParameter={ -- values are distance in meters
+    normal={
+       -- vehicle slow, cbox slide, and any "silent" noise like prone movement and supressors
+      zero=0,
+      -- playerSpeed >=11.6 and <14.8 km/h?; cbox crouch mid [11.6 km/h], DW crouch slow [18 km/h]
+      ss=4.5, 
+      -- playerSpeed >=14.8?; same as ss, maybe hard coded; jogging (ss) [17 km/h], crouch walk fast [14.8 km/h]
+      hs=5.5, 
+      -- playerSpeed >=14 and <=22 km/h?; magazine, tranq dart, water bullet, running (ss) [36 km/h], horse walk [14 km/h], jogging [22 km/h], dive, cbox crouch fast [14.8 km/h]
+      s=9,
+      -- playerSpeed >=22 km/h and <58 km/h?; sonar, knock, whistle, rubber/lethal bullet impact, running [36 km/h], horse jog [22 km/h], DW walk [29.9 km/h], DW crouch fast [60 km/h], weapon throw, NL/chaff fire support, kicking guards awake, supply drop
+      m=15,
+      -- playerSpeed >= 58 km/h?; vehicle fast [max 60 km/h], horse run [58 km/h], active decoy, fulton, thrown body
+      l=30,
+      -- fultoning concious soldier with balloon fulton
+      hll=60,
+      -- unsuppressed gun discharge, explosion, artillery support
+      ll=160,
+      -- probably every sound other than char movement when CP issues combat alert phase
+      alert=160,
+
+      special=500
+    },
     sandstorm={zero=0,ss=0,hs=0,s=0,m=15,l=30,hll=60,ll=160,alert=160,special=500},
     rain={zero=0,ss=0,hs=0,s=4.5,m=15,l=30,hll=60,ll=160,alert=160,special=500}
   },
@@ -103,7 +125,8 @@ TppSoldier2.ReloadSoldier2ParameterTables{
     sleepRecoverSec=300,--nasanhak Set to -1 (negative one) for infinite sleep
     faintRecoverSec=50,--nasanhak Changes to this make absolutely no difference, STN recovery times are controlled somewhere else
     dyingSec=60--nasanhak Set to -1 to never have bleeding soldiers die
-  },  
+  },
   zombieParameterTable={highHeroicValue=1e3}
 }
+TppSoldier2.ReloadSoldier2ParameterTables(this.parameterTables)
 return this

@@ -11,16 +11,16 @@ local IsTable=Tpp.IsTypeTable
 local TimerStart=GkEventTimerManager.Start
 local SVarsIsSynchronized=TppScriptVars.SVarsIsSynchronized
 this.MISSION_PREPARE_STATE=Tpp.Enum{"START","WAIT_INITALIZE","WAIT_TEXTURE_LOADING","END_TEXTURE_LOADING","WAIT_SAVING_FILE","END_SAVING_FILE","FINISH"}
-local function s(sequenceIndex)
+local function UnkMF1(sequenceIndex)
   local seq_sequenceTable=mvars.seq_sequenceTable
   if seq_sequenceTable then
     return seq_sequenceTable[sequenceIndex]
   end
 end
-local function d(sequenceIndex)
+local function UnkMF2(sequenceIndex)
   local seq_sequenceNames=mvars.seq_sequenceNames
   if seq_sequenceNames then
-    return s(seq_sequenceNames[sequenceIndex])
+    return UnkMF1(seq_sequenceNames[sequenceIndex])
   end
 end
 function this.RegisterSequences(sequenceNames)
@@ -49,15 +49,16 @@ function this.RegisterSequences(sequenceNames)
   end
   mvars.seq_sequenceNames=Tpp.Enum(_sequenceNames)
 end
-function this.RegisterSequenceTable(e)
-  if e==nil then
+--<mission>_sequence.lua sequences (local)
+function this.RegisterSequenceTable(sequences)
+  if sequences==nil then
     return
   end
-  mvars.seq_sequenceTable=Tpp.MergeTable(e,baseSequences,true)
+  mvars.seq_sequenceTable=Tpp.MergeTable(sequences,baseSequences,true)
   local s={}
   for t,n in ipairs(mvars.seq_sequenceNames)do
-    if e[n]==nil then
-      e[n]=s
+    if sequences[n]==nil then
+      sequences[n]=s
     end
   end
 end
@@ -146,7 +147,7 @@ function this.MakeSVarsTable(saveVarsList)
   return svarTable
 end
 local waitStartTime=1
-local s=6
+local heliMoveStartTime=6
 local noTelopFadeinTime=2
 requiredSequences={"Seq_Mission_Prepare"}
 this.SYS_SEQUENCE_LENGTH=#requiredSequences
@@ -157,7 +158,7 @@ baseSequences.Seq_Mission_Prepare={
         {msg="EndFadeIn",sender="FadeInOnGameStart",func=function()end,
           option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="StartMissionTelopFadeIn",func=function()
-          TimerStart("Timer_HelicopterMoveStart",s)
+          TimerStart("Timer_HelicopterMoveStart",heliMoveStartTime)
         end,
         option={isExecMissionPrepare=true,isExecMissionClear=true,isExecGameOver=true}},
         {msg="StartMissionTelopFadeOut",func=function()
@@ -188,8 +189,8 @@ baseSequences.Seq_Mission_Prepare={
       TppNetworkUtil.RequestGetFobServerParameter()
     end
   end,
-  OnLeave=function(unk1,unk2)
-    TppMain.OnMissionGameStart(unk2)
+  OnLeave=function(sequenceTable,sequenceName)
+    TppMain.OnMissionGameStart(sequenceName)
     this.DoOnEndMissionPrepareFunction()
     if this.IsFirstLandStart()then
       if not TppSave.IsReserveVarRestoreForContinue()then
@@ -243,8 +244,8 @@ baseSequences.Seq_Mission_Prepare={
     end
   end,
   DEBUG_TextPrint=function(text)
-    local e=(nil).NewContext();
-    (nil).Print(e,{.5,.5,1},text)
+    local context=(nil).NewContext()
+    ;(nil).Print(context,{.5,.5,1},text)
   end,
   OnUpdate=function(sequenceTable)
     if(mvars.seq_missionPrepareState<this.MISSION_PREPARE_STATE.END_TEXTURE_LOADING)then
@@ -398,11 +399,11 @@ function this.CanHandleSignInUserChangedException()
   if mvars.seq_currentSequence==nil then
     return true
   end
-  local e=mvars.seq_sequenceTable[mvars.seq_currentSequence]
-  if e==nil then
+  local sequence=mvars.seq_sequenceTable[mvars.seq_currentSequence]
+  if sequence==nil then
     return true
   end
-  if e.ignoreSignInUserChanged then
+  if sequence.ignoreSignInUserChanged then
     return false
   else
     return true
@@ -457,8 +458,8 @@ function this.MakeSequenceMessageExecTable()
 end
 function this.OnChangeSVars(name,key)
   if name=="seq_sequence"then
-    local s=d(svars.seq_sequence)
-    if s==nil then
+    local sequence=UnkMF2(svars.seq_sequence)
+    if sequence==nil then
       return
     end
     local currentSequenceTable=mvars.seq_sequenceTable[mvars.seq_currentSequence]
@@ -466,9 +467,9 @@ function this.OnChangeSVars(name,key)
       currentSequenceTable.OnLeave(currentSequenceTable,this.GetSequenceNameWithIndex(svars.seq_sequence))
     end
     mvars.seq_currentSequence=mvars.seq_sequenceNames[svars.seq_sequence]
-    if s.OnEnter then
+    if sequence.OnEnter then
       local e
-      s.OnEnter(s)
+      sequence.OnEnter(sequence)
     end
   end
 end
@@ -499,18 +500,18 @@ function this.Update()
   end
 end
 function this.DebugUpdate()
-  local e=mvars
-  local s=svars
-  local n=(nil).NewContext()
-  if e.debug.showCurrentSequence or e.debug.showSequenceHistory then
-    if e.debug.showCurrentSequence then
-    (nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showCurrSequence")
-    ;(nil).Print(n," current_sequence = "..tostring(GetSequenceNameWithIndex(s.seq_sequence)))
+  local mvars=mvars
+  local svars=svars
+  local context=(nil).NewContext()
+  if mvars.debug.showCurrentSequence or mvars.debug.showSequenceHistory then
+    if mvars.debug.showCurrentSequence then
+    (nil).Print(context,{.5,.5,1},"LuaSystem SEQ.showCurrSequence")
+    ;(nil).Print(context," current_sequence = "..tostring(GetSequenceNameWithIndex(svars.seq_sequence)))
     end
-    if e.debug.showSequenceHistory then
-    (nil).Print(n,{.5,.5,1},"LuaSystem SEQ.showSeqHistory")
-      for s,e in ipairs(e.debug.seq_sequenceHistory)do
-        (nil).Print(n," seq["..(tostring(s)..("] = "..tostring(e))))
+    if mvars.debug.showSequenceHistory then
+    (nil).Print(context,{.5,.5,1},"LuaSystem SEQ.showSeqHistory")
+      for s,e in ipairs(mvars.debug.seq_sequenceHistory)do
+        (nil).Print(context," seq["..(tostring(s)..("] = "..tostring(e))))
       end
     end
   end

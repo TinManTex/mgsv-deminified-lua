@@ -42,8 +42,16 @@ function this.Messages()
           mvars.dm_doneStartMissionTelop=true
         end,
         option={isExecDemoPlaying=true,isExecMissionClear=true}},
-      {msg="StartCastTelopLeft",func=function()TppTelop.StartCastTelop"LEFT_START"end,option={isExecDemoPlaying=true,isExecMissionClear=true}},
-      {msg="StartCastTelopRight",func=function()TppTelop.StartCastTelop"RIGHT_START"end,option={isExecDemoPlaying=true,isExecMissionClear=true}},
+      {msg="StartCastTelopLeft",
+        func=function()
+          TppTelop.StartCastTelop"LEFT_START"
+        end,
+        option={isExecDemoPlaying=true,isExecMissionClear=true}},
+      {msg="StartCastTelopRight",
+        func=function()
+          TppTelop.StartCastTelop"RIGHT_START"
+        end,
+        option={isExecDemoPlaying=true,isExecMissionClear=true}},
       nil
     },
     UI={
@@ -54,13 +62,14 @@ function this.Messages()
       {msg="DemoPauseSkip",func=this.FadeOutOnSkip,option={isExecMissionClear=true,isExecDemoPlaying=true,isExecGameOver=true}}
     },
     Timer={
-      {msg="Finish",sender="p31_080110_000_showLocationTelop",func=function()
-        TppUiCommand.RegistInfoTypingText("location",1)
-        TppUiCommand.RegistInfoTypingText("cpname",2,"platform_isolation")
-        TppUiCommand.RegistInfoTypingText("disptime",2)
-        TppUiCommand.ShowInfoTypingText()
-      end,
-      option={isExecDemoPlaying=true}}
+      {msg="Finish",sender="p31_080110_000_showLocationTelop",
+        func=function()
+          TppUiCommand.RegistInfoTypingText("location",1)
+          TppUiCommand.RegistInfoTypingText("cpname",2,"platform_isolation")
+          TppUiCommand.RegistInfoTypingText("disptime",2)
+          TppUiCommand.ShowInfoTypingText()
+        end,
+        option={isExecDemoPlaying=true}}
     }
   }
 end
@@ -99,7 +108,7 @@ this.PLAY_REQUEST_START_FUNC={
     mvars.dem_tempPlayerSuitLevel=Player.GetItemLevel(TppEquip.EQP_SUIT)--RETAILPATCH 1.10
     local forceSnake=true--tex>
     if Ivars.useSoldierForDemos:Is(1) then
-      if vars.playerType~=PlayerType.DD_FEMALE or not InfMain.noSkipIsSnakeOnly[demoId] then
+      if vars.playerType~=PlayerType.DD_FEMALE or not InfMainTpp.noSkipIsSnakeOnly[demoId] then
         forceSnake=false
       end
     end
@@ -152,11 +161,11 @@ this.PLAY_REQUEST_START_CHECK_FUNC={
     end
   end,
   demoBlockLoaded=function(demoId)
-    local findDemoBuddy=FindDemoBody(demoId)
-    if not findDemoBuddy then
+    local demoBody=FindDemoBody(demoId)
+    if not demoBody then
       TppUI.ShowAccessIconContinue()
     end
-    return findDemoBuddy
+    return demoBody
   end,
   playerModelReloaded=function(demoId)
     if mvars.dem_tempPlayerReloadCounter==nil then
@@ -186,8 +195,8 @@ this.PLAY_REQUEST_START_CHECK_FUNC={
     end
   end,
   waitTextureLoadOnDemoPlay=function(demoId)
-    local findDemoBody=FindDemoBody(demoId)
-    if not findDemoBody then
+    local demoBody=FindDemoBody(demoId)
+    if not demoBody then
       TppUI.ShowAccessIconContinue()
       return false
     end
@@ -255,9 +264,9 @@ this.FINISH_WAIT_CHECK_FUNC={
     if not mvars.dem_textureLoadWaitEndTime then
       mvars.dem_textureLoadWaitEndTime=Time.GetRawElapsedTimeSinceStartUp()+30
     end
-    local loadWaitDelta=mvars.dem_textureLoadWaitEndTime-Time.GetRawElapsedTimeSinceStartUp()
+    local waitTime=mvars.dem_textureLoadWaitEndTime-Time.GetRawElapsedTimeSinceStartUp()
     local textureLoadedRate=Mission.GetTextureLoadedRate()
-    if(textureLoadedRate>.35)or(loadWaitDelta<=0)then
+    if(textureLoadedRate>.35)or(waitTime<=0)then
       return true
     else
       TppUI.ShowAccessIconContinue()
@@ -322,7 +331,7 @@ function this.Play(demoName,demoFuncs,demoFlags)
   end
   --tex> force snake off for demo
   if Ivars.useSoldierForDemos:Is(1) then
-    if vars.playerType~=PlayerType.DD_FEMALE or not InfMain.noSkipIsSnakeOnly[demoName] then
+    if vars.playerType~=PlayerType.DD_FEMALE or not InfMainTpp.noSkipIsSnakeOnly[demoName] then
       demoFlags.isSnakeOnly=false
     end
   end--<
@@ -363,7 +372,6 @@ function this.FinalizeOnDemoBlock()
     DemoDaemon.SkipAll()
   end
 end
-
 
 function this.SetDemoTransform(demoName,setInfo)
   local demoId=mvars.dem_demoList[demoName]
@@ -1013,11 +1021,11 @@ this.mtbsPriorityFuncList={
     if not gvars.f30050_isInitNuclearAbolitionCount then
       return false
     end
-    local n=TppStory.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO
-    local e=TppServerManager.GetNuclearAbolitionCount()
-    local a=e>=0
-    local e=gvars.f30050_NuclearAbolitionCount<e
-    if(a and n)and e then
+    local clearedOKB0=TppStory.GetCurrentStorySequence()>=TppDefine.STORY_SEQUENCE.CLEARD_OKB_ZERO
+    local serverAbolitionCount=TppServerManager.GetNuclearAbolitionCount()
+    local abolitionCountNot0=serverAbolitionCount>=0
+    local savedAbolitionCount=gvars.f30050_NuclearAbolitionCount<serverAbolitionCount
+    if(abolitionCountNot0 and clearedOKB0)and savedAbolitionCount then
       if vars.mbmIsNuclearDeveloping==0 and TppMotherBaseManagement.GetResourceUsableCount{resource="NuclearWeapon"}==0 then
         return true
       else

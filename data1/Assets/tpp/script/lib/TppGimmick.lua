@@ -570,7 +570,7 @@ function this.SetCommunicateGimmick(e)
   end
 end
 --NMC on GameObject SwitBreakGimmickchGimmick msg
-function this.BreakGimmick(gameId,locatorNameHash,dataSetNameHash,i)
+function this.BreakGimmick(gameId,locatorNameHash,dataSetNameHash,unkP4)
   local gimmickId=this.GetGimmickID(gameId,locatorNameHash,dataSetNameHash)
   --GetGimmickID(gameId,locatorNameHash,dataSetNameHash)
   if not gimmickId then
@@ -581,12 +581,12 @@ function this.BreakGimmick(gameId,locatorNameHash,dataSetNameHash,i)
   this.HideAsset(gimmickId)
   this.ShowAnnounceLog(gimmickId)
   this.UnlockLandingZone(gimmickId)
-  local t=false
-  if(i==NULL_ID)then
-    t=true
+  local unkLBool=false
+  if(unkP4==NULL_ID)then
+    unkLBool=true
   end
-  this.PowerCut(gimmickId,true,t)
-  this.SetHeroicAndOrgPoint(gimmickId,i)
+  this.PowerCut(gimmickId,true,unkLBool)
+  this.SetHeroicAndOrgPoint(gimmickId,unkP4)
 end
 --NMC returns gimmickIdentifierParamTable identifier, see  SetUpIdentifierTable
 function this.GetGimmickID(gameId,locatorNameHash,dataSetNameHash)

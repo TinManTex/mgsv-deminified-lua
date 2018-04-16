@@ -920,7 +920,7 @@ function this.GetLocationPackagePath(locationId)
   if packPath then
   end
   TppLocation.SetBuddyBlock(locationId)
-  InfCore.PrintInspect(packPath,{varName="locationPackPaths"})--tex DEBUG
+  InfCore.PrintInspect(packPath,"locationPackPaths")--tex DEBUG
   return packPath
 end
 function this.GetMissionPackagePath(missionCode)

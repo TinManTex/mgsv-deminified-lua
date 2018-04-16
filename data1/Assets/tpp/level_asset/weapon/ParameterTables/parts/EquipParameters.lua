@@ -1,9 +1,12 @@
 --EquipParameters.lua
 --RETAILPATCH 1090 various additions
-this={}
-TppEquip.ReloadEquipParameterTables2{
+--see https://github.com/unknown321/mgsmonsterguns
+--indices to other tables from 0
+local this={}
+this.equipParameterTables={
   gunBasic={
-    1,
+    1,--NMC these first entry numbers seem to define table format, see what seems to be an older EquipParameters.lua (in Tpp/Scripts/Equip/) that only loads if this file doesnt exist
+    --{weaponId,recieverId,barrelId,ammoId,stockId,muzzleId,muzzleOptionId,scope1Id (upper scope slot), scope2Id, laser/flash1,laser/flash2, underbarrelId,weaponGrade}
     {TppEquip.WP_10001,TppEquip.RC_10001,TppEquip.BA_10001,TppEquip.AM_10001,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,1},
     {TppEquip.WP_10002,TppEquip.RC_10001,TppEquip.BA_10001,TppEquip.AM_10001,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_10002,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,2},
     {TppEquip.WP_10003,TppEquip.RC_10003,TppEquip.BA_10001,TppEquip.AM_10003,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_10002,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_10102,TppEquip.LT_None,3},
@@ -835,7 +838,12 @@ TppEquip.ReloadEquipParameterTables2{
     {"gl05"},
     {"sr06"}
   },
-  receiver={1,{TppEquip.RC_10001,TppDamage.ATK_10001,0,0,0,0},
+  receiver={
+    1,
+    --{recieverId,attackId,receiverParamSetsBase,receiverParamSetsWobbling,receiverParamSetsSystem,receiverParamSetsSound},
+    --Assumed since the number of number params match the number of reciever info tables
+    --and the maxs match (0 based) number of entries in those tables
+    {TppEquip.RC_10001,TppDamage.ATK_10001,0,0,0,0},
     {TppEquip.RC_10003,TppDamage.ATK_10001,0,1,1,0},
     {TppEquip.RC_10004,TppDamage.ATK_10004,0,1,1,0},
     {TppEquip.RC_10006,TppDamage.ATK_10006,1,2,2,1},
@@ -1147,6 +1155,7 @@ TppEquip.ReloadEquipParameterTables2{
   },
   barrel={
     1,
+    --{barrelId,barrelParamSetsBase,BARREL_LENGTH,hasScopeMount,unk2,hasSideMount,hasUnderMount}--last 4 params are intbool {0-1}, unk2 is always 0
     {TppEquip.BA_10001,0,TppEquip.BARREL_LENGTH_SHORT,0,0,0,0},
     {TppEquip.BA_10004,1,TppEquip.BARREL_LENGTH_SHORT,0,0,0,0},
     {TppEquip.BA_10024,2,TppEquip.BARREL_LENGTH_MIDDLE,0,0,0,0},
@@ -1263,6 +1272,7 @@ TppEquip.ReloadEquipParameterTables2{
   },
   magazine={
     1,
+    --{ammoId,equip ammo id,magazine capacity,total carry capacity,bulletId}
     {TppEquip.AM_10001,TppEquip.EQP_AM_10001,7,63,TppEquip.BL_Hg114Auto},
     {TppEquip.AM_10003,TppEquip.EQP_AM_10003,10,90,TppEquip.BL_Hg114Auto},
     {TppEquip.AM_10015,TppEquip.EQP_AM_10015,10,90,TppEquip.BL_Hg114AutoP},
@@ -1451,6 +1461,7 @@ TppEquip.ReloadEquipParameterTables2{
   },
   muzzleOption={
     1,
+    --{muzzleOptionId, grouping bonus?,durability in number of shots (-1 infinite),bool for sound suppress? (is 1 on supperessors}--from bipbop
     {TppEquip.MO_10101,1,15,1},
     {TppEquip.MO_10105,1,-1,1},
     {TppEquip.MO_10002,1,15,1},
@@ -1505,6 +1516,7 @@ TppEquip.ReloadEquipParameterTables2{
   },
   sight={
     1,
+    --{scopeId,zoom magnification step1 (0,step2(0 if none),step3,scope ui id,bool booster scope, bool nvg, bool build in scope, bool range finder, bool range finder w bullet drop correction crosshair}--from bipbop - untested
     {TppEquip.ST_20104,1,0,0,TppEquip.SCOPE_UI_DOT,1,0,0,0,0},
     {TppEquip.ST_20205,1,0,0,TppEquip.SCOPE_UI_DOT,1,0,0,0,0},
     {TppEquip.ST_30114,1,0,0,TppEquip.SCOPE_UI_DOT,1,0,0,0,0},
@@ -1755,4 +1767,5 @@ TppEquip.ReloadEquipParameterTables2{
     {TppEquip.BL_UavSmokeGrenade,180,100,9.8,21,21,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_SHELL,0,0,TppEquip.EQP_TYPE_None}
   }
 }
+TppEquip.ReloadEquipParameterTables2(this.equipParameterTables)
 return this

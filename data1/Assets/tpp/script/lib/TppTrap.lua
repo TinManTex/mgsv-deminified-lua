@@ -45,10 +45,10 @@ end
 function this.DebugUpdate()
   local mvars=mvars
   local debug=mvars.debug
-  local print=(nil).Print
+  local DebugPrint=(nil).Print
   local context=(nil).NewContext()
   if mvars.debug.showTrapStatus and mvars.trp_variableTrapList then
-    print(context,{.5,.5,1},"LuaSystem TRP.trapStatus")
+    DebugPrint(context,{.5,.5,1},"LuaSystem TRP.trapStatus")
     local e=1
     if mvars.debug.trapStatusScroll>1 then
       e=mvars.debug.trapStatusScroll
@@ -57,7 +57,7 @@ function this.DebugUpdate()
       if i>=e then
         local trapName=trapInfo.name
         local enabled=svars.trp_variableTrapEnable[i]
-        print(context,{.5,.5,1},"trapName = "..(tostring(trapName)..(", status = "..tostring(enabled))))
+        DebugPrint(context,{.5,.5,1},"trapName = "..(tostring(trapName)..(", status = "..tostring(enabled))))
       end
     end
   end
@@ -67,11 +67,11 @@ function this.InitializeVariableTraps()
     return
   end
   for i,trapInfo in ipairs(mvars.trp_variableTrapList)do
-    local isMissionPackLabel=true
+    local isForPackLabel=true
     if trapInfo.packLabel then
-      isMissionPackLabel=TppPackList.IsMissionPackLabelList(trapInfo.packLabel)
+      isForPackLabel=TppPackList.IsMissionPackLabelList(trapInfo.packLabel)
     end
-    if isMissionPackLabel then
+    if isForPackLabel then
       if trapInfo.initialState==TppDefine.TRAP_STATE.ENABLE then
         this.Enable(trapInfo.name)
       elseif trapInfo.initialState==TppDefine.TRAP_STATE.DISABLE then

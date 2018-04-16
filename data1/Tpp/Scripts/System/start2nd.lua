@@ -42,7 +42,7 @@ if Script.LoadLibrary then
   LoadLibrary"/Assets/tpp/motherbase/script/WeaponPartsCombinationSettings.lua"
   YieldFrame()
 
-  InfInit.MBManagementSettings()--tex
+  InfMainTpp.MBManagementSettings()--tex
 end
 if TppSystemUtility.GetCurrentGameMode()~="MGO"then
   dofile"/Assets/tpp/radio/script/RadioParameterTable.lua"

@@ -1,4 +1,5 @@
-local e={
+--UiRegisterInfo.lua
+local tipsIds={
   [TppDefine.TIPS.TIPS]="001_00",
   [TppDefine.TIPS.R3_ZOOM]="007_00",
   [TppDefine.TIPS.COVER]={"017_00","017_01"},
@@ -147,7 +148,7 @@ local e={
   [TppDefine.TIPS.FOB_CONSTRUCT]="616_00",
   [TppDefine.TIPS.ONLINE_DISPATCH_MISSION]="617_00"
 }
-local I={
+local tipTypesForStorySequence={
   [TppDefine.STORY_SEQUENCE.STORY_START]={"TIPS","R3_ZOOM","COVER","COVER_SHOOT","QUICK_DIVE","REFLEX_MODE","WEAPON_RANGE","RETICLE_COLOR","RELOAD","STOCK_CHANGE","INJURY","AUTO_AIM","VIEWPOINT_WEAPON","BASIC","SPOTTED","TAKE_DOWN"},
   [TppDefine.STORY_SEQUENCE.CLEARD_ESCAPE_THE_HOSPITAL]={"INFILTRATING","BINO_MARKING","PUT_MARKER","RADIO_ESPIONAGE","LOG","COMOF_STANCE","HORSE_HIDEACTION","TRASH","TOILET","ACTION_MAKENOISE","TRANQUILIZER","PICKUP_WEAPON","AMMO","CARRY_WEAPON_LIMIT","HOLD_UP","STEALTH_MODE","SUPPRESSOR","THROW_EQUIP","NVG","BINOCULARS","AUDIO_CUE","MARKING","NIGHT","COMBAT_ALERT","CALL_MENU"},
   [TppDefine.STORY_SEQUENCE.CLEARD_RECUE_MILLER]={"ELUDE","QUICK_CHANGE","GET_DOWN","CQC","CQC_THROW","CQC_ATTACK","CQC_HOLD_UP","CQC_COMB","CQC_HOLD","CQC_INTERROGATION","HOLD_UP_INTERROGATION","CQC_CHOKE","CQC_KILL","INTERPRETER"},
@@ -157,48 +158,49 @@ local I={
   [TppDefine.STORY_SEQUENCE.CLEARD_FLAG_MISSIONS_AFTER_FIND_THE_SECRET_WEAPON]={"BUDDY_DOG","DECOY","MINE","ACTIVE_SONAR"},
   [TppDefine.STORY_SEQUENCE.CLEARD_LINGUA_FRANKA]={"SLEEP_GUS","BUDDY_QUIET"},
   [TppDefine.STORY_SEQUENCE.CLEARD_DESTROY_THE_FLOW_STATION]={"BUDDY_WALKER","UNDER_BARREL","RAIN"},
-  [TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA]={"FOB_ABILITY","FOB_WORM_HOLE","WORM_HOLE","FOB_SHIELD","ESP_POINT","STAFF_RANK_BONUS","FOB_GOAL","FOB_GOAL_BONUS","DIRECT_CONTRACTS","REVENGE_WORM_HOLE","NUCLEAR_WEAPON","FOB_HERO","EQUIPPED_GUARDS","PF_RATING","PF_POINT","FOB_SUPPORT","FOB_RESCUE_STAFF","EMERGENCES","FOB_CONSTRUCT","ONLINE_DISPATCH_MISSION"}}
-local p=function(T,_)
-  if type(_)=="string"then
-    local e="tips_name_".._
-    TppUiCommand.DeleteTips(T)
-    TppUiCommand.RegistTipsTitle(T,e)
-    local _="tips_info_".._
-    TppUiCommand.RegistTipsDoc(T,_)
-  elseif type(_)=="table"then
-    local e="tips_name_".._[1]
-    TppUiCommand.DeleteTips(T)
-    TppUiCommand.RegistTipsTitle(T,e)
-    for e,_ in pairs(_)do
-      local _="tips_info_".._
-      TppUiCommand.RegistTipsDoc(T,_)
+  [TppDefine.STORY_SEQUENCE.CLEARD_WHITE_MAMBA]={"FOB_ABILITY","FOB_WORM_HOLE","WORM_HOLE","FOB_SHIELD","ESP_POINT","STAFF_RANK_BONUS","FOB_GOAL","FOB_GOAL_BONUS","DIRECT_CONTRACTS","REVENGE_WORM_HOLE","NUCLEAR_WEAPON","FOB_HERO","EQUIPPED_GUARDS","PF_RATING","PF_POINT","FOB_SUPPORT","FOB_RESCUE_STAFF","EMERGENCES","FOB_CONSTRUCT","ONLINE_DISPATCH_MISSION"}
+}
+local RegisterTip=function(tipEnumStr,tipId)
+  if type(tipId)=="string"then
+    local tipsName="tips_name_"..tipId
+    TppUiCommand.DeleteTips(tipEnumStr)
+    TppUiCommand.RegistTipsTitle(tipEnumStr,tipsName)
+    local tipsInfo="tips_info_"..tipId
+    TppUiCommand.RegistTipsDoc(tipEnumStr,tipsInfo)
+  elseif type(tipId)=="table"then
+    local tipsName="tips_name_"..tipId[1]
+    TppUiCommand.DeleteTips(tipEnumStr)
+    TppUiCommand.RegistTipsTitle(tipEnumStr,tipsName)
+    for e,_ in pairs(tipId)do
+      local tipsInfo="tips_info_".._
+      TppUiCommand.RegistTipsDoc(tipEnumStr,tipsInfo)
     end
   end
 end
-local p=function()
-  for T=1,table.maxn(e)do
-    if e[T]~=nil then
-      local _=tostring(T)
-      p(_,e[T])
+local RegisterTips=function()
+  for tipEnum=1,table.maxn(tipsIds)do
+    if tipsIds[tipEnum]~=nil then
+      local enumStr=tostring(tipEnum)
+      RegisterTip(enumStr,tipsIds[tipEnum])
     end
   end
 end
-local T=function()
-  for T,e in pairs(I)do
-    if type(T)=="number"then
-      local _=tostring(T)
-      for e,T in pairs(e)do
-        local T=TppDefine.TIPS[T]
-        if T then
-          local T=tostring(T)
-          TppUiCommand.RegistTipsGroup(_,T)
+local RegisterTipsGroups=function()
+  for storySequence,tipTypes in pairs(tipTypesForStorySequence)do
+    if type(storySequence)=="number"then
+      local storySeqenceStr=tostring(storySequence)
+      for i,tipName in pairs(tipTypes)do
+        local tipEnum=TppDefine.TIPS[tipName]
+        if tipEnum then
+          local enumStr=tostring(tipEnum)
+          TppUiCommand.RegistTipsGroup(storySeqenceStr,enumStr)
         end
       end
     end
   end
 end
-local T=function()
-  p()
-  T()
+local Setup=function()
+  RegisterTips()
+  RegisterTipsGroups()
 end
-T()
+Setup()

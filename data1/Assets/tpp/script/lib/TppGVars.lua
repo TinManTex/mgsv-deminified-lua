@@ -291,11 +291,11 @@ function this.AllInitialize()
   if this.DeclareGVarsTable==nil then
     return
   end
-  for a,gvar in ipairs(this.DeclareGVarsTable)do
+  for i,gvar in ipairs(this.DeclareGVarsTable)do
     local name,arraySize,value=gvar.name,gvar.arraySize,gvar.value
     if arraySize and(arraySize>1)then
-      for e=0,(arraySize-1)do
-        gvars[name][e]=value
+      for j=0,(arraySize-1)do
+        gvars[name][j]=value
       end
     else
       gvars[name]=value

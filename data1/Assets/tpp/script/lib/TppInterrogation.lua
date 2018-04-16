@@ -388,11 +388,11 @@ function this._OnInterrogationEnd(soldierId,cpId,strCodeName,index)
     svars.InterrogationNormal[cpInterrIndex]=bit.band(svars.InterrogationNormal[cpInterrIndex],bit.bnot(bit.lshift(1,rangedIndex-1)))
   end
 end
-function this._AssignInterrogation(gameId,messageId,index)
-  SendCommand(gameId,{id="AssignInterrogation",messageId=messageId,index=index})
+function this._AssignInterrogation(cpId,messageId,index)
+  SendCommand(cpId,{id="AssignInterrogation",messageId=messageId,index=index})
 end
-function this._AssignInterrogationCollection(gameId)
-  SendCommand(gameId,{id="AssignInterrogationCollection"})
+function this._AssignInterrogationCollection(cpId)
+  SendCommand(cpId,{id="AssignInterrogationCollection"})
 end
 function this._SelectInterrogation(cpId,allowCollectionInterr)
   if mvars.interTable==nil then

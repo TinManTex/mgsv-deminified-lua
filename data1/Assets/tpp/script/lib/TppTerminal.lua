@@ -408,7 +408,7 @@ function this.AddVolunteerStaffs()
   if storySequence<TppDefine.STORY_SEQUENCE.CLEARD_TO_MATHER_BASE then
     return
   end
-  
+
   if this.noAddVolunteerMissions[vars.missionCode]then
     return
   end
@@ -900,7 +900,7 @@ function this.Messages()
   local trapMessages
   if cpIntelTrapTable and next(cpIntelTrapTable)then
     trapMessages={}
-    
+
     for cpName,sender in pairs(cpIntelTrapTable)do
       local msg={
         msg="Enter",
@@ -924,7 +924,7 @@ function this.Messages()
       }
       table.insert(trapMessages,msg)
     end
-    
+
     table.insert(trapMessages,
       {msg="Enter",
         sender="trap_intel_afgh_waterway_cp",
@@ -935,7 +935,7 @@ function this.Messages()
           end
         end,
         option={isExecMissionPrepare=true}
-        })
+      })
     table.insert(trapMessages,
       {msg="Exit",
         sender="trap_intel_afgh_waterway_cp",
@@ -943,7 +943,7 @@ function this.Messages()
           this.ClearBaseTelopName()
         end,
         option={isExecMissionPrepare=true}
-        })
+      })
     table.insert(trapMessages,
       {msg="Enter",
         sender="trap_intel_afgh_ruins_cp",
@@ -954,7 +954,7 @@ function this.Messages()
           end
         end,
         option={isExecMissionPrepare=true}
-        })
+      })
     table.insert(trapMessages,
       {msg="Exit",
         sender="trap_intel_afgh_ruins_cp",
@@ -962,9 +962,9 @@ function this.Messages()
           this.ClearBaseTelopName()
         end,
         option={isExecMissionPrepare=true}
-        })
+      })
   end
-  
+
   return Tpp.StrCode32Table{
     GameObject={
       {msg="Fulton",
@@ -1107,9 +1107,12 @@ function this.SetUp()
 
   --tex> reworked, disable various support menus
   local isActual=TppMission.IsSubsistenceMission()
-  for n, ivar in ipairs(Ivars.disableMenuIvars) do
-    if isActual or ivar:Is(1) then
-      this.EnableDvcMenuByList{{menu=ivar.menuId,active=false}}
+  for n, ivarName in ipairs(InfMainTppIvars.disableMenuIvars) do
+    local ivar=Ivars[ivarName]
+    if ivar then
+      if isActual or ivar:Is(1) then
+        this.EnableDvcMenuByList{{menu=ivar.menuId,active=false}}
+      end
     end
   end
 
@@ -1307,7 +1310,7 @@ function this.OnFultonHostage(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,st
   this.AddTempStaffFulton{staffId=staff,gameObjectId=gameId,tempStaffStatus=tempStaffStatus,fultonedPlayer=fultonedPlayer}
 end
 function this.OnFultonVehicle(vehicleId,a,a,resourceId,a,playerIndex)
-  InfMain.OnFultonVehicle(vehicleId)--tex
+  InfMainTpp.OnFultonVehicle(vehicleId)--tex
   if mvars.trm_isSkipAddResourceToTempBuffer then
     return
   end

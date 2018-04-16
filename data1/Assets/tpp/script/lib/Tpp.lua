@@ -86,16 +86,9 @@ this.requires={
   "/Assets/tpp/script/lib/TppRanking.lua",
   "/Assets/tpp/script/lib/TppTrophy.lua",
   "/Assets/tpp/script/lib/TppMbFreeDemo.lua",
-  "/Assets/tpp/script/lib/InfButton.lua",--tex>
-  "/Assets/tpp/script/lib/InfModules.lua",
-  "/Assets/tpp/script/lib/InfMain.lua",
-  "/Assets/tpp/script/lib/InfMenu.lua",
-  "/Assets/tpp/script/lib/InfEneFova.lua",
-  "/Assets/tpp/script/lib/InfRevenge.lua",
-  "/Assets/tpp/script/lib/InfFova.lua",
-  "/Assets/tpp/script/lib/InfLZ.lua",
-  "/Assets/tpp/script/lib/InfPersistence.lua",
-  "/Assets/tpp/script/lib/InfHooks.lua",--<
+--  "/Assets/tpp/script/lib/InfButton.lua",--tex>--CULL
+--  "/Assets/tpp/script/lib/InfModules.lua",
+--  "/Assets/tpp/script/lib/InfMain.lua",--<
 }
 function this.IsTypeFunc(e)
   return type(e)=="function"
@@ -137,34 +130,34 @@ end
 function this.IsQARelease()
   return(Fox.GetDebugLevel()==Fox.DEBUG_LEVEL_QA_RELEASE)
 end
-function this.SplitString(string,deliminator)
-  local spltStringTable={}
-  local n
+function this.SplitString(string,delim)
+  local splitStringTable={}
+  local splitIndex
   local splitString=string
   while true do
-    n=string.find(splitString,deliminator)
-    if(n==nil)then
-      table.insert(spltStringTable,splitString)
+    splitIndex=string.find(splitString,delim)
+    if(splitIndex==nil)then
+      table.insert(splitStringTable,splitString)
       break
     else
-      local l=string.sub(splitString,0,n-1)
-      table.insert(spltStringTable,l)
-      splitString=string.sub(splitString,n+1)
+      local subString=string.sub(splitString,0,splitIndex-1)
+      table.insert(splitStringTable,subString)
+      splitString=string.sub(splitString,splitIndex+1)
     end
   end
-  return spltStringTable
+  return splitStringTable
 end
 function this.StrCode32Table(table)
   local strCode32Table={}
   for k,v in pairs(table)do
-    local n=k
-    if type(n)=="string"then
-      n=StrCode32(n)
+    local key=k
+    if type(key)=="string"then
+      key=StrCode32(key)
     end
     if type(v)=="table"then
-      strCode32Table[n]=this.StrCode32Table(v)
+      strCode32Table[key]=this.StrCode32Table(v)
     else
-      strCode32Table[n]=v
+      strCode32Table[key]=v
     end
   end
   return strCode32Table
@@ -174,9 +167,10 @@ function this.ApendArray(destTable,sourceTable)
     destTable[#destTable+1]=v
   end
 end
-function this.MergeTable(table1,table2,n)
+function this.MergeTable(table1,table2,unk3)
   local mergedTable=table1
   for k,v in pairs(table2)do
+    --NMC uhhh, both the same?
     if table1[k]==nil then
       mergedTable[k]=v
     else
@@ -233,7 +227,7 @@ function this.MakeMessageExecTable(messagesS32)
   local s32_option=StrCode32"option"
   for messageClassS32,classMessages in pairs(messagesS32)do
     messageExecTable[messageClassS32]=messageExecTable[messageClassS32]or{}
-    for i,messageInfo in pairs(classMessages)do
+    for i,messageInfo in pairs(classMessages)do--tex TODO: re analyse
       local messageNameS32,senderIds,classMessageFunc,options=i,nil,nil,nil
       if IsTypeFunc(messageInfo)then
         classMessageFunc=messageInfo
@@ -254,9 +248,9 @@ function this.MakeMessageExecTable(messagesS32)
               --RETAILBUG msgSndr not defined, moot, no executing code, commented out anyway
               --              if msgSndr==NULL_ID then
               --              end
-          else
-            senderIds[k]=StrCode32(senderId)
-          end
+            else
+              senderIds[k]=StrCode32(senderId)
+            end
           elseif type(senderId)=="number"then
             senderIds[k]=senderId
           end
@@ -303,21 +297,25 @@ function this.DoMessage(messageExecTable,CheckMessageOption,messageClass,message
   if not messageIdRecievers then
     return
   end
-  local RENsomebool=true
-  this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText,RENsomebool)
+  local unkBool=true
+  if InfCore.debugMode and Ivars.debugMessages:Get()==1 then--tex> wrap in pcall
+    InfCore.PCall(this.DoMessageAct,messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText,unkBool)
+  else--<
+    this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText,unkBool)
+  end
 end
 function this.DoMessageAct(messageIdRecievers,CheckMessageOption,arg0,arg1,arg2,arg3,strLogText)
-    if messageIdRecievers.func then
-      if CheckMessageOption(messageIdRecievers.option)then
-        messageIdRecievers.func(arg0,arg1,arg2,arg3)
-      end
+  if messageIdRecievers.func then
+    if CheckMessageOption(messageIdRecievers.option)then
+      messageIdRecievers.func(arg0,arg1,arg2,arg3)
     end
-    local senders=messageIdRecievers.sender--tex NMC actually recievers at this point
-    if senders and senders[arg0]then
-      if CheckMessageOption(messageIdRecievers.senderOption[arg0])then
-        senders[arg0](arg0,arg1,arg2,arg3)
-      end
+  end
+  local senders=messageIdRecievers.sender--tex NMC actually recievers at this point
+  if senders and senders[arg0]then
+    if CheckMessageOption(messageIdRecievers.senderOption[arg0])then
+      senders[arg0](arg0,arg1,arg2,arg3)
     end
+  end
 end
 function this.GetRotationY(rotQuat)
   if not rotQuat then
@@ -643,7 +641,7 @@ function this.IsLoadedSmallBlock(blockIndexX,blockIndexY)
   local blockSize=4
   local minX,minY=StageBlock.GetCurrentMinimumSmallBlockIndex()
   local maxX=minX+blockSize
-  local maxY=minX+blockSize--RETAILBUG: should be minY+blockSize? but function isn't used anywhere?
+  local maxY=minY+blockSize--RETAILBUG: was minX+blockSize (is fixed in SSD), but function isn't used anywhere?
   return((minX<=blockIndexX and maxX>=blockIndexX)and minY<=blockIndexY)and maxY>=blockIndexY
 end
 function this.IsLoadedLargeBlock(blockName)
@@ -663,12 +661,12 @@ function this.GetLoadedLargeBlock()
   end
   return nil
 end
-function this.GetChunkIndex(locationId,isMGO)
+function this.GetChunkIndex(locationId,isMGO)--tex VERIFY, ssd param2 is missioncode
   local chunkIndex
   if isMGO then
     chunkIndex=Chunk.INDEX_MGO
   else
-    chunkIndex=TppDefine.LOCATION_CHUNK_INDEX_TABLE[locationId]
+    chunkIndex=TppDefine.LOCATION_CHUNK_INDEX_TABLE[locationId]--tex TODO: ssd has hang call on nil locationchunkindex
     if chunkIndex==nil then
     end
     return chunkIndex
@@ -681,114 +679,120 @@ function this.StartWaitChunkInstallation(chunkIndex)
   this.ClearChunkInstallPopupUpdateTime()
 end
 local r=1
-local n=0
-function this.ShowChunkInstallingPopup(t,l)
+local chunkInstallPopupUpdateTime=0
+function this.ShowChunkInstallingPopup(chunkId,useOneCancelButtonPopup)
   local frameTime=Time.GetFrameTime()
-  n=n-frameTime
-  if n>0 then
+  chunkInstallPopupUpdateTime=chunkInstallPopupUpdateTime-frameTime
+  if chunkInstallPopupUpdateTime>0 then
     return
   end
-  n=n+r
-  if n<0 then
-    n=0
+  chunkInstallPopupUpdateTime=chunkInstallPopupUpdateTime+r
+  if chunkInstallPopupUpdateTime<0 then
+    chunkInstallPopupUpdateTime=0
   end
   local platform=Fox.GetPlatformName()
-  local e=Chunk.GetChunkInstallationEta(t)
-  if e and platform=="PS4"then
-    if e>86400 then
-      e=86400
+  local installEta=Chunk.GetChunkInstallationEta(chunkId)
+  if installEta and platform=="PS4"then
+    if installEta>86400 then
+      installEta=86400
     end
-    TppUiCommand.SetErrorPopupParam(e)
+    TppUiCommand.SetErrorPopupParam(installEta)
   end
-  local e=Chunk.GetChunkInstallationRate(t)
-  if e and platform=="XboxOne"then
-    TppUiCommand.SetErrorPopupParam(e*1e4,"None",2)
+  local installRate=Chunk.GetChunkInstallationRate(chunkId)
+  if installRate and platform=="XboxOne"then
+    TppUiCommand.SetErrorPopupParam(installRate*1e4,"None",2)
   end
-  local e
-  if l then
-    e=Popup.TYPE_ONE_CANCEL_BUTTON
+  local popupType
+  if useOneCancelButtonPopup then
+    popupType=Popup.TYPE_ONE_CANCEL_BUTTON
   else
     TppUiCommand.SetPopupType"POPUP_TYPE_NO_BUTTON_NO_EFFECT"
   end
-  TppUiCommand.ShowErrorPopup(TppDefine.ERROR_ID.NOW_INSTALLING,e)
+  TppUiCommand.ShowErrorPopup(TppDefine.ERROR_ID.NOW_INSTALLING,popupType)
 end
 function this.ClearChunkInstallPopupUpdateTime()
-  n=0
+  chunkInstallPopupUpdateTime=0
 end
-function this.GetFormatedStorageSizePopupParam(t)
-  local n=1024
-  local e=1024*n
-  local l=1024*e
-  local l,r,i=t/l,t/e,t/n
-  local n=0
-  local e=""
-  if l>=1 then
-    n=l*100
-    e="G"
-  elseif r>=1 then
-    n=r*100
-    e="M"
-  elseif i>=1 then
-    n=i*100
-    e="K"
+function this.GetFormatedStorageSizePopupParam(neededSpace)
+  local toKb=1024
+  local toMb=1024*toKb
+  local toGb=1024*toMb
+  local gb,mg,kb=neededSpace/toGb,neededSpace/toMb,neededSpace/toKb
+  local size=0
+  local unitLetter=""
+  if gb>=1 then
+    size=gb*100
+    unitLetter="G"
+  elseif mg>=1 then
+    size=mg*100
+    unitLetter="M"
+  elseif kb>=1 then
+    size=kb*100
+    unitLetter="K"
   else
-    return t,"",0
+    return neededSpace,"",0
   end
-  local n=math.ceil(n)
-  return n,e,2
+  local sizeValue=math.ceil(size)
+  return sizeValue,unitLetter,2
 end
 --RETAILPATCH 1070 reworked>
-function this.PatchDlcCheckCoroutine(p1,p2,p3,p4)
-  if p4==nil then
-    p4=PatchDlc.PATCH_DLC_TYPE_MGO_DATA
+function this.PatchDlcCheckCoroutine(OnPatchExist,OnPatchNotExist,skipDlcTypeCheck,dlcType)
+  if dlcType==nil then
+    dlcType=PatchDlc.PATCH_DLC_TYPE_MGO_DATA
   end
-  local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=true,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=true}
-  if not n[p4]then
+  local validTypes={
+  [PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=true,
+  [PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=true
+  }
+  if not validTypes[dlcType]then
     Fox.Hungup"Invalid dlc type."
     return false
   end
-  local function RENf1(e)
+  local function DebugPrint(message)
   end
-  local function RENf2()
+  local function ClosePopupYield()
     if TppUiCommand.IsShowPopup()then
       TppUiCommand.ErasePopup()
       while TppUiCommand.IsShowPopup()do
-        RENf1"waiting popup closed..."
+        DebugPrint"waiting popup closed..."
         coroutine.yield()
       end
     end
   end
-  local function RENf3()
+  local function YeildWhileSaving()
     while TppSave.IsSaving()do
-      RENf1"waiting saving end..."
+      DebugPrint"waiting saving end..."
       coroutine.yield()
     end
   end
-  RENf3()
-  PatchDlc.StartCheckingPatchDlc(p4)
+  YeildWhileSaving()
+  PatchDlc.StartCheckingPatchDlc(dlcType)
   if PatchDlc.IsCheckingPatchDlc()then
-    if not p3 then
-      RENf2()
-      local n={[PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=5100,[PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=5150}
-      local e=n[p4]
+    if not skipDlcTypeCheck then
+      ClosePopupYield()
+      local errorIds={
+      [PatchDlc.PATCH_DLC_TYPE_MGO_DATA]=5100,
+      [PatchDlc.PATCH_DLC_TYPE_TPP_COMPATIBILITY_DATA]=5150
+      }
+      local errorId=errorIds[dlcType]
       TppUiCommand.SetPopupType"POPUP_TYPE_NO_BUTTON_NO_EFFECT"
-      TppUiCommand.ShowErrorPopup(e)
+      TppUiCommand.ShowErrorPopup(errorId)
     end
     while PatchDlc.IsCheckingPatchDlc()do
-      RENf1"waiting checking PatchDlc end..."
+      DebugPrint"waiting checking PatchDlc end..."
       coroutine.yield()
       TppUI.ShowAccessIconContinue()
     end
   end
-  RENf2()
-  if PatchDlc.DoesExistPatchDlc(p4)then
-    if p1 then
-      p1()
+  ClosePopupYield()
+  if PatchDlc.DoesExistPatchDlc(dlcType)then
+    if OnPatchExist then
+      OnPatchExist()
     end
     return true
   else
-    if p2 then
-      p2()
+    if OnPatchNotExist then
+      OnPatchNotExist()
     end
     return false
   end
@@ -889,6 +893,8 @@ function this.DEBUG_SetPreference(entityName,property,value)
   end
   Command.SetProperty{entity=entity,property=property,value=value}
 end
+--NMC _requirelist adds a number of calls from TppMain on the libs
+--DeclareSVars, Init, OnReload, OnChangeSVars, OnMessage
 this._requireList={}
 do
   for t,libPath in ipairs(this.requires)do

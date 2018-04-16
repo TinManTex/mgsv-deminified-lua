@@ -1,6 +1,7 @@
 --EquipParameters.lua
-this={}
-TppEquip.ReloadEquipParameterTables2{
+--NMC possibly older format file, only loaded if /Assets/tpp/level_asset/weapon/ParameterTables/parts/EquipParameters.lua doesn't exist
+local this={}
+this.equipParameterTables={
   gunBasic={
     0,
     {1,1,1,0,0,0,0,0,0,0,0},
@@ -905,7 +906,9 @@ TppEquip.ReloadEquipParameterTables2{
     {2,4,6,TppEquip.SCOPE_UI_DEFAULT,0,0},
     {2,4,6,TppEquip.SCOPE_UI_DEFAULT,0,0}
   },
-  stock={0,{1.2,.75},
+  stock={
+    0,
+    {1.2,.75},
     {1.2,.75},
     {1.2,.75},
     {1.2,.75},
@@ -1067,4 +1070,5 @@ TppEquip.ReloadEquipParameterTables2{
     {TppEquip.BL_ms01_G3,12,12,4.9,13,13,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_BLAST,TppEquip.BLA_ms01,1}
   }
 }
+TppEquip.ReloadEquipParameterTables2(this.equipParameterTables)
 return this

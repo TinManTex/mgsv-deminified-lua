@@ -50,7 +50,7 @@ function this.GetDataBaseIdFromAnimalId(animalId)
 end
 function this.SetEnabled(type,name,enabled)
   local gameId={type=type,index=0}
-  if gameId==NULL_ID then
+  if gameId==NULL_ID then--NMC this is nonsenicle
     return
   end
   local command={id="SetEnabled",name=name,enabled=enabled}

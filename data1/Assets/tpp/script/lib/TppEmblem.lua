@@ -41,18 +41,18 @@ function this._AcquireByMissionCode(a,r)
 end
 function this.SetUpCpEmblemTag(cpName,cpId)
   mvars.emb_cpAnihilateEmblemTag=mvars.emb_cpAnihilateEmblemTag or{}
-  local o=eliminateCpEmblems[cpName]
-  if o then
-    mvars.emb_cpAnihilateEmblemTag[cpId]=o
+  local cpAnihilateEmblemTag=eliminateCpEmblems[cpName]
+  if cpAnihilateEmblemTag then
+    mvars.emb_cpAnihilateEmblemTag[cpId]=cpAnihilateEmblemTag
   end
 end
-function this.AcquireOnCommandPostAnnihilated(r)
+function this.AcquireOnCommandPostAnnihilated(cpName)
   if not mvars.emb_cpAnihilateEmblemTag then
     return
   end
-  local r=mvars.emb_cpAnihilateEmblemTag[r]
-  if r then
-    this.Add(r,false,true)
+  local cpAnihilateEmblemTag=mvars.emb_cpAnihilateEmblemTag[cpName]
+  if cpAnihilateEmblemTag then
+    this.Add(cpAnihilateEmblemTag,false,true)
   end
 end
 function this.AcquireByPlayStyle(r)

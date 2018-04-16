@@ -742,7 +742,7 @@ function this.GetSoldierType(soldierId)--tex> now pulls type for subtype> ORIG i
     bodyInfo=InfEneFova.GetMaleBodyInfo()
   end
   if bodyInfo and bodyInfo.soldierSubType then
-    return InfMain.soldierTypeForSubtypes[bodyInfo.soldierSubType]
+    return InfMainTpp.soldierTypeForSubtypes[bodyInfo.soldierSubType]
   end
 
   return soldierType
@@ -2308,17 +2308,19 @@ function this.UnsetAlertRoute(soldierId)
     SendCommand(soldierId,{id="SetAlertRoute",enabled=false,route=""})
   end
 end
-function this.RegistRoutePointMessage(e)
-  if not IsTypeTable(e)then
+function this.RegistRoutePointMessage(unk1)
+  InfCore.Log("WARNING -------!!!!!!!!!!!RegistRoutePointMessage")--tex DEBUGNOW cant see any calls to this, check if from engine (but even if so I would have expected to see some kind setfunc referencing it then)
+  InfCore.PrintInspect(unk1,"unk1")--tex DEBUGNOW
+  if not IsTypeTable(unk1)then
     return
   end
   mvars.ene_routePointMessage=mvars.ene_routePointMessage or{}
   mvars.ene_routePointMessage.main=mvars.ene_routePointMessage.main or{}
   mvars.ene_routePointMessage.sequence=mvars.ene_routePointMessage.sequence or{}
   local messages={}
-  messages[StrCode32"GameObject"]=Tpp.StrCode32Table(e.messages)
+  messages[StrCode32"GameObject"]=Tpp.StrCode32Table(unk1.messages)
   local messageExecTable=(Tpp.MakeMessageExecTable(messages))[StrCode32"GameObject"]
-  local sequenceName=e.sequenceName
+  local sequenceName=unk1.sequenceName
   if sequenceName then
     mvars.ene_routePointMessage.sequence[sequenceName]=mvars.ene_routePointMessage.sequence[sequenceName]or{}
     Tpp.MergeTable(mvars.ene_routePointMessage.sequence[sequenceName],messageExecTable,true)
@@ -2620,7 +2622,7 @@ function this.DeclareSVars(missionTable)
   end
   --tex WIP
   local heliCount=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT
-  if IvarProc.EnabledForMission("heliPatrols") then
+  if IvarProc.EnabledForMission("attackHeliPatrols") then
     heliCount=InfNPCHeli.totalAttackHelis
   end
   TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT=heliCount
@@ -2858,7 +2860,7 @@ function this.RestoreOnMissionStart2()
     end
   end
   this._RestoreOnMissionStart_Hostage2()
-  if not IvarProc.EnabledForMission("heliPatrols") then--tex added check
+  if not IvarProc.EnabledForMission("attackHeliPatrols") then--tex added check
     for e=0,TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT-1 do
       --NMC another casualty of optimisation I guess, TppEnemyHeli only saves/restores to non array unlike the other gameobject types, even though it's clearly originally set up the same
       svars.enemyHeliName=0
@@ -2920,7 +2922,7 @@ function this.RestoreOnContinueFromCheckPoint2()
   --a manual unrealize will fix that, but may just send it into an actual lostcontrol
   --others may be flying, but with the lostcontrol sounds
   --see NMC note in RestoreOnMissionStart2 for more
-  if InfNPCHeli and not IvarProc.EnabledForMission("heliPatrols") then
+  if InfNPCHeli and not IvarProc.EnabledForMission("attackHeliPatrols") then
     if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
       local typeHeli={type="TppEnemyHeli"}
       SendCommand(typeHeli,{id="RestoreFromSVars"})
@@ -2963,7 +2965,7 @@ function this.StoreSVars(_markerOnly)
   end
   this._StoreSVars_Hostage(markerOnly)
   --tex WORKAROUND added bypass, see restore
-  if InfNPCHeli and not IvarProc.EnabledForMission("heliPatrols") then
+  if InfNPCHeli and not IvarProc.EnabledForMission("attackHeliPatrols") then
     if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
       SendCommand({type="TppEnemyHeli"},{id="StoreToSVars"})
     end
@@ -3188,6 +3190,7 @@ function this.SetUpSoldiers()
       end
     end
   end
+  --NMC not sure why its seperating this into has baseCp and not passes, but whatev.
   for cpId,cpName in pairs(mvars.ene_cpList)do
     if not mvars.ene_baseCpList[cpId]then
       local cpSoldiers=mvars.ene_soldierDefine[cpName]
@@ -4198,16 +4201,16 @@ function this.ExecuteOnRecoveredCallback(gameId,gimmickInstanceOrAnimalId,gimmic
   end
   OnRecovered(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex)
 end
-local RENAMErescueDistSqr=10*10
-function this.CheckAllVipClear(n)
-  return this.CheckAllTargetClear(n)
+local targetCheckDistSqr=10*10
+function this.CheckAllVipClear(unk1)
+  return this.CheckAllTargetClear(unk1)
 end
-function this.CheckAllTargetClear(n)
+function this.CheckAllTargetClear(unk1)
   local mvars=mvars
   local thisLocal=this--NMC: tihs pattern is used in two functions in other files. why? is it really that performant?
   local playerPosition=Vector3(vars.playerPosX,vars.playerPosY,vars.playerPosZ)
   TppHelicopter.SetNewestPassengerTable()
-  local t={
+  local checkTargetInfo={
     {mvars.ene_eliminateTargetList,thisLocal.CheckSoldierEliminateTarget,"EliminateTargetSoldier"},
     {mvars.ene_eliminateHelicopterList,thisLocal.CheckHelicopterEliminateTarget,"EliminateTargetHelicopter"},
     {mvars.ene_eliminateVehicleList,thisLocal.CheckVehicleEliminateTarget,"EliminateTargetVehicle"},
@@ -4216,37 +4219,37 @@ function this.CheckAllTargetClear(n)
   }
   if mvars.ene_rescueTargetOptions then
     if not mvars.ene_rescueTargetOptions.orCheck then
-      table.insert(t,{mvars.ene_rescueTargetList,thisLocal.CheckRescueTarget,"RescueTarget"})
+      table.insert(checkTargetInfo,{mvars.ene_rescueTargetList,thisLocal.CheckRescueTarget,"RescueTarget"})
     end
   end
-  for e=1,#t do
-    local e,n,t=t[e][1],t[e][2],t[e][3]
-    if IsTypeTable(e)and next(e)then
-      for e,t in pairs(e)do
-        if not n(e,playerPosition,t)then
+  for i=1,#checkTargetInfo do
+    local targetist,checkFunc,unk3=checkTargetInfo[i][1],checkTargetInfo[i][2],checkTargetInfo[i][3]
+    if IsTypeTable(targetist)and next(targetist)then
+      for gameId,targetName in pairs(targetist)do
+        if not checkFunc(gameId,playerPosition,targetName)then
           return false
         end
       end
     end
   end
   if mvars.ene_rescueTargetOptions and mvars.ene_rescueTargetOptions.orCheck then
-    local t=false
-    for gameId,i in pairs(mvars.ene_rescueTargetList)do
-      if thisLocal.CheckRescueTarget(gameId,playerPosition,i)then
-        t=true
+    local rescuedAllTargets=false
+    for gameId,targetName in pairs(mvars.ene_rescueTargetList)do
+      if thisLocal.CheckRescueTarget(gameId,playerPosition,targetName)then
+        rescuedAllTargets=true
       end
     end
-    return t
+    return rescuedAllTargets
   end
   return true
 end
-function this.CheckSoldierEliminateTarget(gameId,i,a)
+function this.CheckSoldierEliminateTarget(gameId,playerPosition,targetName)
   local lifeStatus=SendCommand(gameId,{id="GetLifeStatus"})
   local status=SendCommand(gameId,{id="GetStatus"})
   if this._IsEliminated(lifeStatus,status)then
     return true
   elseif this._IsNeutralized(lifeStatus,status)then
-    if CloserToPlayerThanDistSqr(RENAMErescueDistSqr,i,gameId)then
+    if CloserToPlayerThanDistSqr(targetCheckDistSqr,playerPosition,gameId)then
       return true
     else
       return false
@@ -4254,7 +4257,7 @@ function this.CheckSoldierEliminateTarget(gameId,i,a)
   end
   return false
 end
-function this.CheckHelicopterEliminateTarget(heliId,n,n)
+function this.CheckHelicopterEliminateTarget(heliId,playerPosition,targetName)
   local isBroken=GameObject.SendCommand(heliId,{id="IsBroken"})
   if isBroken then
     return true
@@ -4262,7 +4265,7 @@ function this.CheckHelicopterEliminateTarget(heliId,n,n)
     return false
   end
 end
-function this.CheckVehicleEliminateTarget(vehicleId,t,t)
+function this.CheckVehicleEliminateTarget(vehicleId,playerPosition,targetName)
   if this.IsRecovered(vehicleId)then
     return true
   elseif this.IsVehicleBroken(vehicleId)then
@@ -4271,7 +4274,7 @@ function this.CheckVehicleEliminateTarget(vehicleId,t,t)
     return false
   end
 end
-function this.CheckWalkerGearEliminateTarget(walkerId,n,n)
+function this.CheckWalkerGearEliminateTarget(walkerId,playerPosition,targetName)
   local isBroken=GameObject.SendCommand(walkerId,{id="IsBroken"})
   if isBroken then
     return true
@@ -4281,10 +4284,10 @@ function this.CheckWalkerGearEliminateTarget(walkerId,n,n)
     return false
   end
 end
-function this.CheckRescueTarget(gameId,playerPosition,a)
+function this.CheckRescueTarget(gameId,playerPosition,targetName)
   if this.IsRecovered(gameId)then
     return true
-  elseif CloserToPlayerThanDistSqr(RENAMErescueDistSqr,playerPosition,gameId)then
+  elseif CloserToPlayerThanDistSqr(targetCheckDistSqr,playerPosition,gameId)then
     return true
   elseif TppHelicopter.IsInHelicopter(gameId)then
     return true
@@ -4387,6 +4390,7 @@ function this.ChangeRouteUsingGimmick(route,a,gameId,a)
     SendCommand(gameId,{id="SetSneakRoute",route=route})
   end
 end
+--No references
 function this.DisableUseGimmickRouteOnShiftChange(a,e)
   if not IsTypeTable(e)then
     return
@@ -4437,6 +4441,7 @@ function this.IsFemaleHostage(gameId)
   local isFemale=GameObject.SendCommand(gameId,{id="isFemale"})
   return isFemale
 end
+--No references
 function this.AddTakingOverHostage(gameId)
   local typeIndex=GameObject.GetTypeIndex(gameId)
   if(typeIndex~=TppGameObject.GAME_OBJECT_TYPE_HOSTAGE2)then
@@ -5826,12 +5831,12 @@ this.announceForPhase={
 function this._AnnouncePhaseChange(cpId,phase)
   local cpSubType=this.GetCpSubType(cpId)
   if cpSubType==nil then
-    InfCore.Log("TppEnemy._AnnouncePhaseChange: WARNING cpSubType==nil for cpId "..tostring(cpId))
+    InfCore.Log("WARNING: TppEnemy._AnnouncePhaseChange: cpSubType==nil for cpId "..tostring(cpId))
     return
   end
   local cpLangId=this.cpSubTypeToLangId[cpSubType]
   if cpLangId==nil then
-    InfCore.Log("TppEnemy._AnnouncePhaseChange: WARNING unknown cpSubType "..cpSubType.." for cpId "..tostring(cpId))
+    InfCore.Log("WARNING: TppEnemy._AnnouncePhaseChange: unknown cpSubType "..cpSubType.." for cpId "..tostring(cpId))
   end
   cpLangId=cpLangId or "cmmn_ene_soviet"--tex default to sov
   if cpLangId=="" then--tex unless specifically none

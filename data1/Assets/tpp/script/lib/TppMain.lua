@@ -12,7 +12,7 @@ local InfCore=InfCore--tex
 
 local moduleUpdateFuncs={}
 local numModuleUpdateFuncs=0
-local missionScriptOnUpdateFuncs={}--NMC: from mission scripts, sequences use this, RESEARCH but does this also grab OnUpdate in mission_main.lua?
+local missionScriptOnUpdateFuncs={}
 local numOnUpdate=0
 --ORPHAN local RENAMEsomeupdatetable2={}
 --ORPHAN local RENAMEsomeupdate2=0
@@ -25,7 +25,7 @@ local messageExecTable={}
 --ORPHAN local unk4={}
 local messageExecTableSize=0
 --NMC: cant actually see this referenced anywhere
-local function RENAMEwhatisquarksystem()
+local function YieldForQuarkSystemLoad()
   if QuarkSystem.GetCompilerState()==QuarkSystem.COMPILER_STATE_WAITING_TO_LOAD then
     QuarkSystem.PostRequestToLoad()
     coroutine.yield()
@@ -87,8 +87,8 @@ function this.OnAllocate(missionTable)
   TppClock.Stop()
   moduleUpdateFuncs={}
   numModuleUpdateFuncs=0
-  --ORPHAN: RENAMEsomeupdatetable2={}
-  --ORPHAN: RENAMEsomeupdate2=0
+  --ORPHAN: debugUpdateFuncs={}
+  --ORPHAN: numDebugUpdateFuncs=0
   TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil)
   TppSave.WaitingAllEnqueuedSaveOnStartMission()
   if TppMission.IsFOBMission(vars.missionCode)then
@@ -100,52 +100,109 @@ function this.OnAllocate(missionTable)
   Mission.Start()
   TppMission.WaitFinishMissionEndPresentation()
   TppMission.DisableInGameFlag()
-  TppException.OnAllocate(missionTable)
-  TppClock.OnAllocate(missionTable)
-  TppTrap.OnAllocate(missionTable)
-  TppCheckPoint.OnAllocate(missionTable)
-  TppUI.OnAllocate(missionTable)
-  TppDemo.OnAllocate(missionTable)
-  TppScriptBlock.OnAllocate(missionTable)
-  TppSound.OnAllocate(missionTable)
-  TppPlayer.OnAllocate(missionTable)
-  TppMission.OnAllocate(missionTable)
-  TppTerminal.OnAllocate(missionTable)
-  TppEnemy.OnAllocate(missionTable)
-  TppRadio.OnAllocate(missionTable)
-  TppGimmick.OnAllocate(missionTable)
-  TppMarker.OnAllocate(missionTable)
-  TppRevenge.OnAllocate(missionTable)
-  this.ClearStageBlockMessage()
-  TppQuest.OnAllocate(missionTable)
-  TppAnimal.OnAllocate(missionTable)
-  InfMain.OnAllocate(missionTable)--tex
+
+  --tex REWORKED to allow pcall TODO: should probably lua-hang on error rather than let it continue
+  local libAllocateOrder={
+    "TppException",
+    "TppClock",
+    "TppTrap",
+    "TppCheckPoint",
+    "TppUI",
+    "TppDemo",
+    "TppScriptBlock",
+    "TppSound",
+    "TppPlayer",
+    "TppMission",
+    "TppTerminal",
+    "TppEnemy",
+    "TppRadio",
+    "TppGimmick",
+    "TppMarker",
+    "TppRevenge",
+  }
+  --tex in lua pcalls on a yield triggers an 'attempt to yield across metamethod/C-call boundary' error
+  local yields={
+    TppUI=true,
+  }
+  for i,libName in ipairs(libAllocateOrder)do
+    InfCore.LogFlow(libName..".OnAllocate")
+    if not _G[libName].OnAllocate then
+      InfCore.Log("ERROR: TppMain.OnAllocate: could not find "..libName..".OnAllocate",false,true)
+    else
+      if yields[libName] then
+        _G[libName].OnAllocate(missionTable)
+      else
+        InfCore.PCallDebug(_G[libName].OnAllocate,missionTable)
+      end
+    end
+  end
+  this.ClearStageBlockMessage()--tex VERIFY that TppQuest, TppAnimal .onallocate needs ClearStageBlockMessage (see ORIG)
+  local libAllocateOrderPostBlockMessageClear={
+    "TppQuest",
+    "TppAnimal",
+    "InfMain",--tex
+  }
+  for i,libName in ipairs(libAllocateOrderPostBlockMessageClear)do
+    InfCore.LogFlow(libName..".OnAllocate")
+    if not _G[libName].OnAllocate then
+      InfCore.Log("ERROR: TppMain.OnAllocate: could not find "..libName..".OnAllocate",false,true)
+    else
+      if yields[libName] then
+        _G[libName].OnAllocate(missionTable)
+      else
+        InfCore.PCallDebug(_G[libName].OnAllocate,missionTable)
+      end
+    end
+  end
+
+  --ORIG
+  --  TppException.OnAllocate(missionTable)
+  --  TppClock.OnAllocate(missionTable)
+  --  TppTrap.OnAllocate(missionTable)
+  --  TppCheckPoint.OnAllocate(missionTable)
+  --  TppUI.OnAllocate(missionTable)
+  --  TppDemo.OnAllocate(missionTable)
+  --  TppScriptBlock.OnAllocate(missionTable)
+  --  TppSound.OnAllocate(missionTable)
+  --  TppPlayer.OnAllocate(missionTable)
+  --  TppMission.OnAllocate(missionTable)
+  --  TppTerminal.OnAllocate(missionTable)
+  --  TppEnemy.OnAllocate(missionTable)
+  --  TppRadio.OnAllocate(missionTable)
+  --  TppGimmick.OnAllocate(missionTable)
+  --  TppMarker.OnAllocate(missionTable)
+  --  TppRevenge.OnAllocate(missionTable)
+  --  this.ClearStageBlockMessage()
+  --  TppQuest.OnAllocate(missionTable)
+  --  TppAnimal.OnAllocate(missionTable)
+  --  InfMain.OnAllocate(missionTable)--tex
   --tex reworked
-  local locationModule=_G[InfUtil.GetLocationName()]
+  local locationName=InfUtil.GetLocationName()
+  local locationModule=_G[locationName]
   if locationModule then
     locationModule.OnAllocate()
-  end--
+  end--<
   --ORIG
-  --    local function locationOnAllocate()
-  --      if TppLocation.IsAfghan()then
-  --        if afgh then
-  --          afgh.OnAllocate()
-  --        end
-  --      elseif TppLocation.IsMiddleAfrica()then
-  --        if mafr then
-  --          mafr.OnAllocate()
-  --        end
-  --      elseif TppLocation.IsCyprus()then
-  --        if cypr then
-  --          cypr.OnAllocate()
-  --        end
-  --      elseif TppLocation.IsMotherBase()then
-  --        if mtbs then
-  --          mtbs.OnAllocate()
-  --        end
+  --  local function LocationOnAllocate()
+  --    if TppLocation.IsAfghan()then
+  --      if afgh then
+  --        afgh.OnAllocate()
+  --      end
+  --    elseif TppLocation.IsMiddleAfrica()then
+  --      if mafr then
+  --        mafr.OnAllocate()
+  --      end
+  --    elseif TppLocation.IsCyprus()then
+  --      if cypr then
+  --        cypr.OnAllocate()
+  --      end
+  --    elseif TppLocation.IsMotherBase()then
+  --      if mtbs then
+  --        mtbs.OnAllocate()
   --      end
   --    end
-  --    locationOnAllocate()
+  --  end
+  --  LocationOnAllocate()
   if missionTable.sequence then
     if f30050_sequence then--
       --RETAILPATCH: 1.0.4.1 PATCHUP: in general I understand the need for patch ups, and in cases like this i even admire the method, however the implementation of just shoving them seemingly anywhere... needs better execution.
@@ -186,6 +243,7 @@ function this.OnAllocate(missionTable)
     if not TppMission.IsFOBMission(vars.missionCode)then
       for i,module in ipairs(InfModules)do
         if module.DeclareSVars then
+          InfCore.LogFlow(module.name..".DeclareSVars:")
           ApendArray(allSvars,InfCore.PCallDebug(module.DeclareSVars,missionTable))
         end
       end
@@ -247,18 +305,18 @@ function this.OnAllocate(missionTable)
     end
     TppStory.UpdateStorySequence{updateTiming="BeforeBuddyBlockLoad"}
     if missionTable.sequence then
-      local dbt=missionTable.sequence.DISABLE_BUDDY_TYPE
+      local disableBuddyType=missionTable.sequence.DISABLE_BUDDY_TYPE
       if TppMission.IsMbFreeMissions(vars.missionCode) and Ivars.mbEnableBuddies:Is(1) then--tex no DISABLE_BUDDY_TYPE
-        dbt=nil
+        disableBuddyType=nil
       end--
-      if dbt ~= nil then
-        local disableBuddyType
-        if IsTypeTable(dbt)then
-          disableBuddyType=dbt
+      if disableBuddyType ~= nil then
+        local disableBuddyTypes
+        if IsTypeTable(disableBuddyType)then
+          disableBuddyTypes=disableBuddyType
         else
-          disableBuddyType={dbt}
+          disableBuddyTypes={disableBuddyType}
         end
-        for n,buddyType in ipairs(disableBuddyType)do
+        for n,buddyType in ipairs(disableBuddyTypes)do
           TppBuddyService.SetDisableBuddyType(buddyType)
         end
       end
@@ -318,6 +376,7 @@ function this.OnAllocate(missionTable)
   --end,missionTable)--DEBUG
   InfCore.LogFlow("OnAllocate Bottom "..vars.missionCode)--tex
 end
+--NOTE: GameObjects loaded after OnAllocate and are gettable by OnInitialize
 function this.OnInitialize(missionTable)--NMC: see onallocate for notes
   --InfCore.PCallDebug(function(missionTable)--tex off till I can verify doesn't run into same issue as OnAllocate
   InfCore.LogFlow("OnInitialize Top "..vars.missionCode)--tex
@@ -352,7 +411,7 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
     end
   end
   TppLandingZone.OverwriteBuddyVehiclePosForALZ()
-  --InfMain.OverwriteBuddyPosForMb()--tex no go
+  --InfMainTpp.OverwriteBuddyPosForMb()--tex no go CULL
   if missionTable.enemy then
     if IsTypeTable(missionTable.enemy.vehicleSettings)then
       TppEnemy.SetUpVehicles()
@@ -434,15 +493,13 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
     if missionTable.enemy.soldierSubTypes then
       TppEnemy.SetUpSoldierSubTypes(missionTable.enemy.soldierSubTypes)
     end
-    --    TppEnemy.armorSoldiers={}--tex DEBUG CULL
-    --    TppEnemy.totalSoldiers=0
     TppRevenge.SetUpEnemy()
     TppEnemy.ApplyPowerSettingsOnInitialize()
     TppEnemy.ApplyPersonalAbilitySettingsOnInitialize()
     TppEnemy.SetOccasionalChatList()
     TppEneFova.ApplyUniqueSetting()
     if missionTable.enemy.SetUpEnemy and IsTypeFunc(missionTable.enemy.SetUpEnemy)then
-      missionTable.enemy.SetUpEnemy()
+      InfCore.PCallDebug(missionTable.enemy.SetUpEnemy)--tex wrapped in pcall
     end
     InfMain.SetUpEnemy(missionTable)--tex
     if TppMission.IsMissionStart()then
@@ -472,7 +529,7 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
   end
   for name,module in pairs(missionTable)do
     if module.OnRestoreSVars then
-      module.OnRestoreSVars()
+       InfCore.PCallDebug(module.OnRestoreSVars)--tex wrapped in pcall
     end
   end
   TppMission.RestoreShowMissionObjective()
@@ -511,8 +568,8 @@ function this.SetUpdateFunction(missionTable)
   numModuleUpdateFuncs=0
   missionScriptOnUpdateFuncs={}
   numOnUpdate=0
-  --ORPHAN: RENAMEsomeupdatetable2={}
-  --ORPHAN: RENAMEsomeupdate2=0
+  --ORPHAN: debugUpdateFuncs={}
+  --ORPHAN: numDebugUpdateFuncs=0
   moduleUpdateFuncs={
     TppMission.Update,
     TppSequence.Update,
@@ -523,6 +580,7 @@ function this.SetUpdateFunction(missionTable)
     InfMain.Update,--tex
   }
   numModuleUpdateFuncs=#moduleUpdateFuncs
+
   for name,module in pairs(missionTable)do
     if IsTypeFunc(module.OnUpdate)then
       numOnUpdate=numOnUpdate+1
@@ -819,7 +877,7 @@ function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMis
     this.StageBlockCurrentPosition()
   end
 end
-function this.StageBlockCurrentPosition(e)
+function this.StageBlockCurrentPosition(yieldTillEmpty)
   if vars.initialPlayerFlag==PlayerFlag.USE_VARS_FOR_INITIAL_POS then
     StageBlockCurrentPositionSetter.SetEnable(true)
     StageBlockCurrentPositionSetter.SetPosition(vars.initialPlayerPosX,vars.initialPlayerPosZ)
@@ -829,7 +887,7 @@ function this.StageBlockCurrentPosition(e)
   if TppMission.IsHelicopterSpace(vars.missionCode)then
     StageBlockCurrentPositionSetter.SetEnable(true)
     StageBlockCurrentPositionSetter.DisablePosition()
-    if e then
+    if yieldTillEmpty then
       while not StageBlock.LargeAndSmallBlocksAreEmpty()do
         coroutine.yield()
       end
@@ -873,10 +931,10 @@ function this.OnReload(missionTable)
   this.SetMessageFunction(missionTable)
 end
 function this.OnUpdate(missionTable)
-  --NMC OFF local e
+  --ORPHAN: local e
   local moduleUpdateFuncs=moduleUpdateFuncs--NMC set in SetUpdateFunction
   local missionScriptOnUpdateFuncs=missionScriptOnUpdateFuncs
-  --NMC OFF local t=RENAMEsomeupdatetable2
+  --ORPHAN: local debugUpdateFuncs=debugUpdateFuncs
   --tex
   if InfCore.debugOnUpdate then
     for i=1,numModuleUpdateFuncs do
@@ -921,6 +979,7 @@ function this.SetMessageFunction(missionTable)--RENAME:
   if not TppMission.IsFOBMission(vars.missionCode)then
     for i,module in ipairs(InfModules)do
       if module.OnMessage then
+        InfCore.LogFlow("SetMessageFunction:"..module.name)
         onMessageTableSize=onMessageTableSize+1
         onMessageTable[onMessageTableSize]=module.OnMessage
       end
@@ -940,8 +999,10 @@ end
 --args are lua type number, but may represent enum,int,float, StrCode32, whatever.
 --arg0 may match sender (not messageClass) in messageexec definition (see Tpp.DoMessage)
 function this.OnMessage(missionTable,sender,messageId,arg0,arg1,arg2,arg3)
-  if Ivars.debugMessages:Is(1)then--tex>
-    InfCore.PCall(InfLookup.PrintOnMessage,sender,messageId,arg0,arg1,arg2,arg3)
+  if InfCore.debugMode and Ivars.debugMessages:Is(1)then--tex>
+    if InfLookup then
+      InfCore.PCall(InfLookup.PrintOnMessage,sender,messageId,arg0,arg1,arg2,arg3)
+  end
   end--<
   local mvars=mvars--LOCALOPT
   local strLogTextEmpty=""

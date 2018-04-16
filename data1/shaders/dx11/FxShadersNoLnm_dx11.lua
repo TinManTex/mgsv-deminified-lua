@@ -1,4 +1,4 @@
-local a={}
-local l={}
-GrTools():SetShaderParameterPackingTable(a)
-GrTools():SetShaderAssignTable(l)
+local parameterPackingTable={}
+local assignTable={}
+GrTools():SetShaderParameterPackingTable(parameterPackingTable)
+GrTools():SetShaderAssignTable(assignTable)

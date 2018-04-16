@@ -13,11 +13,11 @@ function this.FormalizeTime(time,_timeStringType)
     return time
   end
   local hours=math.floor(time*t)
-  local l=hours*hour
-  local minutes=math.floor((time-l)*c)
-  local o=minutes*minute
-  local seconds=math.floor((time-l)-o)
-  local l=seconds
+  local hoursSec=hours*hour
+  local minutes=math.floor((time-hoursSec)*c)
+  local minutesSec=minutes*minute
+  local seconds=math.floor((time-hoursSec)-minutesSec)
+  local sec=seconds
   if(timeStringType=="time")then
     return hours,minutes,seconds
   elseif(timeStringType=="string")then

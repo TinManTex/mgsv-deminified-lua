@@ -1,5 +1,4 @@
 --player2_camouf_param.lua
---RETAILPATCH 1090 various additions
 local this={}
 --tex from CantStoptheBipBop:
 --https://forums.nexusmods.com/index.php?/topic/4691080-mgsvtpp-plethora-of-new-camos-found/page-2
@@ -227,13 +226,34 @@ this.playerCamoTypes={
   "SWIMWEAR_C46",--88,IRON BLUE
   "SWIMWEAR_C48",--89,RED RUST
   "SWIMWEAR_C53",--90,MUD
+  
+  "SWIMWEAR_G_C00",--91,OLIVEDRAB
+  "SWIMWEAR_G_C01",--,TIGERSTRIPE
+  "SWIMWEAR_G_C02",--,GOLDTIGER
+  "SWIMWEAR_G_C03",--,FOXTROT
+  "SWIMWEAR_G_C05",--,WETWORK
+  "SWIMWEAR_G_C06",--,SPLITTER
+  "SWIMWEAR_G_C38",--,PARASITE MIST
+  "SWIMWEAR_G_C39",--,OLD ROSE
+  "SWIMWEAR_G_C44",--,CAMOFLAGE GREEN
+  "SWIMWEAR_G_C46",--,IRON BLUE
+  "SWIMWEAR_G_C48",--,RED RUST
+  "SWIMWEAR_G_C53",--102,MUD
+
+  "SWIMWEAR_H_C00",--103,OLIVEDRAB
+  "SWIMWEAR_H_C01",--,TIGERSTRIPE
+  "SWIMWEAR_H_C02",--,GOLDTIGER
+  "SWIMWEAR_H_C03",--,FOXTROT
+  "SWIMWEAR_H_C05",--,WETWORK
+  "SWIMWEAR_H_C06",--,SPLITTER
+  "SWIMWEAR_H_C38",--,PARASITE MIST
+  "SWIMWEAR_H_C39",--,OLD ROSE
+  "SWIMWEAR_H_C44",--,CAMOFLAGE GREEN
+  "SWIMWEAR_H_C46",--,IRON BLUE
+  "SWIMWEAR_H_C48",--,RED RUST
+  "SWIMWEAR_H_C53",--114,MUD
 }
 this.camoTypes=Tpp.Enum(this.playerCamoTypes)
-
---tex example usage
---local camoType=this.camoTypes.SWIMWEAR_C00
---local materialType=this.materialTypes.MTR_WOOD_A
---local camoMaterialValue=this.cammoTable[camoType][materialType]
 --<
 
 --https://forums.nexusmods.com/index.php?/topic/4789390-any-way-to-check-player-ground-collisions-and-illumination/
@@ -368,5 +388,12 @@ this.camoTable={
 
 Player.InitCamoufTable(this.camoTable)
 --this.camoTable=nil--tex clear if not runtime analysis
+
+--tex example usage
+--local camoType=this.camoTypes.SWIMWEAR_C00
+--local materialType=this.materialTypes.MTR_WOOD_A
+--local camoMaterialValue=this.cammoTable[camoType][materialType] --get value
+--this.camoTable[camoType][materialType]=50 --set value
+
 
 return this

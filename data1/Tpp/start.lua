@@ -4,6 +4,7 @@ InfCore.LogFlow"start.lua"--tex
 
 local dofile=InfCore.DoFile--tex allow external alternate
 local LoadLibrary=InfCore.LoadLibrary --tex allow external alternate, was Script.LoadLibrary
+local increaseMemoryAlloc=Ivars and Ivars.sys_increaseMemoryAlloc:Get()==1--tex DEBUGNOW
 
 local function yield()
   coroutine.yield()
@@ -12,8 +13,8 @@ FoxFadeIo.FadeOut(0)
 TppUiStatusManager.SetStatus("PauseMenu","INVALID")
 TppUiCommand.SetLoadIndicatorVisible(true)
 if(TppSystemUtility.GetCurrentGameMode()~="MGO"and TppGameSequence.GetTargetArea()=="Japan")and not SignIn.PresetUserIdExists()then
-  local e=SplashScreen.Create("cesa","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_cesa_logo_clp_nmp.ftex",1280,640)
-  SplashScreen.Show(e,.5,4,.5)
+  local splash=SplashScreen.Create("cesa","/Assets/tpp/ui/ModelAsset/sys_logo/Pictures/common_cesa_logo_clp_nmp.ftex",1280,640)
+  SplashScreen.Show(splash,.5,4,.5)
 end
 if TppPlayLog and TppSystemUtility.GetCurrentGameMode()=="MGO"then
   TppPlayLog.SetPlayLogEnabled(true)
@@ -155,8 +156,14 @@ if FxDaemon then
   FxDaemon:InitializeReserveObject"TppShaderPool"
   FxDaemon:InitializeReserveObject"TppTexturePoolManager"
   if Fox.GetPlatformName()=="Windows"then
-    FxSystemConfig.SetLimitInstanceMemorySize((1024*1024)*24)
-    FxSystemConfig.SetLimitInstanceMemoryDefaultSize((1024*1024)*24)
+    if increaseMemoryAlloc then--tex>
+      FxSystemConfig.SetLimitInstanceMemorySize((1024*1024)*32)
+      FxSystemConfig.SetLimitInstanceMemoryDefaultSize((1024*1024)*32)
+    else
+      --<
+      FxSystemConfig.SetLimitInstanceMemorySize((1024*1024)*24)
+      FxSystemConfig.SetLimitInstanceMemoryDefaultSize((1024*1024)*24)
+    end
   else
     FxSystemConfig.SetLimitInstanceMemorySize((1024*1024)*9)
     FxSystemConfig.SetLimitInstanceMemoryDefaultSize((1024*1024)*9)
@@ -367,6 +374,7 @@ GeoPathService.BindEdgeTag("Fence","Window")
 GeoPathService.BindEdgeTag("StepOn","Fulton")
 GeoPathService.BindEdgeTag("StepOn","LineCheck")
 GeoPathService.BindEdgeTag("StepOn","Window")
+--NMC is also in init.lua *shrug*
 local phDaemon=PhDaemon.GetInstance()
 if platformName=="Xbox360"then
   PhDaemon.SetMemorySize(1792,1024,768)
@@ -376,7 +384,11 @@ elseif platformName=="Windows"then
   if Editor then
     PhDaemon.SetMemorySize(5120,3072,2048)
   else
-    PhDaemon.SetMemorySize(2560,1536,1024)
+    if increaseMemoryAlloc then--tex>
+      PhDaemon.SetMemorySize(5120,3072,2048)--tex as editor, NOTE: ssd has this as default
+    else--<
+      PhDaemon.SetMemorySize(2560,1536,1024)
+    end
   end
 else
   PhDaemon.SetMemorySize(2560,1536,1024)
@@ -428,6 +440,9 @@ if platformName=="Windows"then
   end
 end
 local systemBlockSize=(.73*1024)*1024
+if increaseMemoryAlloc then--tex>
+  systemBlockSize=(1*1024)*1024--NOTE ssd is 0.8*
+end--<
 systemBlockSize=systemBlockSize+258*1024
 if TppSystemUtility.GetCurrentGameMode()=="MGO"then
   systemBlockSize=635*1024
@@ -436,13 +451,17 @@ if platformName=="Xbox360"then
   systemBlockSize=systemBlockSize+20*1024
 end
 if platformName=="Windows"then
-  systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024
+  systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024--NMC ssd increase 100*1024 to 150*1024
 elseif platformName=="XboxOne"then
   systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024
 elseif platformName=="PS4"then
   systemBlockSize=((systemBlockSize+450*1024)+400*1024)+100*1024
 end
-TppGameSequence.SetSystemBlockSize(systemBlockSize,(40.5*1024)*1024)
+if increaseMemoryAlloc then--tex>
+  TppGameSequence.SetSystemBlockSize(systemBlockSize,(45*1024)*1024)
+else--<
+  TppGameSequence.SetSystemBlockSize(systemBlockSize,(40.5*1024)*1024)
+end
 TppGameSequence.LoadResidentBlock"/Assets/tpp/pack/resident/resident00.fpk"
 if TppSystemUtility.GetCurrentGameMode()~="MGO"then
   Player.CreateResidentMotionBlock{size=((6*1024)*1024-8*1024)-(.55*1024)*1024}
@@ -456,8 +475,8 @@ else
   vars.playerCamoType=PlayerCamoType.NONE
   vars.playerPartsType=PlayerPartsType.NORMAL
   vars.playerHandType=PlayerHandType.NONE
-  local e=false
-  if e then
+  local useTppMotion=false
+  if useTppMotion then
     Player.RegisterCommonMotionPackagePath("DefaultCommonMotion","/Assets/tpp/pack/player/motion/player2_resident_motion.fpk","/Assets/tpp/motion/motion_graph/player2/TppPlayer2_layers.mog")
     Player.RegisterCommonMotionPackagePath("MgoCommonMotion","/Assets/tpp/pack/player/motion/player2_resident_motion.fpk","/Assets/tpp/motion/motion_graph/player2/TppPlayer2_layers.mog")
     Player.RegisterCommonMtarPath("/Assets/tpp/motion/mtar/player2/player2_resident.mtar","/Assets/tpp/motion/mtar/player2/TppPlayer2Facial.mtar")
@@ -654,6 +673,7 @@ if Script.LoadLibrary then
   while Script.IsLoadingLibrary"/Assets/tpp/script/lib/Tpp.lua"do
     yield()
   end
+  Script.LoadLibrary"/Assets/tpp/script/lib/InfInitMain.lua"--tex
   Script.LoadLibrary"/Assets/tpp/script/lib/TppDefine.lua"
   Script.LoadLibrary"/Assets/tpp/script/lib/TppVarInit.lua"
   Script.LoadLibrary"/Assets/tpp/script/lib/TppGVars.lua"
@@ -683,6 +703,8 @@ yield()
 if TppSystemUtility.GetCurrentGameMode()=="TPP"then
   LoadLibrary"/Assets/tpp/level_asset/chara/player/game_object/player2_camouf_param.lua"
 end
+InfCore.LogFlow("Most LoadLibrary libs done")--tex a good place to do stuff on the libs before much is run in them (you'd have to do it from within a library though since start is sandboxed) DEBUGNOW
+LoadLibrary"/Assets/tpp/script/lib/InfHooks.lua"--tex InfCore.LoadLibrary external from /core/ doesn't overcome sandbox but from init > InfInit does?
 yield()
 if Editor then
   TppGeoMaterial.EDIT_CheckWastedMaterialNames()
@@ -740,5 +762,13 @@ TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil,{setMute=true})
 TppVarInit.InitializeOnStartTitle()
 TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
+InfCore.allLoaded=true--tex
 InfCore.LogFlow"start.lua done"--tex
+
+
+
+
+
+
+
 

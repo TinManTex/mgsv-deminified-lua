@@ -1190,7 +1190,7 @@ function this.GetSideOpsListTable()
           end
         end
       end
-     InfMain.RandomResetToOsTime()
+      InfMain.RandomResetToOsTime()
     end
     if #sideOpsListTable>maxUIQuests then
       InfCore.Log("WARNING: sidopList > maxUiQuests",true)--tex TODO lang
@@ -1298,8 +1298,8 @@ function this.SpecialMissionStartSetting(missionClearType)
     TppMission.SetIsStartFromFreePlay()
   end
 end
-function this.RegisterCanActiveQuestListInMission(questName)
-  mvars.qst_canActiveQuestList=questName
+function this.RegisterCanActiveQuestListInMission(allowedQuests)
+  mvars.qst_canActiveQuestList=allowedQuests
 end
 
 --NMC CALLER: quest script OnAllocate
@@ -1646,9 +1646,10 @@ function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
     end
   end
 end
-function this.OnDeactivate(t)
+--quest script .QUEST_TABLE
+function this.OnDeactivate(questTable)
   InfCore.LogFlow("TppQuest.OnDeactivate:")--tex DEBUG
-  if t.questType==TppDefine.QUEST_TYPE.SHOOTING_PRACTIVE then
+  if questTable.questType==TppDefine.QUEST_TYPE.SHOOTING_PRACTIVE then
     this.OnFinishShootingPractice()
     this.ShootingPracticeStopAllTimer()
     this.OnQuestShootingTimerEnd()
@@ -1832,17 +1833,27 @@ function this.InitializeQuestActiveStatus(questActiveCluster)
   end
 end
 function this.DEBUG_Init()
-  mvars.debug.showCurrentQuest=false;(nil).AddDebugMenu("LuaQuest","showCurrentQuest","bool",mvars.debug,"showCurrentQuest")
-  mvars.debug.showQuestStatus=false;(nil).AddDebugMenu("LuaQuest","showQuestStatus","bool",mvars.debug,"showQuestStatus")
-  mvars.debug.selectQuest=1;(nil).AddDebugMenu("LuaQuest","selectQuest","int32",mvars.debug,"selectQuest")
-  mvars.debug.selectQuestIndex=1;(nil).AddDebugMenu("LuaQuest","selectQuestIndex","int32",mvars.debug,"selectQuestIndex")
+  mvars.debug.showCurrentQuest=false
+  ;(nil).AddDebugMenu("LuaQuest","showCurrentQuest","bool",mvars.debug,"showCurrentQuest")
+  mvars.debug.showQuestStatus=false
+  ;(nil).AddDebugMenu("LuaQuest","showQuestStatus","bool",mvars.debug,"showQuestStatus")
+  mvars.debug.selectQuest=1
+  ;(nil).AddDebugMenu("LuaQuest","selectQuest","int32",mvars.debug,"selectQuest")
+  mvars.debug.selectQuestIndex=1
+  ;(nil).AddDebugMenu("LuaQuest","selectQuestIndex","int32",mvars.debug,"selectQuestIndex")
   mvars.debug.historyQuestStep={}
-  mvars.debug.showHistoryQuestStep=false;(nil).AddDebugMenu("LuaQuest","historyQuestStep","bool",mvars.debug,"showHistoryQuestStep")
-  mvars.debug.updateActiveQuest=false;(nil).AddDebugMenu("LuaQuest","updateActiveQuest","bool",mvars.debug,"updateActiveQuest")
-  mvars.debug.applyDebugFlags=false;(nil).AddDebugMenu("LuaQuest","applyDebugFlags","bool",mvars.debug,"applyDebugFlags")
-  mvars.debug.updateOpenFlagSelectQuest=false;(nil).AddDebugMenu("LuaQuest"," dbgSetOpenFlag","bool",mvars.debug,"updateOpenFlagSelectQuest")
-  mvars.debug.updateClearFlagSelectQuest=false;(nil).AddDebugMenu("LuaQuest"," dbgSetClearFlag","bool",mvars.debug,"updateClearFlagSelectQuest")
-  mvars.debug.updateActiveFlagSelectQuest=false;(nil).AddDebugMenu("LuaQuest"," dbgSetActiveFlag","bool",mvars.debug,"updateActiveFlagSelectQuest")
+  mvars.debug.showHistoryQuestStep=false
+  ;(nil).AddDebugMenu("LuaQuest","historyQuestStep","bool",mvars.debug,"showHistoryQuestStep")
+  mvars.debug.updateActiveQuest=false
+  ;(nil).AddDebugMenu("LuaQuest","updateActiveQuest","bool",mvars.debug,"updateActiveQuest")
+  mvars.debug.applyDebugFlags=false
+  ;(nil).AddDebugMenu("LuaQuest","applyDebugFlags","bool",mvars.debug,"applyDebugFlags")
+  mvars.debug.updateOpenFlagSelectQuest=false
+  ;(nil).AddDebugMenu("LuaQuest"," dbgSetOpenFlag","bool",mvars.debug,"updateOpenFlagSelectQuest")
+  mvars.debug.updateClearFlagSelectQuest=false
+  ;(nil).AddDebugMenu("LuaQuest"," dbgSetClearFlag","bool",mvars.debug,"updateClearFlagSelectQuest")
+  mvars.debug.updateActiveFlagSelectQuest=false
+  ;(nil).AddDebugMenu("LuaQuest"," dbgSetActiveFlag","bool",mvars.debug,"updateActiveFlagSelectQuest")
 end
 function this.DebugUpdate()
   local mvars=mvars
@@ -1853,13 +1864,13 @@ function this.DebugUpdate()
     Print(NewContext,{.5,.5,1},"LuaQuest showCurrentQuest")
     Print(NewContext,"Current Area Name : "..tostring(this.GetCurrentAreaName()))
     Print(NewContext,"Current Quest Name : "..tostring(this.GetCurrentQuestName()))
-    local i=this.GetQuestBlockState()
+    local questBlockState=this.GetQuestBlockState()
     local scriptBlockStateNames={}
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_EMPTY]="EMPTY"
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_PROCESSING]="PROCESSING"
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE]="INACTIVE"
     scriptBlockStateNames[ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE]="ACTIVE"
-    Print(NewContext,"Quest block state : "..tostring(scriptBlockStateNames[i]))
+    Print(NewContext,"Quest block state : "..tostring(scriptBlockStateNames[questBlockState]))
     Print(NewContext,"gvars.qst_currentQuestName : "..tostring(gvars.qst_currentQuestName))
     Print(NewContext,"gvars.qst_currentQuestStepNumber : "..tostring(gvars.qst_currentQuestStepNumber))
     do
@@ -1867,8 +1878,9 @@ function this.DebugUpdate()
       local r={1,0,0}
       local s="OK"
       local o=o
-      if not this.GetCurrentAreaName()or i<ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE then
-        s="---"elseif not mvars.qst_questStepTable then
+      if not this.GetCurrentAreaName()or questBlockState<ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE then
+        s="---"
+        elseif not mvars.qst_questStepTable then
         s="No register quest step table! Please Check quest script!"
         o=r
       end
@@ -1986,6 +1998,12 @@ function this.OnUpdateSmallBlockIndex(blockIndexX,blockIndexY,clusterIndex)
   elseif(blockState==STATE_INACTIVE)then
     this.UpdateQuestBlockStateAtInactive(blockIndexX,blockIndexY,clusterIndex)
   elseif(blockState==STATE_ACTIVE)then
+    if Ivars.quest_useAltForceFulton:Get()==1 then--tex>
+      local questAreaTable=this.GetCurrentQuestTable()
+      if not this.IsInsideArea("activeArea",questAreaTable,blockIndexX,blockIndexY)then
+        TppEnemy.CheckDeactiveQuestAreaForceFulton()
+      end
+    end--<
     this.UpdateQuestBlockStateAtActive(blockIndexX,blockIndexY)
   end
 end
@@ -2087,6 +2105,7 @@ function this.QuestBlockOnInitialize(questScript)
   mvars.qst_isRadioTarget=false
 end
 function this.QuestBlockOnTerminate(questScript)
+  InfCore.LogFlow("TppQuest.QuestBlockOnTerminate")--tex
   InfQuest.QuestBlockOnTerminate(questScript)--tex--tex
   this.ExecuteSystemCallback"OnTerminate"
   mvars.qst_systemCallbacks=nil
@@ -3115,17 +3134,22 @@ function this.IsActiveQuestHeli()
   return false
 end
 function this.DeactiveQuestAreaTrapMessages()
+  if Ivars.quest_useAltForceFulton:Get()==1 then--tex>
+    return {}
+  end--<
+
   local deactiveQuestAreaTrapMessages={}
-  local arealList={}
+  local areaList={}
   local missionCode=TppMission.GetMissionID()
+  --RETAILBUG: this means wont fire for sideops in story missions, but there only seems to be one sideop active during them anyway (see CanActiveQuestInMission)
   if missionCode==30010 then
-    arealList=afgAreaList
+    areaList=afgAreaList
   elseif missionCode==30020 then
-    arealList=mafrAreaList
+    areaList=mafrAreaList
   else
     return
   end
-  for i,areaName in ipairs(arealList)do
+  for i,areaName in ipairs(areaList)do
     local trapName=this.GetTrapName(areaName)
     local message={msg="Exit",sender=trapName,
       func=function(e,e)

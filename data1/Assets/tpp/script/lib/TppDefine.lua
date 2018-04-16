@@ -192,7 +192,6 @@ this.LOCATION_ID={
   SAND_AFGH=91,SAND_MAFR=92,SAND_MTBS=95,
   sand_afgh=91,sand_mafr=92,sand_mtbs=95
 }
---DEBUGNOW see what requires this, fallback to some default instead of nil?
 this.LOCATION_CHUNK_INDEX_TABLE={
   [this.LOCATION_ID.AFGH]=Chunk.INDEX_AFGH,
   [this.LOCATION_ID.MAFR]=Chunk.INDEX_MAFR,

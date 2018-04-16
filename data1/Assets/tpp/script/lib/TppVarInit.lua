@@ -8,7 +8,7 @@ local IsTable=Tpp.IsTypeTable
 --ORPHAN local bnot=bit.bnot
 --ORPHAN local band,bor,bxor=bit.band,bit.bor,bit.bxor
 --CALLER: engine I guess, cant see any other references
-function this.StartTitle(unk1)
+function this.StartTitle(StartFunc)
   InfCore.LogFlow("TppVarInit.StartTitle "..tostring(vars.missionCode))--tex
   TppSystemLua.UseAiSystem(true)
   TppSimpleGameSequenceSystem.Start()
@@ -229,8 +229,8 @@ function this.InitializeForNewMission(missionTable)
   end
   TppPlayer.RestorePlayerItemsOnMissionStart()
   TppUI.OnMissionStart()
-  local e=TppMission.SetMissionOrderBoxPosition()
-  if not e then
+  local setMissionOrderBoxPosition=TppMission.SetMissionOrderBoxPosition()
+  if not setMissionOrderBoxPosition then
     if TppMission.IsFreeMission(vars.missionCode)then
       TppPlayer.SetMissionStartPositionFromNoOrderBoxPosition()
     end

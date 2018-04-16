@@ -128,9 +128,9 @@ function this.CheckRotationSetting(a)
   if not IsTypeTable(a)then
     return
   end
-  local e=mvars
-  e.ply_checkDirectionList={}
-  e.ply_checkRotationResult={}
+  local mvars=mvars
+  mvars.ply_checkDirectionList={}
+  mvars.ply_checkRotationResult={}
   local function n(a,t,e)
     if e>=-180 and e<180 then
       a[t]=e
@@ -138,16 +138,16 @@ function this.CheckRotationSetting(a)
   end
   for t,a in pairs(a)do
     if IsTypeFunc(a.func)then
-      e.ply_checkDirectionList[t]={}
-      e.ply_checkDirectionList[t].func=a.func
+      mvars.ply_checkDirectionList[t]={}
+      mvars.ply_checkDirectionList[t].func=a.func
       local o=a.directionX or 0
       local i=a.directionY or 0
       local r=a.directionRangeX or 0
       local a=a.directionRangeY or 0
-      n(e.ply_checkDirectionList[t],"directionX",o)
-      n(e.ply_checkDirectionList[t],"directionY",i)
-      n(e.ply_checkDirectionList[t],"directionRangeX",r)
-      n(e.ply_checkDirectionList[t],"directionRangeY",a)
+      n(mvars.ply_checkDirectionList[t],"directionX",o)
+      n(mvars.ply_checkDirectionList[t],"directionY",i)
+      n(mvars.ply_checkDirectionList[t],"directionRangeX",r)
+      n(mvars.ply_checkDirectionList[t],"directionRangeY",a)
     else
       return
     end
@@ -825,25 +825,25 @@ function this.AddTrapSettingForIntel(trapInfo)
   mvars.ply_intelTrapInfo[intelName].directionRange=directionRange
   Player.AddTrapDetailCondition{trapName=trapName,condition=PlayerTrap.FINE,action=(PlayerTrap.NORMAL+PlayerTrap.BEHIND),stance=(PlayerTrap.STAND+PlayerTrap.SQUAT),direction=direction,directionRange=directionRange}
 end
-function this.ShowIconForIntel(e,t)
-  if not IsTypeString(e)then
+function this.ShowIconForIntel(messageArg,dontShow)
+  if not IsTypeString(messageArg)then
     return
   end
   local trapName
-  if mvars.ply_intelTrapInfo and mvars.ply_intelTrapInfo[e]then
-    trapName=mvars.ply_intelTrapInfo[e].trapName
+  if mvars.ply_intelTrapInfo and mvars.ply_intelTrapInfo[messageArg]then
+    trapName=mvars.ply_intelTrapInfo[messageArg].trapName
   end
-  local a=mvars.ply_intelFlagInfo[e]
-  if a then
-    if svars[a]~=nil then
-      t=svars[a]
+  local intelFlagInfo=mvars.ply_intelFlagInfo[messageArg]
+  if intelFlagInfo then
+    if svars[intelFlagInfo]~=nil then
+      dontShow=svars[intelFlagInfo]
     end
   end
-  if not t then
+  if not dontShow then
     if Tpp.IsNotAlert()then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=StrCode32"GetIntel",messageInDisplay=StrCode32"IntelIconInDisplay",messageArg=e}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL,message=StrCode32"GetIntel",messageInDisplay=StrCode32"IntelIconInDisplay",messageArg=messageArg}
     elseif trapName then
-      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=StrCode32"NGIntel",messageInDisplay=StrCode32"IntelIconInDisplay",messageArg=e}
+      Player.RequestToShowIcon{type=ActionIcon.ACTION,icon=ActionIcon.INTEL_NG,message=StrCode32"NGIntel",messageInDisplay=StrCode32"IntelIconInDisplay",messageArg=messageArg}
       if not TppRadio.IsPlayed(TppRadio.COMMON_RADIO_LIST[TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT])then
         TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.CANNOT_GET_INTEL_ON_ALERT)
       end
@@ -969,31 +969,31 @@ function this.PrepareStartGameOverCamera()
     TppUI.ShowAnnounceLog(mvars.ply_gameOverCameraAnnounceLog)
   end
 end
-function this.FOBStartGameOverCamera(e,t,a)
+function this.FOBStartGameOverCamera(gameId,startTimerName,announceLog)
   if mvars.ply_gameOverCameraGameObjectId~=nil then
     return
   end
-  mvars.ply_gameOverCameraGameObjectId=e
-  mvars.ply_gameOverCameraStartTimerName=t
-  mvars.ply_gameOverCameraAnnounceLog=a
+  mvars.ply_gameOverCameraGameObjectId=gameId
+  mvars.ply_gameOverCameraStartTimerName=startTimerName
+  mvars.ply_gameOverCameraAnnounceLog=announceLog
   TppUiStatusManager.SetStatus("AnnounceLog","INVALID_LOG")
   vars.playerDisableActionFlag=PlayerDisableAction.SUBJECTIVE_CAMERA
   TimerStart("Timer_StartGameOverCamera",.25)
 end
-function this.SetTargetDeadCamera(r)
-  local l
-  local a
-  local o
-  if IsTypeTable(r)then
-    l=r.gameObjectName or""
-    a=r.gameObjectId
-    o=r.announceLog or"target_extract_failed"
+function this.SetTargetDeadCamera(params)
+  local gameObjectName
+  local gameId
+  local announceLog
+  if IsTypeTable(params)then
+    gameObjectName=params.gameObjectName or""
+    gameId=params.gameObjectId
+    announceLog=params.announceLog or"target_extract_failed"
   end
-  a=a or GetGameObjectId(l)
-  if a==NULL_ID then
+  gameId=gameId or GetGameObjectId(gameObjectName)
+  if gameId==NULL_ID then
     return
   end
-  this.StartGameOverCamera(a,"EndFadeOut_StartTargetDeadCamera",o)
+  this.StartGameOverCamera(gameId,"EndFadeOut_StartTargetDeadCamera",announceLog)
 end
 function this._SetTargetDeadCamera()
   this.PrepareStartGameOverCamera()
@@ -1096,8 +1096,8 @@ function this.IsSneakPlayerInFOB(playerIndex)
   end
 end
 function this.PlayMissionClearCamera()
-  local e=this.SetPlayerStatusForMissionEndCamera()
-  if not e then
+  local status=this.SetPlayerStatusForMissionEndCamera()
+  if not status then
     return
   end
   TimerStart("Timer_StartPlayMissionClearCameraStep1",.25)
@@ -1162,7 +1162,7 @@ function this.PlayMissionClearCameraOnFoot(unk1,unk2)
   local skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
   local offsetPos=Vector3(0,0,-4.5)
   local interpTimeAtStart=.3
-  local s
+  local unkl6
   local callSeOfCameraInterp=false
   local timeToSleep=20
   local useLastSelectedIndex=false
@@ -1172,7 +1172,7 @@ function this.PlayMissionClearCameraOnFoot(unk1,unk2)
     skeletonBoundings={Vector3(.1,.125,.1),Vector3(.15,.1,.05)}
     offsetPos=Vector3(0,0,-1.5)
     interpTimeAtStart=.3
-    s=1
+    unkl6=1
     callSeOfCameraInterp=true
   elseif unk2 then
     skeletonNames={"SKL_004_HEAD"}
@@ -1211,7 +1211,7 @@ function this.PlayMissionClearCameraOnFoot(unk1,unk2)
     callSeOfCameraInterp=callSeOfCameraInterp,
     useLastSelectedIndex=useLastSelectedIndex
   }
-  return s
+  return unkl6
 end
 function this.PlayMissionClearCameraOnRideHorse(unk1,unk2,unk3)
   local skeletonNames={"SKL_004_HEAD","SKL_002_CHEST"}
@@ -1756,7 +1756,7 @@ function this.MissionStartPlayerTypeSetting()
       vars.playerPartsType=PlayerPartsType.NORMAL
     end
   end
-  InfMain.PlayerVarsSanityCheck()--tex
+  InfFova.PlayerFaceSanityCheck()--tex
 end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
@@ -1859,7 +1859,7 @@ function this.SetSelfSubsistenceOnHardMission()
     this.RegisterTemporaryPlayerType{partsType=PlayerPartsType.NORMAL,camoType=PlayerCamoType.OLIVEDRAB,handEquip=TppEquip.EQP_HAND_NORMAL,faceEquipId=0}
   end
 
-  InfMain.SetSubsistenceSettings()--tex
+  InfMainTpp.SetSubsistenceSettings()--tex
 end
 function this.OnReload()
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
@@ -2595,8 +2595,8 @@ function this.EvaluateCaptureCage(i,a,grade,material)
   end
   return t,e,a,n
 end
-function this.Refresh(e)
-  if e then
+function this.Refresh(resetDirty)
+  if resetDirty then
     Player.ResetDirtyEffect()
   end
   vars.passageSecondsSinceOutMB=0

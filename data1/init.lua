@@ -1,16 +1,20 @@
 -- DOBUILD: 1
 -- init.lua
--- tex first script loaded by engine
+-- NMC first script loaded by engine
+--tex >
 --IHINTERNAL
-Script.LoadLibrary"/Assets/tpp/script/lib/InfInspect.lua"--tex
-Script.LoadLibrary"/Assets/tpp/script/lib/InfUtil.lua"--tex
-Script.LoadLibrary"/Assets/tpp/script/lib/InfCore.lua"--tex
-Script.LoadLibrary"/Assets/tpp/script/lib/IvarProc.lua"--tex
---tex init seems to be loaded sandboxed, or some other funkery preventing _G from being added to, so loading some external modules to global inside InfInit (LoadLibrary is not boxed).
-Script.LoadLibrary"/Assets/tpp/script/lib/InfInit.lua"--tex
-Script.LoadLibrary"/Assets/tpp/script/lib/InfModelProc.lua"--tex
+Script.LoadLibrary"/Assets/tpp/script/lib/InfInit.lua"
+local increaseMemoryAlloc=Ivars and Ivars.sys_increaseMemoryAlloc:Get()==1--tex DEBUGNOW
+
+--tex mgstpp is a bit more graceful about the errors and will just sit and spin
+--but want to bail here to let mockfox user know of error/make it showstopper.
+if isMockFox and InfCore.modDirFail then
+  print"ERROR: modDirFail"
+  return
+end
 
 local dofile=InfCore.DoFile--tex allow external alternate
+--<
 
 local platform=Fox.GetPlatformName()
 local deviceName=""
@@ -340,8 +344,15 @@ if NavWorldDaemon then
   NavWorldDaemon.AddScene"MainScene"
 end
 if PhDaemon then
-  PhDaemon.SetMemorySize(2560,1536,1024)
-  PhDaemon.SetMaxRigidBodyNum(500)
+  --tex>
+  if increaseMemoryAlloc then
+    PhDaemon.SetMemorySize(5120,3072,2048)--tex as editor value in start.lua
+    PhDaemon.SetMaxRigidBodyNum(700)
+  else
+    --<
+    PhDaemon.SetMemorySize(2560,1536,1024)
+    PhDaemon.SetMaxRigidBodyNum(500)
+  end
   local phDaemon=PhDaemon()
 end
 if SimDaemon then
@@ -410,9 +421,9 @@ if GrDaemon then
   end
 end
 if PerformanceViewer then
-  local PerformanceViewer=PerformanceViewer{name="PerformanceViewer"}
-  PerformanceViewer:Invisible()
-  mainScene:AddActor(PerformanceViewer)
+  local performanceViewer=PerformanceViewer{name="PerformanceViewer"}
+  performanceViewer:Invisible()
+  mainScene:AddActor(performanceViewer)
 end
 if MemoryViewer then
   local memoryViewer=MemoryViewer{name="MemoryViewer"}
@@ -434,7 +445,7 @@ if ConnectionPrintInfo then
   ConnectionPrintInfo{name="ConnectionPrintInfo"}
 end
 if SoundCommand then
-  local e=SoundCommand{}
+  local soundCommand=SoundCommand{}
 end
 if Editor then
   Fox.SetActMode"EDIT"

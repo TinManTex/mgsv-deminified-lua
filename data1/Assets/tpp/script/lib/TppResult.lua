@@ -136,7 +136,7 @@ this.MISSION_TASK_LIST={
   [10280]={0,1}
 }
 this.HARD_MISSION_LIST={11043,11041,11054,11085,11082,11090,11036,11033,11050,11091,11195,11211,11140,11200,11080,11171,11121,11115,11130,11044,11052,11151}
-for a,missionCode in ipairs(this.HARD_MISSION_LIST)do
+for i,missionCode in ipairs(this.HARD_MISSION_LIST)do
   local isMissingNumberMission=TppDefine.MISSING_NUMBER_MISSION_ENUM[tostring(missionCode)]
   if not isMissingNumberMission then
     this.MISSION_TASK_LIST[missionCode]=this.MISSION_TASK_LIST[missionCode-1e3]
@@ -186,17 +186,17 @@ function this._AcquireSpecialBonus(taskInfo,bestScoreBonusType,bestScoreBonusSco
     if not bonusPointList then
       return
     end
-    local t=taskInfo.pointIndex
-    if not Tpp.IsTypeNumber(t)then
+    local pointIndex=taskInfo.pointIndex
+    if not Tpp.IsTypeNumber(pointIndex)then
       return
     end
-    if t<1 then
+    if pointIndex<1 then
       return
     end
-    if t>#bonusPointList then
+    if pointIndex>#bonusPointList then
       return
     end
-    svars[isAquiredBonusInPointListType][t]=true
+    svars[isAquiredBonusInPointListType][pointIndex]=true
     local e,t=this.CalcPoinListBonusScore(bonusPointList,isAquiredBonusInPointListType)
     svars[bestScoreBonusType]=e
     svars[bestScoreBonusScoreType]=t
@@ -211,17 +211,19 @@ function this._AcquireSpecialBonus(taskInfo,bestScoreBonusType,bestScoreBonusSco
     TppUI.EnableMissionTask(bonusTask)
   end
 end
-function this.CalcPoinListBonusScore(a,s)
-  local t=0
-  local e=0
-  for a,n in ipairs(a)do
-    if svars[s][a]then
-      t=t+1
-      e=e+n
+--bonusPointList,isAquiredBonusInPointListType)
+function this.CalcPoinListBonusScore(bonusPointList,isAquiredBonusInPointListType)
+  local unkRet1=0
+  local unkRet2=0
+  for i,unkInt in ipairs(bonusPointList)do
+    if svars[isAquiredBonusInPointListType][i]then
+      unkRet1=unkRet1+1
+      unkRet2=unkRet2+unkInt
     end
   end
-  return t,e
+  return unkRet1,unkRet2
 end
+--NMC cant see any references to this
 function this.SetSpecialBonusMaxCount(e)
   if not Tpp.IsTypeTable(e)then
     return
@@ -1006,14 +1008,14 @@ function this.GetMissionClearCountFromHistory(a)
   end
   return e
 end
-local n=.6
+local unkFloat=.6
 function this.CalcMissionClearHistorySize()
   local t=TppStory.GetOpenMissionCount()
   local e
   if t<=1 then
     e=1
   else
-    e=math.floor(t*n)
+    e=math.floor(t*unkFloat)
   end
   return e
 end
@@ -1042,26 +1044,26 @@ function this.SetSpecialBonusResultScore()
     this._SetSpecialBonusResultScore(1,"bestScoreBounus2","bestScoreBounusScore2",mvars.res_secondSpecialBonusMaxCount,this.COMMON_SCORE_PARAM.secondSpecialBonus,"isCompleteSecondBonus",mvars.res_secondBonusMissionTask)
   end
 end
-function this._SetSpecialBonusResultScore(t,i,n,r,s,o,a)
-  if not a.taskNo then
-    TppUiCommand.SetResultScore("invalid","bonus",t)
+function this._SetSpecialBonusResultScore(bonusNum,bestScoreBounusName,bestScoreBonusScoreName,bonusMaxCount,bonusValue,isCompleteSecondBonusName,bonusMissionTask)
+  if not bonusMissionTask.taskNo then
+    TppUiCommand.SetResultScore("invalid","bonus",bonusNum)
     return
   end
-  local taskLangId=this.MakeMissionTaskLangId(a.taskNo)
-  local a=svars[i]
-  if(not svars[o])and(a==0)then
-    TppUiCommand.SetResultScore("invalid","bonus",t)
+  local taskLangId=this.MakeMissionTaskLangId(bonusMissionTask.taskNo)
+  local bestScoreBonus=svars[bestScoreBounusName]
+  if(not svars[isCompleteSecondBonusName])and(bestScoreBonus==0)then
+    TppUiCommand.SetResultScore("invalid","bonus",bonusNum)
     return
   end
-  local n=svars[n]
-  local e=-1
-  if a>0 then
-    e=a
+  local bestScore=svars[bestScoreBonusScoreName]
+  local unkSomeBestScoreRelated=-1
+  if bestScoreBonus>0 then
+    unkSomeBestScoreRelated=bestScoreBonus
   end
-  if e==-1 then
-    TppUiCommand.SetResultScore(taskLangId,"bonus",t,e,n)
+  if unkSomeBestScoreRelated==-1 then
+    TppUiCommand.SetResultScore(taskLangId,"bonus",bonusNum,unkSomeBestScoreRelated,bestScore)
   else
-    TppUiCommand.SetResultScore(taskLangId,"bonus_rate",t,e,r,n)
+    TppUiCommand.SetResultScore(taskLangId,"bonus_rate",bonusNum,unkSomeBestScoreRelated,bonusMaxCount,bestScore)
   end
 end
 function this.MakeMissionTaskLangId(taskNo)
@@ -1324,10 +1326,10 @@ function this.Messages()
     }
   }
 end
-local unk1=MAX_32BIT_UINT
-local unk2=MAX_32BIT_UINT
-local unk3=true
-local unk4=false
+local unkUint1=MAX_32BIT_UINT
+local unkUint2=MAX_32BIT_UINT
+local unkBool1=true
+local unkBool2=false
 function this.IncrementInterrogateCount()
   Tpp.IncrementPlayData"totalInterrogateCount"
   TppChallengeTask.RequestUpdate"PLAY_RECORD"--RETAILPATCH 1070
@@ -1341,34 +1343,41 @@ function this.IncrementTakeHitCount()
   end
   if svars.oldTakeHitCount<svars.takeHitCount then
     svars.oldTakeHitCount=svars.takeHitCount
-    this.CallCountAnnounce("result_hit",svars.takeHitCount,unk3)
+    this.CallCountAnnounce("result_hit",svars.takeHitCount,unkBool1)
   end
 end
 --RETAILPATCH 1070 tacticalTakedownType added
 function this.OnTacticalActionPoint(gameId,tacticalTakedownType)
-  if SendCommand(gameId,tacticalTakedownType,{id="IsDoneTacticalTakedown"})then
+  if SendCommand(gameId,{id="IsDoneTacticalTakedown"})then
   else
-    SendCommand(gameId,tacticalTakedownType,{id="SetTacticalTakedown"})
+    SendCommand(gameId,{id="SetTacticalTakedown"})
     this.AddTacticalActionPoint{isSneak=true,gameObjectId=gameId,tacticalTakeDownType=tacticalTakedownType}--RETAILPATCH 1070 params added
   end
 end
-function this.GetTacticalActionPoint(e)--RETAILPATCH 1070>
+--function e.OnTacticalActionPoint(t,a)
+--    if S(t,{id="IsDoneTacticalTakedown"})then
+--  else
+--  S(t,{id="SetTacticalTakedown"})e.AddTacticalActionPoint{isSneak=true,gameObjectId=t,tacticalTakeDownType=a}
+--end
+
+--RETAILPATCH 1070>
+function this.GetTacticalActionPoint(e)
   if e then
     return svars.tacticalActionPoint
-else
-  if vars.missionCode~=50050 then
-    return 0
+  else
+    if vars.missionCode~=50050 then
+      return 0
+    end
+    return svars.tacticalActionPointClient
   end
-  return svars.tacticalActionPointClient
-end
 end--<
 --RETAILPATCH 1070 reworked>
 function this.AddTacticalActionPoint(takedownInfo)
   if mvars.res_noTacticalTakeDown then
     return
   end
-  local function SetSvar(t,actionPoint)
-    if t then
+  local function SetSvar(isSneak,actionPoint)
+    if isSneak then
       svars.tacticalActionPoint=actionPoint
     else
       if vars.missionCode~=50050 then
@@ -1377,25 +1386,25 @@ function this.AddTacticalActionPoint(takedownInfo)
       svars.tacticalActionPointClient=actionPoint
     end
   end
-  local a=true
+  local isSneak=true--NMC not quite sure the naming on this, it seems to be server vs client?
   if takedownInfo and(takedownInfo.isSneak==false)then
-    a=false
+    isSneak=false
   end
-  local s=this.GetTacticalActionPoint(a)
-  if a then
+  local tacticalActionPoint=this.GetTacticalActionPoint(isSneak)
+  if isSneak then
     Tpp.IncrementPlayData"rnk_TotalTacticalTakeDownCount"
     TppChallengeTask.RequestUpdate"PLAY_RECORD"
     TppUI.UpdateOnlineChallengeTask{detectType=31,diff=1}--RETAILPATCH 1090
   end
-  if s>=mvars.res_missionScoreTable.tacticalTakeDownPoint.countLimit then
+  if tacticalActionPoint>=mvars.res_missionScoreTable.tacticalTakeDownPoint.countLimit then
     return
   end
-  SetSvar(a,s+1)
-  if a then
-    this.CallCountAnnounce("result_tactical_takedown",svars.tacticalActionPoint,n)
+  SetSvar(isSneak,tacticalActionPoint+1)
+  if isSneak then
+    this.CallCountAnnounce("result_tactical_takedown",svars.tacticalActionPoint,unkBool2)
     TppTutorial.DispGuide("TAKE_DOWN",TppTutorial.DISPLAY_OPTION.TIPS)
-    local e=takedownInfo and takedownInfo.tacticalTakeDownType
-    if e then
+    local hasTakeDownType=takedownInfo and takedownInfo.tacticalTakeDownType
+    if hasTakeDownType then
       Mission.SendMessage("Mission","OnAddTacticalActionPoint",takedownInfo.gameObjectId,takedownInfo.tacticalTakeDownType)
     end
   end

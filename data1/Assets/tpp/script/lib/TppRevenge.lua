@@ -920,7 +920,7 @@ function this._GetUiParameterValue(revengeType)
   return 0
 end
 function this._SetUiParameters()
-  if IvarProc.IsForMission("revengeMode","CUSTOM") then--tex> set ui params
+  if IvarProc.IsForMission("revengeMode","CUSTOM") and InfRevenge then--tex> set ui params
     InfRevenge.SetCustomRevengeUiParameters()
     return
   end--<
@@ -1282,7 +1282,7 @@ function this._CreateRevengeConfig(revengeTypes)
 
   --tex>customrevengeconfig
   local doCustom=IvarProc.IsForMission("revengeMode","CUSTOM")
-  if doCustom then
+  if doCustom and InfRevenge then
     revengeConfig=InfRevenge.CreateCustomRevengeConfig()
 
     for powerType,setting in pairs(revengeConfig)do
@@ -1311,7 +1311,7 @@ function this._CreateRevengeConfig(revengeTypes)
 
     --tex>
     local applyNonDefault=IvarProc.IsForMission("revengeMode","NONDEFAULT")
-    if applyNonDefault then
+    if applyNonDefault and InfRevenge then
       local nonDefaultConfig=InfRevenge.CreateCustomRevengeConfig(applyNonDefault)
 
       for powerType,setting in pairs(nonDefaultConfig)do
@@ -2035,18 +2035,21 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
 
   revengeConfigCp.ASSAULT="10%"
 
-  local originalWeaponSettings={}
   local sumBalance=0
   local numBalance=0
-  numBalance,sumBalance,originalWeaponSettings=InfRevenge.GetSumBalance(balanceWeaponTypes,revengeConfigCp,totalSoldierCount,originalWeaponSettings)
+  if InfRevenge then
+    local originalWeaponSettings={}
 
-  --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG>
-  --      InfCore.PrintInspect(originalWeaponSettings)
-  --    end--<
+    numBalance,sumBalance,originalWeaponSettings=InfRevenge.GetSumBalance(balanceWeaponTypes,revengeConfigCp,totalSoldierCount,originalWeaponSettings)
 
-  if numBalance>0 and sumBalance>Ivars.balanceWeaponPowers.balanceWeaponsThreshold then
-    local reservePercent=0--tex TODO: reserve some for assault? or handle that
-    revengeConfigCp=InfRevenge.BalancePowers(numBalance,reservePercent,originalWeaponSettings,revengeConfigCp)
+    --    if Ivars.selectedCp:Is()==cpId then--tex DEBUG>
+    --      InfCore.PrintInspect(originalWeaponSettings)
+    --    end--<
+
+    if numBalance>0 and sumBalance>Ivars.balanceWeaponPowers.balanceWeaponsThreshold then
+      local reservePercent=0--tex TODO: reserve some for assault? or handle that
+      revengeConfigCp=InfRevenge.BalancePowers(numBalance,reservePercent,originalWeaponSettings,revengeConfigCp)
+    end
   end
 
   if smgForced then
@@ -2062,24 +2065,27 @@ function this._ApplyRevengeToCp(cpId,revengeConfig,plant)
   --    end--<
   end--balanceWeaponPowers
 
-  local originalHeadGearSettings={}--tex
   local sumBalance=0
   local numBalance=0
-  if (Ivars.allowHeadGearCombo:Is(1) or Ivars.balanceHeadGear:Is(1)) then
-    local balanceGearTypes={--tex>
-      "ARMOR",
-      "HELMET",
-      "NVG",
-      "GAS_MASK",
-    }
+  if InfRevenge then
+    local originalHeadGearSettings={}--tex
+    if (Ivars.allowHeadGearCombo:Is(1) or Ivars.balanceHeadGear:Is(1)) then
+      local balanceGearTypes={--tex>
+        "ARMOR",
+        "HELMET",
+        "NVG",
+        "GAS_MASK",
+      }
 
-    numBalance,sumBalance,originalHeadGearSettings=InfRevenge.GetSumBalance(balanceGearTypes,revengeConfigCp,totalSoldierCount,originalHeadGearSettings)
+      numBalance,sumBalance,originalHeadGearSettings=InfRevenge.GetSumBalance(balanceGearTypes,revengeConfigCp,totalSoldierCount,originalHeadGearSettings)
+    end
+
+    if (Ivars.balanceHeadGear:Is(1) and sumBalance>Ivars.balanceHeadGear.balanceHeadGearThreshold) then--tex> only need to balance if oversubscribed
+      local reservePercent=0
+      revengeConfigCp=InfRevenge.BalancePowers(numBalance,reservePercent,originalHeadGearSettings,revengeConfigCp)
+    end
   end
-
-  if (Ivars.balanceHeadGear:Is(1) and sumBalance>Ivars.balanceHeadGear.balanceHeadGearThreshold) then--tex> only need to balance if oversubscribed
-    local reservePercent=0
-    revengeConfigCp=InfRevenge.BalancePowers(numBalance,reservePercent,originalHeadGearSettings,revengeConfigCp)
-  end--<
+  --<
 
   local unfulfilledPowers={}--tex>
   local addConfigFlags={}

@@ -1,4 +1,4 @@
-local shaderParamPackingTable={
+local parameterPackingTable={
   {name="ModelDefault",
     params={},
     packing={},
@@ -1015,7 +1015,7 @@ local shaderParamPackingTable={
     textures={"Base_Tex_SRGB","NormalMap_Tex_NRM","SpecularMap_Tex_LIN"}
   }
 }
-local shaderAssignTable={{technique="ModelDefault",type="Deferred",variation="",shader="GBuffersBase"},
+local assignTable={{technique="ModelDefault",type="Deferred",variation="",shader="GBuffersBase"},
   {technique="fox3DDF_Blin",type="Forward",variation="",shader="fox3dfw_blin"},
   {technique="fox3DDF_Blin_NrmUV",type="Forward",variation="",shader="fox3dfw_blin_nu"},
   {technique="fox3DDF_Blin_LNM",type="Forward",variation="",shader="fox3dfw_blin_ln"},
@@ -1274,5 +1274,5 @@ local shaderAssignTable={{technique="ModelDefault",type="Deferred",variation="",
   {technique="fox3DDC_Blin_LayerMul_NrmUV",type="Deferred_Decal",variation="",shader="fox3ddc_blin_layer_mul_nu"},
   {technique="fox3DNDW_Shadow",type="Deferred",variation="",shader="GBuffersBase"}
 }
-GrTools():SetShaderParameterPackingTable(shaderParamPackingTable)
-GrTools():SetShaderAssignTable(shaderAssignTable)
+GrTools():SetShaderParameterPackingTable(parameterPackingTable)
+GrTools():SetShaderAssignTable(assignTable)

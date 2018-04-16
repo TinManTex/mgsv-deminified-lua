@@ -84,26 +84,26 @@ function this.SetPhaseBGM(e)
   svars.snd_phaseBgmTagHash=StrCode32(e)
   TppMusicManager.ChangeParameter(e)
 end
-local n=0
+local none=0
 function this.ResetPhaseBGM()
   TppMusicManager.ClearParameter()
   if svars and svars.snd_phaseBgmTagHash then
-    svars.snd_phaseBgmTagHash=n
+    svars.snd_phaseBgmTagHash=none
   end
 end
 function this.RestorePhaseBGM()
   if mvars.snd_noRestorePhaseBGM and mvars.snd_noRestorePhaseBGM[svars.snd_phaseBgmTagHash]then
-    svars.snd_phaseBgmTagHash=n
+    svars.snd_phaseBgmTagHash=none
   end
-  if svars.snd_phaseBgmTagHash==n then
+  if svars.snd_phaseBgmTagHash==none then
     TppMusicManager.ClearParameter()
   else
     TppMusicManager.ChangeParameterById(svars.snd_phaseBgmTagHash)
   end
 end
 function this.PostEventForFultonRecover()
-  local e=TppMission.GetMissionStartRecoverDemoType()
-  if(e==TppDefine.MISSION_START_RECOVER_DEMO_TYPE.WALKER_GEAR or e==TppDefine.MISSION_START_RECOVER_DEMO_TYPE.VEHICLE)or e==TppDefine.MISSION_START_RECOVER_DEMO_TYPE.NONE then
+  local demoType=TppMission.GetMissionStartRecoverDemoType()
+  if(demoType==TppDefine.MISSION_START_RECOVER_DEMO_TYPE.WALKER_GEAR or demoType==TppDefine.MISSION_START_RECOVER_DEMO_TYPE.VEHICLE)or demoType==TppDefine.MISSION_START_RECOVER_DEMO_TYPE.NONE then
     TppSoundDaemon.PostEvent("sfx_m_fulton_heli_success","Loading")
   end
 end
@@ -118,7 +118,7 @@ function this.StopHelicopterStartSceneBGM()
   end
 end
 function this.StartEscapeBGM()
-  if svars.snd_phaseBgmTagHash==n then
+  if svars.snd_phaseBgmTagHash==none then
     this.SetPhaseBGM"bgm_chase_phase"
   end
 end
