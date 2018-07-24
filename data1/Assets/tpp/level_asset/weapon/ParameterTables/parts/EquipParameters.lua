@@ -499,7 +499,15 @@ this.equipParameterTables={
     {TppEquip.WP_Com_ms_029,TppEquip.RC_80209,TppEquip.BA_None,TppEquip.AM_80206,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_80203,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,9},
     {TppEquip.WP_Com_ms_02a,TppEquip.RC_80209,TppEquip.BA_None,TppEquip.AM_80206,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_80203,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,10},
     {TppEquip.WP_Com_ms_02b,TppEquip.RC_80209,TppEquip.BA_None,TppEquip.AM_80206,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_80203,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,11},
-    {TppEquip.WP_SCamLocator,TppEquip.RC_10302,TppEquip.BA_10302,TppEquip.AM_10703,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,1}
+    {TppEquip.WP_SCamLocator,TppEquip.RC_10302,TppEquip.BA_10302,TppEquip.AM_10703,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_None,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LT_None,1},
+    --RETAILPATCH 1.0.13>
+    {TppEquip.WP_60605,TppEquip.RC_60605,TppEquip.BA_None,TppEquip.AM_60605,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,7},
+    {TppEquip.WP_60606,TppEquip.RC_60605,TppEquip.BA_None,TppEquip.AM_60606,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,9},
+    {TppEquip.WP_60607,TppEquip.RC_60605,TppEquip.BA_None,TppEquip.AM_60607,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,11},
+    {TppEquip.WP_60615,TppEquip.RC_60615,TppEquip.BA_None,TppEquip.AM_60615,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,7},
+    {TppEquip.WP_60616,TppEquip.RC_60615,TppEquip.BA_None,TppEquip.AM_60616,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,9},
+    {TppEquip.WP_60617,TppEquip.RC_60615,TppEquip.BA_None,TppEquip.AM_60617,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,11},
+    --<
   },
   receiverParamSetsBase={
     {300,35,.48,35,35,.2,29,1},
@@ -1072,7 +1080,11 @@ this.equipParameterTables={
     {TppEquip.RC_EX_hg_000,TppDamage.ATK_EX_hg_000,6,5,3,37},
     {TppEquip.RC_EX_gl_000,TppDamage.ATK_EX_gl_000,60,73,46,38},
     {TppEquip.RC_EX_sr_000,TppDamage.ATK_EX_sr_000,78,96,63,39},
-    {TppEquip.RC_EX_hg_010,TppDamage.ATK_EX_hg_010,16,16,10,5}
+    {TppEquip.RC_EX_hg_010,TppDamage.ATK_EX_hg_010,16,16,10,5},
+    --RETAILPATCH 1.0.13>
+    {TppEquip.RC_60605,TppDamage.ATK_60605,78,96,63,23},
+    {TppEquip.RC_60615,TppDamage.ATK_60615,78,96,63,23},
+    --<
   },
   barrelParamSetsBase={
     {1,1,1,1,1,1,1},
@@ -1457,7 +1469,15 @@ this.equipParameterTables={
     {TppEquip.AM_EX_hg_010,TppEquip.EQP_AM_EX_hg_010,6,24,TppEquip.BL_EX_hg_010},
     {TppEquip.AM_EX_hg_011,TppEquip.EQP_AM_EX_hg_010,6,36,TppEquip.BL_EX_hg_010},
     {TppEquip.AM_EX_hg_012,TppEquip.EQP_AM_EX_hg_010,6,42,TppEquip.BL_EX_hg_010},
-    {TppEquip.AM_EX_hg_013,TppEquip.EQP_AM_EX_hg_010,6,60,TppEquip.BL_EX_hg_010}
+    {TppEquip.AM_EX_hg_013,TppEquip.EQP_AM_EX_hg_010,6,60,TppEquip.BL_EX_hg_010},
+    --RETAILPATCH: 1.0.13>
+    {TppEquip.AM_60605,TppEquip.EQP_AM_60605,1,8,TppEquip.BL_60605},
+    {TppEquip.AM_60606,TppEquip.EQP_AM_60605,1,12,TppEquip.BL_60605},
+    {TppEquip.AM_60607,TppEquip.EQP_AM_60605,1,16,TppEquip.BL_60605},
+    {TppEquip.AM_60615,TppEquip.EQP_AM_60605,1,8,TppEquip.BL_60615},
+    {TppEquip.AM_60616,TppEquip.EQP_AM_60605,1,12,TppEquip.BL_60615},
+    {TppEquip.AM_60617,TppEquip.EQP_AM_60605,1,16,TppEquip.BL_60615},
+    --<
   },
   muzzleOption={
     1,
@@ -1655,7 +1675,8 @@ this.equipParameterTables={
     {"/Assets/tpp/effect/vfx_data/weapon/fx_tpp_wepbltlin03_s0LD.vfx"},
     {"/Assets/tpp/effect/vfx_data/weapon/fx_tpp_wepbltlinwtr01_s0LD.vfx"},
     {"/Assets/tpp/effect/vfx_data/fire/fx_tpp_firvolbltrid01_s0LG.vfx"},
-    {"/Assets/tpp/effect/vfx_data/weapon/fx_tpp_wepbltlin02_s0LG.vfx"}
+    {"/Assets/tpp/effect/vfx_data/weapon/fx_tpp_wepbltlin02_s0LG.vfx"},
+    {"/Assets/tpp/effect/vfx_data/weapon/fx_tpp_wepbltlinsnr01_s0.vfx"},--RETAILPATCH 1.0.13
   },
   bullet={
     0,
@@ -1670,6 +1691,7 @@ this.equipParameterTables={
     {TppEquip.BL_20mmStun,90,90,9.8,21,21,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_SHELL,TppEquip.BLA_20mmGrenade,0,TppEquip.EQP_TYPE_GrenadeLauncher},
     {TppEquip.BL_Tankgun_105mmRifledBoreGun,180,180,12,30,29,7,2,TppEquip.RICOCHET_SIZE_LARGE,TppEquip.BULLET_TYPE_SHELL,TppEquip.BLA_WavCannon,1,TppEquip.EQP_TYPE_None},
     {TppEquip.BL_UavLMG,450,450,15,32,33,1,2,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_NORMAL,0,1,TppEquip.EQP_TYPE_None},
+    {TppEquip.BL_60605,450,450,11,22,23,8,8,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_NORMAL,0,1,TppEquip.EQP_TYPE_Sniper},--RETAILPATCH 1.0.13
     {TppEquip.BL_12GA00Back,310,310,15,13,14,1,2,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_SPREAD,0,1,TppEquip.EQP_TYPE_Shotgun},
     {TppEquip.BL_ParasiteHardRicochet,50,50,15,34,34,1,2,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_NORMAL,0,1,TppEquip.EQP_TYPE_None},
     {TppEquip.BL_12GAAir,310,310,15,20,20,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_AIRSHOCK,0,0,TppEquip.EQP_TYPE_Shotgun},
@@ -1764,6 +1786,7 @@ this.equipParameterTables={
     {TppEquip.BL_UavSleepGasGrenade,180,100,9.8,21,21,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_SHELL,0,0,TppEquip.EQP_TYPE_None},
     {TppEquip.BL_VolBullet,60,60,0,27,27,6,6,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_NORMAL,0,1,TppEquip.EQP_TYPE_None},
     {TppEquip.BL_UavGrenade,180,100,9.8,21,21,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_SHELL,0,0,TppEquip.EQP_TYPE_None},
+    {TppEquip.BL_60615,450,450,15,25,26,8,8,TppEquip.RICOCHET_SIZE_SMALL,TppEquip.BULLET_TYPE_NORMAL,0,0,TppEquip.EQP_TYPE_Sniper},--RETAILPATCH 1.0.13
     {TppEquip.BL_UavSmokeGrenade,180,100,9.8,21,21,0,0,TppEquip.RICOCHET_SIZE_DEFAULT,TppEquip.BULLET_TYPE_SHELL,0,0,TppEquip.EQP_TYPE_None}
   }
 }

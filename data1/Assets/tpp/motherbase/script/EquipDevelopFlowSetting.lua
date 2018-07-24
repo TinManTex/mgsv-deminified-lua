@@ -1,9 +1,15 @@
 --EquipDevelopFlowSetting.lua
 --RETAILPATCH 1090,1.10,1.11 various changes and additions
 local this={}
---NOTES, via unknown321 https://github.com/unknown321/mgsmonsterguns/blob/gh-pages/parameters.txt, nasanhak http://forum.xentax.com/viewtopic.php?f=10&t=12407&p=122960#p122960 and mgo EquipDevelopSetting.lua
+--NMC paired with EquiDevelopConstSetting (in that each entry here matches same indexed entry)
+--NOTES, via 
+--unknown321 https://github.com/unknown321/mgsmonsterguns/blob/gh-pages/parameters.txt, 
+--nasanhak http://forum.xentax.com/viewtopic.php?f=10&t=12407&p=122960#p122960 
+-- and mgo EquipDevelopSetting.lua
 
---nasanhak order of records in these files seems to be strict meaning you can't insert the same number of records at the beginning or in the middle in both the Const and Flow files and expect it to work. The dev pages/chains break. Anything new has to go at the end.
+--nasanhak order of records in these files seems to be strict meaning you can't insert the same number of records at the beginning 
+--or in the middle in both the Const and Flow files and expect it to work. The dev pages/chains break. 
+--Anything new has to go at the end.
 
 --unknown321 I assume that any parameter below can be overridden by konami via online patches
 --You get patches when you log into server (or just after that, happens only once per game session)
@@ -37,7 +43,7 @@ local this={}
 --   2 - Anything un-develop-able - Enemy weapons(cause these need equip info too, just can't be developed), Infected NVG from M43, Balaclava & Headgear, Looks to be unused DD skins(Ocelot & Miller), One Walker Gear pistol, Battle Gear stuff, Honeybee, Skull face gun, Volgin gun(his attack that is), Enemy shields and D.MINE MARKER
 --   3 - only for wormhole fulton all 4 grades
 --   5 - All unused - Fulton cargo, fulton normal, fulton wormhole; Hides equip from equip menu as well
---  p70=0,--
+--  p70=0,--Mystery Column - seems to be 0 for everything
 --  p71=0,--developTimeMinute--Development time
 --  p72={0-7},--isValidMbCoin  --Offline (0) Online (1)
 --  p73=0,--intimacyPoint -- buddy points reuired for dev
@@ -75,6 +81,34 @@ local this={}
 --"Spy",
 --"Medical"
 --}
+
+local descriptiveParamToParamName={
+  index="p50",
+  sideGrade="p51",
+  grade="p52",
+  developGmpCost="p53",
+  usageGmpCost="p54",
+  sectionLvForDevelop="p55",
+  sectionID2ForDevelop="p56",
+  sectionLv2ForDevelop="p57",
+  resourceType1="p58",
+  resourceType1Count="p59",
+  resourceType2="p60",
+  resourceType2Count="p61",
+  initialAvailable="p62", 
+  sectionIDForDevelop="p63",
+  developSectionLv="p64", 
+  resourceUsageType1="p65",
+  resourceUsageType1Count="p66",
+  resourceUsageType2="p67",
+  resourceUsageType2Count="p68",
+  displayInfo="p69",
+  unk70="p70",
+  developTimeMinute="p71",
+  isValidMbCoin="p72",
+  intimacyPoint="p73",
+  isFobAvailable="p74",
+}
 
 this.equipDevTable={
   {p50=0,p51=0,p52=1,p53=0,p54=100,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=1,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=0,p73=0,p74=1},
@@ -835,26 +869,26 @@ this.equipDevTable={
   {p50=755,p51=0,p52=9,p53=18855400,p54=184220,p55=121,p56=6,p57=130,p58="BioticResource",p59=652300,p60="Plant2005",p61=23400,p62=0,p63=0,p64=0,p65="BioticResource",p66=6520,p67="Plant2005",p68=877,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
   {p50=756,p51=0,p52=9,p53=14264700,p54=178300,p55=126,p56=6,p57=139,p58="Plant2007",p59=9800,p60="FuelResource",p61=467500,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
   {p50=757,p51=0,p52=10,p53=16335e3,p54=220520,p55=137,p56=5,p57=150,p58="FuelResource",p59=580900,p60="Plant2003",p61=11e3,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
-  {p50=758,p51=0,p52=11,p53=9692300,p54=96920,p55=113,p56=5,p57=124,p58="PreciousMetal",p59=137100,p60="Plant2007",p61=5e3,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
+  {p50=758,p51=0,p52=11,p53=19391100,p54=281170,p55=147,p56=5,p57=160,p58="FuelResource",p59=67e4,p60="Plant2003",p61=12700,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
   {p50=759,p51=0,p52=9,p53=14349200,p54=179360,p55=127,p56=3,p57=140,p58="Plant2003",p59=9900,p60="FuelResource",p61=469500,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
   {p50=760,p51=0,p52=10,p53=16723200,p54=225760,p55=139,p56=1,p57=152,p58="FuelResource",p59=591500,p60="Plant2007",p61=11200,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
-  {p50=761,p51=0,p52=11,p53=10001200,p54=100010,p55=121,p56=4,p57=126,p58="PreciousMetal",p59=150600,p60="Plant2003",p61=5400,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
+  {p50=761,p51=0,p52=11,p53=19684100,p54=285410,p55=148,p56=4,p57=161,p58="FuelResource",p59=678100,p60="Plant2007",p61=12800,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
   {p50=762,p51=0,p52=9,p53=18654e3,p54=116580,p55=140,p56=0,p57=0,p58="BioticResource",p59=678100,p60="PreciousMetal",p61=339100,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
   {p50=763,p51=0,p52=10,p53=21235400,p54=286670,p55=137,p56=5,p57=150,p58="PreciousMetal",p59=290500,p60="Plant2001",p61=16900,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
-  {p50=764,p51=0,p52=11,p53=12501500,p54=125010,p55=123,p56=5,p57=126,p58="CommonMetal",p59=188200,p60="Plant2002",p61=17100,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5010,p72=1,p73=0,p74=1},
+  {p50=764,p51=0,p52=11,p53=22299700,p54=323340,p55=147,p56=5,p57=160,p58="PreciousMetal",p59=335e3,p60="Plant2003",p61=12700,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
   {p50=765,p51=0,p52=9,p53=18654e3,p54=116580,p55=140,p56=0,p57=0,p58="BioticResource",p59=678100,p60="PreciousMetal",p61=339100,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
   {p50=766,p51=0,p52=10,p53=21235400,p54=286670,p55=137,p56=6,p57=150,p58="PreciousMetal",p59=290500,p60="Plant2001",p61=16900,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
-  {p50=767,p51=0,p52=11,p53=12714900,p54=127140,p55=124,p56=6,p57=127,p58="CommonMetal",p59=394400,p60="Plant2005",p61=19800,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5010,p72=1,p73=0,p74=1},
+  {p50=767,p51=0,p52=11,p53=22299700,p54=323340,p55=147,p56=5,p57=160,p58="PreciousMetal",p59=335e3,p60="Plant2007",p61=12700,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8610,p72=1,p73=0,p74=1},
   {p50=768,p51=0,p52=4,p53=58e4,p54=400,p55=32,p56=6,p57=45,p58="BioticResource",p59=4e3,p60="Plant2003",p61=50,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=330,p72=1,p73=0,p74=1},
   {p50=769,p51=0,p52=5,p53=1005e3,p54=400,p55=42,p56=6,p57=55,p58="BioticResource",p59=8e3,p60="Plant2003",p61=300,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=7170,p72=1,p73=0,p74=1},
   {p50=770,p51=0,p52=6,p53=4501900,p54=400,p55=72,p56=6,p57=85,p58="BioticResource",p59=48e3,p60="Plant2007",p61=1e3,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=10050,p72=1,p73=0,p74=1},
   {p50=771,p51=0,p52=7,p53=6159e3,p54=400,p55=80,p56=6,p57=93,p58="BioticResource",p59=70300,p60="Plant2007",p61=1400,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=14370,p72=1,p73=0,p74=1},
   {p50=772,p51=0,p52=9,p53=15755600,p54=5e3,p55=141,p56=5,p57=128,p58="PreciousMetal",p59=285900,p60="FuelResource",p61=514600,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
   {p50=773,p51=0,p52=10,p53=18470400,p54=5e3,p55=153,p56=3,p57=140,p58="CommonMetal",p59=651400,p60="BioticResource",p61=586300,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17280,p72=1,p73=0,p74=1},
-  {p50=774,p51=0,p52=11,p53=752e4,p54=5e3,p55=109,p56=3,p57=120,p58="PreciousMetal",p59=93100,p60="BioticResource",p61=176900,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17280,p72=1,p73=0,p74=1},
+  {p50=774,p51=0,p52=11,p53=21153900,p54=5e3,p55=147,p56=1,p57=160,p58="PreciousMetal",p59=365500,p60="CommonMetal",p61=657900,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17280,p72=1,p73=0,p74=1},
   {p50=775,p51=0,p52=9,p53=15755600,p54=7e3,p55=141,p56=6,p57=128,p58="PreciousMetal",p59=285900,p60="FuelResource",p61=514600,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17250,p72=1,p73=0,p74=1},
   {p50=776,p51=0,p52=10,p53=18470400,p54=7e3,p55=153,p56=6,p57=140,p58="CommonMetal",p59=651400,p60="BioticResource",p61=586300,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17280,p72=1,p73=0,p74=1},
-  {p50=777,p51=0,p52=11,p53=11295400,p54=7e3,p55=125,p56=3,p57=128,p58="Plant2007",p59=6800,p60="Plant2003",p61=6500,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17280,p72=1,p73=0,p74=1},
+  {p50=777,p51=0,p52=11,p53=21473500,p54=7e3,p55=148,p56=6,p57=161,p58="PreciousMetal",p59=369900,p60="Plant2005",p61=23800,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=17280,p72=1,p73=0,p74=1},
   {p50=778,p51=0,p52=9,p53=6701900,p54=67010,p55=121,p56=4,p57=134,p58="CommonMetal",p59=209500,p60="MinorMetal",p61=188500,p62=0,p63=0,p64=0,p65="CommonMetal",p66=780,p67="MinorMetal",p68=706,p69=0,p70=0,p71=10050,p72=1,p73=0,p74=1},
   {p50=779,p51=0,p52=10,p53=7294440,p54=82060,p55=126,p56=4,p57=139,p58="Plant2002",p59=6500,p60="BioticResource",p61=199200,p62=0,p63=0,p64=0,p65="Plant2002",p66=430,p67="BioticResource",p68=2689,p69=0,p70=0,p71=11490,p72=1,p73=0,p74=1},
   {p50=780,p51=0,p52=11,p53=6949800,p54=100770,p55=137,p56=1,p57=150,p58="MinorMetal",p59=247200,p60="Plant2000",p61=8700,p62=0,p63=0,p64=0,p65="MinorMetal",p66=3580,p67="Plant2000",p68=630,p69=0,p70=0,p71=11490,p72=1,p73=0,p74=1},
@@ -896,8 +930,8 @@ this.equipDevTable={
   {p50=816,p51=0,p52=5,p53=824e3,p54=7800,p55=45,p56=0,p57=0,p58="MinorMetal",p59=9375,p60="FuelResource",p61=7200,p62=0,p63=0,p64=0,p65="MinorMetal",p66=350,p67="",p68=0,p69=0,p70=0,p71=1410,p72=1,p73=0,p74=1},
   {p50=817,p51=0,p52=6,p53=1236e3,p54=9800,p55=55,p56=3,p57=60,p58="MinorMetal",p59=12500,p60="FuelResource",p61=9500,p62=0,p63=0,p64=0,p65="MinorMetal",p66=480,p67="",p68=0,p69=0,p70=0,p71=2850,p72=1,p73=0,p74=1},
   {p50=818,p51=0,p52=8,p53=5703600,p54=57030,p55=75,p56=1,p57=88,p58="MinorMetal",p59=61800,p60="FuelResource",p61=55700,p62=0,p63=0,p64=0,p65="MinorMetal",p66=610,p67="FuelResource",p68=557,p69=0,p70=0,p71=5010,p72=1,p73=0,p74=1},
-  {p50=819,p51=0,p52=10,p53=5664200,p54=45310,p55=86,p56=6,p57=97,p58="FuelResource",p59=67500,p60="Plant2003",p61=1300,p62=0,p63=0,p64=0,p65="FuelResource",p66=540,p67="Plant2003",p68=15,p69=0,p70=0,p71=14370,p72=1,p73=0,p74=1},
-  {p50=820,p51=0,p52=11,p53=5664200,p54=45310,p55=86,p56=6,p57=97,p58="FuelResource",p59=67500,p60="Plant2003",p61=1300,p62=0,p63=0,p64=0,p65="FuelResource",p66=540,p67="Plant2003",p68=15,p69=0,p70=0,p71=14370,p72=1,p73=0,p74=1},
+  {p50=819,p51=0,p52=10,p53=13302600,p54=179580,p55=139,p56=3,p57=152,p58="MinorMetal",p59=470500,p60="BioticResource",p61=423400,p62=0,p63=0,p64=0,p65="MinorMetal",p66=6350,p67="BioticResource",p68=5715,p69=0,p70=0,p71=6450,p72=1,p73=0,p74=1},
+  {p50=820,p51=0,p52=11,p53=15657800,p54=227030,p55=148,p56=3,p57=161,p58="MinorMetal",p59=539400,p60="BioticResource",p61=485500,p62=0,p63=0,p64=0,p65="MinorMetal",p66=7820,p67="BioticResource",p68=7039,p69=0,p70=0,p71=7170,p72=1,p73=0,p74=1},
   {p50=821,p51=0,p52=3,p53=173e3,p54=3650,p55=34,p56=0,p57=0,p58="CommonMetal",p59=1e3,p60="MinorMetal",p61=500,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=36,p72=1,p73=0,p74=1},
   {p50=822,p51=0,p52=5,p53=804e3,p54=7e3,p55=58,p56=0,p57=0,p58="CommonMetal",p59=6e3,p60="MinorMetal",p61=3500,p62=0,p63=0,p64=0,p65="CommonMetal",p66=150,p67="MinorMetal",p68=80,p69=0,p70=0,p71=150,p72=1,p73=0,p74=1},
   {p50=823,p51=0,p52=6,p53=1689520,p54=8800,p55=73,p56=4,p57=60,p58="CommonMetal",p59=15e3,p60="MinorMetal",p61=8e3,p62=0,p63=0,p64=0,p65="CommonMetal",p66=300,p67="MinorMetal",p68=160,p69=0,p70=0,p71=2130,p72=1,p73=0,p74=1},
@@ -955,8 +989,8 @@ this.equipDevTable={
   {p50=874,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   {p50=875,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   --<RETAILPATCH 1.10
-  --RETAILPATCH 1.0.11>
-  {p50=876,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=5,p72=1,p73=0,p74=1},
+  --RETAILPATCH 1.0.11>  
+  {p50=876,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   {p50=877,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   {p50=878,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   {p50=879,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
@@ -980,9 +1014,28 @@ this.equipDevTable={
   {p50=897,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   {p50=898,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
   {p50=899,p51=0,p52=1,p53=1e3,p54=0,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=8640,p72=1,p73=0,p74=1},
-  {p50=900,p51=0,p52=10,p53=8077e3,p54=100960,p55=94,p56=3,p57=105,p58="PreciousMetal",p59=88700,p60="Plant2000",p61=19700,p62=0,p63=0,p64=0,p65="PreciousMetal",p66=1100,p67="Plant2000",p68=730,p69=0,p70=0,p71=1,p72=1,p73=0,p74=1},
-  {p50=901,p51=0,p52=11,p53=8077e3,p54=100960,p55=94,p56=3,p57=105,p58="PreciousMetal",p59=88700,p60="Plant2000",p61=19700,p62=0,p63=0,p64=0,p65="PreciousMetal",p66=1100,p67="Plant2000",p68=730,p69=0,p70=0,p71=1,p72=1,p73=0,p74=1},
-  {p50=902,p51=0,p52=12,p53=8077e3,p54=100960,p55=94,p56=3,p57=105,p58="PreciousMetal",p59=88700,p60="Plant2000",p61=19700,p62=0,p63=0,p64=0,p65="PreciousMetal",p66=1100,p67="Plant2000",p68=730,p69=0,p70=0,p71=1,p72=1,p73=0,p74=1},
+  {p50=900,p51=0,p52=10,p53=8259300,p54=111500,p55=93,p56=3,p57=106,p58="CommonMetal",p59=166e3,p60="MinorMetal",p61=115e3,p62=0,p63=0,p64=0,p65="CommonMetal",p66=2240,p67="MinorMetal",p68=1552,p69=0,p70=0,p71=4290,p72=1,p73=0,p74=1},
+  {p50=901,p51=0,p52=11,p53=17174300,p54=249020,p55=132,p56=4,p57=145,p58="BioticResource",p59=618200,p60="PreciousMetal",p61=214e3,p62=0,p63=0,p64=0,p65="BioticResource",p66=8960,p67="PreciousMetal",p68=3103,p69=0,p70=0,p71=10050,p72=1,p73=0,p74=1},
+  {p50=902,p51=0,p52=12,p53=21258600,p54=308240,p55=149,p56=5,p57=160,p58="PreciousMetal",p59=365100,p60="FuelResource",p61=505500,p62=0,p63=0,p64=0,p65="PreciousMetal",p66=5290,p67="FuelResource",p68=7329,p69=0,p70=0,p71=14370,p72=1,p73=0,p74=1},
+--<
+--RETAILPATCH: 1.0.13>
+  {p50=903,p51=0,p52=7,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=904,p51=0,p52=8,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=905,p51=0,p52=10,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=906,p51=0,p52=11,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=907,p51=0,p52=7,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=908,p51=0,p52=8,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=909,p51=0,p52=10,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=910,p51=0,p52=11,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=911,p51=0,p52=7,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=912,p51=0,p52=8,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=913,p51=0,p52=9,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=914,p51=0,p52=7,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=915,p51=0,p52=9,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=916,p51=0,p52=11,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=917,p51=0,p52=7,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=918,p51=0,p52=9,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
+  {p50=919,p51=0,p52=11,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
 --<
 }
 

@@ -227,6 +227,16 @@ this.DamageParameter={
   {TppDamage.ATK_FlyingDisc,10,10,10,0,0,0,0,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Throwing,1e3,0,350},
   {TppDamage.ATK_Kibidango,10,10,10,0,0,0,0,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Throwing,1e3,0,350},
   {TppDamage.ATK_SmokeGrenade,0,0,0,0,0,0,0,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,TppDamage.DAM_SOURCE_Throwing,0,0,0},
+  --RETAILPATCH 1.0.13>
+  {TppDamage.ATK_DarkMatter,100,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,100,0,1200},
+  {TppDamage.ATK_DarkMatter_G01,100,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,100,0,1200},
+  {TppDamage.ATK_DarkMatter_G02,200,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,200,0,1200},
+  {TppDamage.ATK_DarkMatter_G03,200,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,200,0,1200},
+  {TppDamage.ATK_StunDarkMatter,0,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,0,100,1200},
+  {TppDamage.ATK_StunDarkMatter_G01,0,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,0,100,1200},
+  {TppDamage.ATK_StunDarkMatter_G02,0,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,0,200,1200},
+  {TppDamage.ATK_StunDarkMatter_G03,0,0,0,0,0,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Placed,0,200,1200},
+  --<
   {TppDamage.ATK_StunArm,0,0,0,1e5,100,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,TppDamage.DAM_SOURCE_Arm,0,3e3,1200},
   {TppDamage.ATK_StunArm_G1,0,0,0,1e5,100,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,TppDamage.DAM_SOURCE_Arm,0,3500,1200},
   {TppDamage.ATK_StunArm_G2,0,0,0,1e5,100,1,1,TppDamage.INJ_TYPE_NONE,TppDamage.INJ_PART_NONE,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,TppDamage.DAM_SOURCE_Arm,0,3500,1e3},
@@ -384,6 +394,10 @@ this.DamageParameter={
   {TppDamage.ATK_BossQuiet_sr_010,2500,5200,5e3,0,0,1100,4e3,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,500,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Boss,5200,0,600},
   {TppDamage.ATK_Pr_sr_010,1800,4500,5e3,0,0,1100,1100,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,50,20,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Boss,4500,0,600},
   {TppDamage.ATK_EX_sr_000,6e3,1500,250,0,0,1100,1100,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,50,20,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,TppDamage.DAM_SOURCE_Antimaterial,4e3,0,2200},
+  --RETAILPATCH 1.0.13>
+  {TppDamage.ATK_60605,1800,1500,250,0,0,1100,1100,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,50,20,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,TppDamage.DAM_SOURCE_Sniper,1800,0,600},
+  {TppDamage.ATK_60615,0,0,0,1750,245,0,0,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,50,20,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,TppDamage.DAM_SOURCE_Sniper,0,900,600},
+  --<
   {TppDamage.ATK_FOB_60325,0,0,0,1250,245,0,0,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,50,20,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Sniper,0,1250,600},
   {TppDamage.ATK_70002,750,500,40,0,0,300,150,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,15,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Machinegun,680,0,400},
   {TppDamage.ATK_70009,750,500,40,0,0,300,150,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,15,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_Machinegun,680,0,400},

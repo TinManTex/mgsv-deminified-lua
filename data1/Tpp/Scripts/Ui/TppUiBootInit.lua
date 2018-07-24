@@ -30,7 +30,7 @@ if TppGameSequence.GetTargetArea()=="ChinaKorea"then--RETAILPATCH: 1006 added _c
   LanguageBlock.Create(670*1024)--RETAILPATCH 1.10 sizebump
   LanguageBlock.Create(96*1024)
 else
-  LanguageBlock.Create(690*1024)--RETAILPATCH 1.10 sizebump
+  LanguageBlock.Create(710*1024)--RETAILPATCH 1.13 sizebump
   LanguageBlock.Create(96*1024)
 end
 if Fox.GetPlatformName()=="Windows"then

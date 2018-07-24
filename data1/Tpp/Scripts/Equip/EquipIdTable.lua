@@ -147,6 +147,7 @@ this.equipTable={
   {TppEquip.EQP_AM_70127,TppEquip.EQP_TYPE_Ammo,0,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/parts/weapon/amo/am07_main5_def_v00.parts",""},
   {TppEquip.EQP_BL_ms02Fulton,TppEquip.EQP_TYPE_Bullet,TppEquip.BL_ms02Fulton,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/parts/weapon/mis/ms02_ammo1_def_v00.parts",""},
   {TppEquip.EQP_AM_EX_hg_010,TppEquip.EQP_TYPE_Ammo,0,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/weapon/hag/Scenes/hg06_ammo1_def.fmdl",""},
+  {TppEquip.EQP_AM_60605,TppEquip.EQP_TYPE_Ammo,0,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/weapon/amo/Scenes/am09_main1_def.fmdl",""},--RETAILPATCH 1.0.13
   {TppEquip.EQP_BL_HgGrenade,TppEquip.EQP_TYPE_Bullet,TppEquip.BL_HgGrenade,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/parts/weapon/hag/hg09_ammo1_def_v00.parts",""},
   {TppEquip.EQP_BL_HgSmoke,TppEquip.EQP_TYPE_Bullet,TppEquip.BL_HgSmoke,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/parts/weapon/hag/hg09_ammo0_def_v00.parts",""},
   {TppEquip.EQP_BL_HgSleep,TppEquip.EQP_TYPE_Bullet,TppEquip.BL_HgSleep,TppEquip.EQP_BLOCK_NONE,"/Assets/tpp/parts/weapon/hag/hg09_ammo0_def_v00.parts",""},
@@ -552,6 +553,23 @@ this.equipTable={
   {TppEquip.EQP_SWP_WormholePortal_G01,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_WormholePortal_G01,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt01_main1_def_v00.parts",""},
   {TppEquip.EQP_SWP_WormholePortal_G02,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_WormholePortal_G02,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt01_main1_def_v00.parts",""},
   {TppEquip.EQP_SWP_WormholePortal_G03,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_WormholePortal_G03,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt01_main1_def_v00.parts",""},
+  --<
+  --RETAILPATCH: 1.0.13>
+  {TppEquip.EQP_WP_60605,TppEquip.EQP_TYPE_Sniper,TppEquip.WP_60605,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/snr/sr07_main0_def_v00.parts","/Assets/tpp/pack/collectible/special/EQP_WP_60605.fpk"},
+  {TppEquip.EQP_WP_60606,TppEquip.EQP_TYPE_Sniper,TppEquip.WP_60606,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/snr/sr07_main0_def_v00.parts","/Assets/tpp/pack/collectible/special/EQP_WP_60605.fpk"},
+  {TppEquip.EQP_WP_60607,TppEquip.EQP_TYPE_Sniper,TppEquip.WP_60607,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/snr/sr07_main0_def_v00.parts","/Assets/tpp/pack/collectible/special/EQP_WP_60605.fpk"},
+  {TppEquip.EQP_WP_60615,TppEquip.EQP_TYPE_Sniper,TppEquip.WP_60615,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/snr/sr07_main0_def_v00.parts","/Assets/tpp/pack/collectible/special/EQP_WP_60605.fpk"},
+  {TppEquip.EQP_WP_60616,TppEquip.EQP_TYPE_Sniper,TppEquip.WP_60616,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/snr/sr07_main0_def_v00.parts","/Assets/tpp/pack/collectible/special/EQP_WP_60605.fpk"},
+  {TppEquip.EQP_WP_60617,TppEquip.EQP_TYPE_Sniper,TppEquip.WP_60617,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/snr/sr07_main0_def_v00.parts","/Assets/tpp/pack/collectible/special/EQP_WP_60605.fpk"},
+  {TppEquip.EQP_SWP_DarkMatter,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_DarkMatter,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main0_def_v00.parts",""},
+  {TppEquip.EQP_SWP_DarkMatter_G01,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_DarkMatter_G01,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main0_def_v00.parts",""},
+  {TppEquip.EQP_SWP_DarkMatter_G02,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_DarkMatter_G02,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main0_def_v00.parts",""},
+  {TppEquip.EQP_SWP_DarkMatter_G03,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_DarkMatter_G03,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main0_def_v00.parts",""},
+  {TppEquip.EQP_SWP_StunDarkMatter,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_StunDarkMatter,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main1_def_v00.parts",""},
+  {TppEquip.EQP_SWP_StunDarkMatter_G01,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_StunDarkMatter_G01,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main1_def_v00.parts",""},
+  {TppEquip.EQP_SWP_StunDarkMatter_G02,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_StunDarkMatter_G02,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main1_def_v00.parts",""},
+  {TppEquip.EQP_SWP_StunDarkMatter_G03,TppEquip.EQP_TYPE_Placed,TppEquip.SWP_StunDarkMatter_G03,TppEquip.EQP_BLOCK_COMMON,"/Assets/tpp/parts/weapon/put/pt20_main1_def_v00.parts",""},
+  {TppEquip.EQP_IT_Barrier,TppEquip.EQP_TYPE_Item,0,TppEquip.EQP_BLOCK_COMMON,"",""},
   --<
 }
 TppEquip.ReloadEquipIdTable(this.equipTable)--tex
