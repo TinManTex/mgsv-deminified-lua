@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppEnemy.lua
 local this={}
 local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local IsTypeFunc=Tpp.IsTypeFunc
@@ -11,8 +12,9 @@ local GAME_OBJECT_TYPE_VEHICLE=TppGameObject.GAME_OBJECT_TYPE_VEHICLE
 local NULL_ID=GameObject.NULL_ID
 local SendCommand=GameObject.SendCommand
 --ORPHAN local DEBUG_StrCode32ToString=Tpp.DEBUG_StrCode32ToString
-local questCp="quest_cp"
+local quest_cpStr="quest_cp"
 local EnemySubType=EnemySubType or{}
+local tostring=tostring--tex
 
 local function RENAMEsomeFunction(i)--tex NMC: cant actually find reference to function, it looks similar to setsolidertype/subtype
   local e={}
@@ -336,18 +338,6 @@ this.weaponIdTable={
       SHIELD=TppEquip.EQP_SLD_SV
     }
   },
-  WILDCARD={--tex> dd max grades except for noted
-    NORMAL={
-      HANDGUN=TppEquip.EQP_WP_West_hg_030,--geist p3 machine pistol grade 4 - shows shotgun icon but clearly isnt,
-      SMG=TppEquip.EQP_WP_West_sm_01b,
-      ASSAULT=TppEquip.EQP_WP_West_ar_05b,
-      SNIPER=TppEquip.EQP_WP_EX_sr_000,--molotok-68 grade 9
-      SHOTGUN=TppEquip.EQP_WP_Com_sg_018,
-      MG=TppEquip.EQP_WP_West_mg_03b,--alm48 flashlight grade 4 --TppEquip.EQP_WP_West_mg_037,
-      MISSILE=TppEquip.EQP_WP_Com_ms_02b,
-      SHIELD=TppEquip.EQP_SLD_DD_01,
-    },
-  },--<
   PF_A={
     NORMAL={
       HANDGUN=TppEquip.EQP_WP_West_hg_010,
@@ -439,13 +429,15 @@ this.weaponIdTable={
       SHOTGUN=TppEquip.EQP_WP_Com_sg_020,
       MG=TppEquip.EQP_WP_West_mg_020,
       MISSILE=TppEquip.EQP_WP_Com_ms_010,
-      SHIELD=TppEquip.EQP_SLD_PF_02}},
+      SHIELD=TppEquip.EQP_SLD_PF_02
+    }
+  },
   CHILD={
     NORMAL={
       HANDGUN=TppEquip.EQP_WP_East_hg_010,
       ASSAULT=TppEquip.EQP_WP_East_ar_020}
   }
-}
+}--weaponIdTable
 this.gunLightWeaponIds={
   [TppEquip.EQP_WP_Com_sg_011]=TppEquip.EQP_WP_Com_sg_011_FL,
   [TppEquip.EQP_WP_Com_sg_020]=TppEquip.EQP_WP_Com_sg_020_FL,
@@ -753,7 +745,7 @@ function this._GetSoldierType(soldierId)--tex was GetSoldierType
     if missionCode==10080 or missionCode==11080 then
       return EnemyType.TYPE_PF
     end
-    --NMC: used for quest enemies and a few story missions
+    --NMC: just return the first found
     for n,soldierType in pairs(mvars.ene_soldierTypes)do
       if soldierType then
         return soldierType--NMC: no soliderid so just default to first type
@@ -805,6 +797,7 @@ function this.GetSoldierSubType(soldierId,soldierType)
     if bodyInfo.soldierSubType then
       return bodyInfo.soldierSubType
     else
+      --tex TODO: DOCUMENT, why am I defaulting to DD_FOB?
       return "DD_FOB"
     end
   end
@@ -966,9 +959,11 @@ function this.SetUpDDParameter()
   local stunId=this.weaponIdTable.DD.NORMAL.STUN_GRENADE or TppEquip.EQP_None
   GameObject.SendCommand({type="TppSoldier2"},{id="RegistGrenadeId",grenadeId=grenadeId,stunId=stunId})
 end
+--CALLERS: TppRevenge._AllocateResources, TppEnemy.GetWeaponId
+--REWORKED
 function this.GetWeaponIdTable(soldierType,soldierSubType)
-  --ORPHAN local n={}
-  local weaponIdTable={}
+  local weaponIdTable=this.weaponIdTable
+  local soldierWeaponIdTable={}
 
   if IvarProc.EnabledForMission("customWeaponTable") then--tex>
     return this.weaponIdTable.CUSTOM
@@ -976,31 +971,69 @@ function this.GetWeaponIdTable(soldierType,soldierSubType)
   if soldierSubType=="SOVIET_WILDCARD" or soldierSubType=="PF_WILDCARD"then--tex>
     return this.weaponIdTable.WILDCARD
   end--<
+  if InfMission then--tex> allow custom missions prefered weaponIdTable
+    soldierWeaponIdTable=InfMission.GetSoldierWeaponIdTable(soldierType,soldierSubType)--GOTCHA: missioninfo weaponIdTable is a actually weaponIdTable soldier type sub table
+    if soldierWeaponIdTable then
+      return soldierWeaponIdTable
+    end
+  end--<
+  
+  weaponIdTable=InfWeaponIdTable.GetWeaponIdTable()--tex will return this.weaponIdTable if default
 
   if soldierType==EnemyType.TYPE_SOVIET then
-    weaponIdTable=this.weaponIdTable.SOVIET_A
+    soldierWeaponIdTable=weaponIdTable.SOVIET_A
   elseif soldierType==EnemyType.TYPE_PF then
-    weaponIdTable=this.weaponIdTable.PF_A
+    soldierWeaponIdTable=weaponIdTable.PF_A
     if soldierSubType=="PF_B"then
-      weaponIdTable=this.weaponIdTable.PF_B
+      soldierWeaponIdTable=weaponIdTable.PF_B
     elseif soldierSubType=="PF_C"then
-      weaponIdTable=this.weaponIdTable.PF_C
+      soldierWeaponIdTable=weaponIdTable.PF_C
     end
   elseif soldierType==EnemyType.TYPE_DD then
-    weaponIdTable=this.weaponIdTable.DD
+    soldierWeaponIdTable=weaponIdTable.DD
   elseif soldierType==EnemyType.TYPE_SKULL then
     if soldierSubType=="SKULL_CYPR"then
-      weaponIdTable=this.weaponIdTable.SKULL_CYPR
+      soldierWeaponIdTable=weaponIdTable.SKULL_CYPR
     else
-      weaponIdTable=this.weaponIdTable.SKULL
+      soldierWeaponIdTable=weaponIdTable.SKULL
     end
   elseif soldierType==EnemyType.TYPE_CHILD then
-    weaponIdTable=this.weaponIdTable.CHILD
+    soldierWeaponIdTable=weaponIdTable.CHILD
   else
-    weaponIdTable=this.weaponIdTable.SOVIET_A
+    soldierWeaponIdTable=weaponIdTable.SOVIET_A
   end
-  return weaponIdTable
+  
+  return soldierWeaponIdTable
 end
+--ORIG:
+--function this.GetWeaponIdTable(soldierType,soldierSubType)
+--  --ORPHAN local n={}
+--  local weaponIdTable={}
+--  if soldierType==EnemyType.TYPE_SOVIET then
+--    weaponIdTable=this.weaponIdTable.SOVIET_A
+--  elseif soldierType==EnemyType.TYPE_PF then
+--    weaponIdTable=this.weaponIdTable.PF_A
+--    if soldierSubType=="PF_B"then
+--      weaponIdTable=this.weaponIdTable.PF_B
+--    elseif soldierSubType=="PF_C"then
+--      weaponIdTable=this.weaponIdTable.PF_C
+--    end
+--  elseif soldierType==EnemyType.TYPE_DD then
+--    weaponIdTable=this.weaponIdTable.DD
+--  elseif soldierType==EnemyType.TYPE_SKULL then
+--    if soldierSubType=="SKULL_CYPR"then
+--      weaponIdTable=this.weaponIdTable.SKULL_CYPR
+--    else
+--      weaponIdTable=this.weaponIdTable.SKULL
+--    end
+--  elseif soldierType==EnemyType.TYPE_CHILD then
+--    weaponIdTable=this.weaponIdTable.CHILD
+--  else
+--    weaponIdTable=this.weaponIdTable.SOVIET_A
+--  end
+--  
+--  return weaponIdTable
+--end
 --tex REWORKED
 local weaponTypes={
   primary={
@@ -1048,7 +1081,7 @@ function this.GetWeaponId(soldierId,config)
     end
   end
 
-  --tex> table/bag support
+  --tex> tables with multiple equipIds per weapon category have a id randomly picked
   for slotName,weaponId in pairs(weapons)do
     if Tpp.IsTypeTable(weaponId) then
       if weaponId.bag then
@@ -1960,7 +1993,7 @@ function this.IsActiveSoldierInRange(pos,range)
 end
 function this._SetOutOfArea(soldierNames,outOfAreaList)
   if IsTypeTable(soldierNames)then
-    for a,soldierNames in ipairs(soldierNames)do
+    for i,soldierNames in ipairs(soldierNames)do
       this._SetOutOfArea(soldierNames,outOfAreaList)
     end
   else
@@ -2308,19 +2341,19 @@ function this.UnsetAlertRoute(soldierId)
     SendCommand(soldierId,{id="SetAlertRoute",enabled=false,route=""})
   end
 end
-function this.RegistRoutePointMessage(unk1)
-  InfCore.Log("WARNING -------!!!!!!!!!!!RegistRoutePointMessage")--tex DEBUGNOW cant see any calls to this, check if from engine (but even if so I would have expected to see some kind setfunc referencing it then)
-  InfCore.PrintInspect(unk1,"unk1")--tex DEBUGNOW
-  if not IsTypeTable(unk1)then
+function this.RegistRoutePointMessage(routePointMessages)
+  InfCore.Log("WARNING !RegistRoutePointMessage Called!")--tex DEBUG cant see any calls to this, check if from engine (but even if so I would have expected to see some kind setfunc referencing it then)
+  InfCore.PrintInspect(routePointMessages,"routePointMessages")--tex DEBUG
+  if not IsTypeTable(routePointMessages)then
     return
   end
   mvars.ene_routePointMessage=mvars.ene_routePointMessage or{}
   mvars.ene_routePointMessage.main=mvars.ene_routePointMessage.main or{}
   mvars.ene_routePointMessage.sequence=mvars.ene_routePointMessage.sequence or{}
   local messages={}
-  messages[StrCode32"GameObject"]=Tpp.StrCode32Table(unk1.messages)
+  messages[StrCode32"GameObject"]=Tpp.StrCode32Table(routePointMessages.messages)
   local messageExecTable=(Tpp.MakeMessageExecTable(messages))[StrCode32"GameObject"]
-  local sequenceName=unk1.sequenceName
+  local sequenceName=routePointMessages.sequenceName
   if sequenceName then
     mvars.ene_routePointMessage.sequence[sequenceName]=mvars.ene_routePointMessage.sequence[sequenceName]or{}
     Tpp.MergeTable(mvars.ene_routePointMessage.sequence[sequenceName],messageExecTable,true)
@@ -2340,7 +2373,8 @@ function this.IsOuterBaseCp(cpId)
   end
   return mvars.ene_outerBaseCpList[cpId]
 end
-function this.ChangeRouteSets(routeSets,a)
+--CALLER: From a few events/moments in mission scripts
+function this.ChangeRouteSets(routeSets,unk2)
   mvars.ene_routeSetsTemporary=mvars.ene_routeSets
   mvars.ene_routeSetsPriorityTemporary=mvars.ene_routeSetsPriority
   this.MergeRouteSetDefine(routeSets)
@@ -2922,12 +2956,12 @@ function this.RestoreOnContinueFromCheckPoint2()
   --a manual unrealize will fix that, but may just send it into an actual lostcontrol
   --others may be flying, but with the lostcontrol sounds
   --see NMC note in RestoreOnMissionStart2 for more
-  if InfNPCHeli and not IvarProc.EnabledForMission("attackHeliPatrols") then
-    if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
-      local typeHeli={type="TppEnemyHeli"}
-      SendCommand(typeHeli,{id="RestoreFromSVars"})
-    end
+  --if InfNPCHeli==nil or not IvarProc.EnabledForMission("attackHeliPatrols") then--DEBUGNOW I disabled this, am I no longer having the problem or what?
+  if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
+    local typeHeli={type="TppEnemyHeli"}
+    SendCommand(typeHeli,{id="RestoreFromSVars"})
   end
+  --end
   if GameObject.GetGameObjectIdByIndex("TppVehicle2",0)~=NULL_ID then
     SendCommand({type="TppVehicle2"},{id="RestoreFromSVars"})
   end
@@ -2965,11 +2999,11 @@ function this.StoreSVars(_markerOnly)
   end
   this._StoreSVars_Hostage(markerOnly)
   --tex WORKAROUND added bypass, see restore
-  if InfNPCHeli and not IvarProc.EnabledForMission("attackHeliPatrols") then
-    if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
-      SendCommand({type="TppEnemyHeli"},{id="StoreToSVars"})
-    end
+  --DEBUGNOW if InfNPCHeli==nil or not IvarProc.EnabledForMission("attackHeliPatrols") then
+  if GameObject.GetGameObjectIdByIndex("TppEnemyHeli",0)~=NULL_ID then
+    SendCommand({type="TppEnemyHeli"},{id="StoreToSVars"})
   end
+  --  end
   if GameObject.GetGameObjectIdByIndex("TppVehicle2",0)~=NULL_ID then
     SendCommand({type="TppVehicle2"},{id="StoreToSVars"})
   end
@@ -3129,6 +3163,7 @@ function this.DefineSoldiers(soldierDefine)
     end
   end
 end
+--CALLER: TppMain.OnInitialize
 function this.SetUpSoldiers()
   if not IsTypeTable(mvars.ene_soldierDefine)then
     return
@@ -3267,16 +3302,17 @@ function this.AssignSoldiersToCP()
     end
   end
 end
+--NMC: don't actually know what cp groups are used for
 function this.InitCpGroups()
   mvars.ene_cpGroups={}
 end
-function this.RegistCpGroups(n)
+function this.RegistCpGroups(cpGroups)
   this.SetCommonCpGroups()
-  if IsTypeTable(n)then
-    for e,n in pairs(n)do
-      mvars.ene_cpGroups[e]=mvars.ene_cpGroups[e]or{}
-      for t,n in pairs(n)do
-        table.insert(mvars.ene_cpGroups[e],n)
+  if IsTypeTable(cpGroups)then
+    for group,cpList in pairs(cpGroups)do
+      mvars.ene_cpGroups[group]=mvars.ene_cpGroups[group]or{}
+      for i,cpName in pairs(cpList)do
+        table.insert(mvars.ene_cpGroups[group],cpName)
       end
     end
   end
@@ -3285,12 +3321,12 @@ function this.SetCommonCpGroups()
   if not IsTypeTable(mvars.loc_locationCommonCpGroups)then
     return
   end
-  for n,t in pairs(mvars.loc_locationCommonCpGroups)do
-    if IsTypeTable(t)then
-      mvars.ene_cpGroups[n]={}
-      for e,a in pairs(mvars.ene_soldierDefine)do
-        if t[e]then
-          table.insert(mvars.ene_cpGroups[n],e)
+  for group,cps in pairs(mvars.loc_locationCommonCpGroups)do
+    if IsTypeTable(cps)then
+      mvars.ene_cpGroups[group]={}
+      for cpName,soldierList in pairs(mvars.ene_soldierDefine)do
+        if cps[cpName]then
+          table.insert(mvars.ene_cpGroups[group],cpName)
         end
       end
     end
@@ -3386,6 +3422,7 @@ end
 function this.GetCpIntelTrapTable()
   return mvars.ene_cpIntelTrapTable
 end
+--CALLER: RouteSelector
 function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
 
   local SetForTime=function(cpId,timeOfDay)
@@ -3394,8 +3431,8 @@ function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
     end
     local routeSetType="sneak"..("_"..timeOfDay)
     if cpId then
-      local n=not next(mvars.ene_routeSets[cpId].sneak_midnight)
-      if routeSetType=="sneak_midnight"and n then
+      local noMidnightRoutes=not next(mvars.ene_routeSets[cpId].sneak_midnight)
+      if routeSetType=="sneak_midnight"and noMidnightRoutes then
         routeSetType="sneak_night"
       end
     end
@@ -3430,35 +3467,38 @@ function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
     end
   end
   return routeSetType
-end
-
-function this.GetPrioritizedRouteTable(cpId,routeSet,routeSetsPriorities,routeSetTagStr32)
+end--GetCurrentRouteSetType
+--CALLER: RouteSelector (though there's a Fox.Log warning in mtbs_enemy.GetRouteSetPriority mentioning it(via ene_funcRouteSetPriority -v-))
+--routeSet: routeSet for cp (mvars.ene_routeSets[cpId])
+--routeSetsPriorities: mvars.ene_routeSetsPriority
+function this.GetPrioritizedRouteTable(cpId,routesForGroup,routeSetsPriority,routeSetTagStr32)
   local routeList={}
-  local cpPriorities=routeSetsPriorities[cpId]
-  if not IsTypeTable(cpPriorities)then
+  local routeSetsPriorityForCp=routeSetsPriority[cpId]
+  if not IsTypeTable(routeSetsPriorityForCp)then
     return
   end
   if mvars.ene_funcRouteSetPriority then
     --NMC only mtbs_enemy.GetRouteSetPriority = function( cpGameObjectId, routeSetListInPlants, plantTables, sysPhase )
-    routeList=mvars.ene_funcRouteSetPriority(cpId,routeSet,routeSetsPriorities,routeSetTagStr32)
+    routeList=mvars.ene_funcRouteSetPriority(cpId,routesForGroup,routeSetsPriority,routeSetTagStr32)
   else
     local maxRoutes=0
-    for i,groupName in ipairs(cpPriorities)do
-      if routeSet[groupName]then
-        local numRoutes=#routeSet[groupName]
+    for i,groupName in ipairs(routeSetsPriorityForCp)do
+      if routesForGroup[groupName]then
+        local numRoutes=#routesForGroup[groupName]
         if numRoutes>maxRoutes then
           maxRoutes=numRoutes
         end
       end
     end
-    --NMC GOTCHA, subtle difference from above not IsTable(route). thanks NasaNhak.
-    --this leads to routes in a table (sniper routes, since they are bundled with some other into) being added first
+
+    --NMC GOTCHA, subtle difference from following not IsTable(route). thanks NasaNhak.
+    --this leads to routes in a table (sniper routes, since they are bundled with some other info) being added first
     local routeNum=1
     for i=1,maxRoutes do
-      for j,groupName in ipairs(cpPriorities)do
-        local routes=routeSet[groupName]
-        if routes then
-          local route=routes[i]
+      for j,groupName in ipairs(routeSetsPriorityForCp)do
+        local routesForGroup=routesForGroup[groupName]
+        if routesForGroup then
+          local route=routesForGroup[i]
           if route and Tpp.IsTypeTable(route)then
             routeList[routeNum]=route
             routeNum=routeNum+1
@@ -3467,8 +3507,8 @@ function this.GetPrioritizedRouteTable(cpId,routeSet,routeSetsPriorities,routeSe
       end
     end
     for i=1,maxRoutes do
-      for j,groupName in ipairs(cpPriorities)do
-        local routes=routeSet[groupName]
+      for j,groupName in ipairs(routeSetsPriorityForCp)do
+        local routes=routesForGroup[groupName]
         if routes then
           local route=routes[i]
           if route and not Tpp.IsTypeTable(route)then
@@ -3479,10 +3519,18 @@ function this.GetPrioritizedRouteTable(cpId,routeSet,routeSetsPriorities,routeSe
       end
     end
   end
+  if this.debugModule then--tex>
+    InfCore.PrintInspect(routeList, "TppEnemy.GetPrioritizedRouteTable routeList")
+  end--<
   return routeList
-end
---NMC called from engine (set up in SetUpCommandPost)
+end--GetPrioritizedRouteTable
+--NMC called from engine with different cpids. Set up in SetUpCommandPost. Seems like it initially called right then. then at what other points?
+--see mvars.ene_routeSets, which is a transformed <mission script>_enemy.routeSets and mvars.ene_routeSetsPriority for the main drivers of these functions
 function this.RouteSelector(cpId,routeTypeTagStr32,routeSetTagStr32)
+  --InfCore.PCallDebug(function(cpId,routeTypeTagStr32,routeSetTagStr32)--tex kills function for some reason
+  if this.debugModule then--tex>
+    InfCore.LogFlow("TppEnemy.RouteSelector: cpId:"..InfLookup.CpNameForCpId(cpId).." routeTypeTag:"..InfLookup.StrCode32ToString(routeTypeTagStr32).." routeSetTag:"..tostring(InfLookup.StrCode32ToString(routeSetTagStr32)))
+  end--<
   local routeSetForCp=mvars.ene_routeSets[cpId]
   if routeSetForCp==nil then
     return{"dummyRoute"}
@@ -3490,34 +3538,91 @@ function this.RouteSelector(cpId,routeTypeTagStr32,routeSetTagStr32)
   if routeSetTagStr32==StrCode32"immediately"then
     if routeTypeTagStr32==StrCode32"old"then
       local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
       return this.GetPrioritizedRouteTable(cpId,mvars.ene_routeSetsTemporary[cpId][currentRouteSetType],mvars.ene_routeSetsPriorityTemporary)
     else
       local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
       return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority)
     end
   end
   if routeSetTagStr32==StrCode32"SYS_Sneak"then
-    local sneakRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.SNEAK,cpId)
-    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[sneakRouteSetType],mvars.ene_routeSetsPriority,routeSetTagStr32)
+    local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.SNEAK,cpId)
+    if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
+    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority,routeSetTagStr32)
   end
   if routeSetTagStr32==StrCode32"SYS_Caution"then
-    local cautionRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.CAUTION,cpId)
-    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[cautionRouteSetType],mvars.ene_routeSetsPriority,routeSetTagStr32)
+    local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.CAUTION,cpId)
+    if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
+    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority,routeSetTagStr32)
   end
   local currentRouteSetType=this.GetCurrentRouteSetType(routeTypeTagStr32,this.GetPhaseByCPID(cpId),cpId)
+  if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
   local routesForTag=routeSetForCp[currentRouteSetType][routeSetTagStr32]
   if routesForTag then
     return routesForTag
   else
     if currentRouteSetType=="hold"then
       local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
       return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority)
     else
       local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
+      if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
       return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority)
     end
   end
-end
+  --end,cpId,routeTypeTagStr32,routeSetTagStr32)--tex
+end--RouteSelector
+--DEBUGNOW tex REWORKED UNUSED
+function this.RouteSelectorNEW(cpId,routeTypeTagStr32,routeSetTagStr32)
+  --InfCore.PCallDebug(function(cpId,routeTypeTagStr32,routeSetTagStr32)--tex DEBUGNOW
+  if this.debugModule then--tex>
+    InfCore.LogFlow("TppEnemy.RouteSelector: cpId:"..InfLookup.CpNameForCpId(cpId).." routeTypeTag:"..InfLookup.StrCode32ToString(routeTypeTagStr32).." routeSetTag:"..InfLookup.StrCode32ToString(routeSetTagStr32))
+  end--<
+  local routeSetForCp=mvars.ene_routeSets[cpId]
+  if routeSetForCp==nil then
+    return{"dummyRoute"}
+  end
+
+  local routeType=nil
+  local routeSetTagS32L=nil
+
+  local phase=this.GetPhaseByCPID(cpId)
+  if routeSetTagStr32==StrCode32"SYS_Sneak"then
+    phase=this.PHASE.SNEAK
+    routeSetTagS32L=routeSetTagStr32
+  elseif routeSetTagStr32==StrCode32"SYS_Caution"then
+    phase=this.PHASE.CAUTION
+    routeSetTagS32L=routeSetTagStr32
+  end
+
+
+  local routeSetForCp=mvars.ene_routeSets[cpId]
+  local routeSetsPriority=mvars.ene_routeSetsPriority
+
+  if routeSetTagStr32==StrCode32"immediately"then
+    if routeTypeTagStr32==StrCode32"old"then
+      routeSetForCp=mvars.ene_routeSetsTemporary[cpId]
+      routeSetsPriority=mvars.ene_routeSetsPriorityTemporary
+    end
+  end
+
+  local currentRouteSetType=this.GetCurrentRouteSetType(nil,phase,cpId)--returns string hold,sleep,travel,caution,sneak_night etc
+  local selectRouteTable=this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],routeSetsPriority,routeSetTagS32L)
+  if routeSetTagStr32==StrCode32"immediately" or routeSetTagStr32==StrCode32"SYS_Sneak" or routeSetTagStr32==StrCode32"SYS_Caution" then
+    return selectRouteTable
+  end
+
+  local currentRouteSetTypeForTag=this.GetCurrentRouteSetType(routeTypeTagStr32,phase,cpId)
+  local routesForTag=routeSetForCp[currentRouteSetTypeForTag][routeSetTagStr32]
+  if routesForTag then
+    return routesForTag
+  else
+    return selectRouteTable
+  end
+  --end,cpId,routeTypeTagStr32,routeSetTagStr32)--tex
+end--RouteSelectorNEW
 this.STR32_CAN_USE_SEARCH_LIGHT=StrCode32"CanUseSearchLight"
 this.STR32_CAN_NOT_USE_SEARCH_LIGHT=StrCode32"CanNotUseSearchLight"
 this.STR32_IS_GIMMICK_BROKEN=StrCode32"IsGimmickBroken"
@@ -3527,9 +3632,15 @@ function this.SetUpSwitchRouteFunc()
     return
   end
   SendCommand({type="TppSoldier2"},{id="SetSwitchRouteFunc",func=this.SwitchRouteFunc})
-end
-function this.SwitchRouteFunc(a,RENAMEgimmickState,gimmickName,a,a)
-  if RENAMEgimmickState==this.STR32_CAN_USE_SEARCH_LIGHT then
+end--SetUpSwitchRouteFunc
+--NMC called from engine (when?) (set up in SetUpSwitchRouteFunc, right there -^-)
+--unk4
+function this.SwitchRouteFunc(soldierId,gimmickStateS32,gimmickName,routeS32,unk5)
+  --InfCore.PCallDebug(function(unk1,RENAMEgimmickState,gimmickName,unk4,unk5)--tex
+  if this.debugModule then--tex>
+    InfCore.LogFlow("TppEnemy.SwitchRouteFunc "..InfLookup.ObjectNameForGameId(soldierId).." "..InfLookup.StrCode32ToString(gimmickStateS32).." "..InfLookup.StrCode32ToString(gimmickName).." "..InfLookup.StrCode32ToString(gimmickName).." "..InfLookup.StrCode32ToString(routeS32).." "..InfLookup.StrCode32ToString(unk5))--DEBUGNOW
+  end--<
+  if gimmickStateS32==this.STR32_CAN_USE_SEARCH_LIGHT then
     local gimmickId=mvars.gim_gimmackNameStrCode32Table[gimmickName]
     if TppGimmick.IsBroken{gimmickId=gimmickId}then
       return false
@@ -3540,7 +3651,7 @@ function this.SwitchRouteFunc(a,RENAMEgimmickState,gimmickName,a,a)
       return true
     end
   end
-  if RENAMEgimmickState==this.STR32_CAN_NOT_USE_SEARCH_LIGHT then
+  if gimmickStateS32==this.STR32_CAN_NOT_USE_SEARCH_LIGHT then
     local gimmickId=mvars.gim_gimmackNameStrCode32Table[gimmickName]
     if TppGimmick.IsBroken{gimmickId=gimmickId}then
       return true
@@ -3551,7 +3662,7 @@ function this.SwitchRouteFunc(a,RENAMEgimmickState,gimmickName,a,a)
       return false
     end
   end
-  if RENAMEgimmickState==this.STR32_IS_GIMMICK_BROKEN then
+  if gimmickStateS32==this.STR32_IS_GIMMICK_BROKEN then
     local gimmickId=mvars.gim_gimmackNameStrCode32Table[gimmickName]
     if TppGimmick.IsBroken{gimmickId=gimmickId}then
       return true
@@ -3559,7 +3670,7 @@ function this.SwitchRouteFunc(a,RENAMEgimmickState,gimmickName,a,a)
       return false
     end
   end
-  if RENAMEgimmickState==this.STR32_IS_NOT_GIMMICK_BROKEN then
+  if gimmickStateS32==this.STR32_IS_NOT_GIMMICK_BROKEN then
     local gimmickId=mvars.gim_gimmackNameStrCode32Table[gimmickName]
     if TppGimmick.IsBroken{gimmickId=gimmickId}then
       return false
@@ -3568,7 +3679,8 @@ function this.SwitchRouteFunc(a,RENAMEgimmickState,gimmickName,a,a)
     end
   end
   return true
-end
+    --end,unk1,RENAMEgimmickState,gimmickName,unk4,unk5)--tex
+end--SwitchRouteFunc
 function this.SetUpCommandPost()
   if not IsTypeTable(mvars.ene_soldierIDList)then
     return
@@ -3639,7 +3751,10 @@ function this.MergeRouteSetDefine(routeSets)
     MergeRouteSets(cpName,_routeSet)
   end
 end
---mvars.ene_routeSetsDefine
+--CALLER: RegisterRouteSet, ChangeRouteSets
+--routeSets = mvars.ene_routeSetsDefine, some mission alternate routeset
+--SIDE/IN: ene_noShiftChangeGroupSetting
+--SIDE/IN/OUT: mvars. ene_routeSets, ene_routeSetsFixedShiftChange, ene_routeSetsPriority
 function this.UpdateRouteSet(routeSets)
   for cpName,routeSet in pairs(routeSets)do
     local cpId=GetGameObjectId(cpName)
@@ -3674,12 +3789,13 @@ function this.UpdateRouteSet(routeSets)
                 mvars.ene_routeSets[cpId][routeSetType][StrCode32(groupName)][j]=route
               end
             end
-          end
-        end
-      end
-    end
-  end
-end
+          end--for routeSet[routeSetType]
+        end--if routeSet[routeSetType]
+      end--for ROUTE_SET_TYPES
+    end--if cpId
+  end--for routesets
+end--UpdateRouteSet
+--CALLER: TppMain.OnInitialize,TppMain.OnReload
 --routeSets=missionTable.enemy.routeSets
 function this.RegisterRouteSet(routeSets)
   mvars.ene_routeSetsDefine={}
@@ -3705,21 +3821,21 @@ function this._InsertShiftChangeUnit(cpId,insertPos,shiftChangeUnit)
     end
   end
 end
-function this._GetShiftChangeRouteGroup(priorities,unk2,unk3,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
-  local e=(unk2-unk3)+1
-  local o=unk3
-  if fixedShiftChangeRouteSet[priorities[unk3]]then
-    e=o
+function this._GetShiftChangeRouteGroup(priorities,numPriorities,priorityIndex,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
+  local e=(numPriorities-priorityIndex)+1
+  local currentPriority=priorityIndex
+  if fixedShiftChangeRouteSet[priorities[priorityIndex]]then
+    e=currentPriority
   else
     local i=0
-    for a=1,unk3 do
+    for a=1,priorityIndex do
       if fixedShiftChangeRouteSet[priorities[a]]then
         i=i+1
       end
     end
     e=e+i
     local a=0
-    for i=e,unk2 do
+    for i=e,numPriorities do
       if fixedShiftChangeRouteSet[priorities[i]]then
         a=a+1
       end
@@ -3735,55 +3851,55 @@ function this._GetShiftChangeRouteGroup(priorities,unk2,unk3,hold,sleep,groupNam
     end
     e=e-i
   end
-  local a=priorities[e]
-  local t="default"
+  local unkGroup1=priorities[e]
+  local holdGroup="default"
   if hold[groupNameStr32]then
-    t=groupNameStr32
+    holdGroup=groupNameStr32
   end
-  local e=nil
+  local sleepGroup=nil
   if isSleep then
-    e="default"
+    sleepGroup="default"
     if sleep[groupNameStr32]then
-      e=groupNameStr32
+      sleepGroup=groupNameStr32
     end
   end
-  local n=priorities[o]
-  return a,t,e,n
+  local unkGroup4=priorities[currentPriority]
+  return unkGroup1,holdGroup,sleepGroup,unkGroup4
 end
-function this._MakeShiftChangeUnit(cpId,priorities,groupNameStr32,hold,isSleep,sleep,isMidnight,unk1,unk2,unk3,fixedShiftChangeRouteSet)
+function this._MakeShiftChangeUnit(cpId,priorities,groupNameStr32,hold,isSleep,sleep,isMidnight,numPriorities,priorityIndex,unkP10,fixedShiftChangeRouteSet)
   if mvars.ene_noShiftChangeGroupSetting[cpId]and mvars.ene_noShiftChangeGroupSetting[cpId][groupNameStr32]then
     return nil
   end
-  local n,i,e,a=this._GetShiftChangeRouteGroup(priorities,unk1,unk2,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
+  local unkGroup1,holdGroup,sleepGroup,unkGroup4=this._GetShiftChangeRouteGroup(priorities,numPriorities,priorityIndex,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
   local shiftChangeUnit={}
-  for shiftName,t in pairs(mvars.ene_shiftChangeTable[cpId])do
+  for shiftName,unkV1 in pairs(mvars.ene_shiftChangeTable[cpId])do
     shiftChangeUnit[shiftName]={}
   end
-  if(i~="default")or(IsTypeTable(hold[StrCode32"default"])and next(hold[StrCode32"default"]))then
-    shiftChangeUnit.shiftAtNight.start={"day",n}
-    shiftChangeUnit.shiftAtNight.hold={"hold",i}
+  if(holdGroup~="default")or(IsTypeTable(hold[StrCode32"default"])and next(hold[StrCode32"default"]))then
+    shiftChangeUnit.shiftAtNight.start={"day",unkGroup1}
+    shiftChangeUnit.shiftAtNight.hold={"hold",holdGroup}
     shiftChangeUnit.shiftAtNight.holdTime=mvars.ene_holdTimes[cpId]
-    shiftChangeUnit.shiftAtNight.goal={"night",a}
-    shiftChangeUnit.shiftAtMorning.hold={"hold",i}
+    shiftChangeUnit.shiftAtNight.goal={"night",unkGroup4}
+    shiftChangeUnit.shiftAtMorning.hold={"hold",holdGroup}
     shiftChangeUnit.shiftAtMorning.holdTime=mvars.ene_holdTimes[cpId]
-    shiftChangeUnit.shiftAtMorning.goal={"day",a}
+    shiftChangeUnit.shiftAtMorning.goal={"day",unkGroup4}
   else
-    shiftChangeUnit.shiftAtNight.start={"day",n}
-    shiftChangeUnit.shiftAtNight.goal={"night",a}
-    shiftChangeUnit.shiftAtMorning.goal={"day",a}
+    shiftChangeUnit.shiftAtNight.start={"day",unkGroup1}
+    shiftChangeUnit.shiftAtNight.goal={"night",unkGroup4}
+    shiftChangeUnit.shiftAtMorning.goal={"day",unkGroup4}
   end
   if isSleep then
-    shiftChangeUnit.shiftAtMidNight.start={"night",n}
-    shiftChangeUnit.shiftAtMidNight.hold={"sleep",i}
+    shiftChangeUnit.shiftAtMidNight.start={"night",unkGroup1}
+    shiftChangeUnit.shiftAtMidNight.hold={"sleep",holdGroup}
     shiftChangeUnit.shiftAtMidNight.holdTime=mvars.ene_sleepTimes[cpId]
     if isMidnight then
-      shiftChangeUnit.shiftAtMidNight.goal={"midnight",a}
+      shiftChangeUnit.shiftAtMidNight.goal={"midnight",unkGroup4}
     else
-      shiftChangeUnit.shiftAtMidNight.goal={"night",n}
+      shiftChangeUnit.shiftAtMidNight.goal={"night",unkGroup1}
     end
-    shiftChangeUnit.shiftAtMorning.start={"midnight",n}
+    shiftChangeUnit.shiftAtMorning.start={"midnight",unkGroup1}
   else
-    shiftChangeUnit.shiftAtMorning.start={"night",n}
+    shiftChangeUnit.shiftAtMorning.start={"night",unkGroup1}
   end
   return shiftChangeUnit
 end
@@ -3810,10 +3926,10 @@ function this.MakeShiftChangeTable()
       sleep=mvars.ene_routeSets[cpId].sleep
     end
     local insertPos=1
-    local l=#priorities
-    for _,groupNameStr32 in ipairs(priorities)do
+    local numPriorities=#priorities
+    for priorityIndex,groupNameStr32 in ipairs(priorities)do
       local shiftChangeUnit
-      shiftChangeUnit=this._MakeShiftChangeUnit(cpId,priorities,groupNameStr32,hold,isSleep,sleep,isMidnight,l,_,insertPos,mvars.ene_routeSetsFixedShiftChange[cpId])
+      shiftChangeUnit=this._MakeShiftChangeUnit(cpId,priorities,groupNameStr32,hold,isSleep,sleep,isMidnight,numPriorities,priorityIndex,insertPos,mvars.ene_routeSetsFixedShiftChange[cpId])
       if shiftChangeUnit then
         this._InsertShiftChangeUnit(cpId,insertPos,shiftChangeUnit)
         insertPos=insertPos+1
@@ -4347,17 +4463,17 @@ function this.AutoFultonRecoverNeutralizedTarget(gameId,a)
   end
 end
 --NMC no references
-function this.CheckQuestTargetOnOutOfActiveArea(n)
+function this.CheckQuestTargetOnOutOfActiveArea(unkP1Table)
   InfCore.Log("CheckQuestTargetOnOutOfActiveArea")--tex DEBUG, see RETAILBUG below
-  InfCore.PrintInspect(n)--tex DEBUG
-  if not IsTypeTable(n)then
+  InfCore.PrintInspect(unkP1Table)--tex DEBUG
+  if not IsTypeTable(unkP1Table)then
     return
   end
   local playerPosition=Vector3(vars.playerPosX,vars.playerPosY,vars.playerPosZ)
   local checkDist=10
   local distSqr=checkDist*checkDist
   local recovered=false
-  for n,n in pairs(n)do
+  for n,n in pairs(unkP1Table)do
     local gameId=GetGameObjectId(soliderName)--RETAILBUG: TODO: investigate, soldiername was undefined assume its supposed to be key name - n, but there's no lua references to this. add an debug announcelog, grab a hostage and see what happens when you go out of hotzone (reuirees a mission with one) and out of mission area (all actual missions  have them)
     if gameId~=NULL_ID then
       if CloserToPlayerThanDistSqr(distSqr,playerPosition,gameId)then
@@ -4369,7 +4485,7 @@ function this.CheckQuestTargetOnOutOfActiveArea(n)
   return recovered
 end
 --NMC no references
-function this.ChangeRouteUsingGimmick(route,a,gameId,a)
+function this.ChangeRouteUsingGimmick(route,unkP2,gameId,unkP3)
   local gimmickId=TppGimmick.GetRouteConnectedGimmickId(route)
   if(gimmickId~=nil)and TppGimmick.IsBroken{gimmickId=gimmickId}then
     local cpId
@@ -4391,14 +4507,14 @@ function this.ChangeRouteUsingGimmick(route,a,gameId,a)
   end
 end
 --No references
-function this.DisableUseGimmickRouteOnShiftChange(a,e)
-  if not IsTypeTable(e)then
+function this.DisableUseGimmickRouteOnShiftChange(unkP1GameId,unkP2Table)
+  if not IsTypeTable(unkP2Table)then
     return
   end
   if mvars.ene_usingGimmickRouteEnemyList==nil then
     return
   end
-  for t,route in pairs(e)do
+  for k,route in pairs(unkP2Table)do
     local strCodeRoute=StrCode32(route)
     local gameId=mvars.ene_usingGimmickRouteEnemyList[strCodeRoute]
     if gameId then
@@ -4407,7 +4523,7 @@ function this.DisableUseGimmickRouteOnShiftChange(a,e)
     local gimmickId=mvars.gim_routeGimmickConnectTable[StrCode32(route)]
     if(gimmickId~=nil)and TppGimmick.IsBroken{gimmickId=gimmickId}then
       local command={id="SetRouteEnabled",routes={route},enabled=false}
-      SendCommand(a,command)
+      SendCommand(unkP1GameId,command)
     end
   end
 end
@@ -4441,7 +4557,7 @@ function this.IsFemaleHostage(gameId)
   local isFemale=GameObject.SendCommand(gameId,{id="isFemale"})
   return isFemale
 end
---No references
+--NMC: No references
 function this.AddTakingOverHostage(gameId)
   local typeIndex=GameObject.GetTypeIndex(gameId)
   if(typeIndex~=TppGameObject.GAME_OBJECT_TYPE_HOSTAGE2)then
@@ -4482,11 +4598,12 @@ function this._AddTakingOverHostage(hostageId)
   gvars.ene_takingOverHostageFlags[takingOverHostageCount]=keepFlagValue
   gvars.ene_takingOverHostageCount=gvars.ene_takingOverHostageCount+1
 end
-function this.IsNeedHostageTakingOver(e)
+--NMC: No references
+function this.IsNeedHostageTakingOver(missionCode)
   if TppMission.IsSysMissionId(vars.missionCode)then
     return false
   end
-  if TppMission.IsHelicopterSpace(e)then
+  if TppMission.IsHelicopterSpace(missionCode)then
     return false
   end
   if(TppLocation.IsAfghan()or TppLocation.IsMiddleAfrica())then
@@ -4495,6 +4612,7 @@ function this.IsNeedHostageTakingOver(e)
     return false
   end
 end
+--NMC: No references
 function this.ResetTakingOverHostageInfo()
   gvars.ene_takingOverHostageCount=0
   for e=0,TppDefine.MAX_TAKING_OVER_HOSTAGE_COUNT-1 do
@@ -4507,12 +4625,13 @@ function this.ResetTakingOverHostageInfo()
     gvars.ene_takingOverHostageFlags[e]=0
   end
 end
-function this.SpawnTakingOverHostage(n)
-  if not IsTypeTable(n)then
+--NMC: No references
+function this.SpawnTakingOverHostage(unkP1Table)
+  if not IsTypeTable(unkP1Table)then
     return
   end
-  for n,t in ipairs(n)do
-    this._SpawnTakingOverHostage(n-1,t)
+  for k,v in ipairs(unkP1Table)do
+    this._SpawnTakingOverHostage(k-1,v)
   end
 end
 function this._SpawnTakingOverHostage(t,hostageName)
@@ -4535,15 +4654,16 @@ function this._SpawnTakingOverHostage(t,hostageName)
     SendCommand(hostageId,{id="SetEnabled",enabled=false})
   end
 end
-function this.SetIgnoreTakingOverHostage(e)
-  if not IsTypeTable(e)then
+--NMC: No references
+function this.SetIgnoreTakingOverHostage(unkP1Table)
+  if not IsTypeTable(unkP1Table)then
     return
   end
   mvars.ene_ignoreTakingOverHostage=mvars.ene_ignoreTakingOverHostage or{}
-  for n,e in ipairs(e)do
-    local e=GetGameObjectId(e)
-    if e~=NULL_ID then
-      mvars.ene_ignoreTakingOverHostage[e]=true
+  for n,hostageName in ipairs(unkP1Table)do
+    local hostageId=GetGameObjectId(hostageName)
+    if hostageId~=NULL_ID then
+      mvars.ene_ignoreTakingOverHostage[hostageId]=true
     else
       return
     end
@@ -4858,6 +4978,12 @@ function this.OnActivateQuest(questTable)
     this.SetupActivateQuestHostage(questTable.hostageList)
     isQuestSetup=true
   end
+  --tex>
+  if(questTable.uavList and Tpp.IsTypeTable(questTable.uavList))and next(questTable.uavList)then
+    this.SetupActivateQuestUav(questTable.uavList)
+    isQuestSetup=true
+  end
+  --<
   if isQuestSetup==true then
     mvars.ene_isQuestSetup=true
   end
@@ -4883,13 +5009,13 @@ function this.SetupActivateQuestVehicle(vehicleList,targetList)
     mvars.ene_questVehicleList={}
     this.SpawnVehicles(vehicleList)
     --InfCore.DebugPrint"OnActivateQuest vehicleList"--DEBUG
-    for a,vehicleInfo in ipairs(vehicleList)do
+    for i,vehicleInfo in ipairs(vehicleList)do
       if vehicleInfo.locator then
         local command={id="Despawn",locator=vehicleInfo.locator}
         table.insert(mvars.ene_questVehicleList,command)
       end
-      for a,t in ipairs(targetList)do
-        if vehicleInfo.locator==t then
+      for j,locator in ipairs(targetList)do
+        if vehicleInfo.locator==locator then
           this.SetQuestEnemy(vehicleInfo.locator,true)
           TppMarker.SetQuestMarker(vehicleInfo.locator)
         else
@@ -5137,6 +5263,7 @@ function this.SetupActivateQuestHostage(hostageList)
         hostageId=GameObject.GetGameObjectId(hostageId)
       end
       if hostageId==NULL_ID then
+        InfCore.Log("WARNING: TppEnemy.SetupActivateQuestHostage: could not find game object for "..tostring(hostageInfo.hostageName))--tex DEBUG
       else
         if mvars.ene_isQuestSetup==false then
           if(hostageInfo.staffTypeId or hostageInfo.skill)or hostageInfo.uniqueTypeId then
@@ -5191,15 +5318,21 @@ function this.SetupActivateQuestHostage(hostageList)
           if hostageInfo.path then
             GameObject.SendCommand(hostageId,{id="SpecialAction",action="PlayMotion",path=hostageInfo.path,autoFinish=false,enableMessage=true,commandId=StrCode32"CommandA",enableGravity=false,enableCollision=false})
           end
+          --tex>
+          if hostageInfo.route_d then
+            GameObject.SendCommand(hostageId,{id="SetSneakRoute",route=hostageInfo.route_d,})
+          end
+          --<
           this.SetQuestEnemy(hostageId,false)
-        end
+        end-- if questSetup false
+
         if(hostageInfo.bodyId or hostageInfo.faceId)or hostageInfo.isFaceRandom then
           local faceId=hostageInfo.faceId or false
           local bodyId=hostageInfo.bodyId or false
           if hostageInfo.isFaceRandom then
             faceId=TppQuest.GetRandomFaceId(mvars.qst_currentQuestName,index)--tex added index
             --tex> don't know exactly what it does, but it does fix male voices issue
-            if InfEneFova.IsFemaleFace(faceId) then
+            if faceId and InfEneFova.IsFemaleFace(faceId) then
               local command={id="SetHostage2Flag",flag="female",on=true}
               GameObject.SendCommand(hostageId,command)
             end
@@ -5217,6 +5350,35 @@ function this.SetupActivateQuestHostage(hostageList)
     end
   end
 end
+--tex>
+function this.SetupActivateQuestUav(uavList)
+  InfCore.LogFlow("SetupActivateQuestUav")
+  for index,uavDef in pairs(uavList)do
+    if uavDef.name then
+      local gameId=uavDef.name
+      if IsTypeString(gameId)then
+        gameId=GameObject.GetGameObjectId(gameId)
+      end
+      if gameId==NULL_ID then
+        InfCore.Log("WARNING: TppEnemy.SetupActivateQuestUav: could not find game object for "..tostring(uavDef.name))--tex DEBUG
+      else
+        InfCore.LogFlow("SetupActivateQuestUav "..tostring(uavDef.name))--DEBUG
+        if mvars.ene_isQuestSetup==false then--tex DEBUGNOW verify if anything need to be run every call or just during setup
+          this.SetQuestEnemy(gameId,false)
+
+          SendCommand(gameId,{id="SetEnabled",enabled=true})--DEBUGNOW right place?
+          SendCommand(gameId,{id="SetPatrolRoute",route=uavDef.route_d})
+          SendCommand(gameId,{id="SetCombatRoute",route=uavDef.route_c})--tex route_c usually defines caution route, dont know if I should use route_a to indicate Alert/combat
+
+          SendCommand(gameId,{id="SetCommandPost",cp=uavDef.cpName})--tex wont init without it set to a valid cp
+          SendCommand(gameId,{id="WarpToNearestPatrolRouteNode"})
+          SendCommand(gameId,{id="SetDevelopLevel",developLevel=uavDef.developLevel})
+        end
+      end
+    end
+  end
+end
+--<
 function this.OnDeactivateQuest(questTable)
   if mvars.ene_isQuestSetup==true then
     if(questTable.vehicleList and Tpp.IsTypeTable(questTable.vehicleList))and next(questTable.vehicleList)then
@@ -5238,6 +5400,11 @@ function this.OnDeactivateQuest(questTable)
     if(questTable.hostageList and Tpp.IsTypeTable(questTable.hostageList))and next(questTable.hostageList)then
       this.SetupDeactivateQuestHostage(questTable.hostageList)
     end
+    --tex>
+    if(questTable.uavList and Tpp.IsTypeTable(questTable.uavList))and next(questTable.uavList)then
+      this.SetupDeactivateQuestUav(questTable.uavList)
+    end
+    --<
     if not mvars.qst_isMissionEnd then
       local clearType=this.CheckQuestAllTarget(questTable.questType,nil,nil,true)
       TppQuest.ClearWithSave(clearType)
@@ -5310,6 +5477,28 @@ function this.SetupDeactivateQuestHostage(hostageList)
     end
   end
 end
+--tex>
+function this.SetupDeactivateQuestUav(uavList)
+  for index,uavDef in pairs(uavList)do
+    if uavDef.name then
+      local gameId=uavDef.name
+      if IsTypeString(gameId)then
+        gameId=GameObject.GetGameObjectId(gameId)
+      end
+      if gameId==NULL_ID then
+        InfCore.Log("WARNING: TppEnemy.SetupDeactivateQuestUav: could not find game object for "..tostring(uavDef.name))--tex DEBUG
+      else
+        SendCommand(gameId,{id="SetPatrolRoute",route=""})
+        SendCommand(gameId,{id="SetCombatRoute",route=""})
+
+        SendCommand(gameId,{id="SetCommandPost",cp=""})
+
+        SendCommand(gameId,{id="SetEnabled",enabled=false})
+      end
+    end
+  end
+end
+--<
 function this.OnTerminateQuest(questTable)
   if mvars.ene_isQuestSetup==true then
     if(questTable.vehicleList and Tpp.IsTypeTable(questTable.vehicleList))and next(questTable.vehicleList)then
@@ -5522,6 +5711,7 @@ function this.CheckDeactiveQuestAreaForceFulton()
   if not next(mvars.ene_questTargetList)then
     return
   end
+  local didFulton=false--tex
   for gameId,targetInfo in pairs(mvars.ene_questTargetList)do
     if Tpp.IsSoldier(gameId)or Tpp.IsHostage(gameId)then
       if this.CheckQuestDistance(gameId)then
@@ -5529,15 +5719,20 @@ function this.CheckDeactiveQuestAreaForceFulton()
           GameObject.SendCommand(gameId,{id="RequestForceFulton"})
           TppRadio.Play"f1000_rtrg5140"
           TppSoundDaemon.PostEvent"sfx_s_rescue_pow"
+          didFulton=true--tex
         else
           GameObject.SendCommand(gameId,{id="RequestDisableWithFadeout"})
         end
       end
     end
   end
+  if didFulton then--tex>
+    InfCore.DebugPrint(InfLangProc.LangString"exited_sideop_area")
+  end--<
 end
+
 --NMC Called from quest script on various elimination msgs, or on quest deactivate
---cant see any calls using questDeactivate or param5
+--cant see any calls using param5
 function this.CheckQuestAllTarget(questType,messageId,gameId,questDeactivate,param5)
   local clearType=TppDefine.QUEST_CLEAR_TYPE.NONE
   local deactivating=questDeactivate or false
@@ -5652,29 +5847,29 @@ function this.ReserveQuestHeli()
   mvars.ene_isQuestHeli=true
 end
 function this.UnreserveQuestHeli()
-  local cpId=GetGameObjectId("TppCommandPost2",questCp)
+  local cpId=GetGameObjectId("TppCommandPost2",quest_cpStr)
   TppReinforceBlock.FinishReinforce(cpId)
   TppReinforceBlock.UnloadReinforceBlock(cpId)
   TppRevenge.SetEnabledSuperReinforce(true)
   mvars.ene_isQuestHeli=false
 end
 function this.LoadQuestHeli(colorType)
-  local cpId=GetGameObjectId("TppCommandPost2",questCp)
+  local cpId=GetGameObjectId("TppCommandPost2",quest_cpStr)
   TppReinforceBlock.LoadReinforceBlock(TppReinforceBlock.REINFORCE_TYPE.HELI,cpId,colorType)
 end
 function this.UnloadQuestHeli()
-  local cpId=GetGameObjectId("TppCommandPost2",questCp)
+  local cpId=GetGameObjectId("TppCommandPost2",quest_cpStr)
   TppReinforceBlock.UnloadReinforceBlock(cpId)
 end
 function this.ActivateQuestHeli(colorType)
-  local cpId=GetGameObjectId("TppCommandPost2",questCp)
+  local cpId=GetGameObjectId("TppCommandPost2",quest_cpStr)
   if not TppReinforceBlock.IsLoaded()then
     TppReinforceBlock.LoadReinforceBlock(TppReinforceBlock.REINFORCE_TYPE.HELI,cpId,colorType)
   end
   TppReinforceBlock.StartReinforce(cpId)
 end
 function this.DeactivateQuestHeli()
-  local cpId=GetGameObjectId("TppCommandPost2",questCp)
+  local cpId=GetGameObjectId("TppCommandPost2",quest_cpStr)
   TppReinforceBlock.FinishReinforce(cpId)
 end
 function this.IsQuestHeli()
@@ -5992,15 +6187,15 @@ function this._DoRoutePointMessage(arg2,arg1,arg0,arg3)
     return
   end
   local currentSequenceName=TppSequence.GetCurrentSequenceName()
-  local RENsomesequenceMessageTable=routePointMessage.sequence[currentSequenceName]
+  local sequenceMessages=routePointMessage.sequence[currentSequenceName]
   local strLogText=""
-  if RENsomesequenceMessageTable then
-    this.ExecuteRoutePointMessage(RENsomesequenceMessageTable,arg2,arg1,arg0,arg3,strLogText)
+  if sequenceMessages then
+    this.ExecuteRoutePointMessage(sequenceMessages,arg2,arg1,arg0,arg3,strLogText)
   end
   this.ExecuteRoutePointMessage(routePointMessage.main,arg2,arg1,arg0,arg3,strLogText)
 end
-function this.ExecuteRoutePointMessage(n,arg2,arg1,arg0,arg3,strLogText)
-  local messageIdRecievers=n[arg3]
+function this.ExecuteRoutePointMessage(messages,arg2,arg1,arg0,arg3,strLogText)
+  local messageIdRecievers=messages[arg3]
   if not messageIdRecievers then
     return
   end

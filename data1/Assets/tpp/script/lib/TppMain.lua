@@ -177,7 +177,7 @@ function this.OnAllocate(missionTable)
   --  TppAnimal.OnAllocate(missionTable)
   --  InfMain.OnAllocate(missionTable)--tex
   --tex reworked
-  local locationName=InfUtil.GetLocationName()
+  local locationName=TppLocation.GetLocationName()
   local locationModule=_G[locationName]
   if locationModule then
     locationModule.OnAllocate()
@@ -321,15 +321,18 @@ function this.OnAllocate(missionTable)
         end
       end
     end
+
     --if(vars.missionCode==11043)or(vars.missionCode==11044)then--tex ORIG: changed to issubs check, more robust even without my mod
-    if TppMission.IsSubsistenceMission() or Ivars.disableSelectBuddy:Is(1) then--tex added disableSelectBuddy
+    if TppMission.IsSubsistenceMission() or IvarProc.GetForMission"heliSpace_NoBuddyMenuFromMissionPreparetion"==2 then--tex added NoBuddyMenu check DEBUGNOW rethink
       TppBuddyService.SetDisableAllBuddy()
     end
     if TppGameSequence.GetGameTitleName()=="TPP"then
       if missionTable.sequence and missionTable.sequence.OnBuddyBlockLoad then
         missionTable.sequence.OnBuddyBlockLoad()
       end
-      if TppLocation.IsAfghan()or TppLocation.IsMiddleAfrica()then
+      local locationInfo=InfMission.GetLocationInfo(vars.locationCode)--tex added locationInfo check -v-
+      if TppLocation.IsAfghan()or TppLocation.IsMiddleAfrica() or (locationInfo and locationInfo.requestTppBuddy2BlockController)then
+        InfCore.LogFlow"TppBuddy2BlockController.Load"--tex DEBUG
         TppBuddy2BlockController.Load()
       end
     end
@@ -529,9 +532,14 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
   end
   for name,module in pairs(missionTable)do
     if module.OnRestoreSVars then
-       InfCore.PCallDebug(module.OnRestoreSVars)--tex wrapped in pcall
+      if vars.missionCode==10010 then--tex> WORKAROUND, s10010_sequence.OnRestoreSvars has a coroutine.yield()
+        module.OnRestoreSVars()
+      else--<
+        InfCore.PCallDebug(module.OnRestoreSVars)--tex wrapped in pcall
+      end
     end
   end
+  InfMain.OnRestoreSvars()--tex
   TppMission.RestoreShowMissionObjective()
   TppRevenge.SetUpRevengeMine()
   if TppPickable.StartToCreateFromLocators then
@@ -571,6 +579,7 @@ function this.SetUpdateFunction(missionTable)
   --ORPHAN: debugUpdateFuncs={}
   --ORPHAN: numDebugUpdateFuncs=0
   moduleUpdateFuncs={
+    InfMain.UpdateBegin,--tex
     TppMission.Update,
     TppSequence.Update,
     TppSave.Update,
@@ -866,7 +875,7 @@ end
 --
 loadPositionFuncs[TppDefine.MISSION_LOAD_TYPE.MISSION_RESTART]=function(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)end
 loadPositionFuncs[TppDefine.MISSION_LOAD_TYPE.CONTINUE_FROM_CHECK_POINT]=function(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)end
---
+--NMC most commonly only called with just missionLoadType, so the params are really just specific to the call with the missionLoadType that actually passes them in.
 function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)
   igvars.mis_isGroundStart=false--tex WORKAROUND
   this.DisableGameStatus()
@@ -938,7 +947,7 @@ function this.OnUpdate(missionTable)
   --tex
   if InfCore.debugOnUpdate then
     for i=1,numModuleUpdateFuncs do
-      InfCore.PCallDebug(moduleUpdateFuncs[i])
+      InfCore.PCallDebug(moduleUpdateFuncs[i],missionTable)--tex added missionTable param
     end
     for i=1,numOnUpdate do
       InfCore.PCallDebug(missionScriptOnUpdateFuncs[i])
@@ -946,7 +955,7 @@ function this.OnUpdate(missionTable)
     --ORIG>
   else
     for i=1,numModuleUpdateFuncs do
-      moduleUpdateFuncs[i]()
+      moduleUpdateFuncs[i](missionTable)--tex added missionTable param
     end
     for i=1,numOnUpdate do
       missionScriptOnUpdateFuncs[i]()

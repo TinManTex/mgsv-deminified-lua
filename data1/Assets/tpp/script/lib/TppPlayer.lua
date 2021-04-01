@@ -102,25 +102,30 @@ function this.ForceChangePlayerToSnake(basic)
   end
   Player.SetItemLevel(TppEquip.EQP_SUIT,vars.sortiePrepPlayerSnakeSuitLevel)
 end
---RETAILPATCH 1.0.11>
+--RETAILPATCH 1.0.11 , 1.0.13 added IsCurrentPlayerQuiet>
 function this.ForceChangePlayerFromOcelot()
-  if this.IsCurrentPlayerOcelot() or this.IsCurrentPlayerQuiet()then--RETAILPATCH 1.0.13 quiet
+  if this.IsCurrentPlayerOcelot() or this.IsCurrentPlayerQuiet()then
     if vars.sortiePrepPlayerType==PlayerType.SNAKE or vars.sortiePrepPlayerType==PlayerType.AVATAR then
       vars.playerPartsType=vars.sortiePrepPlayerSnakePartsType
       vars.playerCamoType=vars.sortiePrepPlayerSnakeCamoType
       vars.playerFaceEquipId=vars.sortiePrepPlayerSnakeFaceEquipId
       Player.SetItemLevel(TppEquip.EQP_SUIT,vars.sortiePrepPlayerSnakeSuitLevel)
-  elseif vars.sortiePrepPlayerType==PlayerType.DD_MALE or vars.sortiePrepPlayerType==PlayerType.DD_FEMALE then
-    vars.playerPartsType=vars.sortiePrepPlayerDDPartsType
-    vars.playerCamoType=vars.sortiePrepPlayerDDCamoType
-    vars.playerFaceEquipId=vars.sortiePrepPlayerDDFaceEquipId
-    Player.SetItemLevel(TppEquip.EQP_SUIT,vars.sortiePrepPlayerDDSuitLevel)
-  end
-  vars.playerStaffHeader=vars.sortiePrepPlayerStaffHeader
-  vars.playerStaffSeed=vars.sortiePrepPlayerStaffSeed
-  vars.playerType=vars.sortiePrepPlayerType
-  vars.playerFaceId=vars.sortiePrepPlayerFaceId
-  Player.ResetDirtyEffect()
+    elseif vars.sortiePrepPlayerType==PlayerType.DD_MALE or vars.sortiePrepPlayerType==PlayerType.DD_FEMALE then
+      vars.playerPartsType=vars.sortiePrepPlayerDDPartsType
+      vars.playerCamoType=vars.sortiePrepPlayerDDCamoType
+      vars.playerFaceEquipId=vars.sortiePrepPlayerDDFaceEquipId
+      Player.SetItemLevel(TppEquip.EQP_SUIT,vars.sortiePrepPlayerDDSuitLevel)
+    end
+    vars.playerStaffHeader=vars.sortiePrepPlayerStaffHeader
+    vars.playerStaffSeed=vars.sortiePrepPlayerStaffSeed
+    vars.playerType=vars.sortiePrepPlayerType
+    vars.playerFaceId=vars.sortiePrepPlayerFaceId
+    Player.ResetDirtyEffect()
+    --tex>
+    if not TppMission.IsHelicopterSpace(vars.missionCode) then
+      TppGameStatus.Reset("heli_common_sequence.lua", "S_IS_SORTIE_PREPARATION")
+    end
+    --<
   end
 end
 --<

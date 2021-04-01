@@ -1,10 +1,10 @@
 -- DOBUILD: 1
 -- TppQuestList.lua
 local this={}
-this.questList={
+this.questList={--see lso mvars.qst_questList
   {locationId=TppDefine.LOCATION_ID.AFGH,
     areaName="tent",
-    loadArea={116,134,131,152},
+    loadArea={116,134,131,152},--xMin,yMin,xMax,yMax, see Tpp.CheckBlockArea
     activeArea={117,135,130,151},
     invokeArea={117,135,130,151},
     infoList={
@@ -103,6 +103,7 @@ this.questList={
       {name="quest_q20095",invokeStepName="QStep_Start",isOnce=true},
       {name="citadel_q10090",invokeStepName="QStep_Start"},
       {name="quest_q22005",invokeStepName="QStep_Start"}}},
+      
   {locationId=TppDefine.LOCATION_ID.MAFR,areaName="outland",loadArea={121,124,132,150},activeArea={122,125,131,149},invokeArea={122,125,131,149},
     infoList={
       {name="outland_q20913",invokeStepName="QStep_Start",isStory=true,isOnce=true},
@@ -187,6 +188,7 @@ this.questList={
       {name="lab_q71600",invokeStepName="QStep_Start"},
       {name="lab_q60022",invokeStepName="QStep_Start",isOnce=true},
       {name="lab_q71700",invokeStepName="QStep_Start"}}},
+      
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsCommand",clusterName="Command",
     infoList={
       {name="Mtbs_child_dog",invokeStepName="QStep_Start"},
@@ -208,7 +210,7 @@ this.questList={
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsSpy",clusterName="Spy",infoList={{name="mtbs_q42060",invokeStepName="QStep_Start"}}},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsBaseDev",clusterName="BaseDev",infoList={{name="mtbs_q42040",invokeStepName="QStep_Start"}}},
   {locationId=TppDefine.LOCATION_ID.MTBS,areaName="MtbsPaz",clusterName="MedicalPaz",infoList={{name="mtbs_q99060",invokeStepName="QStep_Start",isStory=true,isOnce=true}}}
-}
+}--questList
 
 this.questPackList={
   waterway_q99010={"/Assets/tpp/pack/mission2/quest/battle/bossQuiet/qest_bossQuiet_00.fpk"},
@@ -437,19 +439,19 @@ this.questPackList={
   mtbs_q42050={"/Assets/tpp/pack/mission2/quest/mtbs/Medical/quest_q42050.fpk"},
   mtbs_q42060={"/Assets/tpp/pack/mission2/quest/mtbs/Spy/quest_q42060.fpk"},
   mtbs_q42070={"/Assets/tpp/pack/mission2/quest/mtbs/Combat/quest_q42070.fpk"},
-}
+}--questPackList
 
 --tex lookup table>
-function this.BuildQuestAreaTable(questAreaTable)
+function this.BuildQuestAreaTable(questAreaNameTable)
   for n,areaQuests in ipairs(this.questList)do
     for i,info in ipairs(areaQuests.infoList)do
       local questName=info.name
-      questAreaTable[questName]=areaQuests.areaName
+      questAreaNameTable[questName]=areaQuests.areaName
     end
   end
 end
-this.questAreaTable={}--tex TABLESETUP
-this.BuildQuestAreaTable(this.questAreaTable)
+this.questAreaNameTable={}--tex TABLESETUP
+this.BuildQuestAreaTable(this.questAreaNameTable)
 --<
 
 return this

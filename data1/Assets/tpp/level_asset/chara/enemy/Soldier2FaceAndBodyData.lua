@@ -1,5 +1,15 @@
 -- DOBUILD: 1
 -- Soldier2FaceAndBodyData.lua
+-- The soldier face system is used by ai soldiers and hostages and player as DD soldier, soldier body system is used by ai soldiers and hostages.
+-- Infinite Heaven includes two systems for adding to these entries, so editing it yourself should be unnessesary (and if the system doesn't cover the feature you want contact me)
+-- see \Assets\tpp\script\ih\InfModelProc.lua for head fova addons - faceFova, faceDecoFova, hairFova, hairDecoFova
+-- and headDefinitions which pull them all together to generate or modify a faceDefinition.
+-- and \mod\modules\InfBodyInfo.lua which handles the soldier body fova addons -
+-- FLOW: The actual loading/initialization of the fpks seems to be in-engine between GetMissionPackagePath and OnAllocate
+-- (which can be tested by referening a non existant fpk, game loading will halt like it does for non existing mission pack fpks).
+--GOTCHA: There seems to be a limit to the number of additions for body fovas, which manifests in fovas past that not applying
+--dont know if its for bodyDefinition or bodyFova count though.
+--seems to be vanilla count + 64 = 366
 local this={}
 --face meshes
 this.faceFova={
@@ -469,7 +479,7 @@ this.bodyFova={
   {"/Assets/tpp/fova/chara/dlf/dlf1_enem0_f_v10.fv2","/Assets/tpp/pack/fova/chara/dlf/dlf0_plym0_v10.fpk"}, --240,403,,
   {"/Assets/tpp/fova/chara/dlf/dlf1_enem0_v11.fv2","/Assets/tpp/pack/fova/chara/dlf/dlf0_plym0_v11.fpk"},   --250,404,,
   {"/Assets/tpp/fova/chara/dlf/dlf1_enem0_f_v11.fv2","/Assets/tpp/pack/fova/chara/dlf/dlf0_plym0_v11.fpk"}, --251,405,, --<
-  
+
   {"/Assets/tpp/fova/chara/dlg/dlg1_enem0_v00.fv2","/Assets/tpp/pack/fova/chara/dlg/dlg0_plym0_v00.fpk"},--RETAILPATCH 1.0.11>
   {"/Assets/tpp/fova/chara/dlg/dlg1_enem0_f_v00.fv2","/Assets/tpp/pack/fova/chara/dlg/dlg0_plym0_v00.fpk"},
   {"/Assets/tpp/fova/chara/dlg/dlg1_enem0_v01.fv2","/Assets/tpp/pack/fova/chara/dlg/dlg0_plym0_v01.fpk"},
@@ -518,33 +528,7 @@ this.bodyFova={
   {"/Assets/tpp/fova/chara/dlh/dlh1_enem0_f_v10.fv2","/Assets/tpp/pack/fova/chara/dlh/dlh0_plym0_v10.fpk"},
   {"/Assets/tpp/fova/chara/dlh/dlh1_enem0_v11.fv2","/Assets/tpp/pack/fova/chara/dlh/dlh0_plym0_v11.fpk"},
   {"/Assets/tpp/fova/chara/dlh/dlh1_enem0_f_v11.fv2","/Assets/tpp/pack/fova/chara/dlh/dlh0_plym0_v11.fpk"},--<
---tex> OFF CULL
---  {"/Assets/tpp/fova/chara/dds/dds0_main2_v01.fv2","/Assets/tpp/pack/fova/chara/dds/dds0_main2_v00_ih.fpk"},--252,406,,
---  {"/Assets/tpp/fova/chara/dds/dds0_main2_v02.fv2","/Assets/tpp/pack/fova/chara/dds/dds0_main2_v00_ih.fpk"},--253,407,,
---  {"/Assets/tpp/fova/chara/dds/dds0_main2_v04.fv2","/Assets/tpp/pack/fova/chara/dds/dds0_main2_v00_ih.fpk"},--254,408,,
---  {"/Assets/tpp/fova/chara/dds/dds0_main2_v05.fv2","/Assets/tpp/pack/fova/chara/dds/dds0_main2_v00_ih.fpk"},--255,409,,
---
---  {"/Assets/tpp/fova/chara/wss/wss4_main0_v00.fv2","/Assets/tpp/pack/fova/chara/wss/wss4_main0_v00_ih.fpk"},--256,410,,
---  {"/Assets/tpp/fova/chara/wss/wss4_main0_v01.fv2","/Assets/tpp/pack/fova/chara/wss/wss4_main0_v00_ih.fpk"},--257,411,,
---  {"/Assets/tpp/fova/chara/wss/wss4_main0_v01.fv2","/Assets/tpp/pack/fova/chara/wss/wss4_main0_v00_ih.fpk"},--258,412,,
---<
 }
-
---tex add player comos to fova system>
-local numCamos=60 --tex from 0. missing 9,15,21 (see inffova), but will add them for simplicty since they're otherwise complete/contiguous.
---tex TODO player dds6/female fatigue fovas dont seem to apply to dd6, while player dds5 to dd5 is fine.
-local fovaInfo={
-  dds5={"/Assets/tpp/fova/chara/sna/dds5_main0_ply_v%02d.fv2","/Assets/tpp/pack/player/fova/plfova_dds5_main0_ply_v%02d.fpk"},
-  dds6={"/Assets/tpp/fova/chara/sna/dds6_main0_ply_v%02d.fv2","/Assets/tpp/pack/player/fova/plfova_dds6_main0_ply_v%02d.fpk"},
-}
-local camoAddStart=#this.bodyFova
-for camoId=0,numCamos do
-  table.insert(this.bodyFova,{string.format(fovaInfo.dds5[1],camoId),string.format(fovaInfo.dds5[2],camoId)})
-end
-for camoId=0,numCamos do
-  table.insert(this.bodyFova,{string.format(fovaInfo.dds6[1],camoId),string.format(fovaInfo.dds6[2],camoId)})
-end
---<
 
 local no=EnemyFova.INVALID_FOVA_VALUE
 this.faceDefinition={
@@ -556,15 +540,17 @@ this.faceDefinition={
 
   --unknown unk1: ranges male: 0,1,2,3,16,17,18,19,48,50, female: 32,34,35,48,50, -- dd headgears (both gender) 16
   --for males initially appears to be race (see InfEneFova .RACE) when in the range 0-3, but then what is above that?
+  
+  --unk3 and unk4 can both be set to INVALID_FOVA_VALUE suggesting theyre an index into some fova table
 
   --unk6 range {0,1,3}, 3 seems common face, 1 unique, 0?
   --unk6->unk10 are all zeroed past face 303, maximums do show those at 303 but DOC faceFova.ods spreadsheet shows that not all values in that 0-303 range are used uniquely
 
   --changing faceFova and also unknown1 (other params currently untested) changes voice
-  --{n,50, 1, 1,58,60,13,24, 4, 4, 1,N/A          , 3,303,303,303,3}--maximums (from values)
-  --{n,50, 1, 1,58,no,no,no,no,no, 1,N/A          , 3,303,303,303,3}--actual maximums (no=EnemyFova.INVALID_FOVA_VALUE)
-  --{n,       50,     1,   1,      58,          60,      13,          24,   4,   4,   1,N/A          ,   3, 303, 303, 303,    3}--maximums
-  --{faceId,unk1,gender,unk2,faceFova,faceDecoFova,hairFova,hairDecoFova,unk3,unk4,unk5,uiTextureName,unk6,unk7,unk8,unk9,unk10},--notes
+--{n,50, 1, 1,58,60,13,24, 4, 4, 1,N/A          , 3,303,303,303,3}--maximums (from values)
+--{n,50, 1, 1,58,no,no,no,no,no, 1,N/A          , 3,303,303,303,3}--actual maximums (no=EnemyFova.INVALID_FOVA_VALUE)
+--{n,       50,     1,   1,      58,          60,      13,          24,   4,   4,   1,N/A          ,   3, 303, 303, 303,    3}--maximums
+--{faceId,unk1,gender,unk2,faceFova,faceDecoFova,hairFova,hairDecoFova,unk3,unk4,unk5,uiTextureName,unk6,unk7,unk8,unk9,unk10},--notes
   {  0, 0, 0, 0, 3, 0,no,no, 0, 0, 0,"ui_face_000", 3,  4,  2,  6,3},--male>
   {  1, 0, 0, 0, 1, 0,no,no, 3, 0, 0,"ui_face_001", 3,  4,  1,  0,2},
   {  2, 0, 0, 0, 2, 0,no,no, 1, 0, 0,"ui_face_002", 3,  4,  9, 10,3},
@@ -1412,30 +1398,7 @@ this.bodyDefinition={
   {451,297,0},
   {452,298,0},
   {453,299,0},--<
---tex OFF CULL
---  {406,252,0},--tex>dds0_main2
---  {407,253,0},
---  {408,254,0},
---  {409,255,0},--<
---  {410,256,0},--tex>wss4_main0
---  {411,257,0},
---  {412,258,0},--<
 }
-
---tex> add player camos to fova system
-local bodyIdStart=this.bodyDefinition[#this.bodyDefinition][1]+1
-local bodyFovaStart=this.bodyDefinition[#this.bodyDefinition][2]+1
-for camoId=0,numCamos do
-  table.insert(this.bodyDefinition,{bodyIdStart+camoId,bodyFovaStart+camoId})
-  TppEnemyBodyId[string.format("dds5_main0_ply_v%02d",camoId)]=bodyIdStart+camoId
-end
-local bodyIdStart=this.bodyDefinition[#this.bodyDefinition][1]+1
-local bodyFovaStart=this.bodyDefinition[#this.bodyDefinition][2]+1
-for camoId=0,numCamos do
-  table.insert(this.bodyDefinition,{bodyIdStart+camoId,bodyFovaStart+camoId})
-  TppEnemyBodyId[string.format("dds6_main0_ply_v%02d",camoId)]=bodyIdStart+camoId
-end
---<
 
 --{bodyId,?type name,?type index,?},--body description (from body id),type description
 this.modBodyFova={
@@ -1502,8 +1465,7 @@ if TppSoldierFace~=nil then
     hairDecoFova={table=this.hairDecoFova,maxCount=40},
     bodyFova={table=this.bodyFova,maxCount=301}--RETAILPATCH 1.0.11 increased from 256
   }
-  this.fovaFileTable.bodyFova.maxCount=#this.bodyDefinition+1--tex
-
+  --tex maxCounts may be increased in below functions
   InfCore.PCall(InfModelProc.Setup,this)--tex
 
   TppSoldierFace.SetFovaFileTable(this.fovaFileTable)
@@ -1522,13 +1484,5 @@ if TppSoldierFace~=nil then
 end
 
 return this--tex
-
-
-
-
-
-
-
-
 
 --ORIG return{}

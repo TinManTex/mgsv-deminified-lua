@@ -1,10 +1,11 @@
--- DOBUILD: 1
+-- DOBUILD: 0 -- OFF till I can figure out a better approach
 --EquipIdTable.lua
 --RETAILPATCH 1090 various additions
 local this={}--tex made local
 --tex made module-local so i can analyze table - was TppEquip.ReloadEquipIdTable{<table>
 -- was TppEquip.ReloadEquipIdTable{--<table>
 this.equipTable={
+--block = EQP_BLOCK_MISSION means it needs to load via RequestLoadToEquipMissionBlock (TppEnemy.weaponIdTable automagically does, IH may load other equip for various features see InfEquip? for more info).
 --REF {equipId,equipType,subIdOrIdOr0,block,partsOrFmdlPath,packPath},
   {TppEquip.EQP_SLD_SV,TppEquip.EQP_TYPE_Shield,0,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/sld/sd00_main0_def_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_SLD_SV.fpk"},
   {TppEquip.EQP_SLD_PF_00,TppEquip.EQP_TYPE_Shield,0,TppEquip.EQP_BLOCK_MISSION,"/Assets/tpp/parts/weapon/sld/sd01_main0_def_v00.parts","/Assets/tpp/pack/collectible/primary/EQP_SLD_PF.fpk"},

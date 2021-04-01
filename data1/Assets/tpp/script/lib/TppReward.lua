@@ -156,21 +156,21 @@ function this.ShowBonusPopup(category,rewardType,bonusId,o,d)
     this.ShowBonusPopupCategory(rewardType,rewardFirstLangId,bonusId)
   end
 end
-function this.SetParameters(r,a,o,i,t)
-  local n,e,a=this.GetParameterOffsets(a)
-  gvars[r][n]=o
-  gvars[r][e]=i
-  gvars[r][a]=t
+function this.SetParameters(paramName,stackSize,rewardType,arg1,arg2)
+  local typeOffset,arg1Offset,arg2Offset=this.GetParameterOffsets(stackSize)
+  gvars[paramName][typeOffset]=rewardType
+  gvars[paramName][arg1Offset]=arg1
+  gvars[paramName][arg2Offset]=arg2
 end
-function this.GetParameters(paramName,a)
-  local typeOffset,arg1Offset,arg2Offset=this.GetParameterOffsets(a)
+function this.GetParameters(paramName,stackSize)
+  local typeOffset,arg1Offset,arg2Offset=this.GetParameterOffsets(stackSize)
   local type=gvars[paramName][typeOffset]
   local arg1=gvars[paramName][arg1Offset]
   local arg2=gvars[paramName][arg2Offset]
   return type,arg1,arg2
 end
-function this.GetParameterOffsets(e)
-  local max=e*TppDefine.REWARD_PARAM.MAX
+function this.GetParameterOffsets(stackSize)
+  local max=stackSize*TppDefine.REWARD_PARAM.MAX
   local typeOffset=max+TppDefine.REWARD_PARAM.TYPE
   local arg1Offset=max+TppDefine.REWARD_PARAM.ARG1
   local arg2Offset=max+TppDefine.REWARD_PARAM.ARG2

@@ -1,4 +1,7 @@
+-- DOBUILD: 0 --DEBUGNOW
 -- TppCassette.lua
+-- Conditions and functions for unlocking cassete tapes
+-- See also /Assets/tpp/sound/scripts/tape/PreinstallTape.lua
 local this={}
 
 local someMissionTapes={"tp_m_10020_03","tp_m_10020_04","tp_m_10020_05","tp_m_10020_06","tp_m_10020_12","tp_m_10280_11","tp_c_00000_03"}
@@ -144,6 +147,7 @@ function this.AcquireOnMissionOpen(missionCode)
     this.Acquire{cassetteList=tapes,pushReward=true}
   end
 end
+--CALLER: msg OnPickUpWeapon > TppPlayer.OnPickUpWeapon
 function this.AcquireOnPickUp(cassetteIndex)
   Gimmick.NotifyOfTakingCassette(cassetteIndex)
   TppMotherBaseManagement.AddCassetteTapeTrackByIndex(cassetteIndex)
@@ -200,5 +204,12 @@ function this.OnEnterFreeHeliPlay()
     this.Acquire{cassetteList={"tp_m_10100_01"},isShowAnnounceLog={delayTimeSec=2}}
     this.Acquire{cassetteList={"tp_c_00000_09"},isShowAnnounceLog={delayTimeSec=2}}
   end
+  --tex DEBUGNOW 
+--    if TppStory.IsMissionOpen(10280)then
+--    this.Acquire{cassetteList={"tp_m_10160_03"},isShowAnnounceLog={delayTimeSec=2}}
+--    this.Acquire{cassetteList={"tp_bgm_22_22"},isShowAnnounceLog={delayTimeSec=2}}--DEBUGNOW
+--    this.Acquire{cassetteList={"tp_m_10260_02"},isShowAnnounceLog={delayTimeSec=2}}--DEBUGNOW
+--  end
+  --<
 end
 return this

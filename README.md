@@ -10,7 +10,7 @@ I can't guarantee I haven't added bugs, every release or so I come across one pr
 
 Most of the straight data tables are just formatted nicer, and sometimes have notes, from me or gathered from community notes, IH currently does not modify most of those so there's little issue using them for other mods.
 
-Those with -- DOBUILD at the top of the file are however modified by IH and would conflict if added in other mods, so if you have a mod that needs to modify these contact me to see if some kind of compatablity can be worked out.
+Those with -- DOBUILD: 1 at the top of the file are however modified by IH and would conflict if added in other mods, so if you have a mod that needs to modify these contact me to see if some kind of compatablity can be worked out.
 
 Changes by are marked with --tex if it's a single line addition or --tex>  through to --< for blocks of code.
 

@@ -134,7 +134,7 @@ function this.OnEnter()
   mvars.FreeHeliRadio_nvgRadioGroup=nil
   TppMission.RegisterMissionSystemCallback{OnAddStaffsFromTempBuffer=this.OnAddStaffsFromTempBuffer}
   TppCassette.OnEnterFreeHeliPlay()
-  local n={}
+  local unkT1={}
   if TppMotherBaseManagement.GetStaffCount()<=10 then
     this._RegisterOptionRadio"f2000_oprg0020"
   end
@@ -150,22 +150,22 @@ function this.OnEnter()
   if vars.weather==TppDefine.WEATHER.SANDSTORM then
     this._RegisterOptionRadio"f2000_oprg0185"
   end
-  local n=this.TryPandemicStart()
+  local tryPandemicStart=this.TryPandemicStart()
   if TppTerminal.CheckPandemicEventFinish()then
     TppTerminal.FinishPandemicEvent()
   end
-  local i=TppStory.GetCurrentStorySequence()
-  local i=TppStory.GetClearedMissionCount{10036,10033,10043}
-  local i=TppStory.GetClearedMissionCount{10041,10044,10052,10054}
-  local i=TppStory.GetClearedMissionCount{10010,10020,10030,10036,10043,10033,10040,10041,10044,10052,10054,10050,10070,10080,10086,10082,10090,10091,10195,10100,10110,10121,10115,10120,10085,10200,10211,10081,10130,10140,10150,10151,10045,10156,10093,10171}
-  if n then
+  local currentStorySeq=TppStory.GetCurrentStorySequence()
+  local unk1=TppStory.GetClearedMissionCount{10036,10033,10043}
+  local unk2=TppStory.GetClearedMissionCount{10041,10044,10052,10054}
+  local unk3=TppStory.GetClearedMissionCount{10010,10020,10030,10036,10043,10033,10040,10041,10044,10052,10054,10050,10070,10080,10086,10082,10090,10091,10195,10100,10110,10121,10115,10120,10085,10200,10211,10081,10130,10140,10150,10151,10045,10156,10093,10171}
+  if tryPandemicStart then
     return this.ON_ENTER_RESULT.START_PANDEMIC_TUTORIAL
   end
   if not svars.freeRadio_isPlayed then
     svars.freeRadio_isPlayed=true
-    local n=TppStory.GetForceMBDemoNameOrRadioList"freeHeliRadio"
-    if n then
-      this._PlayRadio(n)
+    local demoOrRadio=TppStory.GetForceMBDemoNameOrRadioList"freeHeliRadio"
+    if demoOrRadio then
+      this._PlayRadio(demoOrRadio)
     end
   end
 end

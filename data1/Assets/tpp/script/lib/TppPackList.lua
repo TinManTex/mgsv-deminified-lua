@@ -140,6 +140,7 @@ function this.SetUseDdEmblemFova(missionCode)
   end
 end
 function this.SetMissionPackLabelName(labelName)
+  InfCore.Log("TppPackList.SetMissionPackLabelName: "..tostring(labelName))--tex DEBUG
   if Tpp.IsTypeString(labelName)then
     gvars.pck_missionPackLabelName=StrCode32(labelName)
   end
@@ -170,6 +171,9 @@ function this.GetMissionTypeAndMissionName(missionCode)
   end
   return missionTypeName,missionCodeName
 end
+--NMC tex this is pretty jank, but works with custom locations since IH patches LOCATION_HAVE_MISSION_LIST
+--however his lumps mbqf missions as MTBS
+--GOTCHA: only returns addon missions after TppMission.AddInLocations is exec
 function this.GetLocationNameFormMissionCode(missionCode)
   local locationName
   for location,missions in pairs(TppDefine.LOCATION_HAVE_MISSION_LIST)do

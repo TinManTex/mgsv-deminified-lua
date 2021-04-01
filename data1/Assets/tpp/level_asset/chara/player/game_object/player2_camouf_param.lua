@@ -30,7 +30,7 @@ local this={}
 --Notes for what parameters are named and named outfits in the camouflage lua file
 --https://mega.nz/#F!KhJRkLRb!Vw_BNsAUrWaAwXg0hOyagw
 
---actual assigment of material to index is in chunk2.dat/Assets/tpp/pack/location/afgh/pack_common/afgh_common.fpkd/Assets/tpp/level/location/afgh/block_common/afgh_common_terrainMaterial.fox / mafr etc, materialIndex key
+--actual assigment of material to index is in chunk2.dat/Assets/tpp/pack/location/afgh/pack_common/afgh_common.fpkd/Assets/tpp/level/location/afgh/block_common/afgh_common_terrainMaterial.fox2 / mafr etc, materialIndex key
 --
 --g = greenery
 --s = sand/soil
@@ -390,11 +390,18 @@ this.camoTable={
 Player.InitCamoufTable(this.camoTable)
 --this.camoTable=nil--tex clear if not runtime analysis
 
---tex example usage
+--tex example usage of the cammoTypes and materialTypes tables I added
 --local camoType=this.camoTypes.SWIMWEAR_C00
 --local materialType=this.materialTypes.MTR_WOOD_A
 --local camoMaterialValue=this.cammoTable[camoType][materialType] --get value
 --this.camoTable[camoType][materialType]=50 --set value
 
+--or conversely, printing out
+--for cammoType,cammoStrengths in ipairs(this.cammoTable)do
+--  InfCore.Log(this.playerCammoTypeNames[cammoType])
+--  for materialType,cammoStrength in ipairs(cammoStrengths)do
+--    InfCore.Log(this.materialTypeNames[materialType]..":"..cammoStrength)
+--  end
+--end
 
 return this

@@ -709,7 +709,7 @@ this.missionPackTable[30050]=function(missionCode)
   end--<
 
   do
-    if TppPackList.IsMissionPackLabel"AfterDemo"or TppPackList.IsMissionPackLabel"BattleHanger"then
+    if TppPackList.IsMissionPackLabel"AfterDemo"or TppPackList.IsMissionPackLabel"BattleHanger"or TppPackList.IsMissionPackLabel"Interior"then--tex added Interior check
       TppDemo.SetNextMBDemo(nil)
     else
       if not TppPackList.IsMissionPackLabel"USE_USER_SETTING"and TppDemo.CanUpdateMBDemo()then
@@ -725,7 +725,12 @@ this.missionPackTable[30050]=function(missionCode)
       isUseMBDemoStage=true
       TppDemo.SetNextMBDemo(nil)
     end
-    if TppPackList.IsMissionPackLabel"BattleHanger"or TppDemo.IsBattleHangerDemo(TppDemo.GetMBDemoName())then
+    --tex INTERIOR>
+    if TppPackList.IsMissionPackLabel"Interior" then
+      InfInterior.AddInteriorMissionPacks(missionCode)    
+      gvars.f30050_missionPackIndex=3--tex f30050_sequence STAGE_PACK_INDEX.INTERIOR
+    --<
+    elseif TppPackList.IsMissionPackLabel"BattleHanger"or TppDemo.IsBattleHangerDemo(TppDemo.GetMBDemoName())then  
       local battleHangarPackPath=string.format("/Assets/tpp/pack/mission2/free/f30050/f30050_hanger_btg%.2d.fpk",TppStory.GetBattleGearDevelopLevel())
       TppPackList.AddMissionPack(battleHangarPackPath)
       do
@@ -914,6 +919,7 @@ this.missionPackTable[50050]=function(missionCode)
   end
   TppPackList.AddFOBLayoutPack(missionCode)
 end
+--CALLER: engine during Mission.LoadMission, set via SetLocationPackagePathFunc -v-
 function this.GetLocationPackagePath(locationId)
   InfCore.LogFlow("TppMissionList.GetLocationPackagePath "..locationId)--tex
   local packPath=this.locationPackTable[locationId]
@@ -923,6 +929,7 @@ function this.GetLocationPackagePath(locationId)
   InfCore.PrintInspect(packPath,"locationPackPaths")--tex DEBUG
   return packPath
 end
+--CALLER: engine during Mission.LoadMission, set via SetMissionPackagePathFunc -v-
 function this.GetMissionPackagePath(missionCode)
   InfCore.LogFlow("TppMissionList.GetMissionPackagePath "..missionCode)--tex
   TppPackList.SetUseDdEmblemFova(missionCode)
@@ -934,10 +941,11 @@ function this.GetMissionPackagePath(missionCode)
   elseif Tpp.IsTypeTable(this.missionPackTable[missionCode])then
     packPaths=this.missionPackTable[missionCode]
   end
-  InfMain.AddMissionPacks(missionCode,packPaths)--tex
+  InfCore.PCallDebug(InfMain.AddMissionPacks,missionCode,packPaths)--tex DEBUGNOW
   InfCore.PrintInspect(packPaths,"missionPackPaths")--tex DEBUG
   return packPaths
 end
+--EXEC
 if Mission.SetLocationPackagePathFunc then
   Mission.SetLocationPackagePathFunc(this.GetLocationPackagePath)
 end

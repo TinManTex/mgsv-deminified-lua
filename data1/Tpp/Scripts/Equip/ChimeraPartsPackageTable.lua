@@ -1,6 +1,6 @@
 --ChimeraPartsPackageTable.lua
---RETAILPATCH 1090 various additions
-this={}
+--see https://metalgearmodding.fandom.com/wiki/Chimera_Package_Table for more info
+local this={}--tex made local
 TppEquip.ReloadChimeraPartsInfoTable{
   packageInfos={
     {"/Assets/tpp/parts/weapon/bar/ba03_main1_def_v00.parts","/Assets/tpp/pack/collectible/chimera/barrel/ba03_main1_def_v00.fpk","/Assets/tpp/fova/weapon/bar/ba03_main1_def_cam.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def_cam.fpk","/Assets/tpp/fova/weapon/bar/ba03_main1_def_clv.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def_clv.fpk","/Assets/tpp/fova/weapon/bar/default/ba03_main1_def.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def.fpk"},
@@ -338,7 +338,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {"/Assets/tpp/parts/weapon/grl/gl04_main2_def_v00.parts","/Assets/tpp/pack/collectible/chimera/underBarrel/gl04_main2_def_v00.fpk","/Assets/tpp/fova/weapon/grl/gl04_main2_def_cam.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl04_main2_def_cam.fpk","/Assets/tpp/fova/weapon/grl/gl04_main2_def_clv.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl04_main2_def_clv.fpk","/Assets/tpp/fova/weapon/grl/default/gl04_main2_def.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl04_main2_def.fpk"},
     {"/Assets/tpp/parts/weapon/grl/gl00_main0_def_v00.parts","/Assets/tpp/pack/collectible/chimera/underBarrel/gl00_main0_def_v00.fpk","/Assets/tpp/fova/weapon/grl/gl00_main0_def_cam.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl00_main0_def_cam.fpk","","","/Assets/tpp/fova/weapon/grl/default/gl00_main0_def.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl00_main0_def.fpk"},
     {"/Assets/tpp/parts/weapon/grl/gl00_main1_def_v00.parts","/Assets/tpp/pack/collectible/chimera/underBarrel/gl00_main1_def_v00.fpk","/Assets/tpp/fova/weapon/grl/gl00_main1_def_cam.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl00_main1_def_cam.fpk","","","/Assets/tpp/fova/weapon/grl/default/gl00_main1_def.fv2","/Assets/tpp/pack/collectible/fova/underBarrel/gl00_main1_def.fpk"}
-  },
+  },--packageInfos
   barrel={
     {TppEquip.BA_10001,0},
     {TppEquip.BA_10004,0},
@@ -444,7 +444,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.BA_70203,5},
     {TppEquip.BA_70205,6},
     {TppEquip.BA_70207,7}
-  },
+  },--barrel
   magazine={
     {TppEquip.AM_10001,71},
     {TppEquip.AM_10003,72},
@@ -606,7 +606,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.AM_80304,143},
     {TppEquip.AM_80305,143},
     {TppEquip.AM_80306,143}
-  },
+  },--magazine
   muzzleOption={
     {TppEquip.MO_10101,145},
     {TppEquip.MO_10105,0},
@@ -647,7 +647,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.MO_60406,170},
     {TppEquip.MO_6040a,170},
     {TppEquip.MO_70025,171}
-  },
+  },--muzzleOption
   muzzle={
     {TppEquip.MZ_30001,172},
     {TppEquip.MZ_30023,173},
@@ -677,7 +677,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.MZ_70106,194},
     {TppEquip.MZ_70203,195},
     {TppEquip.MZ_70207,196}
-  },
+  },--muzzle
   option={
     {TppEquip.LT_10102,197},
     {TppEquip.LT_10104,198},
@@ -688,7 +688,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.LS_20004,203},
     {TppEquip.LS_30104,204},
     {TppEquip.LS_40034,205}
-  },
+  },--option
   receiver={
     {TppEquip.RC_10001,206},
     {TppEquip.RC_10003,206},
@@ -900,7 +900,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.RC_80304,267},
     {TppEquip.RC_80305,267},
     {TppEquip.RC_80306,267}
-  },
+  },--receiver
   sight={
     {TppEquip.ST_20104,269},
     {TppEquip.ST_20205,270},
@@ -926,7 +926,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.ST_80103,0},
     {TppEquip.ST_80203,0},
     {TppEquip.ST_80303,0}
-  },
+  },--sight
   stock={
     {TppEquip.SK_20002,288},
     {TppEquip.SK_20015,289},
@@ -968,7 +968,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.SK_60405,0},
     {TppEquip.SK_70103,320},
     {TppEquip.SK_70203,321}
-  },
+  },--stock
   underBarrel={
     {TppEquip.UB_20105,322},
     {TppEquip.UB_30005,323},
@@ -992,7 +992,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.UB_50147,334},
     {TppEquip.UB_50133,335},
     {TppEquip.UB_50136,335}
-  },
+  },--underBarrel
   color={
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c00.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c00.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c01.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c01.fpk"},
@@ -1113,7 +1113,9 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c91.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c91.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c92.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c92.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c93.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c93.fpk"},
-    {"/Assets/tpp/fova/weapon/all/wfv_camo_c94.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c94.fpk"}}}
+    {"/Assets/tpp/fova/weapon/all/wfv_camo_c94.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c94.fpk"}
+  }--color
+}--chimeraPartsInfoTable
 return this
 
 

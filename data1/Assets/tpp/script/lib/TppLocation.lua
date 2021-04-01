@@ -1,19 +1,63 @@
+-- DOBUILD: 1
 --TppLocation.lua
+InfCore.LogFlow"TppLocation.lua"--tex DEBUG
 local this={}
 local StrCode32=Fox.StrCode32
-function this.GetLocationName()
-  if vars.locationCode==10 then
-    return"afgh"
-  elseif vars.locationCode==20 then
-    return"mafr"
-  elseif vars.locationCode==30 then
-    return"cypr"
-  elseif vars.locationCode==50 then
-    return"mtbs"
-  elseif vars.locationCode==55 then
-    return"mbqf"
-  end
+
+--tex>
+--tex is added to by InfMission.AddInLocations, leads to GOTCHA described below
+this.locationIdForName={
+  init=1,
+  afgh=10,
+  mafr=20,
+  cypr=30,
+  gntn=40,
+  mtbs=50,
+  mbqf=55,
+  ombs=45,
+  hlsp=60,
+  flyk=70,
+  sand_afgh=91,
+  sand_mafr=92,
+  sand_mtbs=95,
+  --ssd
+  ssd_afgh=15,
+  ssd_ombs=47,--tex ssds TppLocation actually returns ombs for 47
+  aftr=16,
+  ssd_afgh2=17,
+  sbri=18,
+  spfc=19,
+  ssav=25,
+}--locationIdForName
+
+this.locationNames={}
+for k,v in pairs(this.locationIdForName)do
+  this.locationNames[v]=k
 end
+--<
+
+--tex REWORKED:
+--GOTCHA: this wont return addon locations before it's setup during InfMisison.AddInLocations
+function this.GetLocationName(locationCode)
+  InfCore.LogFlow"TppLocation.GetLocationName"--tex DEBUGNOW
+  local locationCode=locationCode or vars.locationCode
+  return this.locationNames[locationCode]
+end
+--ORIG:
+--function this.GetLocationName()
+--  if vars.locationCode==10 then
+--    return"afgh"
+--  elseif vars.locationCode==20 then
+--    return"mafr"
+--  elseif vars.locationCode==30 then
+--    return"cypr"
+--  elseif vars.locationCode==50 then
+--    return"mtbs"
+--  elseif vars.locationCode==55 then
+--    return"mbqf"
+--  end
+--end
+
 function this.IsAfghan()
   if vars.locationCode==10 then
     return true
@@ -51,7 +95,10 @@ function this.IsMBQF()
 end
 function this.SetBuddyBlock(locationId)
   if TppGameSequence.GetGameTitleName()=="TPP"then
-    if locationId==10 or locationId==20 then--afgh,mafr
+    InfCore.LogFlow("TppMission.SetBuddyBlock "..tostring(locationId))--tex DEBUGNOW
+    local locationInfo=InfMission.GetLocationInfo(locationId)--tex added locationInfo check -v-
+    if locationId==10 or locationId==20 or (locationInfo and locationInfo.requestTppBuddy2BlockController) then
+      InfCore.LogFlow("TppMission.SetBuddyBlock "..tostring(locationId).." TppBuddy2BlockController.CreateBlock")--tex DEBUG
       if TppBuddy2BlockController.CreateBlock then
         TppBuddy2BlockController.CreateBlock()
     end

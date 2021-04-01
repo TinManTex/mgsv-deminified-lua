@@ -755,6 +755,7 @@ function this.OnAllocate(missionTable)
   end
 end
 function this.SetUpMineAreaVarsName()
+  --tex DEBUGNOW want addon support? gvars :/
   if TppLocation.IsAfghan()then
     mvars.rev_missionStartMineAreaVarsName="rev_baseMissionStartMineAreaAfgh"
     mvars.rev_LastVisitedMineAreaVarsName="rev_baseLastVisitedMineAreaAfgh"
@@ -1194,15 +1195,20 @@ function this.SelectReinforceType()
   local canUseReinforceHeli=this.CanUseReinforceHeli() and mvars.revenge_isEnabledSuperReinforce--tex added isEnabledSuper, which is only set by quest heli and shouldnt stop other vehicle
   if canuseReinforceVehicle then
     InfCore.Log("SelectReinforceType canuseReinforceVehicle")--tex DEBUG
+    --tex DEBUGNOW TppReinforceBlock is after TppRevenge, so cant make this module local  want addon support
     local reinforceVehiclesForLocation={
       AFGH={TppReinforceBlock.REINFORCE_TYPE.EAST_WAV,TppReinforceBlock.REINFORCE_TYPE.EAST_TANK},
       MAFR={TppReinforceBlock.REINFORCE_TYPE.WEST_WAV,TppReinforceBlock.REINFORCE_TYPE.WEST_WAV_CANNON,TppReinforceBlock.REINFORCE_TYPE.WEST_TANK}
     }
-    if TppLocation.IsAfghan()then
-      reinforceVehicleTypes=reinforceVehiclesForLocation.AFGH
-    elseif TppLocation.IsMiddleAfrica()then
-      reinforceVehicleTypes=reinforceVehiclesForLocation.MAFR
-    end
+    --REWORKED
+    local locationName=TppLocation.GetLocationName(vars.locationCode)
+    local reinforceVehicleTypes=reinforceVehiclesForLocation[string.upper(locationName)]
+    --ORIG
+--    if TppLocation.IsAfghan()then
+--      reinforceVehicleTypes=reinforceVehiclesForLocation.AFGH
+--    elseif TppLocation.IsMiddleAfrica()then
+--      reinforceVehicleTypes=reinforceVehiclesForLocation.MAFR
+--    end
   end
   if canUseReinforceHeli then
     InfCore.Log("SelectReinforceType canuseReinforceHeli")--tex DEBUG
@@ -1454,7 +1460,7 @@ local weaponTypes={
   "SHIELD",
   "MISSILE",
 }
-
+--CALLER: OnAllocate > DecideRevenge
 function this._AllocateResources(config)
   mvars.revenge_loadedEquip={}
   local missionRequiresSettings=mvars.ene_missionRequiresPowerSettings
@@ -2496,6 +2502,7 @@ function this._OnReinforceRespawn(soldierId)
   else
     --    InfCore.DebugPrint"_OnReinforceRespawn"--tex DEBUG>
     --    InfCore.PrintInspect(soldierIds)--<
+    InfCore.LogFlow("TppRevenge._OnReinforceRespawn")--tex DEBUG
     this.ApplyPowerSettingsForReinforce{soldierId}
   end
 end

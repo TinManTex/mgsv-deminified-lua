@@ -3,8 +3,8 @@
 -- NMC first script loaded by engine
 --tex >
 --IHINTERNAL
-Script.LoadLibrary"/Assets/tpp/script/lib/InfInit.lua"
-local increaseMemoryAlloc=Ivars and Ivars.sys_increaseMemoryAlloc:Get()==1--tex DEBUGNOW
+Script.LoadLibrary"/Assets/tpp/script/ih/InfInit.lua"
+local increaseMemoryAlloc=Ivars and Ivars.sys_increaseMemoryAlloc:Get()==1--tex
 
 --tex mgstpp is a bit more graceful about the errors and will just sit and spin
 --but want to bail here to let mockfox user know of error/make it showstopper.

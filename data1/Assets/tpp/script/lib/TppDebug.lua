@@ -868,22 +868,22 @@ function this.DebugUpdate()
     local blockIndexX,blockIndexY=Tpp.GetCurrentStageSmallBlockIndex()
     Print(newContext,string.format("current block position (x,y) = (%03d, %03d)",blockIndexX,blockIndexY))
     Print(newContext,"Load animal block area = "..tostring(mvars.animalBlockAreaName))
-    local n=ScriptBlock.GetScriptBlockId"animal_block"
-    local t
-    if n~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
-      t=ScriptBlock.GetScriptBlockState(n)
+    local animalBlockId=ScriptBlock.GetScriptBlockId"animal_block"
+    local animalBlockState
+    if animalBlockId~=ScriptBlock.SCRIPT_BLOCK_ID_INVALID then
+      animalBlockState=ScriptBlock.GetScriptBlockState(animalBlockId)
     end
-    local n
-    if t==ScriptBlock.SCRIPT_BLOCK_STATE_EMPTY then
-      n="SCRIPT_BLOCK_STATE_EMPTY"
-    elseif t==ScriptBlock.SCRIPT_BLOCK_STATE_PROCESSING then
-      n="SCRIPT_BLOCK_STATE_PROCESSING"
-    elseif t==ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE then
-      n="SCRIPT_BLOCK_STATE_INACTIVE"
-    elseif t==ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE then
-      n="SCRIPT_BLOCK_STATE_ACTIVE"
+    local animalBlockStateString
+    if animalBlockState==ScriptBlock.SCRIPT_BLOCK_STATE_EMPTY then
+      animalBlockStateString="SCRIPT_BLOCK_STATE_EMPTY"
+    elseif animalBlockState==ScriptBlock.SCRIPT_BLOCK_STATE_PROCESSING then
+      animalBlockStateString="SCRIPT_BLOCK_STATE_PROCESSING"
+    elseif animalBlockState==ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE then
+      animalBlockStateString="SCRIPT_BLOCK_STATE_INACTIVE"
+    elseif animalBlockState==ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE then
+      animalBlockStateString="SCRIPT_BLOCK_STATE_ACTIVE"
     end
-    Print(newContext,"animal block state : "..tostring(n))
+    Print(newContext,"animal block state : "..tostring(animalBlockStateString))
     if mvars.animalBlockScript then
       Print(newContext,"animalBlockScript exist")
       local t=""
@@ -901,7 +901,7 @@ function this.DebugUpdate()
       Print(newContext,"OnMessage "..(tostring(t)..(" OnReload "..tostring(n))))
       this.ShowMessageTable(newContext,"MessageTable",mvars.animalBlockScript.messageExecTable)
     else
-      if t==ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE or t==ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE then
+      if animalBlockState==ScriptBlock.SCRIPT_BLOCK_STATE_INACTIVE or animalBlockState==ScriptBlock.SCRIPT_BLOCK_STATE_ACTIVE then
         Print(newContext,{1,0,0},"this data is invalid!!!! please check data!!!")
       else
         Print(newContext,"animalBlockScript   not")

@@ -1293,13 +1293,15 @@ function this.UpdateMBDemo()
   if Ivars.mbDemoSelection:Is"DISABLED" then--tex> disable mb demo
     return
   elseif Ivars.mbDemoSelection:Is"PLAY" then
+    InfCore.Log("UpdateMBDemo mbDemoSelection mbFreeDemoPlayNext:"..tostring(TppDefine.MB_FREEPLAY_DEMO_PRIORITY_LIST[ivars.mbSelectedDemo+1]))--tex
     gvars.mbFreeDemoPlayNextIndex=Ivars.mbSelectedDemo:Get()+1--tex TODO: sanity check
     return
   end--<
-  for n,demoName in ipairs(TppDefine.MB_FREEPLAY_DEMO_PRIORITY_LIST)do
+  for demoIndex,demoName in ipairs(TppDefine.MB_FREEPLAY_DEMO_PRIORITY_LIST)do
     local canRunDemo=this.mtbsPriorityFuncList[demoName]
     if canRunDemo and canRunDemo()then
-      gvars.mbFreeDemoPlayNextIndex=n
+      InfCore.Log("UpdateMBDemo canRunDemo mbFreeDemoPlayNext:"..tostring(TppDefine.MB_FREEPLAY_DEMO_PRIORITY_LIST[demoIndex]))--tex
+      gvars.mbFreeDemoPlayNextIndex=demoIndex
       return
     end
   end

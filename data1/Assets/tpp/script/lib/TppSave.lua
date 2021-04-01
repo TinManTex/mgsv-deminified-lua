@@ -557,11 +557,11 @@ end
 function this.VarSavePersonalData()
   this.SaveVarsToSlot(TppDefine.SAVE_SLOT.PERSONAL,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_PERSONAL)
 end
-function this.LoadFromSaveFile(slot,area,fileName)
-  if not fileName then
-    return TppScriptVars.ReadSlotFromFile(slot,area)
+function this.LoadFromSaveFile(slot,fileName,area)
+  if not area then
+    return TppScriptVars.ReadSlotFromFile(slot,fileName)
   else
-    return TppScriptVars.ReadSlotFromAreaFile(slot,fileName,area)
+    return TppScriptVars.ReadSlotFromAreaFile(slot,area,fileName)
   end
 end
 function this.GetGameSaveFileName()

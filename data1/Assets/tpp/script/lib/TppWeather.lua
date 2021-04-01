@@ -155,7 +155,7 @@ function this.SetDefaultWeatherProbabilities()
   local isHeliSpace=TppMission.IsHelicopterSpace(vars.missionCode)
 
   --tex reworked>
-  local locationName=InfUtil.GetLocationName()--tex use TppLocation.GetLocationName() if modding this independantly from Infinite Heaven
+  local locationName=TppLocation.GetLocationName()
   locationName=string.upper(locationName)
   local heliSuffix=""
   if isHeliSpace then

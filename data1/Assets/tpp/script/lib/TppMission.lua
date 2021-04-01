@@ -208,6 +208,13 @@ function this.IsMatchStartLocation(missionCode)
       return false
     end
   else
+    local locationId=TppDefine.LOCATION_ID[locationName]--tex>
+    local locationInfo=InfMission.GetLocationInfo(locationId)
+    --tex locationId for the given missionCode param == current locationId (the TppLocation.Is<loc> is using vars.locationCode)
+    if locationInfo and locationId==vars.locationCode then
+      return true
+    end--< 
+    
     return false
   end
   return true
@@ -373,7 +380,20 @@ function this._StartEmergencyMissionTimer(timerName,timeFromHeli,timeFromLand)
     return timeFromLand
   end
 end
+--CALLER: some mission _sequence s
+--Used to load into/out of variations of the same mission?
+--REF
+--TppMission.Reload{
+--  isNoFade = false,                         
+--  showLoadingTips = false, 
+--  missionPackLabelName = "AfterVolginDemo",         
+--  OnEndFadeOut = function()                     
+--    TppSequence.ReserveNextSequence( "Seq_Demo_Volgin" )
+--    TppMission.UpdateCheckPointAtCurrentPosition()
+--  end,
+--}
 function this.Reload(loadInfo)
+  InfCore.LogFlow("TppMission.Reload")--tex
   local isNoFade,missionPackLabelName,locationCode,OnEndFadeOut,showLoadingTips,ignoreMtbsLoadLocationForce
   if loadInfo then
     isNoFade=loadInfo.isNoFade
@@ -410,7 +430,9 @@ function this.Reload(loadInfo)
     TppUI.FadeOut(TppUI.FADE_SPEED.FADE_NORMALSPEED,"ReloadFadeOutFinish",nil,{setMute=true})
   end
 end
+--CALLERS: ReturnToMission, exe>esc menu msg PauseMenuRestart, msg Timer_OnEndReturnToTile
 function this.RestartMission(loadInfo)
+  InfCore.LogFlow("TppMission.RestartMission")--tex
   local isNoFade
   local isReturnToMission
   if loadInfo then
@@ -479,7 +501,9 @@ function this.ExecuteRestartMission(isReturnToMission)
     DoLoad()
   end
 end
+--CALLER: exe>esc menu - msg PauseMenuCheckpoint
 function this.ContinueFromCheckPoint(loadInfo)
+  InfCore.LogFlow("TppMission.ContinueFromCheckPoint")--tex
   local isNoFade
   local isReturnToMission
   if loadInfo then
@@ -496,7 +520,10 @@ function this.ContinueFromCheckPoint(loadInfo)
     TppUI.FadeOut(TppUI.FADE_SPEED.FADE_NORMALSPEED,"ContinueFromCheckPointFadeOutFinish",nil,{setMute=true,exceptGameStatus={AnnounceLog="INVALID_LOG"}})
   end
 end
+--returning from fob/emergency mission?
+--GameOverReturnToMission, PauseMenuReturnToMission, helli_common - if GetNextMissionCodeForEmergency() == 50050, o50050_sequence - isSyncDefMissionClear 
 function this.ReturnToMission(_loadInfo)
+  InfCore.LogFlow("TppMission.ReturnToMission")--tex
   local loadInfo=_loadInfo or{}
   loadInfo.isReturnToMission=true
   this.DisableInGameFlag()
@@ -611,7 +638,9 @@ function this.ExecuteOnReturnToMissionCallback()
   end
   return OnReturnToMission
 end
+--AbortForRideOnHelicopter, AbortForOutOfMissionArea, heli_common_seq, o50050_seq
 function this.AbortMission(abortInfo)
+  InfCore.LogFlow("TppMission.AbortMission")--tex
   InfMain.AbortMissionTop(abortInfo)--tex
   local isNoFade
   local isNoSave
@@ -877,6 +906,7 @@ function this.LoadForMissionAbort()
     this.Load(vars.missionCode,mvars.mis_abortCurrentMissionCode,mvars.mis_missionAbortLoadingOption)
   end
 end
+--CALLERS: PauseMenuReturnToTitle
 function this.ReturnToTitle()
   if TppException.isNowGoingToMgo then--RETAILPATCH 1070>
     return
@@ -895,6 +925,7 @@ function this.ReturnToTitle()
   end
 end
 function this.GameOverReturnToTitle()
+  InfCore.LogFlow("TppMission.GameOverReturnToTitle")--tex
   gvars.title_nextMissionCode=vars.missionCode
   gvars.title_nextLocationCode=vars.locationCode
   gvars.ini_isTitleMode=true
@@ -907,6 +938,7 @@ function this.GameOverReturnToTitle()
   this.ExecuteMissionAbort()
 end
 function this.ReserveGameOver(gameOverType,gameOverRadio,isAborting)
+  InfCore.LogFlow("TppMission.ReserveGameOver")--tex
   --tex>
   if gameOverType==TppDefine.GAME_OVER_TYPE.OUTSIDE_OF_MISSION_AREA then
     if Ivars.disableOutOfBoundsChecks:Is(1) then
@@ -1035,6 +1067,7 @@ function this.ReserveMissionClear(missionClearInfo)
   return true
 end
 function this.MissionGameEnd(sequence)
+  InfCore.LogFlow("TppMission.MissionGameEnd")--tex
   local delayTime=0
   local fadeDelayTime=0
   local fadeSpeed=TppUI.FADE_SPEED.FADE_NORMALSPEED
@@ -1163,6 +1196,7 @@ function this.DisablePauseForShowResult()
   end
 end
 function this.ShowMissionResult()
+  InfCore.LogFlow("TppMission.ShowMissionResult")--tex
   TppUiStatusManager.SetStatus("AnnounceLog","INVALID_LOG")
   TppRadio.Stop()
   TppSoundDaemon.SetMute"Loading"
@@ -1200,6 +1234,7 @@ function this.OnEndMissionReward()
 end
 --NMC: called from in sequence when decided mission is ended
 function this.MissionFinalize(options)
+  InfCore.LogFlow("TppMission.MissionFinalize")--tex
   local isNoFade,isExecGameOver,showLoadingTips,setMute,isInterruptMissionEnd,ignoreMtbsLoadLocationForce
   if IsTypeTable(options)then
     isNoFade=options.isNoFade
@@ -1233,8 +1268,16 @@ function this.MissionFinalize(options)
     end
   end
 end
+--CALLERS: 
+--msg EndFadeOut MissionFinalizeFadeOutFinish
+--msg EndFadeOut MissionFinalizeAtGameOverFadeOutFinish
+--TppMission.MissionFinalize
+--TppMission.OnEndMissionReward
+--does final mission switch over before loadrequesting next
+--including changing vars.missionCode over (if mis_nextMissionCodeForMissionClear)
+--IN/SIDE: gvars.mis_nextMissionCodeForMissionClear
 function this.ExecuteMissionFinalize()
-  InfCore.LogFlow("TppMission.ExecuteMissionFinalize "..vars.missionCode)--tex
+  InfCore.LogFlow("TppMission.ExecuteMissionFinalize missionCode:"..vars.missionCode.." nextMissionCode:"..tostring(gvars.mis_nextMissionCodeForMissionClear))--tex
   InfMain.ExecuteMissionFinalizeTop()--tex
   local nextLocationName=TppPackList.GetLocationNameFormMissionCode(gvars.mis_nextMissionCodeForMissionClear)
   if nextLocationName then
@@ -1295,6 +1338,7 @@ function this.ExecuteMissionFinalize()
     Ivars.prevMissionCode=vars.missionCode--tex added
     vars.locationCode=mvars.mis_nextLocationCode
     vars.missionCode=gvars.mis_nextMissionCodeForMissionClear
+    InfCore.Log("Updated locationCode:"..tostring(vars.locationCode).." missionCode:"..tostring(vars.missionCode).." prevMissionCode:"..tostring(Ivars.prevMissionCode))--tex
   else
     if not mvars.mis_isInterruptMissionEnd then
       Tpp.DEBUG_Fatal"Not defined next missionId!!"
@@ -1346,17 +1390,8 @@ function this.ExecuteMissionFinalize()
     Gimmick.StoreSaveDataPermanentGimmickFromMissionAfterClear()
   end
   if isFreeMission then
-    --tex cant check var.missionCode directly here because it's already been updated to mis_nextMissionCodeForMissionClear
-    InfMainTpp.ExecuteMissionFinalizeFree{--tex>
-      currentMissionCode=currentMissionCode,
-      currentLocationCode=currentLocationCode,
-      isHeliSpace=isHeliSpace,
-      nextIsHeliSpace=nextIsHeliSpace,
-      isFreeMission=isFreeMission,
-      nextIsFreeMission=nextIsFreeMission,
-      isMotherBase=isMotherBase,
-      isZoo=isZoo,
-    }--<
+    --tex cant check var.missionCode directly here because it's already been updated to mis_nextMissionCodeForMissionClear, thus the isBleh vars
+    InfMainTpp.MbCollectionRepop(isMotherBase,isZoo)--tex isFreeVersion IH repop since -^-
     Gimmick.StoreSaveDataPermanentGimmickFromMission()
   end
   local lockStaffForMission={
@@ -1740,10 +1775,11 @@ function this.Messages()
         end
       end,option={isExecMissionClear=true,isExecGameOver=true,isExecMissionPrepare=true}},
       {msg="EndResultBlockLoad",func=this.OnEndResultBlockLoad,option={isExecMissionClear=true,isExecGameOver=true,isExecDemoPlaying=true}},
-      {msg="EndReloginSync",func=function()--RETAILPATCH 1090>
+      --RETAILPATCH 1090>
+      {msg="EndReloginSync",func=function()
         if this.IsHelicopterSpace(vars.missionCode)then
           TppVarInit.InitializeOnlineChallengeTaskVarsForNewMission()
-      end
+        end
       end},--<
     },
     Radio={{msg="Finish",func=this.OnFinishUpdateObjectiveRadio}},
@@ -1959,6 +1995,7 @@ function this.OnPlayerDead(playerId,deathTypeStr32)
   end
 end
 function this.OnEndMissionPreparation(deployTime,clusterId)
+  InfCore.LogFlow("TppMission.OnEndMissionPreparation")--tex
   mvars.mis_selectedDeployTime=deployTime
   if gvars.mis_nextMissionCodeForEmergency==0 then
     local missionStartRoute
@@ -1979,6 +2016,7 @@ function this.GetNextMissionCodeForEmergency()
   return(mvars.mis_emergencyMissionCode or gvars.mis_nextMissionCodeForEmergency)
 end
 function this.OnAbortMissionPreparation()
+  InfCore.LogFlow("TppMission.OnAbortMissionPreparation")--tex
   TppPlayer.ForceChangePlayerFromOcelot()--RETAILPATCH 1.0.11
   this.SetNextMissionCodeForMissionClear(missionClearCodeNone)
   gvars.heli_missionStartRoute=0
@@ -2072,7 +2110,8 @@ function this.OnAllocate(missionTable)
   }
   GameMessage.SetMessageHandler(this.MessageHandler,{"UI","Radio","Video","Network","Nt"})
 end
-function this.DisableInGameFlag()
+function this.DisableInGameFlag()  
+  InfCore.LogFlow"DisableInGameFlag"--tex DEBUG
   mvars.mis_missionStateIsNotInGame=true
 end
 function this.EnableInGameFlag(resetMute)
@@ -2080,11 +2119,13 @@ function this.EnableInGameFlag(resetMute)
     resetMute=true
   end
   if gvars.mis_missionClearState<=TppDefine.MISSION_CLEAR_STATE.NOT_CLEARED_YET then
+    InfCore.LogFlow"EnableInGameFlag"--tex DEBUG
     mvars.mis_missionStateIsNotInGame=false
     if not resetMute then
       TppSoundDaemon.ResetMute"Loading"
     end
   else
+    InfCore.LogFlow"EnableInGameFlag mis_missionStateIsNotInGame = true"--tex DEBUG
     mvars.mis_missionStateIsNotInGame=true
   end
 end
@@ -2131,6 +2172,7 @@ function this.Init(missionTable)
   end
 end
 function this.OnReload(missionTable)
+  InfCore.LogFlow("TppMission.OnReload")--tex
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
   this.messageExecTableWhileLoading=Tpp.MakeMessageExecTable(this.MessagesWhileLoading())
   if missionTable.sequence then
@@ -2714,13 +2756,18 @@ function this._ReserveMissionClearOnOutOfHotZone()
   if mvars.mis_lastOutSideOfHotZoneButAlert then
     TppRadio.PlayCommonRadio(TppDefine.COMMON_RADIO.OUTSIDE_HOTZONE_CHANGE_SNEAK)
   end
-  if TppLocation.IsAfghan()then
-    this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE}
-  elseif TppLocation.IsMiddleAfrica()then
-    this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=TppDefine.SYS_MISSION_ID.MAFR_FREE}
-  else
-    this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE}
-  end
+  --tex REWORKED>
+  local freeMission=InfMission.GetFreeMissionForLocation(vars.locationCode,vars.missionCode) or TppDefine.SYS_MISSION_ID.AFGH_FREE
+  this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=freeMission}
+  --<
+  --ORIG
+--  if TppLocation.IsAfghan()then
+--    this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE}
+--  elseif TppLocation.IsMiddleAfrica()then
+--    this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=TppDefine.SYS_MISSION_ID.MAFR_FREE}
+--  else
+--    this.ReserveMissionClear{missionClearType=TppDefine.MISSION_CLEAR_TYPE.ON_FOOT,nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE}
+--  end
 end
 function this.ReserveMissionClearOnRideOnHelicopter()
   if TppLocation.IsAfghan()then
@@ -2770,14 +2817,19 @@ function this.AbortForOutOfMissionArea(abortInfo)
       presentationFunction=TppPlayer.PlayMissionAbortCamera
       playRadio=true
     end
-  end
-  if TppLocation.IsAfghan()then
-    this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
-  elseif TppLocation.IsMiddleAfrica()then
-    this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.MAFR_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
-  else
-    this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
-  end
+  end 
+  --tex REWORKED>
+  local freeMission=InfMission.GetFreeMissionForLocation(vars.locationCode,vars.missionCode) or TppDefine.SYS_MISSION_ID.AFGH_FREE
+  this.AbortMission{nextMissionId=freeMission,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
+  --<
+  --ORIG
+--  if TppLocation.IsAfghan()then
+--    this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
+--  elseif TppLocation.IsMiddleAfrica()then
+--    this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.MAFR_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
+--  else
+--    this.AbortMission{nextMissionId=TppDefine.SYS_MISSION_ID.AFGH_FREE,isNoSave=isNoSave,fadeDelayTime=fadeDelayTime,fadeSpeed=fadeSpeed,presentationFunction=presentationFunction,playRadio=playRadio}
+--  end
 end
 function this.AbortForRideOnHelicopter(abortInfo)
   local isNoSave=true
@@ -2820,16 +2872,21 @@ function this.GameOverAbortMission()
   this.ExecuteMissionAbort()
 end
 function this.GameOverAbortForOutOfMissionArea()
-  if TppLocation.IsAfghan()then
-    mvars.mis_abortWithSave=false
-    mvars.mis_nextMissionCodeForAbort=TppDefine.SYS_MISSION_ID.AFGH_FREE
-  elseif TppLocation.IsMiddleAfrica()then
-    mvars.mis_abortWithSave=false
-    mvars.mis_nextMissionCodeForAbort=TppDefine.SYS_MISSION_ID.MAFR_FREE
-  else
-    mvars.mis_abortWithSave=false
-    mvars.mis_nextMissionCodeForAbort=TppDefine.SYS_MISSION_ID.AFGH_FREE
-  end
+  --tex REWORKED>
+  local freeMission=InfMission.GetFreeMissionForLocation(vars.locationCode,vars.missionCode) or TppDefine.SYS_MISSION_ID.AFGH_FREE
+  mvars.mis_abortWithSave=false
+  mvars.mis_nextMissionCodeForAbort=freeMission
+  --ORIG
+--  if TppLocation.IsAfghan()then
+--    mvars.mis_abortWithSave=false
+--    mvars.mis_nextMissionCodeForAbort=TppDefine.SYS_MISSION_ID.AFGH_FREE
+--  elseif TppLocation.IsMiddleAfrica()then
+--    mvars.mis_abortWithSave=false
+--    mvars.mis_nextMissionCodeForAbort=TppDefine.SYS_MISSION_ID.MAFR_FREE
+--  else
+--    mvars.mis_abortWithSave=false
+--    mvars.mis_nextMissionCodeForAbort=TppDefine.SYS_MISSION_ID.AFGH_FREE
+--  end
 end
 function this.GameOverAbortForRideOnHelicopter()
   if TppLocation.IsAfghan()then
@@ -3573,6 +3630,7 @@ function this.IsChunkLoading(chunkIndex)
   Tpp.ShowChunkInstallingPopup(chunkIndex,false)
   return true
 end
+--CALLERS: StartInitMission, ExecuteRestartMission, ExecuteContinueFromCheckPoint, LoadForMissionAbort, LoadWithChunkCheck
 function this.Load(nextMissionCode,currentMissionCode,loadSettings)
   InfCore.LogFlow("TppMission.Load nextMissionCode:"..tostring(nextMissionCode).." currentMissionCode:"..tostring(currentMissionCode))--tex
   InfCore.PrintInspect(loadSettings,"loadSettings")--tex DEBUG
@@ -3594,10 +3652,10 @@ function this.Load(nextMissionCode,currentMissionCode,loadSettings)
     TppEnemy.UnloadSoldier2CommonBlock()
   end
   if(currentMissionCode~=nextMissionCode)or(loadSettings and loadSettings.force)then
-    local locationNameForMissionCode=TppPackList.GetLocationNameFormMissionCode(nextMissionCode)
-    local renameLocationNameForSomeMissionCode=TppPackList.GetLocationNameFormMissionCode(currentMissionCode)
+    local locationNameForNextMissionCode=TppPackList.GetLocationNameFormMissionCode(nextMissionCode)
+    local locationNameForCurrentMissionCode=TppPackList.GetLocationNameFormMissionCode(currentMissionCode)
     local locationSettings
-    if locationNameForMissionCode=="MTBS"and renameLocationNameForSomeMissionCode=="MTBS"then
+    if locationNameForNextMissionCode=="MTBS"and locationNameForCurrentMissionCode=="MTBS"then
       if nextMissionCode~=TppDefine.SYS_MISSION_ID.MTBS_HELI then
         if not(loadSettings and loadSettings.ignoreMtbsLoadLocationForce)then
           locationSettings={force=true}
@@ -3791,10 +3849,13 @@ function this.OnMissionStart()
 end
 function this.SetPlayRecordClearInfo()
   local clearCount,allCount=TppStory.CalcAllMissionClearedCount()
+  --InfCore.Log("MissionClearedCount ["..clearCount.."/"..allCount.."]")--tex DEBUG
   TppUiCommand.SetPlayRecordClearInfo{recordId="MissionClear",clearCount=clearCount,allCount=allCount}
   local clearCount,allCount=TppStory.CalcAllMissionTaskCompletedCount()
+  --InfCore.Log("MissionTaskCompletedCount ["..clearCount.."/"..allCount.."]")--tex DEBUG
   TppUiCommand.SetPlayRecordClearInfo{recordId="MissionTaskClear",clearCount=clearCount,allCount=allCount}
   local clearCount,allCount=TppQuest.CalcQuestClearedCount()
+  --InfCore.Log("QuestClearedCount ["..clearCount.."/"..allCount.."]")--tex DEBUG
   TppUiCommand.SetPlayRecordClearInfo{recordId="SideOpsClear",clearCount=clearCount,allCount=allCount}
 end
 function this.IsBossBattle()

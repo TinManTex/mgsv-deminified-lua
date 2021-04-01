@@ -953,7 +953,9 @@ function this.GetMissionClearRankGMP(clearRank,missionCode)
   end
   return total
 end
+--tex NMC called from UI (TppUiCommand.RegisterMbMissionListFunction) at some point DEBUGNOW TODO: when?
 function this.GetMbMissionListParameterTable()
+  InfCore.LogFlow("TppResult.GetMbMissionListParameterTable")--tex DEBUGNOW not called as this file isnt DOBUILD
   local missionListParameterTable={}
   for missionCodeStr,enum in pairs(TppDefine.MISSION_ENUM)do
     local missionCode=tonumber(missionCodeStr)

@@ -1,3 +1,4 @@
+-- TppPaz.lua
 local this={}
 local StrCode32=Fox.StrCode32
 local SendCommand=GameObject.SendCommand
@@ -742,7 +743,28 @@ function this.PlayPlayerMotion(actionPath)
   Player.RequestToPlayDirectMotion{"handBookToPaz",{actionPath,false,pazLocator,"Move","MTP_GLOBAL_C",false}}
 end
 function this.PlayCameraAnimation()
-  Player.RequestToPlayCameraNonAnimation{characterId=this.GetPazGameObjectId(),isFollowPos=true,isFollowRot=true,followTime=6,followDelayTime=.5,candidateRots={{-10,110}},skeletonNames={"SKL_002_CHEST"},skeletonCenterOffsets={Vector3(0,0,0)},skeletonBoundings={Vector3(.1,.1,.1)},offsetTarget=Vector3(0,.5,.5),offsetPos=Vector3(0,0,-1),focalLength=21,aperture=4,timeToSleep=6,interpTimeAtStart=1,fitOnCamera=false,timeToStartToFitCamera=1,fitCameraInterpTime=.3,diffFocalLengthToReFitCamera=16,isCollisionCheck=false}
+  Player.RequestToPlayCameraNonAnimation{
+    characterId=this.GetPazGameObjectId(),
+    isFollowPos=true,
+    isFollowRot=true,
+    followTime=6,
+    followDelayTime=.5,
+    candidateRots={{-10,110}},
+    skeletonNames={"SKL_002_CHEST"},
+    skeletonCenterOffsets={Vector3(0,0,0)},
+    skeletonBoundings={Vector3(.1,.1,.1)},
+    offsetTarget=Vector3(0,.5,.5),
+    offsetPos=Vector3(0,0,-1),
+    focalLength=21,
+    aperture=4,
+    timeToSleep=6,
+    interpTimeAtStart=1,
+    fitOnCamera=false,
+    timeToStartToFitCamera=1,
+    fitCameraInterpTime=.3,
+    diffFocalLengthToReFitCamera=16,
+    isCollisionCheck=false
+  }
   Player.RequestToSetCameraRotation{rotX=10,rotY=45,interpTime=1}
 end
 function this.IsMonologuePhotoSpeech(speechLable)

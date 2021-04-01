@@ -346,7 +346,7 @@ function this.OverwriteBuddyVehiclePosForALZ()
         [EntryBuddyType.VEHICLE]={Vector3(6.412,-5.952,294.757),TppMath.DegreeToRadian(-153.76)},
         [EntryBuddyType.BUDDY]={Vector3(2.113,-5.436,299.302),-153.76}}}
   }
-  for n,posForLz in pairs(posTable)do
+  for area,posForLz in pairs(posTable)do
     TppEnemy.NPCEntryPointSetting(posForLz)
   end
 end

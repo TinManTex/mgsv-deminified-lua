@@ -6,6 +6,7 @@ local dofile=InfCore.DoFile--tex allow external alternate
 local LoadLibrary=InfCore.LoadLibrary --tex allow external alternate, was Script.LoadLibrary
 
 local function YieldFrame()
+  --InfCore.Log("start2nd.lua yeilding")--tex DEBUG
   coroutine.yield()
 end
 dofile"/Assets/tpp/sound/scripts/motion/setup.lua"
@@ -50,4 +51,4 @@ end
 
 InfCore.PCallDebug(InfMain.LoadLibraries)--tex
 
-InfCore.LogFlow"start2nd.lua done"--tex
+InfCore.Log"start2nd.lua done"--tex

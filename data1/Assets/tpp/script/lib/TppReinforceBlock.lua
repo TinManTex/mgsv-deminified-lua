@@ -60,31 +60,34 @@ end
 function this.IsProcessing()
   return this.GetReinforceBlockState()==ScriptBlock.SCRIPT_BLOCK_STATE_PROCESSING
 end
+--NMC: tex pretty much just indexes into REINFORCE_FPK[], complicated because REINFORCE_TYPE.HELI has sub tables for location/coloringType,
 function this.GetFpk(reinforceType,pfcType,coloringType)--NMC: basically parses REINFORCE_FPK
+  InfCore.Log("TppReinforceBlock.GetFpk: reinforceType:"..tostring(reinforceType).." pfcType:"..tostring(pfcType).." coloringType:"..tostring(coloringType))--tex DEBUG
   local fpkTableForReinforceType=this.REINFORCE_FPK[reinforceType]
   if Tpp.IsTypeTable(fpkTableForReinforceType)then
-  local locationString=InfUtil.GetLocationName()--tex REWORKED>
-  locationString=locationString or ""
-  locationString=string.upper(locationString)
-  --ORIG
---    local locationString=""
---    if TppLocation.IsAfghan()then
---      locationString="AFGH"
---    elseif TppLocation.IsMiddleAfrica()then
---      locationString="MAFR"
---    end
-    local fpkPath=fpkTableForReinforceType[pfcType]or fpkTableForReinforceType[locationString]
-    if Tpp.IsTypeTable(fpkPath)then
+    local locationString=TppLocation.GetLocationName()--tex REWORKED>
+    locationString=locationString or ""
+    locationString=string.upper(locationString)--<
+    --ORIG
+    --    local locationString=""
+    --    if TppLocation.IsAfghan()then
+    --      locationString="AFGH"
+    --    elseif TppLocation.IsMiddleAfrica()then
+    --      locationString="MAFR"
+    --    end
+    local fpkOrTable=fpkTableForReinforceType[pfcType]or fpkTableForReinforceType[locationString]
+    if Tpp.IsTypeTable(fpkOrTable)then
       coloringType=coloringType or"_DEFAULT"
-      if fpkPath[coloringType]then
-        fpkPath=fpkPath[coloringType]
+      if fpkOrTable[coloringType]then
+        fpkOrTable=fpkOrTable[coloringType]
       else
-        fpkPath=nil
+        fpkOrTable=nil
       end
     end
-    if fpkPath then
-      fpkTableForReinforceType=fpkPath
-    else
+    if fpkOrTable then
+      fpkTableForReinforceType=fpkOrTable
+    else--tex NMC I don't get what case this is trying to catch
+      InfCore.Log("WARNING: TppReinforceBlock.GetFpk: could not find fpk path")--tex DEBUG
       local r=""
       for i,n in pairs(fpkTableForReinforceType)do
         if r==""then
@@ -98,7 +101,7 @@ function this.GetFpk(reinforceType,pfcType,coloringType)--NMC: basically parses 
     return""
   end
   return fpkTableForReinforceType
-end
+end--GetFpk
 function this.SetUpReinforceBlock()
   InfCore.LogFlow"TppReinforceBlock.SetUpReinforceBlock"--tex DEBUG
   mvars.reinforce_reinforceBlockName="reinforce_block"
@@ -194,7 +197,7 @@ end
 function this.StartReinforce(cpId)
   InfCore.LogFlow("TppReinforceBlock.StartReinforce: "..tostring(cpId))--tex DEBUG
   if not mvars.reinforce_hasReinforceBlock then
-        InfCore.Log"StartReinforce: reinforce_hasReinforceBlock==false, aborting"--tex DEBUG
+    InfCore.Log"StartReinforce: reinforce_hasReinforceBlock==false, aborting"--tex DEBUG
     return
   end
   if mvars.reinforce_reinforceType==this.REINFORCE_TYPE.NONE then

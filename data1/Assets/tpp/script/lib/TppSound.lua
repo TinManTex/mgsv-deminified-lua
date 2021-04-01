@@ -54,13 +54,13 @@ function this.StopSceneBGM()
   this.HaltSceneBGM()
 end
 function this.RestoreSceneBGM()
-  local n,postBgmName=this.GetCurrentSceneBgmSetting()
-  if not n then
+  local bgmInfo,postBgmName=this.GetCurrentSceneBgmSetting()
+  if not bgmInfo then
     return
   end
-  local startBgm=n.start
-  if n.restore then
-    postBgmName=n.restore
+  local startBgm=bgmInfo.start
+  if bgmInfo.restore then
+    postBgmName=bgmInfo.restore
   end
   if startBgm then
     TppMusicManager.StartSceneMode()

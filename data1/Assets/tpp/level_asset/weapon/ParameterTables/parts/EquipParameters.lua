@@ -509,6 +509,10 @@ this.equipParameterTables={
     {TppEquip.WP_60617,TppEquip.RC_60615,TppEquip.BA_None,TppEquip.AM_60617,TppEquip.SK_None,TppEquip.MZ_None,TppEquip.MO_None,TppEquip.ST_60105,TppEquip.ST_None,TppEquip.UD_None,TppEquip.LT_None,TppEquip.LS_30104,11},
     --<
   },
+  -- From https://metalgearmodding.fandom.com/wiki/Iron_Sight_adjustments,_fire-rate,_draw_and_reload_speeds
+  -- as of 2019-8-11
+  -- check to see if it's updated
+  --{fireRate,aimAssistDist,drawSpeed,unk4,unk5,ironSight1,ironSight2,reloadSpeed}
   receiverParamSetsBase={
     {300,35,.48,35,35,.2,29,1},
     {300,41,.5,41,41,.2,29,1},

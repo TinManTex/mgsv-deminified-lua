@@ -1,4 +1,5 @@
 -- DOBUILD: 1
+-- TppHero.lua
 local this={}
 local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
 local Code32Table=Tpp.Code32Table
@@ -239,29 +240,6 @@ function this.SetAndAnnounceHeroicOgrePoint(pointTable,downLangId,upLangId)
   if TppMission.IsFOBMission(vars.missionCode)and(vars.fobSneakMode==FobMode.MODE_SHAM)then
     return
   end
-  --tex KLUDGE, rather than checking multiple calls to this, TODO better > 
-  --ASSUMPTION all calls to SetAndAnnounceHeroicOgrePoint with mbstaff_died wrapped in isDD check >
-  local Ivars=Ivars    --tex TODO: better
-  if downLangId=="mbstaff_died" then
-    if Ivars.customSoldierTypeFREE:Is()>0 and Ivars.customSoldierTypeFREE:MissionCheck() then
-      return
-    end
-    if Ivars.customSoldierTypeMB_ALL:Is()>0 and Ivars.customSoldierTypeMB_ALL:MissionCheck() then
-      if Ivars.mbHostileSoldiers:Is(0) then
-        return
-      end
-    end
-    if Ivars.customSoldierFemaleTypeMB_ALL:Is()>0 and Ivars.customSoldierFemaleTypeMB_ALL:MissionCheck() then
-      if Ivars.mbHostileSoldiers:Is(0) then
-        return
-      end
-    end
-    if Ivars.enableWildCardFreeRoam:Is()>0 and Ivars.enableWildCardFreeRoam:MissionCheck() then
-      return
-    end
-  end
-  --<
-
   this.SetHeroicPoint(pointTable.heroicPoint)
   this.AnnounceHeroicPoint(pointTable,downLangId,upLangId)
   this.SetOgrePoint(pointTable.ogrePoint)
@@ -441,22 +419,24 @@ function this.Messages()
                 end
               end
             end
+            --RETAILPATCH 1070 check added
           elseif Tpp.IsSoldier(gameId)then
-            if(deadMessageFlag==nil)then--RETAILPATCH 1070 check added
+            if(deadMessageFlag==nil)then
               Tpp.IncrementPlayData"totalKillCount"
-            else--RETAILPATCH 1070>
+            else
+              --RETAILPATCH 1070>
               if(band(deadMessageFlag,DeadMessageFlag.NOT_DAMAGE_DEAD)==0)and(band(deadMessageFlag,DeadMessageFlag.INDIRECTLY_TARGET)==0)then
                 Tpp.IncrementPlayData"totalKillCount"
+              end
+              --<
             end
-            end--<
-
             local soldierType=TppEnemy.GetSoldierType(gameId)
-            if(SendCommand(gameId,{id="IsDD"})) and not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
+            if(SendCommand(gameId,{id="IsDD"}) and not InfMainTpp.IsDDEnemy(gameId))then--tex added enemy check --DEBUGNOW
               if(deadMessageFlag~=nil)and(band(deadMessageFlag,DeadMessageFlag.FIRE)~=0)then
                 this.SetAndAnnounceHeroicOgrePoint(this.FIRE_KILL_DD_SOLDIER,"mbstaff_died")
-            else
-              this.SetAndAnnounceHeroicOgrePoint(this.KILL_DD_SOLDIER,"mbstaff_died")
-            end
+              else
+                this.SetAndAnnounceHeroicOgrePoint(this.KILL_DD_SOLDIER,"mbstaff_died")
+              end
             else
               if(soldierType~=EnemyType.TYPE_CHILD)then
                 local checkDeadFlag=DeadMessageFlag.FIRE
@@ -496,7 +476,7 @@ function this.Messages()
               this.SetAndAnnounceHeroicOgrePoint{heroicPoint=0,ogrePoint=20}
             end
           end
-        else
+        else--not player attacker
           if Tpp.IsHostage(gameId)then
             if SendCommand(gameId,{id="IsDD"})and(not TppMission.IsFOBMission(vars.missionCode))then
               this.SetAndAnnounceHeroicOgrePoint(this.DEAD_DD_SOLDIER,"mbstaff_died")
@@ -511,21 +491,21 @@ function this.Messages()
             end--<
             if TppMission.IsFOBMission(vars.missionCode)then
             else
-              if(SendCommand(gameId,{id="IsDD"}))and not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
+              if(SendCommand(gameId,{id="IsDD"}) and not InfMainTpp.IsDDEnemy(gameId))then--tex added enemy check --DEBUGNOW
                 this.SetAndAnnounceHeroicOgrePoint(this.DEAD_DD_SOLDIER,"mbstaff_died")
               end
             end
           end
-        end
+        end--player attacker or not
       end},
-      {msg="Dying",func=function(soldierId,arg2)
-        if Tpp.IsSoldier(soldierId)then
-          if not SendCommand(soldierId,{id="IsDD"}) and not (vars.missionCode==30050 and Ivars.mbNonStaff:Is(1))then--tex added nonstaff
+      {msg="Dying",func=function(gameId,arg2)
+        if Tpp.IsSoldier(gameId)then
+          if not SendCommand(gameId,{id="IsDD"}) or InfMainTpp.IsDDEnemy(gameId) then--tex added enemy check --DEBUGNOW
             this.SetAndAnnounceHeroicOgrePoint(this.DYING_SOLDIER)
           end
-        elseif Tpp.IsParasiteSquad(soldierId)then
+        elseif Tpp.IsParasiteSquad(gameId)then
           this.SetAndAnnounceHeroicOgrePoint(this.DYING_PARASITE,"destroyed_skull","destroyed_skull")
-        elseif Tpp.IsBossQuiet(soldierId)then
+        elseif Tpp.IsBossQuiet(gameId)then
           local quietType=SendCommand({type="TppBossQuiet2"},{id="GetQuietType"})
           if quietType==StrCode32"Cam"then
             this.SetAndAnnounceHeroicOgrePoint(this.DYING_PARASITE,"destroyed_skull","destroyed_skull")

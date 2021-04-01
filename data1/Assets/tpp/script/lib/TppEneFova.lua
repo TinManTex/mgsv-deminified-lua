@@ -97,7 +97,8 @@ local prs5_main0_def_v00PartsAfrica="/Assets/tpp/parts/chara/prs/prs5_main0_def_
 local prs3_main0_def_v00PartsAfghanFree="/Assets/tpp/parts/chara/prs/prs3_main0_def_v00.parts"
 local prs6_main0_def_v00PartsAfricaFree="/Assets/tpp/parts/chara/prs/prs6_main0_def_v00.parts"
 local dds5_main0_def_v00Parts="/Assets/tpp/parts/chara/dds/dds5_main0_def_v00.parts"
-this.noArmorForMission={--tex made module local
+--tex following tables exposed as module members below-v-
+local noArmorForMission={
   [10010]=1,
   [10020]=1,
   [10030]=1,
@@ -210,7 +211,12 @@ this.S10240_FemaleFaceIdList={394,351,373,456,463,455,511,502}
 this.S10240_MaleFaceIdList={195,144,214,6,217,83,273,60,87,71,256,201,290,178,102,255,293,165,85,18,228,12,65,134,31,132,161,342,107,274,184,226,153,247,344,242,56,183,54,126,223}
 
 local fovaSetupFuncs={}
-this.fovaSetupFuncs=fovaSetupFuncs--tex expose to other modules
+--tex expose to other modules>
+this.fovaSetupFuncs=fovaSetupFuncs
+this.noArmorForMission=noArmorForMission
+this.missionArmorType=missionArmorType
+this.missionHostageInfos=missionHostageInfos
+--<
 
 --NMC an addaption of switch / case from Case method on http://lua-users.org/wiki/SwitchStatement
 --mostly used for PreMissionLoad, but also in some of the fovaSetupFuncs[missionId] funcs to run the area fova func
@@ -230,7 +236,7 @@ function this.IsNotRequiredArmorSoldier(missionCode)
   if InfEneFova.ForceArmor(missionCode) then--tex >
     return false
   end--<
-  if this.noArmorForMission[missionCode]~=nil then
+  if noArmorForMission[missionCode]~=nil then
     return true
   end
   return false
@@ -779,7 +785,7 @@ function fovaSetupFuncs.mafr(locationName,missionId)
   local faceGroupTable=this.GetFaceGroupTableAtGroupType(faceGroupType)
   TppSoldierFace.OverwriteMissionFovaData{face=faceGroupTable}
   if isMoreVariationMode>0 then
-    for e=1,2 do
+    for i=1,2 do
       solface_groupNumber=solface_groupNumber+2
       local faceGroup=(solface_groupNumber%MAX_AFRICA_GRP)*2
       local faceGroupType=TppEnemyFaceGroupId.AFRICA_GRP000_B+(faceGroup)
@@ -794,7 +800,7 @@ function fovaSetupFuncs.mafr(locationName,missionId)
   local faceGroupTable=this.GetFaceGroupTableAtGroupType(faceGroupType)
   TppSoldierFace.OverwriteMissionFovaData{face=faceGroupTable}
   if isMoreVariationMode>0 then
-    for e=1,2 do
+    for i=1,2 do
       solface_groupNumber=solface_groupNumber+2
       local faceGroup=(solface_groupNumber%MAX_AFRICA_GRP)*2
       local faceGroupType=TppEnemyFaceGroupId.AFRICA_GRP000_W+(faceGroup)
@@ -848,7 +854,7 @@ function fovaSetupFuncs.mafr(locationName,missionId)
     if armorTypeTable~=nil then
       local numArmorTypes=#armorTypeTable
       if numArmorTypes>0 then
-        for t,armorType in ipairs(armorTypeTable)do
+        for i,armorType in ipairs(armorTypeTable)do
           if armorType==TppDefine.AFR_ARMOR.TYPE_ZRS then
             table.insert(bodies,{TppEnemyBodyId.pfa0_v00_a,MAX_REALIZED_COUNT})
           elseif armorType==TppDefine.AFR_ARMOR.TYPE_CFA then
@@ -1155,10 +1161,11 @@ function fovaSetupFuncs.mtbs(locationName,missionId)
   TppSoldierFace.OverwriteMissionFovaData{face=faces}
   local bodies={}
   --tex> ddsuit bodies
-  if IvarProc.EnabledForMission("customSoldierType",missionId) then
-    local bodyInfo=InfEneFova.GetMaleBodyInfo(missionId)
-    if bodyInfo and bodyInfo.partsPath then
-      TppSoldier2.SetDefaultPartsPath(bodyInfo.partsPath)
+  local maleBodyInfo=InfEneFova.GetMaleBodyInfo(missionId)
+  local femaleBodyInfo=InfEneFova.GetFemaleBodyInfo(missionId)
+  if maleBodyInfo or femaleBodyInfo then
+    if maleBodyInfo and maleBodyInfo.partsPath then
+      TppSoldier2.SetDefaultPartsPath(maleBodyInfo.partsPath)
     end
 
     --tex manage body limit (see InfBodyInfo GOTCHA)
@@ -1166,8 +1173,6 @@ function fovaSetupFuncs.mtbs(locationName,missionId)
     local halfMax=maxBodies/2
     local maleBodyCount=0
     local femaleBodyCount=0
-    local maleBodyInfo=InfEneFova.GetMaleBodyInfo(missionId)
-    local femaleBodyInfo=InfEneFova.GetFemaleBodyInfo(missionId)
     if maleBodyInfo and maleBodyInfo.bodyIds then
       maleBodyCount=#maleBodyInfo.bodyIds
     end
@@ -1227,11 +1232,11 @@ function fovaSetupFuncs.mtbs(locationName,missionId)
   TppSoldierFace.OverwriteMissionFovaData{body=bodies}
 
   --tex> dd suit SetExtendPartsInfo
-  if IvarProc.EnabledForMission("customSoldierType",missionId) then
+  local femaleBodyInfo=InfEneFova.GetFemaleBodyInfo()
+  if femaleBodyInfo then
     --tex only female uses extendparts
-    local bodyInfo=InfEneFova.GetFemaleBodyInfo()
-    if bodyInfo and bodyInfo.partsPath then
-      TppSoldier2.SetExtendPartsInfo{type=1,path=bodyInfo.partsPath}
+    if femaleBodyInfo.partsPath then
+      TppSoldier2.SetExtendPartsInfo{type=1,path=femaleBodyInfo.partsPath}
     end
     --<
     --not ddogs, shining lights
@@ -1267,7 +1272,7 @@ function fovaSetupFuncs.mtbs(locationName,missionId)
   TppSoldierFace.SetSoldierUseHairFova(true)
 end
 
---tex >ASSUMPTION customSoldierType true WIP
+--tex >ASSUMPTION customSoldierType true WIP UNUSED
 function fovaSetupFuncs.mtbsCustomBody(locationName,missionId)
   if TppMission.IsHelicopterSpace(missionId)then
     return
@@ -1295,20 +1300,20 @@ function fovaSetupFuncs.mtbsCustomBody(locationName,missionId)
 
   --tex bodies
   local bodies={}
-  local bodyInfo=InfEneFova.GetMaleBodyInfo(missionId)
-  if bodyInfo then
-    InfEneFova.SetupBodies(bodyInfo,bodies,InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER)
-    if bodyInfo.partsPath then
-      TppSoldier2.SetDefaultPartsPath(bodyInfo.partsPath)
+  local maleBodyInfo=InfEneFova.GetMaleBodyInfo(missionId)
+  if maleBodyInfo then
+    InfEneFova.SetupBodies(maleBodyInfo,bodies,InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER)
+    if maleBodyInfo.partsPath then
+      TppSoldier2.SetDefaultPartsPath(maleBodyInfo.partsPath)
     end
   end
 
-  local bodyInfo=InfEneFova.GetFemaleBodyInfo()
-  if bodyInfo then
-    InfEneFova.SetupBodies(bodyInfo,bodies,InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER)
+  local femaleBodyInfo=InfEneFova.GetFemaleBodyInfo()
+  if femaleBodyInfo then
+    InfEneFova.SetupBodies(femaleBodyInfo,bodies,InfMainTpp.MAX_STAFF_NUM_ON_CLUSTER)
     --tex only female uses extendparts
-    if bodyInfo.partsPath then
-      TppSoldier2.SetExtendPartsInfo{type=1,path=bodyInfo.partsPath}
+    if femaleBodyInfo.partsPath then
+      TppSoldier2.SetExtendPartsInfo{type=1,path=femaleBodyInfo.partsPath}
     end
   end
   TppSoldierFace.OverwriteMissionFovaData{body=bodies}
@@ -1331,6 +1336,12 @@ function fovaSetupFuncs.default(locationName,missionId)
     TppSoldierFace.OverwriteMissionFovaData{face=face}
   end
 end
+--tex>
+function this.SetupFovaForLocation(locationName,missionId)
+  fovaSetupFuncs[locationName](locationName,missionId)
+end
+--<
+--NMC: cant see any references to this
 function this.AddTakingOverHostagePack()
   local settings={}
   for n,name in ipairs(TppEnemy.TAKING_OVER_HOSTAGE_LIST)do
@@ -1357,22 +1368,16 @@ function this.PreMissionLoad(missionId,currentMissionId)
     local isNoKillMode=TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
     TppEnemy.PrepareDDParameter(soldierEquipGrade,isNoKillMode)
   end
+  InfMain.PreMissionLoad(missionId,currentMissionId)--tex added
   --tex REWORKED>
   --tex the respective area name fova functions have been renamed to match locationName output (ex fovaSetupFuncs.Afghan to fovaSetupFuncs.afgh)
-  local locationName=InfUtil.GetLocationName()
-  local fovaFuncName="default"
-  if fovaSetupFuncs[missionId] then
-    fovaFuncName=missionId
-  elseif fovaSetupFuncs[locationName] then
-    fovaFuncName=locationName
-  end
-
+  local locationName=TppLocation.GetLocationName()
   InfCore.LogFlow("TppEneFova.PreMissionLoad locationName:"..tostring(locationName).." missionId:"..tostring(missionId))--tex DEBUG
+  local FovaFunc = fovaSetupFuncs[missionId] or fovaSetupFuncs[locationName] or fovaSetupFuncs.default
   --tex 1st parameter wasn't actually used in vanilla, only for the switch/case, might as well repurpose it
-  InfCore.PCallDebug(fovaSetupFuncs[fovaFuncName],locationName,missionId)
-
-  InfMain.PreMissionLoad(missionId,currentMissionId)--tex added
+  InfCore.PCallDebug(FovaFunc,locationName,missionId)
   --<
+  --DEBUGNOW CULL or make PreMissionLoadPostFova InfMain.PreMissionLoad(missionId,currentMissionId)--tex added
   --ORIG
   --  local _fovaSetupFuncs=Select(fovaSetupFuncs)
   --  if fovaSetupFuncs[missionId]==nil then
@@ -1746,7 +1751,9 @@ function this.ApplyMTBSUniqueSetting(soldierId,faceId,useBalaclava,forceNoBalacl
       bodyInfo=InfEneFova.GetMaleBodyInfo()
     end
     if bodyInfo then
-      GameObject.SendCommand(soldierId,{id="UseExtendParts",enabled=isFemale})
+      if isFemale then
+        GameObject.SendCommand(soldierId,{id="UseExtendParts",enabled=isFemale})
+      end
 
       if bodyId==0 or bodyId==nil then--tex dont set body, rely on GetBodyId
         local soldierType=TppEnemy.GetSoldierType(soldierId)
@@ -2015,7 +2022,7 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
       else
         lethalUavType=TppUav.DEVELOP_LEVEL_LMG_0
       end
-    elseif uavLevel==3 then
+    elseif uavLevel>=3 then--RETAILPATCH 1090 was ==3 , tex did not notice I hadn't applied this during the merge until Feb2020, patch 1090 was released in April 2016 oops
       if soldierEquipGrade>=lmgLv2EquipGrade then
         lethalUavType=TppUav.DEVELOP_LEVEL_LMG_2
       elseif soldierEquipGrade>=lmgLv1EquipGrade then
@@ -2053,7 +2060,7 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
   if soldierEquipGrade<sleepEquipGrade then
     sleepUavType=defaultUavType
   else
-    if uavSleepingLevel==1 then
+    if uavSleepingLevel>=1 then--RETAILPATCH 1090 was ==1 , tex did not notice I hadn't applied this during the merge until Feb2020, patch 1090 was released in April 2016 oops
       sleepUavType=TppUav.DEVELOP_LEVEL_SLEEP_0
     end
   end
@@ -2088,42 +2095,43 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
 end
 --<
 --RETAILPATCH 1090>
+--NMC: cant see any references to this
 function this.GetUavCombatGradeAndEmpLevel(p1,p2,p3,p4)
   if p1<9 then
     return nil,0
   end
-  local d={
+  local unkTable1={
     [9]={4,2},
     [10]={5,3},
     [11]={6,4}
   }
-  local n,e
+  local unkN1,unkN2
   if p2 then
-    e=2
-    n=p4
+    unkN2=2
+    unkN1=p4
   else
-    e=1
-    n=p3
+    unkN2=1
+    unkN1=p3
   end
-  local a
-  for t,d in pairs(d)do
-    if d[e]==n then
-      a=t
+  local unkN3
+  for unkK,unkV in pairs(unkTable1)do
+    if unkV[unkN2]==unkN1 then
+      unkN3=unkK
     end
   end
-  if not a then
-    if n>d[11][e]then
+  if not unkN3 then
+    if unkN1>unkTable1[11][unkN2]then
     end
     return nil,0
   end
-  local e,n
-  if p1<=a then
-    e=p1
+  local ret1,ret2
+  if p1<=unkN3 then
+    ret1=p1
   else
-    e=a
+    ret1=unkN3
   end
-  n=e-8
-  return e,n
+  ret2=ret1-8
+  return ret1,ret2
 end
 --<
 function this.GetUniqueSettings()--tex>

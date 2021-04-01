@@ -1,12 +1,13 @@
 -- DOBUILD: 1
 --start.lua
-InfCore.LogFlow"start.lua"--tex
+InfCore.Log"start.lua"--tex
 
 local dofile=InfCore.DoFile--tex allow external alternate
 local LoadLibrary=InfCore.LoadLibrary --tex allow external alternate, was Script.LoadLibrary
-local increaseMemoryAlloc=Ivars and Ivars.sys_increaseMemoryAlloc:Get()==1--tex DEBUGNOW
-
+local increaseMemoryAlloc=Ivars and Ivars.sys_increaseMemoryAlloc:Get()==1--tex
+--NMC: tex don't know why they wrapped it in a function, but it lets me log it easily (I want the timestamps so I can compare to ihhook_log) so I'm not complaining
 local function yield()
+  --InfCore.Log("start.lua yeilding")--tex DEBUG
   coroutine.yield()
 end
 FoxFadeIo.FadeOut(0)
@@ -422,6 +423,7 @@ phDaemon.SetCollisionGroupState(11,5,true)
 phDaemon.SetCollisionGroupState(12,3,true)
 phDaemon.SetCollisionGroupState(12,4,true)
 phDaemon.SetCollisionGroupState(12,5,true)
+InfCore.LogFlow"dofile TppUiBootInit.lua"--tex DEBUG
 dofile"Tpp/Scripts/Ui/TppUiBootInit.lua"
 TppCassetteTapeInfo.Setup()
 if Editor then
@@ -462,6 +464,7 @@ if increaseMemoryAlloc then--tex>
 else--<
   TppGameSequence.SetSystemBlockSize(systemBlockSize,(40.5*1024)*1024)
 end
+InfCore.LogFlow"LoadResidentBlock"--tex DEBUG
 TppGameSequence.LoadResidentBlock"/Assets/tpp/pack/resident/resident00.fpk"
 if TppSystemUtility.GetCurrentGameMode()~="MGO"then
   Player.CreateResidentMotionBlock{size=((6*1024)*1024-8*1024)-(.55*1024)*1024}
@@ -518,6 +521,7 @@ if Editor then
   EdDemoEditBlockController.AddToolsBlockPath"/Assets/tpp/demo/event/info/TppEdDemoEditTools.fpk"
 end
 if NavWorldDaemon then
+  InfCore.LogFlow"NavWorldDaemon.AddWorld"--tex DEBUG
   NavWorldDaemon.AddWorld{
     sceneName="MainScene",
     worldName="",
@@ -537,13 +541,16 @@ TppMarker2System.CreateMarker2System()
 local e=false
 if TPP_MISSION_MANAGER_ENABLED then
   if e==false then
+    InfCore.LogFlow"TppGameSequence.RequestGameSetup"--tex DEBUG
     TppGameSequence.RequestGameSetup()
   end
 end
 if TppNewCollectibleModule then
+  InfCore.LogFlow"TppNewCollectibleModule.InitializeWhenStartLua"--tex DEBUG
   TppNewCollectibleModule.InitializeWhenStartLua()
 end
 yield()
+InfCore.LogFlow"TppMotherBaseManagement.SetMbs"--tex DEBUG
 TppMotherBaseManagement.SetMbsClusterParam{category="Command",grade=4,buildStatus="Completed"}
 TppMotherBaseManagement.SetMbsClusterParam{category="Combat",grade=4,buildStatus="Completed"}
 TppMotherBaseManagement.SetMbsClusterParam{category="Develop",grade=4,buildStatus="Completed"}
@@ -558,6 +565,7 @@ TppMotherBaseManagement.SetMbsPlatformSecurityParam{platform="Common1",soldierQu
 TppMotherBaseManagement.SetMbsPlatformSecurityParam{platform="Common2",soldierQuantity="Middle",irSensorQuantity="Small",cameraQuantity="Large",decoyQuantity="Middle",mineQuantity="Large",uavQuantity="Small",importantCautionAreas={false,true,true,false,false,true,true,false}}
 TppMotherBaseManagement.SetMbsPlatformSecurityParam{platform="Common3",soldierQuantity="Middle",irSensorQuantity="Small",cameraQuantity="Large",decoyQuantity="Middle",mineQuantity="Large",uavQuantity="Small",importantCautionAreas={false,true,true,false,false,true,true,false}}
 yield()
+InfCore.LogFlow"Gimmick.RegisterCassetteToRadio"--tex DEBUG
 Gimmick.RegisterCassetteToRadio("afgh_radi001_csst001_gim_n0000|srt_afgh_radi001_csst001","/Assets/tpp/level/mission2/story/s10150/s10150_block01.fox2",1)
 Gimmick.RegisterCassetteToRadio("afgh_radi001_csst001_gim_n0000|srt_afgh_radi001_csst001","/Assets/tpp/level/location/afgh/block_large/slopedTown/afgh_slopedTown_gimmick.fox2",2)
 Gimmick.RegisterCassetteToRadio("afgh_radi001_csst001_gim_n0000|srt_afgh_radi001_csst001","/Assets/tpp/level/location/afgh/block_large/fort/afgn_fort_gimmick.fox2",17)
@@ -673,7 +681,7 @@ if Script.LoadLibrary then
   while Script.IsLoadingLibrary"/Assets/tpp/script/lib/Tpp.lua"do
     yield()
   end
-  Script.LoadLibrary"/Assets/tpp/script/lib/InfInitMain.lua"--tex
+  Script.LoadLibrary"/Assets/tpp/script/ih/InfInitMain.lua"--tex
   Script.LoadLibrary"/Assets/tpp/script/lib/TppDefine.lua"
   Script.LoadLibrary"/Assets/tpp/script/lib/TppVarInit.lua"
   Script.LoadLibrary"/Assets/tpp/script/lib/TppGVars.lua"
@@ -703,8 +711,8 @@ yield()
 if TppSystemUtility.GetCurrentGameMode()=="TPP"then
   LoadLibrary"/Assets/tpp/level_asset/chara/player/game_object/player2_camouf_param.lua"
 end
-InfCore.LogFlow("Most LoadLibrary libs done")--tex a good place to do stuff on the libs before much is run in them (you'd have to do it from within a library though since start is sandboxed) DEBUGNOW
-LoadLibrary"/Assets/tpp/script/lib/InfHooks.lua"--tex InfCore.LoadLibrary external from /core/ doesn't overcome sandbox but from init > InfInit does?
+InfCore.LogFlow("Most LoadLibrary libs done")--tex a good place to do stuff on the libs before much is run in them (you'd have to do it from within a library though since start is sandboxed)
+LoadLibrary"/Assets/tpp/script/ih/InfHooks.lua"--tex InfCore.LoadLibrary external from /core/ doesn't overcome sandbox but from init > InfInit does?
 yield()
 if Editor then
   TppGeoMaterial.EDIT_CheckWastedMaterialNames()
@@ -762,13 +770,11 @@ TppUI.FadeOut(TppUI.FADE_SPEED.FADE_MOMENT,nil,nil,{setMute=true})
 TppVarInit.InitializeOnStartTitle()
 TppVarInit.StartInitMission()
 TppUiCommand.SetLoadIndicatorVisible(false)
-InfCore.allLoaded=true--tex
+
+InfCore.allLoaded=true--tex>
+local count=collectgarbage("count")
+InfCore.Log("Lua memory usage: "..count.." KB")
+collectgarbage()
+count=collectgarbage("count")
+InfCore.Log("Lua memory usage post collect: "..count.." KB")
 InfCore.LogFlow"start.lua done"--tex
-
-
-
-
-
-
-
-

@@ -1,5 +1,6 @@
 -- DOBUILD: 1
 -- TppGVars.lua
+-- GOTCHA: setting a TYPE_BOOL scriptvar to 0 will set it to true
 local this={}
 this.DeclareGVarsTable={
   {name="ini_isReturnToTitle",type=TppScriptVars.TYPE_BOOL,value=false,save=false},
@@ -180,7 +181,18 @@ this.DeclareGVarsTable={
   {name="res_headShotCount",type=TppScriptVars.TYPE_UINT32,arraySize=(TppDefine.PLAYSTYLE_HISTORY_MAX+1),value=0,save=true,category=TppScriptVars.CATEGORY_MISSION},
   {name="res_isStealth",type=TppScriptVars.TYPE_BOOL,arraySize=(TppDefine.PLAYSTYLE_HISTORY_MAX+1),value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
   {name="res_isPerfectStealth",type=TppScriptVars.TYPE_BOOL,arraySize=(TppDefine.PLAYSTYLE_HISTORY_MAX+1),value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
-  {name="ui_isTaskLastComleted",arraySize=#TppDefine.MISSION_LIST*TppDefine.MAX_MISSION_TASK_COUNT,type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},--tex DEBUGNOW will shift size depenting on mission list
+  --tex ui_isTaskLastComleted size being defined by #TppDefine.MISSION_LIST is problematic since it becomes variable with the mission addon system, but we're using missing missions so list is at #62,
+  --so I've bumped it up to 64/MISSION_COUNT_MAX
+  --I did a small test to see if changing this trashes the following gvars, rev_revengeRandomValue, rev_revengeLv
+  --1. set ui_isTaskLastComleted size to original
+  --2. loaded a unmodded save
+  --3. set the gvars to specific values
+  --4. made sure it saved (loaded level)
+  --5. set ui_isTaskLastComleted to new size
+  --6. set the ui_isTaskLastComleted end values ([62],[63]) (automatically are set to 0 via InfMission.OpenMissions, I should probably set to specfic values or max)
+  --7. checked values
+  --was {name="ui_isTaskLastComleted",arraySize=#TppDefine.MISSION_LIST*TppDefine.MAX_MISSION_TASK_COUNT,type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},
+  {name="ui_isTaskLastComleted",arraySize=TppDefine.MISSION_COUNT_MAX*TppDefine.MAX_MISSION_TASK_COUNT,type=TppScriptVars.TYPE_BOOL,value=false,save=true,category=TppScriptVars.CATEGORY_MISSION},--tex was arraySize=#TppDefine.MISSION_LIST*TppDefine.MAX_MISSION_TASK_COUNT   
   {name="rev_revengeRandomValue",type=TppScriptVars.TYPE_UINT32,arraySize=1,value=4934224,save=true,category=TppScriptVars.CATEGORY_MISSION_RESTARTABLE},
   {name="rev_revengeLv",type=TppScriptVars.TYPE_UINT8,arraySize=TppRevenge.REVENGE_TYPE.MAX,value=0,save=true,category=TppScriptVars.CATEGORY_MISSION_RESTARTABLE},
   {name="rev_revengePoint",type=TppScriptVars.TYPE_UINT16,arraySize=TppRevenge.REVENGE_TYPE.MAX,value=0,save=true,category=TppScriptVars.CATEGORY_MISSION_RESTARTABLE},

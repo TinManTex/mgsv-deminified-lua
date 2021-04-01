@@ -88,55 +88,55 @@ end
 if TppCommandPost2.SetDominationTargetCpList then
   TppCommandPost2.SetDominationTargetCpList{afgh=dominationTargetCpList.afgh,mafr=dominationTargetCpList.mafr}
 end
-function this.Unlock(a,heroicPoint,_)
+function this.Unlock(trophyIndex,heroicPoint,_ogrePoints)
   if not(TppMission.IsFOBMission(vars.missionCode)and(vars.fobSneakMode==FobMode.MODE_SHAM))then
-    if not gvars.trp_isGot[a]then
+    if not gvars.trp_isGot[trophyIndex]then
       if heroicPoint then
         local ogrePoint=0
-        if _ then
-          ogrePoint=_
+        if _ogrePoints then
+          ogrePoint=_ogrePoints
         end
         TppHero.SetAndAnnounceHeroicOgrePoint{heroicPoint=heroicPoint,ogrePoint=ogrePoint}
       end
     end
-    gvars.trp_isGot[a]=true
+    gvars.trp_isGot[trophyIndex]=true
   end
-  Trophy.TrophyUnlock(a)
-  local a=true
-  for _=1,47 do
-    if not gvars.trp_isGot[_]then
-      a=false
+  Trophy.TrophyUnlock(trophyIndex)
+  local allUnlocked=true
+  for i=1,47 do
+    if not gvars.trp_isGot[i]then
+      allUnlocked=false
       break
     end
   end
-  if a then
+  if allUnlocked then
     if not gvars.trp_isGot[0]then
       gvars.trp_isGot[0]=true
     end
   end
 end
-function this.UnlockOnMissionClear(_)
-  local _=this.MISSION_CLEAR[_]
-  if _ then
-    this.Unlock(_)
+function this.UnlockOnMissionClear(missionCode)
+  local tropyForMission=this.MISSION_CLEAR[missionCode]
+  if tropyForMission then
+    this.Unlock(tropyForMission)
   end
 end
 function this.UnlockOnBuddyFriendlyMax()
-  for _,o in pairs(this.BUDDY_FRIENDLY_MAX)do
-    if TppBuddyService.GetFriendlyPoint(_)>=100 then
-      this.Unlock(o,5e3,-5e3)
+  for buddyType,trophy in pairs(this.BUDDY_FRIENDLY_MAX)do
+    if TppBuddyService.GetFriendlyPoint(buddyType)>=100 then
+      this.Unlock(trophy,5e3,-5e3)
     end
   end
 end
 function this.UnlockOnAllMissionTaskCompleted()
-  local _=true
-  for a,o in pairs(TppResult.MISSION_TASK_LIST)do
-    if not TppUI.IsAllTaskCompleted(a)then
-      _=false
+  local allComplete=true
+  for missionCode,taskNumbers in pairs(TppResult.MISSION_TASK_LIST)do
+    if not TppUI.IsAllTaskCompleted(missionCode)then
+      allComplete=false
       break
     end
   end
-  if _ then
+  if allComplete then
     this.Unlock(13,3e4)
   end
 end
