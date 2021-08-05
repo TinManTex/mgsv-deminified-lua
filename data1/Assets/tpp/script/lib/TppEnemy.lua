@@ -235,7 +235,7 @@ this.subTypeOfCpTable={
     mafr_27_30_lrrp=true
   }
 }
-this.subTypeOfCp={}
+this.subTypeOfCp={}--tex built below, but also added to via missionTable.enemy.cpSubTypes in OnAllocate
 this.subTypeOfCpDefault={}--tex
 for subType,cp in pairs(this.subTypeOfCpTable)do
   for cpName,bool in pairs(cp)do
@@ -623,15 +623,18 @@ function this._ConvertSoldierNameKeysToId(soldierTypes)
   end
 end
 function this._SetUpSoldierTypes(soldierType,soldierIds)
-  for a,soldierId in ipairs(soldierIds)do
-    if IsTypeTable(soldierId)then
-      this._SetUpSoldierTypes(soldierType,soldierId)
+  for a,soldierName in ipairs(soldierIds)do
+    if IsTypeTable(soldierName)then
+      this._SetUpSoldierTypes(soldierType,soldierName)
     else
-      mvars.ene_soldierTypes[soldierId]=EnemyType["TYPE_"..soldierType]
+      mvars.ene_soldierTypes[soldierName]=EnemyType["TYPE_"..soldierType]--tex NMC gets converted to soldierId later
     end
   end
 end
 function this.SetUpSoldierTypes(soldierTypes)
+  if this.debugModule then--tex>
+    InfCore.PrintInspect(soldierTypes,"TppEnemy.SetUpSoldierTypes")
+  end--<  
   for subTypes,soldierNames in pairs(soldierTypes)do
     this._SetUpSoldierTypes(subTypes,soldierNames)
   end
@@ -647,6 +650,9 @@ function this._SetUpSoldierSubTypes(subTypes,soldierNames)
   end
 end
 function this.SetUpSoldierSubTypes(soldierSubTypes)
+  if this.debugModule then--tex>
+    InfCore.PrintInspect(soldierSubTypes,"TppEnemy.SetUpSoldierSubTypes")
+  end--<
   for subTypes,soldierName in pairs(soldierSubTypes)do
     this._SetUpSoldierSubTypes(subTypes,soldierName)
   end
@@ -752,7 +758,7 @@ function this._GetSoldierType(soldierId)--tex was GetSoldierType
       end
     end
   else
-    --NMC: used for quest enemies and a few story missions
+    --NMC: used for quest enemies and a few story missions, <missioncode>_enemy.soldierTypes
     if mvars.ene_soldierTypes then
       local soldierType=mvars.ene_soldierTypes[soldierId]
       if soldierType then
@@ -977,7 +983,7 @@ function this.GetWeaponIdTable(soldierType,soldierSubType)
       return soldierWeaponIdTable
     end
   end--<
-  
+
   weaponIdTable=InfWeaponIdTable.GetWeaponIdTable()--tex will return this.weaponIdTable if default
 
   if soldierType==EnemyType.TYPE_SOVIET then
@@ -1002,7 +1008,7 @@ function this.GetWeaponIdTable(soldierType,soldierSubType)
   else
     soldierWeaponIdTable=weaponIdTable.SOVIET_A
   end
-  
+
   return soldierWeaponIdTable
 end
 --ORIG:
@@ -1031,7 +1037,7 @@ end
 --  else
 --    weaponIdTable=this.weaponIdTable.SOVIET_A
 --  end
---  
+--
 --  return weaponIdTable
 --end
 --tex REWORKED
@@ -1837,6 +1843,12 @@ function this.SetSaluteVoiceList()
   if not GameObject.DoesGameObjectExistWithTypeName"TppSoldier2"then
     return
   end
+
+  if Ivars.mbIncreaseStaffSaluteReactions:Is(1) then--tex>
+    InfMBVisit.SetSaluteVoiceList()
+    return
+  end--<
+
   local highList={}
   local highOnceList={}
   local midList={}
@@ -2374,6 +2386,7 @@ function this.IsOuterBaseCp(cpId)
   return mvars.ene_outerBaseCpList[cpId]
 end
 --CALLER: From a few events/moments in mission scripts
+--See also UpdateRouteSet
 function this.ChangeRouteSets(routeSets,unk2)
   mvars.ene_routeSetsTemporary=mvars.ene_routeSets
   mvars.ene_routeSetsPriorityTemporary=mvars.ene_routeSetsPriority
@@ -2388,6 +2401,13 @@ function this.ChangeRouteSets(routeSets,unk2)
     SendCommand(cpId,{id="ShiftChange",schedule=schedule})
   end
 end
+--REF info
+--{
+--  cpName="afgh_field_cp",
+--  soldierList={ "sol_vip_0000", },
+--  groupName="vip",
+--}
+--CALLERS: some story missions
 function this.InitialRouteSetGroup(info)
   local cpId=GetGameObjectId(info.cpName)
   local groupName=info.groupName
@@ -2406,36 +2426,41 @@ function this.InitialRouteSetGroup(info)
   end
   SendCommand(cpId,{id="AssignSneakRouteGroup",soldiers=soldiers,group=groupName})
 end
-function this.RegisterHoldTime(soldierName,holdTime)
-  local soldierId=GetGameObjectId(soldierName)
-  if soldierId==NULL_ID then
+--CALLER: s10150_enemy
+function this.RegisterHoldTime(cpName,holdTime)
+  local cpId=GetGameObjectId(cpName)
+  if cpId==NULL_ID then
     return
   end
-  mvars.ene_holdTimes[soldierId]=holdTime
+  mvars.ene_holdTimes[cpId]=holdTime
 end
-function this.ChangeHoldTime(soldierName,holdTime)
-  local soldierId=GetGameObjectId(soldierName)
-  if soldierId==NULL_ID then
+function this.ChangeHoldTime(cpName,holdTime)
+  local cpId=GetGameObjectId(cpName)
+  if cpId==NULL_ID then
     return
   end
-  mvars.ene_holdTimes[soldierId]=holdTime
+  mvars.ene_holdTimes[cpId]=holdTime
   this.MakeShiftChangeTable()
 end
-function this.RegisterSleepTime(soldierName,sleepTime)
-  local soldierId=GetGameObjectId(soldierName)
-  if soldierId==NULL_ID then
+--CALLER: none
+function this.RegisterSleepTime(cpName,sleepTime)
+  local cpId=GetGameObjectId(cpName)
+  if cpId==NULL_ID then
     return
   end
-  mvars.ene_sleepTimes[soldierId]=sleepTime
+  mvars.ene_sleepTimes[cpId]=sleepTime
 end
-function this.ChangeSleepTime(soldierName,sleepTime)
-  local soldierId=GetGameObjectId(soldierName)
-  if soldierId==NULL_ID then
+--CALLER: none
+function this.ChangeSleepTime(cpName,sleepTime)
+  local cpId=GetGameObjectId(cpName)
+  if cpId==NULL_ID then
     return
   end
-  mvars.ene_sleepTimes[soldierId]=sleepTime
+  mvars.ene_sleepTimes[cpId]=sleepTime
   this.MakeShiftChangeTable()
 end
+--CALLERS: some story missions
+--(sic)
 function this.NoShifhtChangeGruopSetting(cpName,groupName)
   local cpId=GetGameObjectId(cpName)
   if cpId==NULL_ID then
@@ -2483,6 +2508,9 @@ function this.RegisterCombatSetting(combatSetting)
       GameObject.SendCommand(type,command)
     else
       for t,locatorSetName in ipairs(cpCombatSetting)do
+        if this.debugModule then--tex>
+          InfCore.Log("RegisterCombatLocatorSetToCpforLua "..tostring(cpName).." "..tostring(locatorSetName))
+        end--<
         TppCombatLocatorProvider.RegisterCombatLocatorSetToCpforLua{cpName=cpName,locatorSetName=locatorSetName}
       end
     end
@@ -2544,8 +2572,14 @@ function this.UnRealizeParasiteSquad()
 end
 function this.OnAllocate(missionTable)
   this.SetMaxSoldierStateCount(TppDefine.DEFAULT_SOLDIER_STATE_COUNT)
+  this.SetMaxHeliStateCount(TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT)--tex>
+  this.SetMaxWalkerGearStateCount(TppDefine.DEFAULT_WALKER_GEAR_STATE_COUNT)
+  this.SetMaxUAVStateCount(TppDefine.DEFAULT_UAV_STATE_COUNT)--<
   if missionTable.enemy then
     this.SetMaxSoldierStateCount(missionTable.enemy.MAX_SOLDIER_STATE_COUNT)
+    this.SetMaxHeliStateCount(missionTable.enemy.MAX_HELI_STATE_COUNT)--tex>
+    this.SetMaxWalkerGearStateCount(missionTable.enemy.MAX_WALKER_GEAR_STATE_COUNT)--tex
+    this.SetMaxUAVStateCount(missionTable.enemy.MAX_UAV_STATE_COUNT)--tex--<
   end
   if TppCommandPost2 then
     TppCommandPost2.SetSVarsKeyNames{names="cpNames",flags="cpFlags"}
@@ -2631,8 +2665,34 @@ function this.OnAllocate(missionTable)
       this.DisablePowerSettings(missionTable.enemy.disablePowerSettings)
     end
     if missionTable.enemy.soldierTypes then
+      if type(missionTable.enemy.soldierTypes)~="table" and missionTable.enemy.soldierDefine then--tex>
+        local soldierType=missionTable.enemy.soldierTypes
+        for cpName,cpSoldiers in pairs(missionTable.enemy.soldierDefine)do
+          this._SetUpSoldierTypes(soldierType,cpSoldiers)
+        end
+      else--<
       this.SetUpSoldierTypes(missionTable.enemy.soldierTypes)
+      end
     end
+    if missionTable.enemy.cpTypes then--tex>
+      mvars.ene_cpTypes=missionTable.enemy.cpTypes
+    end--<
+    if missionTable.enemy.cpSubTypes then--tex>
+      --mvars.ene_cpSubTypes=missionTable.enemy.cpSubTypes--tex only really needed if need a location only list later, otherwise use the already existing .subTypeOfCp, even then can't be relied on since it will only be in addons not vanilla
+      if type(missionTable.enemy.cpSubTypes)~="table" and missionTable.enemy.soldierDefine then
+        local subType=missionTable.enemy.cpSubTypes
+        for cpName,cpSoldiers in pairs(missionTable.enemy.soldierDefine)do
+          this.subTypeOfCp[cpName]=subType
+          this.subTypeOfCpDefault[cpName]=subType--tex
+        end
+      else
+        for cpName,subType in pairs(missionTable.enemy.cpSubTypes)do
+          this.subTypeOfCp[cpName]=subType
+          this.subTypeOfCpDefault[cpName]=subType--tex
+        end
+      end--if type cpSubTypes
+    end--<
+    InfMainTpp.RandomizeCpSubTypeTable(missionTable)--tex
   end
   mvars.ene_soldierPowerSettings={}
   mvars.ene_missionSoldierPowerSettings={}
@@ -2647,21 +2707,14 @@ function this.OnAllocate(missionTable)
   mvars.ene_questBalaclavaId=0
   mvars.ene_isQuestSetup=false
   mvars.ene_isQuestHeli=false
-end
+end--OnAllocate
 function this.DeclareSVars(missionTable)
   --tex>
-  local walkerGearCount=4
-  if IvarProc.EnabledForMission("enableWalkerGears") then
-    walkerGearCount=InfWalkerGear.numWalkerGears
-  end
-  --tex WIP
-  local heliCount=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT
-  if IvarProc.EnabledForMission("attackHeliPatrols") then
-    heliCount=InfNPCHeli.totalAttackHelis
-  end
-  TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT=heliCount
+  InfCore.LogFlow("mvars.ene_maxHeliStateCount:"..tostring(mvars.ene_maxHeliStateCount))
+  InfCore.LogFlow("mvars.ene_maxWalkerGearStateCount:"..tostring(mvars.ene_maxWalkerGearStateCount))
+  InfCore.LogFlow("mvars.ene_maxUAVStateCount:"..tostring(mvars.ene_maxUAVStateCount))
   --<
-  local uavCount=0
+  local uavCount=mvars.ene_maxUAVStateCount--tex was 0 --DEBUGNOW think of how to set for addon quest
   local missionId=TppMission.GetMissionID()
   if TppMission.IsFOBMission(missionId)then
     uavCount=TppDefine.MAX_UAV_COUNT
@@ -2728,23 +2781,23 @@ function this.DeclareSVars(missionTable)
     {name="hosOptParam1",arraySize=TppDefine.DEFAULT_HOSTAGE_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
     {name="hosOptParam2",arraySize=TppDefine.DEFAULT_HOSTAGE_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
     {name="hosRandomSeed",arraySize=TppDefine.DEFAULT_HOSTAGE_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliName",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliLocation",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT*4,type=TppScriptVars.TYPE_FLOAT,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliCp",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliFlag",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliSneakRoute",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliCautionRoute",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliAlertRoute",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliRouteNodeIndex",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliRouteEventIndex",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="enemyHeliMarker",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_RETRY},
-    {name="enemyHeliLife",arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="ene_wkrg_name",arraySize=walkerGearCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},--tex NMC arraysSize was '4'-v-
-    {name="ene_wkrg_life",arraySize=walkerGearCount,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="ene_wkrg_partslife",arraySize=walkerGearCount*24,type=TppScriptVars.TYPE_UINT8,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="ene_wkrg_location",arraySize=walkerGearCount*4,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="ene_wkrg_bulletleft",arraySize=walkerGearCount*2,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
-    {name="ene_wkrg_marker",arraySize=walkerGearCount*2,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_RETRY},
+    {name="enemyHeliName",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},--tex was arraySize=TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT>
+    {name="enemyHeliLocation",arraySize=mvars.ene_maxHeliStateCount*4,type=TppScriptVars.TYPE_FLOAT,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliCp",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliFlag",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliSneakRoute",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliCautionRoute",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliAlertRoute",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliRouteNodeIndex",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliRouteEventIndex",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="enemyHeliMarker",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_RETRY},
+    {name="enemyHeliLife",arraySize=mvars.ene_maxHeliStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},--< arraysize
+    {name="ene_wkrg_name",arraySize=mvars.ene_maxWalkerGearStateCount,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},--tex NMC arraysSize was '4'-v-
+    {name="ene_wkrg_life",arraySize=mvars.ene_maxWalkerGearStateCount,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="ene_wkrg_partslife",arraySize=mvars.ene_maxWalkerGearStateCount*24,type=TppScriptVars.TYPE_UINT8,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="ene_wkrg_location",arraySize=mvars.ene_maxWalkerGearStateCount*4,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="ene_wkrg_bulletleft",arraySize=mvars.ene_maxWalkerGearStateCount*2,type=TppScriptVars.TYPE_UINT16,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
+    {name="ene_wkrg_marker",arraySize=mvars.ene_maxWalkerGearStateCount*2,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_RETRY},
     {name="ene_holdRecoveredStateName",arraySize=TppDefine.MAX_HOLD_RECOVERED_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
     {name="ene_isRecovered",arraySize=TppDefine.MAX_HOLD_RECOVERED_STATE_COUNT,type=TppScriptVars.TYPE_BOOL,value=false,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
     {name="ene_holdBrokenStateName",arraySize=TppDefine.MAX_HOLD_VEHICLE_BROKEN_STATE_COUNT,type=TppScriptVars.TYPE_UINT32,value=0,save=true,sync=false,wait=false,category=TppScriptVars.CATEGORY_MISSION},
@@ -2826,6 +2879,22 @@ function this.SetMaxSoldierStateCount(maxStateCount)
     mvars.ene_maxSoldierStateCount=maxStateCount
   end
 end
+function this.SetMaxHeliStateCount(maxStateCount)--tex>
+  if Tpp.IsTypeNumber(maxStateCount)and(maxStateCount>0)then
+    mvars.ene_maxHeliStateCount=maxStateCount
+end
+end
+function this.SetMaxWalkerGearStateCount(maxStateCount)--tex>
+  if Tpp.IsTypeNumber(maxStateCount)and(maxStateCount>0)then
+    mvars.ene_maxWalkerGearStateCount=maxStateCount
+end
+end
+function this.SetMaxUAVStateCount(maxStateCount)--tex>
+  if Tpp.IsTypeNumber(maxStateCount)and(maxStateCount>0)then
+    mvars.ene_maxUAVStateCount=maxStateCount
+end
+end
+--<
 function this.RestoreOnMissionStart2()
   local INVALID_FOVA_FACE=0
   local INVALID_FOVA_BODY=0
@@ -2894,9 +2963,12 @@ function this.RestoreOnMissionStart2()
     end
   end
   this._RestoreOnMissionStart_Hostage2()
-  if not IvarProc.EnabledForMission("attackHeliPatrols") then--tex added check
+  --GOTCHA: svars are weird in that if arraySize==1 then they arent defined as an array(so trying to index them as such will give an error)
+  --DEFAULT_ENEMY_HELI_STATE_COUNT is 1, but don't know how the actual save/restore functions are handling them (RestoreFromSVars) as thats in the exe
+  --KLUDGE don't want to just bump DEFAULT_ENEMY_HELI_STATE_COUNT to 2 in case there really is something else going on in the exe so run through the vanilla code path unless specficially not
+  if mvars.ene_maxHeliStateCount==TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT then--tex
+    --ORIG
     for e=0,TppDefine.DEFAULT_ENEMY_HELI_STATE_COUNT-1 do
-      --NMC another casualty of optimisation I guess, TppEnemyHeli only saves/restores to non array unlike the other gameobject types, even though it's clearly originally set up the same
       svars.enemyHeliName=0
       svars.enemyHeliLocation[0]=0
       svars.enemyHeliLocation[1]=0
@@ -2912,11 +2984,9 @@ function this.RestoreOnMissionStart2()
       svars.enemyHeliMarker=0
       svars.enemyHeliLife=0
   end
-  --WIP
-  else--tex>
-    --tex what it should be :/
-    local heliCount=InfNPCHeli.totalAttackHelis
-    for e=0,heliCount-1 do
+  else
+    --tex REWORKED see GOTCHA above
+    for e=0,mvars.ene_maxHeliStateCount-1 do
       svars.enemyHeliName[e]=0
       svars.enemyHeliLocation[e*4+0]=0
       svars.enemyHeliLocation[e*4+1]=0
@@ -3106,7 +3176,28 @@ function this.Init(missionTable)
       GameObject.SendCommand({type=skullType},{id="SetFultonEnabled",enabled=skullFultonable})
     end
   end
-end
+  if missionTable.enemy then--tex>
+    local langIds=missionTable.enemy.cpAnounceLangIds
+    if langIds then
+      mvars.cpAnounceLangIds=langIds
+      local langId
+      if type(langIds)~="table"then
+        mvars.cpAnounceLangIds=langIds
+      else
+        mvars.cpAnounceLangIds={}
+        for cpName,langId in pairs(langIds)do
+          local cpId=GetGameObjectId(cpName)
+          if cpId==NULL_ID then
+            InfCore.Log("WARNING: TppEnemy.Init: enemy.cpAnounceLangIds could not find cpId for "..tostring(cpName))
+          else
+            mvars.cpAnounceLangIds[cpId]=langId
+          end--if cpId
+        end--for langIds
+      end--if type langIds
+      InfCore.PrintInspect(mvars.cpAnounceLangIds,"mvars.cpAnounceLangIds")
+    end--if langIds
+  end--< if missionTable.enemy
+end--Init
 function this.RegistCommonRoutePointMessage()
 end
 function this.OnReload(missionTable)
@@ -3162,7 +3253,19 @@ function this.DefineSoldiers(soldierDefine)
       end
     end
   end
-end
+
+  if this.debugModule then  --tex>
+    InfCore.PrintInspect(mvars.ene_soldierDefine,"mvars.ene_soldierDefine")
+    InfCore.PrintInspect(mvars.ene_soldierIDList,"mvars.ene_soldierIDList")
+    InfCore.PrintInspect(mvars.ene_cpList,"mvars.ene_cpList")
+    --InfCore.PrintInspect(mvars.ene_baseCpList,"mvars.ene_baseCpList")
+    --InfCore.PrintInspect(mvars.ene_outerBaseCpList,"mvars.ene_outerBaseCpList")    
+    InfCore.PrintInspect(mvars.ene_holdTimes,"mvars.ene_holdTimes")
+    InfCore.PrintInspect(mvars.ene_sleepTimes,"mvars.ene_sleepTimes")
+    InfCore.PrintInspect(mvars.lrrpTravelPlan,"mvars.lrrpTravelPlan")
+    InfCore.PrintInspect(mvars.lrrpVehicle,"mvars.lrrpVehicle")
+  end --<
+end--DefineSoldiers
 --CALLER: TppMain.OnInitialize
 function this.SetUpSoldiers()
   if not IsTypeTable(mvars.ene_soldierDefine)then
@@ -3199,7 +3302,19 @@ function this.SetUpSoldiers()
         end
       end
       local setCpType
-      if(missionId==10150 or missionId==10151)or missionId==11151 then
+      if mvars.ene_cpTypes~=nil then--tex>
+        --tex requires the proper vox_ene_common_ soundbank to be loaded, see InfSoundInfo for pack paths
+        local cpType
+        if type(mvars.ene_cpTypes)~="table"then
+          cpType=mvars.ene_cpTypes
+        else
+          cpType=mvars.ene_cpTypes[cpName]
+        end
+        if cpType then
+          setCpType={id="SetCpType",type=cpType}
+        end
+      --<
+      elseif(missionId==10150 or missionId==10151)or missionId==11151 then
         setCpType={id="SetCpType",type=CpType.TYPE_AMERICA}
       elseif TppLocation.IsAfghan()then
         setCpType={id="SetCpType",type=CpType.TYPE_SOVIET}
@@ -3208,11 +3323,18 @@ function this.SetUpSoldiers()
       elseif TppLocation.IsMotherBase()or TppLocation.IsMBQF()then
         setCpType={id="SetCpType",type=CpType.TYPE_AMERICA}
       end
+      if this.debugModule then--tex>
+        if setCpType==nil then
+          InfCore.Log("WARNING: SetUpSoldiers setCpType==nil")
+        else
+          InfCore.Log("SetUpSoldiers "..cpId.." SetCpType:"..setCpType.type)
+        end
+      end--<
       if setCpType then
         GameObject.SendCommand(cpId,setCpType)
       end
-    end
-  end
+    end--if cpId
+  end--for soldierDegine
   for cpId,cpName in pairs(mvars.ene_cpList)do
     if mvars.ene_baseCpList[cpId]then
       local soldierList=mvars.ene_soldierDefine[cpName]
@@ -3223,7 +3345,7 @@ function this.SetUpSoldiers()
           SendCommand(soldierId,{id="AddRouteAssignMember"})
         end
       end
-    end
+    end--for cpList
   end
   --NMC not sure why its seperating this into has baseCp and not passes, but whatev.
   for cpId,cpName in pairs(mvars.ene_cpList)do
@@ -3237,10 +3359,11 @@ function this.SetUpSoldiers()
         end
       end
     end
-  end
+  end--for cpList
   this.AssignSoldiersToCP()
-end
+end--SetUpSoldiers
 function this.AssignSoldiersToCP()
+  InfCore.LogFlow"TppEnemy.AssignSoldiersToCP"--tex
   --tex CULL
   --  local forceSubType=InfEneFova.enemySubTypes[gvars.forceSoldierSubType]--tex WIP
   --  if Ivars.forceSoldierSubType:Is(1) then
@@ -3282,6 +3405,9 @@ function this.AssignSoldiersToCP()
       end
       local command
       local soldierType=this.GetSoldierType(soldierId)
+      if this.debugModule then--tex>
+        InfCore.Log(soldierId.." SetSoldier2Type:"..tostring(soldierType))
+      end--<
       --tex CULL
       --      if Ivars.forceSoldierSubType:Is(1) then--tex> WIP:
       --        this.SetSoldierType(soldierId,soldierType)--tex does a setsoldiertype
@@ -3424,8 +3550,8 @@ function this.GetCpIntelTrapTable()
 end
 --CALLER: RouteSelector
 function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
-
-  local SetForTime=function(cpId,timeOfDay)
+  --InfCore.Log("GetCurrentRouteSetType: routeTypeStr32: "..InfLookup.StrCode32ToString(routeTypeStr32).. " phase: "..tostring(phase).." cpId: "..tostring(cpId))--tex DEBUG
+  local RouteSetTypeForTime=function(cpId,timeOfDay)
     if not timeOfDay then
       timeOfDay=TppClock.GetTimeOfDayIncludeMidNight()
     end
@@ -3444,47 +3570,78 @@ function this.GetCurrentRouteSetType(routeTypeStr32,phase,cpId)
   end
   local routeSetType
   if routeTypeStr32 then
-    local routeSetType=this.ROUTE_SET_TYPETAG[routeTypeStr32]
-    if routeSetType=="travel"then
+    local routeTypeTag=this.ROUTE_SET_TYPETAG[routeTypeStr32]
+    if routeTypeTag=="travel"then
       return"travel"
     end
-    if routeSetType=="hold"then
+    if routeTypeTag=="hold"then
       return"hold"
     end
-    if routeSetType=="sleep"then
+    if routeTypeTag=="sleep"then
       return"sleep"
     end
     if phase==this.PHASE.SNEAK then
-      routeSetType=SetForTime(cpId,routeSetType)
+      routeSetType=RouteSetTypeForTime(cpId,routeTypeTag)
     else
       routeSetType="caution"
     end
   else
     if phase==this.PHASE.SNEAK then
-      routeSetType=SetForTime(cpId)
+      routeSetType=RouteSetTypeForTime(cpId)
     else
       routeSetType="caution"
     end
   end
+  --tex REF old r129 bug
+  --CULL
+  --  if routeTypeStr32 then
+  --    local routeSetType=this.ROUTE_SET_TYPETAG[routeTypeStr32]--tex bug was here with local assignment of var with same name clobbering the outer one, thus not passing out of scope
+  --    if routeSetType=="travel"then
+  --      return"travel"
+  --    end
+  --    if routeSetType=="hold"then
+  --      return"hold"
+  --    end
+  --    if routeSetType=="sleep"then
+  --      return"sleep"
+  --    end
+  --    if phase==this.PHASE.SNEAK then
+  --      routeSetType=RouteSetTypeForTime(cpId,routeSetType)
+  --    else
+  --      routeSetType="caution"
+  --    end
+  --  else
+  --    if phase==this.PHASE.SNEAK then
+  --      routeSetType=RouteSetTypeForTime(cpId)
+  --    else
+  --      routeSetType="caution"
+  --    end
+  --  end
   return routeSetType
 end--GetCurrentRouteSetType
 --CALLER: RouteSelector (though there's a Fox.Log warning in mtbs_enemy.GetRouteSetPriority mentioning it(via ene_funcRouteSetPriority -v-))
 --routeSet: routeSet for cp (mvars.ene_routeSets[cpId])
 --routeSetsPriorities: mvars.ene_routeSetsPriority
-function this.GetPrioritizedRouteTable(cpId,routesForGroup,routeSetsPriority,routeSetTagStr32)
+--returns a list of routes by adding a route for each group in priority order till all routes are added
+--see afgh_routesets afgh_citadel_cp for a commented example of a routeset
+function this.GetPrioritizedRouteTable(cpId,routeGroupsForRouteType,routeSetsPriority,routeSetTagOrGroupS32)
+  --  if this.debugModule then--tex> logging already handled by RouteSelector
+  --    local routeSetTag=InfLookup.StrCode32ToString(routeSetTagStr32)
+  --    InfCore.LogFlow("TppEnemy.GetPrioritizedRouteTable: cpId:"..InfLookup.CpNameForCpId(cpId).." routeSetTag:"..routeSetTag)
+  --  end--<
   local routeList={}
-  local routeSetsPriorityForCp=routeSetsPriority[cpId]
-  if not IsTypeTable(routeSetsPriorityForCp)then
+  local groupPriorityForCp=routeSetsPriority[cpId]
+  if not IsTypeTable(groupPriorityForCp)then
     return
   end
-  if mvars.ene_funcRouteSetPriority then
+  if mvars.ene_funcRouteSetPriority then--tex missionTable.enemy.GetRouteSetPriority, used for mtbs
     --NMC only mtbs_enemy.GetRouteSetPriority = function( cpGameObjectId, routeSetListInPlants, plantTables, sysPhase )
-    routeList=mvars.ene_funcRouteSetPriority(cpId,routesForGroup,routeSetsPriority,routeSetTagStr32)
+    routeList=mvars.ene_funcRouteSetPriority(cpId,routeGroupsForRouteType,routeSetsPriority,routeSetTagOrGroupS32)
   else
     local maxRoutes=0
-    for i,groupName in ipairs(routeSetsPriorityForCp)do
-      if routesForGroup[groupName]then
-        local numRoutes=#routesForGroup[groupName]
+    for i,groupName in ipairs(groupPriorityForCp)do
+      if routeGroupsForRouteType[groupName]then
+        local numRoutes=#routeGroupsForRouteType[groupName]
         if numRoutes>maxRoutes then
           maxRoutes=numRoutes
         end
@@ -3495,48 +3652,49 @@ function this.GetPrioritizedRouteTable(cpId,routesForGroup,routeSetsPriority,rou
     --this leads to routes in a table (sniper routes, since they are bundled with some other info) being added first
     local routeNum=1
     for i=1,maxRoutes do
-      for j,groupName in ipairs(routeSetsPriorityForCp)do
-        local routesForGroup=routesForGroup[groupName]
+      for j,groupName in ipairs(groupPriorityForCp)do
+        local routesForGroup=routeGroupsForRouteType[groupName]
         if routesForGroup then
           local route=routesForGroup[i]
           if route and Tpp.IsTypeTable(route)then
             routeList[routeNum]=route
             routeNum=routeNum+1
           end
-        end
-      end
-    end
+        end--routesForGroup
+      end--for groupPriorityForCp
+    end--for maxRoutes
     for i=1,maxRoutes do
-      for j,groupName in ipairs(routeSetsPriorityForCp)do
-        local routes=routesForGroup[groupName]
-        if routes then
-          local route=routes[i]
+      for j,groupName in ipairs(groupPriorityForCp)do
+        local routesForGroup=routeGroupsForRouteType[groupName]
+        if routesForGroup then
+          local route=routesForGroup[i]
           if route and not Tpp.IsTypeTable(route)then
             routeList[routeNum]=route
             routeNum=routeNum+1
           end
-        end
-      end
-    end
+        end--if routes
+      end--for groupPriorityForCp
+    end--for maxRoutes
   end
   if this.debugModule then--tex>
-    InfCore.PrintInspect(routeList, "TppEnemy.GetPrioritizedRouteTable routeList")
+    InfCore.PrintInspect(routeList, "TppEnemy.GetPrioritizedRouteTable numRoutes:"..#routeList.." routeList")
   end--<
   return routeList
 end--GetPrioritizedRouteTable
---NMC called from engine with different cpids. Set up in SetUpCommandPost. Seems like it initially called right then. then at what other points?
+--NMC called from engine with different cpids. Set up in SetUpCommandPost. Seems like it initially called right then. DEBUGNOW then at what other points?
 --see mvars.ene_routeSets, which is a transformed <mission script>_enemy.routeSets and mvars.ene_routeSetsPriority for the main drivers of these functions
-function this.RouteSelector(cpId,routeTypeTagStr32,routeSetTagStr32)
-  --InfCore.PCallDebug(function(cpId,routeTypeTagStr32,routeSetTagStr32)--tex kills function for some reason
+--and RegisterRouteSet, ChangeRouteSets
+--the params are a mess because kjp tried to jam a lot of different concerns into them
+function this.RouteSelector(cpId,tagOrRouteTypeS32,tagOrSysPhaseOrGroup32)
   if this.debugModule then--tex>
-    InfCore.LogFlow("TppEnemy.RouteSelector: cpId:"..InfLookup.CpNameForCpId(cpId).." routeTypeTag:"..InfLookup.StrCode32ToString(routeTypeTagStr32).." routeSetTag:"..tostring(InfLookup.StrCode32ToString(routeSetTagStr32)))
+    InfCore.LogFlow("TppEnemy.RouteSelector: cpId:"..InfLookup.CpNameForCpId(cpId).." tagOrRouteTypeS32:"..InfLookup.StrCode32ToString(tagOrRouteTypeS32).." tagOrSysPhaseOrGroup32:"..tostring(InfLookup.StrCode32ToString(tagOrSysPhaseOrGroup32)))
   end--<
   local routeSetForCp=mvars.ene_routeSets[cpId]
   if routeSetForCp==nil then
     return{"dummyRoute"}
   end
-  if routeSetTagStr32==StrCode32"immediately"then
-    if routeTypeTagStr32==StrCode32"old"then
+  if tagOrSysPhaseOrGroup32==StrCode32"immediately"then
+    if tagOrRouteTypeS32==StrCode32"old"then
       local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
       if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
       return this.GetPrioritizedRouteTable(cpId,mvars.ene_routeSetsTemporary[cpId][currentRouteSetType],mvars.ene_routeSetsPriorityTemporary)
@@ -3546,21 +3704,21 @@ function this.RouteSelector(cpId,routeTypeTagStr32,routeSetTagStr32)
       return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority)
     end
   end
-  if routeSetTagStr32==StrCode32"SYS_Sneak"then
+  if tagOrSysPhaseOrGroup32==StrCode32"SYS_Sneak"then
     local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.SNEAK,cpId)
     if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
-    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority,routeSetTagStr32)
+    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority,tagOrSysPhaseOrGroup32)
   end
-  if routeSetTagStr32==StrCode32"SYS_Caution"then
+  if tagOrSysPhaseOrGroup32==StrCode32"SYS_Caution"then
     local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.PHASE.CAUTION,cpId)
     if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
-    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority,routeSetTagStr32)
+    return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority,tagOrSysPhaseOrGroup32)
   end
-  local currentRouteSetType=this.GetCurrentRouteSetType(routeTypeTagStr32,this.GetPhaseByCPID(cpId),cpId)
+  local currentRouteSetType=this.GetCurrentRouteSetType(tagOrRouteTypeS32,this.GetPhaseByCPID(cpId),cpId)
   if this.debugModule then InfCore.Log("currentRouteSetType:"..currentRouteSetType) end--tex
-  local routesForTag=routeSetForCp[currentRouteSetType][routeSetTagStr32]
-  if routesForTag then
-    return routesForTag
+  local routesForGroup=routeSetForCp[currentRouteSetType][tagOrSysPhaseOrGroup32]
+  if routesForGroup then
+    return routesForGroup
   else
     if currentRouteSetType=="hold"then
       local currentRouteSetType=this.GetCurrentRouteSetType(nil,this.GetPhaseByCPID(cpId),cpId)
@@ -3572,11 +3730,9 @@ function this.RouteSelector(cpId,routeTypeTagStr32,routeSetTagStr32)
       return this.GetPrioritizedRouteTable(cpId,routeSetForCp[currentRouteSetType],mvars.ene_routeSetsPriority)
     end
   end
-  --end,cpId,routeTypeTagStr32,routeSetTagStr32)--tex
 end--RouteSelector
 --DEBUGNOW tex REWORKED UNUSED
 function this.RouteSelectorNEW(cpId,routeTypeTagStr32,routeSetTagStr32)
-  --InfCore.PCallDebug(function(cpId,routeTypeTagStr32,routeSetTagStr32)--tex DEBUGNOW
   if this.debugModule then--tex>
     InfCore.LogFlow("TppEnemy.RouteSelector: cpId:"..InfLookup.CpNameForCpId(cpId).." routeTypeTag:"..InfLookup.StrCode32ToString(routeTypeTagStr32).." routeSetTag:"..InfLookup.StrCode32ToString(routeSetTagStr32))
   end--<
@@ -3621,7 +3777,6 @@ function this.RouteSelectorNEW(cpId,routeTypeTagStr32,routeSetTagStr32)
   else
     return selectRouteTable
   end
-  --end,cpId,routeTypeTagStr32,routeSetTagStr32)--tex
 end--RouteSelectorNEW
 this.STR32_CAN_USE_SEARCH_LIGHT=StrCode32"CanUseSearchLight"
 this.STR32_CAN_NOT_USE_SEARCH_LIGHT=StrCode32"CanNotUseSearchLight"
@@ -3636,7 +3791,6 @@ end--SetUpSwitchRouteFunc
 --NMC called from engine (when?) (set up in SetUpSwitchRouteFunc, right there -^-)
 --unk4
 function this.SwitchRouteFunc(soldierId,gimmickStateS32,gimmickName,routeS32,unk5)
-  --InfCore.PCallDebug(function(unk1,RENAMEgimmickState,gimmickName,unk4,unk5)--tex
   if this.debugModule then--tex>
     InfCore.LogFlow("TppEnemy.SwitchRouteFunc "..InfLookup.ObjectNameForGameId(soldierId).." "..InfLookup.StrCode32ToString(gimmickStateS32).." "..InfLookup.StrCode32ToString(gimmickName).." "..InfLookup.StrCode32ToString(gimmickName).." "..InfLookup.StrCode32ToString(routeS32).." "..InfLookup.StrCode32ToString(unk5))--DEBUGNOW
   end--<
@@ -3679,7 +3833,6 @@ function this.SwitchRouteFunc(soldierId,gimmickStateS32,gimmickName,routeS32,unk
     end
   end
   return true
-    --end,unk1,RENAMEgimmickState,gimmickName,unk4,unk5)--tex
 end--SwitchRouteFunc
 function this.SetUpCommandPost()
   if not IsTypeTable(mvars.ene_soldierIDList)then
@@ -3695,8 +3848,13 @@ function this.RegisterRouteAnimation()
     TppRouteAnimationCollector.RegisterGaniPath(mvars.ene_routeAnimationGaniPathTable)
   end
 end
+--CALLERS: RegisterRouteSet, ChangeRouteSets
+--IN/SIDE: mvars.loc_locationCommonRouteSet
+--OUT/SIDE mvars.ene_routeSetsDefine
+--GOTCHA: isn't a pure merge, some aspects of the merging routeset will override the current
 function this.MergeRouteSetDefine(routeSets)
   local function MergeRouteSets(cpName,routeSet)
+    --tex NMC GOTCHA: this means priority, fixedShiftChangeGroup is overidden, not merged?
     if routeSet.priority then
       mvars.ene_routeSetsDefine[cpName].priority={}
       mvars.ene_routeSetsDefine[cpName].fixedShiftChangeGroup={}
@@ -3709,6 +3867,14 @@ function this.MergeRouteSetDefine(routeSets)
         mvars.ene_routeSetsDefine[cpName].fixedShiftChangeGroup[i]=routeSet.fixedShiftChangeGroup[i]
       end
     end
+    --tex added so we can reused the current ene_routeSetsDefine for randomisation (was just discarded in vanilla since SetOutOfRainRoute is all it needs) >
+    if routeSet.outofrain then
+      mvars.ene_routeSetsDefine[cpName].outofrain=mvars.ene_routeSetsDefine[cpName].outofrain or {}
+      for i=1,#routeSet.outofrain do
+        mvars.ene_routeSetsDefine[cpName].outofrain[i]=routeSet.outofrain[i]
+      end
+    end--<
+    --tex NMC actually merging
     for i,routeSetType in pairs(this.ROUTE_SET_TYPES)do
       mvars.ene_routeSetsDefine[cpName][routeSetType]=mvars.ene_routeSetsDefine[cpName][routeSetType]or{}
       if routeSet[routeSetType]then
@@ -3719,10 +3885,10 @@ function this.MergeRouteSetDefine(routeSets)
               mvars.ene_routeSetsDefine[cpName][routeSetType][groupName][i]=routeName
             end
           end
-        end
-      end
-    end
-  end
+        end--for routeSet[routeSetType]
+      end--if routeSet[routeSetType]
+    end--for ROUTE_SET_TYPES
+  end--function MergeRouteSets
 
   for cpName,routeSet in pairs(routeSets)do
     mvars.ene_routeSetsDefine[cpName]=mvars.ene_routeSetsDefine[cpName]or{}
@@ -3731,10 +3897,12 @@ function this.MergeRouteSetDefine(routeSets)
       local cpId=GetGameObjectId(cpName)
       SendCommand(cpId,{id="SetWalkerGearParkRoute",routes=_routeSet.walkergearpark})
     end
+    --afgh_routeSets, mafr_routeSets
     if mvars.loc_locationCommonRouteSets then
       if mvars.loc_locationCommonRouteSets[cpName]then
         if mvars.loc_locationCommonRouteSets[cpName].outofrain then
           local cpId=GetGameObjectId(cpName)
+          --tex GOTCHA: this is override rather than merege
           if _routeSet.outofrain then
             SendCommand(cpId,{id="SetOutOfRainRoute",routes=_routeSet.outofrain})
           else
@@ -3747,15 +3915,24 @@ function this.MergeRouteSetDefine(routeSets)
           MergeRouteSets(cpName,mvars.loc_locationCommonRouteSets[cpName])
         end
       end
-    end
+    else
+      --tex GOTCHA: this is override rather than merege
+      if _routeSet.outofrain then--tex> for addon support of outofrain without having a locationCommonRouteSet
+        local cpId=GetGameObjectId(cpName)
+        SendCommand(cpId,{id="SetOutOfRainRoute",routes=_routeSet.outofrain})
+      end--<
+    end--if loc_locationCommonRouteSets
     MergeRouteSets(cpName,_routeSet)
   end
-end
+end--MergeRouteSetDefine
 --CALLER: RegisterRouteSet, ChangeRouteSets
 --routeSets = mvars.ene_routeSetsDefine, some mission alternate routeset
+--see afgh_routeSets - afgh_citadel_cp for example of commented routeSet
 --SIDE/IN: ene_noShiftChangeGroupSetting
 --SIDE/IN/OUT: mvars. ene_routeSets, ene_routeSetsFixedShiftChange, ene_routeSetsPriority
+--used by RouteSelector and GetPrioritizedRouteTable
 function this.UpdateRouteSet(routeSets)
+  InfCore.LogFlow("TppEnemy.UpdateRouteSet")--tex DEBUG
   for cpName,routeSet in pairs(routeSets)do
     local cpId=GetGameObjectId(cpName)
     if cpId==NULL_ID then
@@ -3773,11 +3950,13 @@ function this.UpdateRouteSet(routeSets)
           mvars.ene_routeSetsFixedShiftChange[cpId][StrCode32(routeSet.fixedShiftChangeGroup[i])]=i
         end
       end
+      --tex NMC via NoShifhtChangeGruopSetting (sic) from some missions
       if mvars.ene_noShiftChangeGroupSetting[cpId]then
         for groupNameStr32,noShiftChange in pairs(mvars.ene_noShiftChangeGroupSetting[cpId])do
           mvars.ene_routeSetsFixedShiftChange[cpId][groupNameStr32]=noShiftChange
         end
       end
+
       for i,routeSetType in pairs(this.ROUTE_SET_TYPES)do
         mvars.ene_routeSets[cpId][routeSetType]=mvars.ene_routeSets[cpId][routeSetType]or{}
         if routeSet[routeSetType]then
@@ -3800,6 +3979,7 @@ end--UpdateRouteSet
 function this.RegisterRouteSet(routeSets)
   mvars.ene_routeSetsDefine={}
   this.MergeRouteSetDefine(routeSets)
+  --tex NMC the output of UpdateRouteSet
   mvars.ene_routeSets={}
   mvars.ene_routeSetsPriority={}
   mvars.ene_routeSetsFixedShiftChange={}
@@ -3808,8 +3988,9 @@ function this.RegisterRouteSet(routeSets)
   TppClock.RegisterClockMessage("ShiftChangeAtMorning",TppClock.NIGHT_TO_DAY)
   TppClock.RegisterClockMessage("ShiftChangeAtMidNight",TppClock.NIGHT_TO_MIDNIGHT)
 end
+--CALLER: MakeShiftChangeTable
 function this._InsertShiftChangeUnit(cpId,insertPos,shiftChangeUnit)
-  for shiftName,i in pairs(mvars.ene_shiftChangeTable[cpId])do
+  for shiftName,existingUnit in pairs(mvars.ene_shiftChangeTable[cpId])do
     if shiftChangeUnit[shiftName]and next(shiftChangeUnit[shiftName])then
       if shiftChangeUnit[shiftName].hold then
         mvars.ene_shiftChangeTable[cpId][shiftName][insertPos*2-1]={shiftChangeUnit[shiftName].start,shiftChangeUnit[shiftName].hold,holdTime=shiftChangeUnit[shiftName].holdTime}
@@ -3821,37 +4002,38 @@ function this._InsertShiftChangeUnit(cpId,insertPos,shiftChangeUnit)
     end
   end
 end
-function this._GetShiftChangeRouteGroup(priorities,numPriorities,priorityIndex,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
-  local e=(numPriorities-priorityIndex)+1
+--CALLER: _MakeShiftChangeUnit
+function this._GetShiftChangeRouteGroup(priorityGroupsS32,numPriorities,priorityIndex,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
+  local remainingPriorities=(numPriorities-priorityIndex)+1--tex remaining priorities
   local currentPriority=priorityIndex
-  if fixedShiftChangeRouteSet[priorities[priorityIndex]]then
-    e=currentPriority
+  if fixedShiftChangeRouteSet[priorityGroupsS32[priorityIndex]]then
+    remainingPriorities=currentPriority
   else
-    local i=0
-    for a=1,priorityIndex do
-      if fixedShiftChangeRouteSet[priorities[a]]then
-        i=i+1
+    local numFixedPriorities=0
+    for fixedPriorityIndex=1,priorityIndex do
+      if fixedShiftChangeRouteSet[priorityGroupsS32[fixedPriorityIndex]]then
+        numFixedPriorities=numFixedPriorities+1
       end
     end
-    e=e+i
-    local a=0
-    for i=e,numPriorities do
-      if fixedShiftChangeRouteSet[priorities[i]]then
-        a=a+1
+    remainingPriorities=remainingPriorities+numFixedPriorities
+    local numRemainingFixedShift=0
+    for i=remainingPriorities,numPriorities do
+      if fixedShiftChangeRouteSet[priorityGroupsS32[i]]then
+        numRemainingFixedShift=numRemainingFixedShift+1
       end
     end
-    e=e-a
-    local a=e
+    remainingPriorities=remainingPriorities-numRemainingFixedShift
+    local a=remainingPriorities
     local i=0
-    local r=fixedShiftChangeRouteSet[priorities[a]]
-    while r do
+    local fixedShiftPriority=fixedShiftChangeRouteSet[priorityGroupsS32[a]]
+    while fixedShiftPriority do
       i=i+1
       a=a-1
-      r=fixedShiftChangeRouteSet[priorities[a]]
+      fixedShiftPriority=fixedShiftChangeRouteSet[priorityGroupsS32[a]]
     end
-    e=e-i
+    remainingPriorities=remainingPriorities-i
   end
-  local unkGroup1=priorities[e]
+  local remainingGroup=priorityGroupsS32[remainingPriorities]
   local holdGroup="default"
   if hold[groupNameStr32]then
     holdGroup=groupNameStr32
@@ -3863,50 +4045,71 @@ function this._GetShiftChangeRouteGroup(priorities,numPriorities,priorityIndex,h
       sleepGroup=groupNameStr32
     end
   end
-  local unkGroup4=priorities[currentPriority]
-  return unkGroup1,holdGroup,sleepGroup,unkGroup4
-end
-function this._MakeShiftChangeUnit(cpId,priorities,groupNameStr32,hold,isSleep,sleep,isMidnight,numPriorities,priorityIndex,unkP10,fixedShiftChangeRouteSet)
+  local currentGroup=priorityGroupsS32[currentPriority]
+  return remainingGroup,holdGroup,sleepGroup,currentGroup
+end--_GetShiftChangeRouteGroup
+--Creates a shiftchangeunit that's used by _InsertShiftChangeUnit to transform-insert into mvars.ene_shiftChangeTable
+--CALLER: MakeShiftChangeTable while iterating over priorityGroupsS32, and passing in priorityIndex
+function this._MakeShiftChangeUnit(cpId,priorityGroupsS32,groupNameStr32,hold,isSleep,sleep,isMidnight,numPriorities,priorityIndex,insertPos,fixedShiftChangeRouteSet)
   if mvars.ene_noShiftChangeGroupSetting[cpId]and mvars.ene_noShiftChangeGroupSetting[cpId][groupNameStr32]then
     return nil
   end
-  local unkGroup1,holdGroup,sleepGroup,unkGroup4=this._GetShiftChangeRouteGroup(priorities,numPriorities,priorityIndex,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
+  local remainingGroup,holdGroup,sleepGroup,currentGroup=this._GetShiftChangeRouteGroup(priorityGroupsS32,numPriorities,priorityIndex,hold,sleep,groupNameStr32,isSleep,fixedShiftChangeRouteSet)
   local shiftChangeUnit={}
-  for shiftName,unkV1 in pairs(mvars.ene_shiftChangeTable[cpId])do
+  for shiftName,existingShiftChangeUnit in pairs(mvars.ene_shiftChangeTable[cpId])do
     shiftChangeUnit[shiftName]={}
   end
   if(holdGroup~="default")or(IsTypeTable(hold[StrCode32"default"])and next(hold[StrCode32"default"]))then
-    shiftChangeUnit.shiftAtNight.start={"day",unkGroup1}
+    shiftChangeUnit.shiftAtNight.start={"day",remainingGroup}
     shiftChangeUnit.shiftAtNight.hold={"hold",holdGroup}
     shiftChangeUnit.shiftAtNight.holdTime=mvars.ene_holdTimes[cpId]
-    shiftChangeUnit.shiftAtNight.goal={"night",unkGroup4}
+    shiftChangeUnit.shiftAtNight.goal={"night",currentGroup}
     shiftChangeUnit.shiftAtMorning.hold={"hold",holdGroup}
     shiftChangeUnit.shiftAtMorning.holdTime=mvars.ene_holdTimes[cpId]
-    shiftChangeUnit.shiftAtMorning.goal={"day",unkGroup4}
+    shiftChangeUnit.shiftAtMorning.goal={"day",currentGroup}
   else
-    shiftChangeUnit.shiftAtNight.start={"day",unkGroup1}
-    shiftChangeUnit.shiftAtNight.goal={"night",unkGroup4}
-    shiftChangeUnit.shiftAtMorning.goal={"day",unkGroup4}
+    shiftChangeUnit.shiftAtNight.start={"day",remainingGroup}
+    shiftChangeUnit.shiftAtNight.goal={"night",currentGroup}
+    shiftChangeUnit.shiftAtMorning.goal={"day",currentGroup}
   end
   if isSleep then
-    shiftChangeUnit.shiftAtMidNight.start={"night",unkGroup1}
+    shiftChangeUnit.shiftAtMidNight.start={"night",remainingGroup}
     shiftChangeUnit.shiftAtMidNight.hold={"sleep",holdGroup}
     shiftChangeUnit.shiftAtMidNight.holdTime=mvars.ene_sleepTimes[cpId]
     if isMidnight then
-      shiftChangeUnit.shiftAtMidNight.goal={"midnight",unkGroup4}
+      shiftChangeUnit.shiftAtMidNight.goal={"midnight",currentGroup}
     else
-      shiftChangeUnit.shiftAtMidNight.goal={"night",unkGroup1}
+      shiftChangeUnit.shiftAtMidNight.goal={"night",remainingGroup}
     end
-    shiftChangeUnit.shiftAtMorning.start={"midnight",unkGroup1}
+    shiftChangeUnit.shiftAtMorning.start={"midnight",remainingGroup}
   else
-    shiftChangeUnit.shiftAtMorning.start={"night",unkGroup1}
+    shiftChangeUnit.shiftAtMorning.start={"night",remainingGroup}
   end
   return shiftChangeUnit
-end
+end--_MakeShiftChangeUnit
+--makes ene_shiftChangeTable based on routeset .hold and .sleep (see _MakeShiftChangeUnit -^-)
+--USER: ShiftChangeByTime (mvars.ene_shiftChangeTable)
+--IN/SIDE: mvars.ene_routeSetsPriority, mvars.ene_routeSets
+--OUT/SIDE: mvars.ene_shiftChangeTable
+--CALLERS: called pretty much whenever routeset is set up (but not for changeroutesets?)
+--REF --groups are actually StrCode32 in live table
+--afgh_enemyBase_cp
+--mvars.ene_shiftChangeTable[cpId]={
+--  shiftAtNight={
+--    [1]={--insertPos*2-1
+--      [1]={"day","groupE"},-- shiftChangeUnit .start -- {shiftName, groupName}
+--      [2]={"hold","default"},-- shiftChangeUnit .goal
+--      holdTime=60,
+--    },
+--    [2]={--insertPos*2
+--      [1]={"hold","default"},-- shiftChangeUnit .start
+--      [2]={"night","groupA"},-- shiftChangeUnit .goal
+--    },
+--    ...
 function this.MakeShiftChangeTable()
   mvars.ene_shiftChangeTable={}
-  for cpId,priorities in pairs(mvars.ene_routeSetsPriority)do
-    if not IsTypeTable(priorities)then
+  for cpId,priorityGroupsS32 in pairs(mvars.ene_routeSetsPriority)do
+    if not IsTypeTable(priorityGroupsS32)then
       return
     end
     local isSleep=false
@@ -3926,17 +4129,21 @@ function this.MakeShiftChangeTable()
       sleep=mvars.ene_routeSets[cpId].sleep
     end
     local insertPos=1
-    local numPriorities=#priorities
-    for priorityIndex,groupNameStr32 in ipairs(priorities)do
+    local numPriorities=#priorityGroupsS32
+    for priorityIndex,groupNameStr32 in ipairs(priorityGroupsS32)do
       local shiftChangeUnit
-      shiftChangeUnit=this._MakeShiftChangeUnit(cpId,priorities,groupNameStr32,hold,isSleep,sleep,isMidnight,numPriorities,priorityIndex,insertPos,mvars.ene_routeSetsFixedShiftChange[cpId])
+      shiftChangeUnit=this._MakeShiftChangeUnit(cpId,priorityGroupsS32,groupNameStr32,hold,isSleep,sleep,isMidnight,numPriorities,priorityIndex,insertPos,mvars.ene_routeSetsFixedShiftChange[cpId])
       if shiftChangeUnit then
         this._InsertShiftChangeUnit(cpId,insertPos,shiftChangeUnit)
         insertPos=insertPos+1
       end
-    end
-  end
-end
+    end--for priorityGroupsS32
+  end--for ene_routeSetsPriority
+  if this.debugModule then--tex>
+    InfCore.PrintInspect(mvars.ene_shiftChangeTable,"mvars.ene_shiftChangeTable")--tex DEBUGNOW has s32 groupnames, so Lookup it
+  end--<
+end--MakeShiftChangeTable
+--CALLER: Clock msgs ShiftChangeAtNight etc
 function this.ShiftChangeByTime(shiftName)
   if TppLocation.IsMotherBase()or TppLocation.IsMBQF()then
     return
@@ -3944,9 +4151,9 @@ function this.ShiftChangeByTime(shiftName)
   if not IsTypeTable(mvars.ene_shiftChangeTable)then
     return
   end
-  for cpId,schedules in pairs(mvars.ene_shiftChangeTable)do
-    if schedules[shiftName]then
-      SendCommand(cpId,{id="ShiftChange",schedule=schedules[shiftName]})
+  for cpId,shifts in pairs(mvars.ene_shiftChangeTable)do
+    if shifts[shiftName]then
+      SendCommand(cpId,{id="ShiftChange",schedule=shifts[shiftName]})
     end
   end
 end
@@ -6023,23 +6230,38 @@ this.announceForPhase={
 }
 --<
 --tex REWORKED
+--via msg ChangePhaseForAnnounce, not called on _ob / outer bases?
 function this._AnnouncePhaseChange(cpId,phase)
-  local cpSubType=this.GetCpSubType(cpId)
-  if cpSubType==nil then
-    InfCore.Log("WARNING: TppEnemy._AnnouncePhaseChange: cpSubType==nil for cpId "..tostring(cpId))
-    return
+  local cpLangId
+  if mvars.cpAnounceLangIds then--tex> set via missionScript _enemy
+    if type(mvars.cpAnounceLangIds)~="table"then
+      cpLangId=mvars.cpAnounceLangIds
+    else
+      cpLangId=mvars.cpAnounceLangIds[cpId]
+    end
+    --InfCore.Log("TppEnemy._AnnouncePhaseChange cpAnounceLangIds cpLangId "..tostring(cpId).." "..tostring(cpLangId))--DEBUG
   end
-  local cpLangId=this.cpSubTypeToLangId[cpSubType]
-  if cpLangId==nil then
-    InfCore.Log("WARNING: TppEnemy._AnnouncePhaseChange: unknown cpSubType "..cpSubType.." for cpId "..tostring(cpId))
+  if cpLangId==nil then--<
+    local cpSubType=this.GetCpSubType(cpId)
+    if cpSubType==nil then
+      InfCore.Log("WARNING: TppEnemy._AnnouncePhaseChange: cpSubType==nil for cpId "..tostring(cpId))
+      return
+    end
+    cpLangId=this.cpSubTypeToLangId[cpSubType]--tex shifted declaration to top
+    if cpLangId==nil then
+      InfCore.Log("WARNING: TppEnemy._AnnouncePhaseChange: unknown cpSubType "..cpSubType.." for cpId "..tostring(cpId))
+    end
+    cpLangId=cpLangId or "cmmn_ene_soviet"--tex default to sov
   end
-  cpLangId=cpLangId or "cmmn_ene_soviet"--tex default to sov
   if cpLangId=="" then--tex unless specifically none
     return
   end
+  if this.debugModule then--tex>--DEBUGNOW
+    InfCore.Log("TppEnemy._AnnouncePhaseChange "..tostring(cpId).." "..tostring(cpLangId))
+  end--<
   local announceLangId=this.announceForPhase[phase]
   TppUiCommand.AnnounceLogViewLangId(announceLangId,cpLangId)
-end
+end--_AnnouncePhaseChange
 --ORIG
 --function this._AnnouncePhaseChange(cpId,phase)
 --  local cpSubType=this.GetCpSubType(cpId)

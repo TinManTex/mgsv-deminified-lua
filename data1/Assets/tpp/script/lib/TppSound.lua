@@ -77,12 +77,12 @@ function this.HaltSceneBGM()
   svars.snd_bgmNameHash=0
   svars.snd_bgmSwitchNameHash=0
 end
-function this.SetPhaseBGM(e)
-  if not IsTypeString(e)then
+function this.SetPhaseBGM(phaseBgmTag)
+  if not IsTypeString(phaseBgmTag)then
     return
   end
-  svars.snd_phaseBgmTagHash=StrCode32(e)
-  TppMusicManager.ChangeParameter(e)
+  svars.snd_phaseBgmTagHash=StrCode32(phaseBgmTag)
+  TppMusicManager.ChangeParameter(phaseBgmTag)
 end
 local none=0
 function this.ResetPhaseBGM()

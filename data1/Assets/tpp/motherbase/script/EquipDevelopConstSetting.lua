@@ -17,7 +17,7 @@ local this={}
 --p05=65535,--bluePrintId //Design requirements - 65535, TppMotherBaseManagementConst.DESIGN_2000,
 --p06="name_wp_4040",--langEquipName //Item name (displayed in iDroid)
 --p07="info_wp_4040",--langEquipInfo //Item description (displayed in iDroid)
---p08="/Assets/tpp/ui/texture/EquipIcon/npc/ui_wp_com_sg_020_alp",--ftexPath //Item picture (displayed in iDroid)
+--p08="/Assets/tpp/ui/texture/EquipIcon/npc/ui_wp_com_sg_020_alp",--iconFtexPath //Item picture (displayed in iDroid)
 --p09=TppMbDev.EQP_DEV_GROUP_WEAPON_180,--equipDevelopGroupID //Item group (tool/item/skin/etc)
 
 --p10="ability_0105",--langPowerUpInfo0
@@ -57,7 +57,7 @@ local this={}
 
 --name,description,long name are in: \Assets\tpp\lang\ui\tpp_weapon.eng.lng2
 
-local descriptiveParamToParamName={
+this.descriptiveParamToParamName={
   equipDevelopID="p00",
   equipID="p01",
   equipDevelopTypeID="p02",
@@ -66,7 +66,7 @@ local descriptiveParamToParamName={
   bluePrintId="p05",
   langEquipName="p06",
   langEquipInfo="p07",
-  ftexPath="p08",
+  iconFtexPath="p08",
   equipDevelopGroupID="p09",
 
   langPowerUpInfo0="p10",
@@ -86,10 +86,10 @@ local descriptiveParamToParamName={
   isResultRankLimited="p31",
   isCustomEnable="p32",
   isColorChangeEnable="p33",
---??="p34",
---??="p35",
---??="p36",
-}
+  unk34="p34",
+  isSecurityStaffEquip="p35",
+  unk36="p36",
+}--descriptiveParamToParamName
 
 this.equipDevTable={
   {p00=1000,p01=TppEquip.EQP_WP_10101,p02=TppMbDev.EQP_DEV_TYPE_Handgun,p03=0,p04=0,p05=65535,p06="name_wp_1000",p07="info_wp_1000",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/ui_wp_hg01_00_10_alp",p09=TppMbDev.EQP_DEV_GROUP_WEAPON_010,p10="ability_0300",p30="real_wp_1000",p31=0,p32=1,p33=1,p34=1,p35=0,p36=0},
@@ -1002,31 +1002,62 @@ this.equipDevTable={
   {p00=11081,p01=TppEquip.EQP_SWP_WormholePortal_G01,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11080,p04=0,p05=65535,p06="name_wp_11080",p07="info_wp_11080",p08="/Assets/tpp/ui/texture/EquipIcon/supportweapon/ui_swp_tpp_wormhole_alp.ftex",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_160,p10="ability_1113",p30="name_wp_11080",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
   {p00=11082,p01=TppEquip.EQP_SWP_WormholePortal_G02,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11081,p04=0,p05=65535,p06="name_wp_11080",p07="info_wp_11080",p08="/Assets/tpp/ui/texture/EquipIcon/supportweapon/ui_swp_tpp_wormhole_alp.ftex",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_160,p10="ability_1002",p11="ability_1113",p30="name_wp_11080",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
   {p00=11083,p01=TppEquip.EQP_SWP_WormholePortal_G03,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11082,p04=0,p05=65535,p06="name_wp_11080",p07="info_wp_11080",p08="/Assets/tpp/ui/texture/EquipIcon/supportweapon/ui_swp_tpp_wormhole_alp.ftex",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_160,p10="ability_1003",p11="ability_1113",p30="name_wp_11080",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  --<
+  --RETAILPATCH 1.0.13>
+  {p00=11100,p01=TppEquip.EQP_SWP_DarkMatter,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=0,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11101,p01=TppEquip.EQP_SWP_DarkMatter_G01,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11100,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11102,p01=TppEquip.EQP_SWP_DarkMatter_G02,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11101,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1111",p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11103,p01=TppEquip.EQP_SWP_DarkMatter_G03,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11102,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11110,p01=TppEquip.EQP_SWP_StunDarkMatter,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=0,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11111,p01=TppEquip.EQP_SWP_StunDarkMatter_G01,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11110,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11112,p01=TppEquip.EQP_SWP_StunDarkMatter_G02,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11111,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1111",p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=11113,p01=TppEquip.EQP_SWP_StunDarkMatter_G03,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11112,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=13070,p01=TppEquip.EQP_IT_Barrier,p02=TppMbDev.EQP_DEV_TYPE_Equip,p03=0,p04=0,p05=65535,p06="name_it_13070",p07="info_it_13070",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_brr_alp",p09=TppMbDev.EQP_DEV_GROUP_TOOL_110,p30="name_it_13070",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=13071,p01=TppEquip.EQP_IT_Barrier,p02=TppMbDev.EQP_DEV_TYPE_Equip,p03=13070,p04=0,p05=65535,p06="name_it_13070",p07="info_it_13070",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_brr_alp",p09=TppMbDev.EQP_DEV_GROUP_TOOL_110,p10="ability_1109",p30="name_it_13070",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=13072,p01=TppEquip.EQP_IT_Barrier,p02=TppMbDev.EQP_DEV_TYPE_Equip,p03=13071,p04=0,p05=65535,p06="name_it_13070",p07="info_it_13070",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_brr_alp",p09=TppMbDev.EQP_DEV_GROUP_TOOL_110,p10="ability_1109",p30="name_it_13070",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=6060,p01=TppEquip.EQP_WP_60605,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=0,p04=0,p05=65535,p06="name_wp_6060",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0210",p11="ability_0257",p12="ability_1114",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=6061,p01=TppEquip.EQP_WP_60606,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6060,p04=0,p05=65535,p06="name_wp_6060",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=6062,p01=TppEquip.EQP_WP_60607,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6061,p04=0,p05=65535,p06="name_wp_6060",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=6063,p01=TppEquip.EQP_WP_60615,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=0,p04=0,p05=65535,p06="name_wp_6064",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0210",p11="ability_0257",p12="ability_1114",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=6064,p01=TppEquip.EQP_WP_60616,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6063,p04=0,p05=65535,p06="name_wp_6064",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+  {p00=6065,p01=TppEquip.EQP_WP_60617,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6064,p04=0,p05=65535,p06="name_wp_6064",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
 --<
---RETAILPATCH 1.0.13>
-{p00=11100,p01=TppEquip.EQP_SWP_DarkMatter,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=0,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11101,p01=TppEquip.EQP_SWP_DarkMatter_G01,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11100,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11102,p01=TppEquip.EQP_SWP_DarkMatter_G02,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11101,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1111",p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11103,p01=TppEquip.EQP_SWP_DarkMatter_G03,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11102,p04=0,p05=65535,p06="name_wp_11100",p07="info_wp_11100",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11100",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11110,p01=TppEquip.EQP_SWP_StunDarkMatter,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=0,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11111,p01=TppEquip.EQP_SWP_StunDarkMatter_G01,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11110,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11112,p01=TppEquip.EQP_SWP_StunDarkMatter_G02,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11111,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1111",p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=11113,p01=TppEquip.EQP_SWP_StunDarkMatter_G03,p02=TppMbDev.EQP_DEV_TYPE_Placed,p03=11112,p04=0,p05=65535,p06="name_wp_11110",p07="info_wp_11110",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_dmtr_alp",p09=TppMbDev.EQP_DEV_GROUP_SUPPORT_120,p10="ability_1109",p30="name_wp_11110",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=13070,p01=TppEquip.EQP_IT_Barrier,p02=TppMbDev.EQP_DEV_TYPE_Equip,p03=0,p04=0,p05=65535,p06="name_it_13070",p07="info_it_13070",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_brr_alp",p09=TppMbDev.EQP_DEV_GROUP_TOOL_110,p30="name_it_13070",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=13071,p01=TppEquip.EQP_IT_Barrier,p02=TppMbDev.EQP_DEV_TYPE_Equip,p03=13070,p04=0,p05=65535,p06="name_it_13070",p07="info_it_13070",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_brr_alp",p09=TppMbDev.EQP_DEV_GROUP_TOOL_110,p10="ability_1109",p30="name_it_13070",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=13072,p01=TppEquip.EQP_IT_Barrier,p02=TppMbDev.EQP_DEV_TYPE_Equip,p03=13071,p04=0,p05=65535,p06="name_it_13070",p07="info_it_13070",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_brr_alp",p09=TppMbDev.EQP_DEV_GROUP_TOOL_110,p10="ability_1109",p30="name_it_13070",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=6060,p01=TppEquip.EQP_WP_60605,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=0,p04=0,p05=65535,p06="name_wp_6060",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0210",p11="ability_0257",p12="ability_1114",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=6061,p01=TppEquip.EQP_WP_60606,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6060,p04=0,p05=65535,p06="name_wp_6060",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=6062,p01=TppEquip.EQP_WP_60607,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6061,p04=0,p05=65535,p06="name_wp_6060",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=6063,p01=TppEquip.EQP_WP_60615,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=0,p04=0,p05=65535,p06="name_wp_6064",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0210",p11="ability_0257",p12="ability_1114",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=6064,p01=TppEquip.EQP_WP_60616,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6063,p04=0,p05=65535,p06="name_wp_6064",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
-{p00=6065,p01=TppEquip.EQP_WP_60617,p02=TppMbDev.EQP_DEV_TYPE_Sniper,p03=6064,p04=0,p05=65535,p06="name_wp_6064",p07="info_wp_6060",p08="/Assets/tpp/ui/texture/EquipIcon/weapon/fob_snpr_alp",p09=TppMbDev.EQP_DEV_GROUP_None,p10="ability_0105",p30="real_wp_6060",p31=0,p32=0,p33=0,p34=0,p35=0,p36=0},
+}--equipDevTable
+
+--tex incomplete unlocker example>
+--this stuff could also be pulled into it's own external lua and run via MockFox
+local removeItemRequirements=false--goes through the unlock announce roll but chrashes on idroid open, given that there's many without prereqs its a matter of finding the bad apple(s)
+local removeStaffSkillRequirements=false
+local removeDesignRequirements=false
+local iDontEvenKnow=false--tex modded file had this true
+local removeWhatIsThisItWasAddedDuringAPatchP36=false--tex modded file had this true
+
+
+local dParam=this.descriptiveParamToParamName
+for n,developSetting in ipairs(this.equipDevTable)do
+  if removeItemRequirements then
+    developSetting[dParam.baseEquipDevelopId]=0
+  end
+  if removeStaffSkillRequirements then
+    developSetting[dParam.skill]=0
+  end
+  if removeDesignRequirements then
+    developSetting[dParam.bluePrintId]=0
+  end
+  if iDontEvenKnow then--tex dont know why, but that's what the modded file did
+    developSetting[dParam.isCustomEnable]=1
+    developSetting[dParam.isColorChangeEnable]=1
+    developSetting.p34=1
+  end
+  if removeWhatIsThisItWasAddedDuringAPatchP36 then
+    developSetting.p36=0
+  end
+end
 --<
-}
 
 for i,developSetting in ipairs(this.equipDevTable)do
   TppMotherBaseManagement.RegCstDev(developSetting)
 end
-this.equipDevTable=nil--tex clear if not doing any run-time analysis
+--this={}--tex clear if not doing any run-time analysis and if you want to free up some memory
 
 return this

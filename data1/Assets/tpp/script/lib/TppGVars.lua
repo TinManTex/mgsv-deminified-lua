@@ -295,10 +295,13 @@ this.DeclareGVarsTable={
   nil
 }
 Tpp.ApendArray(this.DeclareGVarsTable,Ivars.DeclareVars())--tex
+
 TppScriptVars.DeclareGVars(this.DeclareGVarsTable)
+
 if Fox.GetPlatformName()=="PS3"then
   this.DeclareGVarsTable=nil
 end
+--CALLER: TppVarInit.ClearAllVarsAndSlot
 function this.AllInitialize()
   if this.DeclareGVarsTable==nil then
     return

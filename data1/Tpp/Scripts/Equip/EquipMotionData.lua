@@ -1,7 +1,8 @@
 --EquipMotionData.lua
 --RETAILPATCH 1090 various additions
-this={}
-TppEquip.ReloadEquipMotionData{
+local this={}--tex made local
+--tex was TppEquip.ReloadEquipMotionData{
+this.equipMotionData={
   MotionDataTable={
     {TppEquip.EQP_WP_West_hg_010,"/Assets/tpp/motion/mtar/equip/chimera/assemble/hg00_asm.mtar"},
     {TppEquip.EQP_WP_West_hg_010_WG,"/Assets/tpp/motion/mtar/equip/chimera/assemble/hg00_asm.mtar"},
@@ -135,5 +136,6 @@ TppEquip.ReloadEquipMotionData{
     {TppEquip.EQP_WP_60617,"/Assets/tpp/motion/mtar/equip/chimera/receiver/sr02_default.mtar"},
     --<
   }
-}
+}--equipMotionData
+TppEquip.ReloadEquipMotionData(this.equipMotionData)--tex
 return this

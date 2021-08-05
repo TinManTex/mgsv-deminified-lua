@@ -1,6 +1,44 @@
 -- DamageParameterTables.lua
 --RETAILPATCH 1090 various additions
 local this={}--tex made local
+
+ --notes from muffins 4pr 1.3
+this.parameterNames={
+  "damageId",-- {TppDamage.ATK_10001,--[[ D114/M1911 ATTACK ]]
+  "lethalDamageUI",-- 750,--[[ Displays Lethal Damage UI ]]
+  "unk3",-- 500,--[[ ??? ]]
+  "unk4",-- 40,--[[ ??? ]]
+  "unk5",-- 0,--[[ ??? ]]
+  "unk6",-- 0,--[[ ??? ]]
+  "unk7",-- 300,--[[ ??? ]]
+  "unk8",-- 90,--[[ ??? ]]
+  "injureType",-- TppDamage.INJ_TYPE_BULLET,
+  "injurePart",-- TppDamage.INJ_PART_ALL,
+  "unk11",-- 15,--[[ ??? ]]
+  "unk12",-- 2,--[[ ??? ]]
+  "hitNPC",-- 1,--[[ Projectile Hitting NPCs Boolean ]]
+  "unk14",-- 0,
+  "unk15",-- 0,--[[ Vortex Ring Boolean? ]]
+  "isTranq",-- 0,--[[ Tranquilizer Boolean, Requires Non-Lethal Damage Value ]]
+  "isStun",-- 0,--[[ Stun Damage Boolean, Requires Non-Lethal Damage Value ]]
+  "unk18",-- 0,
+  "unk19",-- 0,
+  "unk20",-- 0,
+  "isFire",-- 0,--[[ Fire Boolean ]]
+  "unk22",-- 0,
+  "isGas",-- 0,--[[ Gas Boolean? ]]
+  "unk24",-- 0,
+  "unk25",-- 0,
+  "isElectric",-- 0,--[[ Electric Boolean? ]]
+  "unk27",-- 0,
+  "unk28",-- 0,
+  "damageSource",-- TppDamage.DAM_SOURCE_Handgun,
+  "lethalDamage",-- 400,--[[ Lethal Damage Value ]]
+  "staminaDamage",-- 0,--[[ Non-Lethal Damage Value ]]
+  "impactForce",-- 300,--[[ Impact Force ]
+}--parameterNames
+this.parameterEnum=Tpp.Enum(this.parameterNames)--from 1
+
 --tex made local table, was just straight into TppDamage.ReloadDamageParameter
 this.DamageParameter={
   0,
@@ -483,7 +521,7 @@ this.DamageParameter={
   {TppDamage.ATK_mgm0_mgun0,1500,500,140,0,0,1100,500,TppDamage.INJ_TYPE_BULLET,TppDamage.INJ_PART_ALL,15,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_WalkerGear,1500,0,0},
   {TppDamage.ATK_mgm0_ammo0,8e3,3500,14e3,0,0,3e4,4e3,TppDamage.INJ_TYPE_DISLOCATED,TppDamage.INJ_PART_ALL,4,20,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_WalkerGear,2400,0,3500},
   {TppDamage.ATK_mgm0_famo0,3e4,3500,1e4,0,0,3e4,4e3,TppDamage.INJ_TYPE_DISLOCATED,TppDamage.INJ_PART_ALL,4,20,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,TppDamage.DAM_SOURCE_WalkerGear,2800,0,3500}
-}
+}--DamageParameter
 
 TppDamage.ReloadDamageParameter{DamageParameter=this.DamageParameter}
 this.DamageParameter=nil--tex clear, if you're not doing any runtime analysis

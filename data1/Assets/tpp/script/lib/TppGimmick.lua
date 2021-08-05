@@ -1,4 +1,5 @@
 -- TppGimmick.lua
+--tex TODO: if you pull this into the build then integrate workaround in InfQuest.OnActivateQuest
 local this={}
 local StrCode32=Fox.StrCode32
 local GetTypeIndex=GameObject.GetTypeIndex
@@ -650,18 +651,18 @@ function this.HideAsset(e)
     TppDataUtility.SetVisibleDataFromIdentifier(e.identifierName,n,false,true)
   end
 end
-function this.Show(show)
-  local e=this.SetVisibility(show,false)
+function this.Show(gimmickId)
+  local e=this.SetVisibility(gimmickId,false)
 end
-function this.Hide(hide)
-  this.SetVisibility(hide,true)
+function this.Hide(gimmickId)
+  this.SetVisibility(gimmickId,true)
 end
-function this.SetVisibility(gimmickId,visible)
+function this.SetVisibility(gimmickId,setInvisible)
   local gimmickInfo=mvars.gim_identifierParamTable[gimmickId]
   if not gimmickInfo then
     return
   end
-  Gimmick.InvisibleGimmick(gimmickInfo.type,gimmickInfo.locatorName,gimmickInfo.dataSetName,visible)
+  Gimmick.InvisibleGimmick(gimmickInfo.type,gimmickInfo.locatorName,gimmickInfo.dataSetName,setInvisible)
   return true
 end
 function this.UnlockLandingZone(gimmickId)
@@ -811,7 +812,7 @@ function this.OnActivateQuest(questTable)
     end
     if(questTable.gimmickMarkList and Tpp.IsTypeTable(questTable.gimmickMarkList))and next(questTable.gimmickMarkList)then
       for i,gimmickMarkInfo in pairs(questTable.gimmickMarkList)do
-        if gimmickMarkInfo.isStartGimmick==true then
+        if gimmickMarkInfo.isStartGimmick==true then--NMC tex no references, I guess they had it so you had to shoot one specific start marker at some point?
           mvars.gim_questMarkStartName=StrCode32(gimmickMarkInfo.locatorName)
           mvars.gim_questMarkStartLocator=gimmickMarkInfo.locatorName
           mvars.gim_questMarkStartData=gimmickMarkInfo.dataSetName
@@ -907,7 +908,7 @@ function this.CheckQuestAllTarget(questType,gimmickIdentifier,targetPracticeTime
         end
       end
     end
-  end
+  end--if targetPracticeTimeOut==false
   if questType==TppDefine.QUEST_TYPE.DEVELOP_RECOVERED or questType==TppDefine.QUEST_TYPE.GIMMICK_RECOVERED then
     local recoveredCount=0
     local totalCount=0
@@ -971,18 +972,18 @@ function this.IsQuestTarget(checkId)
   end
   return false
 end
-function this.SetQuestInvisibleGimmick(questMarkSetIndex,visible,skipCheck)
+function this.SetQuestInvisibleGimmick(questMarkSetIndex,setInvisible,skipCheck)
   local force=skipCheck or false
   for i,targetInfo in pairs(mvars.gim_questTargetList)do
     if questMarkSetIndex==mvars.gim_questMarkSetIndex or force==true then
-      Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,targetInfo.locatorName,targetInfo.dataSetName,visible)
+      Gimmick.InvisibleGimmick(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,targetInfo.locatorName,targetInfo.dataSetName,setInvisible)
     end
   end
 end
-function this.SetQuestSootingTargetInvincible(setInvis)
+function this.SetQuestSootingTargetInvincible(setInvincible)--GOTCHA: invinvible not invisible
   for i,targetInfo in pairs(mvars.gim_questTargetList)do
-    Gimmick.InvincibleGimmickData(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,"mtbs_bord001_vrtn003_ev_gim_i0000|TppPermanentGimmick_mtbs_bord001_vrtn003_ev",targetInfo.dataSetName,setInvis)
-    break--NMC wut
+    Gimmick.InvincibleGimmickData(TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,"mtbs_bord001_vrtn003_ev_gim_i0000|TppPermanentGimmick_mtbs_bord001_vrtn003_ev",targetInfo.dataSetName,setInvincible)
+    break--NMC tex wut. mtbs_bord001_vrtn003_ev_gim_i0000 is the instance rather than specific target, but they still need the datasetname, they could have just used mvars.gim_questTargetList[1].dataSetName?
   end
 end
 --NMC no references

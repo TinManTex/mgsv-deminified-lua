@@ -185,6 +185,7 @@ function this.OnFultonHostage(gameId,recoveredByHeli)
     end
   end
 end
+--No refs?
 function this.OnFultonEli(n,e)
   if e then
     TppMotherBaseManagement.AddTempLifesavingLog{heroicPoint=240,subOgrePoint=240}
@@ -192,33 +193,33 @@ function this.OnFultonEli(n,e)
     TppMotherBaseManagement.AddTempLifesavingLog{heroicPoint=120,subOgrePoint=120}
   end
 end
-function this.GetFobServerParameter(_name)
-  local parameter,name
-  if IsTypeString(_name)then
-    name=_name
-    parameter=TppNetworkUtil.GetFobServerParameterByName(_name)
+function this.GetFobServerParameter(pointsOrParamName)
+  local points,name
+  if IsTypeString(pointsOrParamName)then
+    name=pointsOrParamName
+    points=TppNetworkUtil.GetFobServerParameterByName(pointsOrParamName)
   else
-    parameter=_name
+    points=pointsOrParamName
   end
-  return parameter,name
+  return points,name
 end
-function this.SetHeroicPoint(points)
-  local _points,n=this.GetFobServerParameter(points)
-  if _points<0 then
-    TppMotherBaseManagement.SubHeroicPoint{heroicPoint=-_points}
-  elseif _points>0 then
-    TppMotherBaseManagement.AddHeroicPoint{heroicPoint=_points}
+function this.SetHeroicPoint(pointsOrParamName)
+  local points,name=this.GetFobServerParameter(pointsOrParamName)
+  if points<0 then
+    TppMotherBaseManagement.SubHeroicPoint{heroicPoint=-points}
+  elseif points>0 then
+    TppMotherBaseManagement.AddHeroicPoint{heroicPoint=points}
   end
-  return _points
+  return points
 end
 function this.SetOgrePoint(ogrePoint)
-  local amount,n=this.GetFobServerParameter(ogrePoint)
-  if amount<0 then
-    TppMotherBaseManagement.SubOgrePoint{ogrePoint=-amount}
-  elseif amount>0 then
-    TppMotherBaseManagement.AddOgrePoint{ogrePoint=amount}
+  local points,name=this.GetFobServerParameter(ogrePoint)
+  if points<0 then
+    TppMotherBaseManagement.SubOgrePoint{ogrePoint=-points}
+  elseif points>0 then
+    TppMotherBaseManagement.AddOgrePoint{ogrePoint=points}
   end
-  svars.her_missionOgrePoint=svars.her_missionOgrePoint+amount
+  svars.her_missionOgrePoint=svars.her_missionOgrePoint+points
 end
 function this.GetMissionOgrePoint()
   return svars.her_missionOgrePoint
@@ -240,7 +241,8 @@ function this.SetAndAnnounceHeroicOgrePoint(pointTable,downLangId,upLangId)
   if TppMission.IsFOBMission(vars.missionCode)and(vars.fobSneakMode==FobMode.MODE_SHAM)then
     return
   end
-  this.SetHeroicPoint(pointTable.heroicPoint)
+  pointTable=InfHero.ModHeroicPoint(pointTable)--tex
+  this.SetHeroicPoint(pointTable.heroicPoint) 
   this.AnnounceHeroicPoint(pointTable,downLangId,upLangId)
   this.SetOgrePoint(pointTable.ogrePoint)
 end

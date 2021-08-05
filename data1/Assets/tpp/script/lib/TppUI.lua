@@ -1057,8 +1057,8 @@ function this.Init()
   TppUiCommand.ResetCpNameBaseLangId()
   if TppUiCommand.RegistCpNameBaseLangId and mvars.loc_locationBaseTelop then
     for n,langIds in ipairs(mvars.loc_locationBaseTelop.cpLangIdTable)do
-      local n,e,i=langIds[1],langIds[2],langIds[3]
-      TppUiCommand.RegistCpNameBaseLangId(n,e,i)
+      local cpName,cpLangId,cpLangIdEng=langIds[1],langIds[2],langIds[3]
+      TppUiCommand.RegistCpNameBaseLangId(cpName,cpLangId,cpLangIdEng)
     end
   end
   TppUiCommand.RegistCpNameBaseLangId("helicopterSpace","tpp_heli_acc")

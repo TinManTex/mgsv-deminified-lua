@@ -4,7 +4,8 @@ local this={}
 local minuteInSeconds=60
 local hourInSeconds=60*60
 
-local weatherProbabilitiesTable={
+--tex following tables changed from locals to module members
+this.weatherProbabilitiesTable={
   AFGH={
     {TppDefine.WEATHER.SUNNY,80},
     {TppDefine.WEATHER.CLOUDY,20}
@@ -17,12 +18,9 @@ local weatherProbabilitiesTable={
     {TppDefine.WEATHER.SUNNY,80},
     {TppDefine.WEATHER.CLOUDY,20}
   },
-  AFGH_NO_SANDSTORM={
-    {TppDefine.WEATHER.SUNNY,80},
-    {TppDefine.WEATHER.CLOUDY,20}
-  }
 }
-local weatherDurations={
+this.weatherProbabilitiesTable.AFGH_NO_SANDSTORM=this.weatherProbabilitiesTable.AFGH--tex use it directly since it was same values any way
+this.weatherDurations={
   {TppDefine.WEATHER.SUNNY,5*hourInSeconds,8*hourInSeconds},
   {TppDefine.WEATHER.CLOUDY,3*hourInSeconds,5*hourInSeconds},
   {TppDefine.WEATHER.SANDSTORM,13*minuteInSeconds,20*minuteInSeconds},
@@ -30,12 +28,13 @@ local weatherDurations={
   {TppDefine.WEATHER.FOGGY,13*minuteInSeconds,20*minuteInSeconds}
 }
 --tex broken out from SetDefaultWeatherDurations>
-local extraWeatherInterval={
+this.extraWeatherInterval={
   min=5*hourInSeconds,
   max=8*hourInSeconds,
 }
 --<
-local extraWeatherProbabilitiesTable={
+this.extraWeatherProbabilitiesTable={
+  NONE={},--tex added
   AFGH={{TppDefine.WEATHER.SANDSTORM,100}},
   MAFR={{TppDefine.WEATHER.RAINY,100}},
   MTBS={
@@ -45,9 +44,9 @@ local extraWeatherProbabilitiesTable={
   AFGH_HELI={},
   MAFR_HELI={{TppDefine.WEATHER.RAINY,100}},
   MTBS_HELI={{TppDefine.WEATHER.RAINY,100}},
-  AFGH_NO_SANDSTORM={}
+  --AFGH_NO_SANDSTORM={}--tex SetWeatherProbabilitiesAfghNoSandStorm now uses NONE
 }
---tex>
+--tex> CULL
 local altExtraWeatherProbabilitiesTable={
   AFGH={
     {TppDefine.WEATHER.SANDSTORM,80},
@@ -72,7 +71,6 @@ local altExtraWeatherProbabilitiesTable={
     {TppDefine.WEATHER.RAINY,70},
     {TppDefine.WEATHER.SANDSTORM,30},
   },
-  AFGH_NO_SANDSTORM={}
 }
 --<
 local sandStormOrFoggy={[TppDefine.WEATHER.SANDSTORM]=true,[TppDefine.WEATHER.FOGGY]=true}
@@ -142,13 +140,16 @@ function this.CancelForceRequestWeather(weatherType,param1,param2)
     }
   end
 end
+--CALLER: TppMain.OnMissionCanStart
 function this.SetDefaultWeatherDurations()
-  WeatherManager.SetWeatherDurations(weatherDurations)
+  WeatherManager.SetWeatherDurations(this.weatherDurations)
   if not WeatherManager.SetExtraWeatherInterval then
     return
   end
-  WeatherManager.SetExtraWeatherInterval(extraWeatherInterval.min,extraWeatherInterval.max)--tex values broken out to extraWeatherInterval
+  WeatherManager.SetExtraWeatherInterval(this.extraWeatherInterval.min,this.extraWeatherInterval.max)--tex values broken out to extraWeatherInterval
 end
+--CALLER: TppMain.OnMissionCanStart
+--tex hooking in InfWeather so I don't disturb existing mods
 function this.SetDefaultWeatherProbabilities()
   local weatherProbabilities
   local extraWeatherProbabilities
@@ -162,8 +163,8 @@ function this.SetDefaultWeatherProbabilities()
     heliSuffix="_HELI"
   end
 
-  weatherProbabilities=weatherProbabilitiesTable[locationName]
-  extraWeatherProbabilities=extraWeatherProbabilitiesTable[locationName..heliSuffix]
+  weatherProbabilities=this.weatherProbabilitiesTable[locationName]
+  extraWeatherProbabilities=this.extraWeatherProbabilitiesTable[locationName..heliSuffix] or this.extraWeatherProbabilitiesTable.NONE
   --<
   -- ORIG
   --  if TppLocation.IsAfghan()then
@@ -194,10 +195,11 @@ function this.SetDefaultWeatherProbabilities()
   if extraWeatherProbabilities then
     WeatherManager.SetExtraWeatherProbabilities(extraWeatherProbabilities)
   end
-end
+end--SetDefaultWeatherProbabilities
+--CALLER: several story missions
 function this.SetWeatherProbabilitiesAfghNoSandStorm()
-  WeatherManager.SetNewWeatherProbabilities("default",weatherProbabilitiesTable.AFGH_NO_SANDSTORM)
-  WeatherManager.SetExtraWeatherProbabilities(extraWeatherProbabilitiesTable.AFGH_NO_SANDSTORM)
+  WeatherManager.SetNewWeatherProbabilities("default",this.weatherProbabilitiesTable.AFGH_NO_SANDSTORM)
+  WeatherManager.SetExtraWeatherProbabilities(this.extraWeatherProbabilitiesTable.NONE)--tex was extraWeatherProbabilitiesTable.AFGH_NO_SANDSTORM
 end
 function this.SetMissionStartWeather(weatherType)
   mvars.missionStartWeatherScript=weatherType
@@ -230,12 +232,14 @@ function this.RestoreMissionStartWeather()
   vars.extraWeatherInterval=gvars.missionStartExtraWeatherInterval
   WeatherManager.RestoreFromSVars()
 end
+--no refrences
 function this.OverrideColorCorrectionLUT(unk1)
   TppColorCorrection.SetLUT(unk1)
 end
 function this.RestoreColorCorrectionLUT()
   TppColorCorrection.RemoveLUT()
 end
+--no refrences
 function this.OverrideColorCorrectionParameter(unk1,unk2,unk3)
   TppColorCorrection.SetParameter(unk1,unk2,unk3)
 end

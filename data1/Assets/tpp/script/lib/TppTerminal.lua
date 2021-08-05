@@ -316,6 +316,7 @@ function this.ClearStaffNewIcon(isHeliSpace,isFreeMission,nextIsHeliSpace,nextIs
   end
 end
 function this.AddStaffsFromTempBuffer(readOnly,RENoffline)
+  InfCore.LogFlow("TppTerminal.AddStaffsFromTempBuffer")--tex
   if(vars.fobSneakMode==FobMode.MODE_SHAM)then
     return
   end
@@ -877,6 +878,8 @@ function this.OnReload(missionTable)
   this.Init(missionTable)
   this.MakeMessage()
 end
+--CALLER: TppMain.OnMissionGameStart
+--GOTCHA: param isn't actuall passed in
 function this.OnMissionGameStart(e)
   if not mvars.trm_currentIntelCpName then
     if Ivars.disableSpySearch:Is(1) then--tex added bypass
@@ -923,7 +926,7 @@ function this.Messages()
         option={isExecMissionPrepare=true}
       }
       table.insert(trapMessages,msg)
-    end
+    end--for cpIntelTrapTable
 
     table.insert(trapMessages,
       {msg="Enter",
@@ -963,7 +966,7 @@ function this.Messages()
         end,
         option={isExecMissionPrepare=true}
       })
-  end
+  end--if cpIntelTrapTable
 
   return Tpp.StrCode32Table{
     GameObject={
@@ -1011,7 +1014,7 @@ function this.Messages()
       end}
     },
     Terminal={
-      {msg="MbDvcActCallBuddy",func=function(buddyType,t)
+      {msg="MbDvcActCallBuddy",func=function(buddyType,callOption)
         TppUI.SetSupportCallBuddyType(buddyType)
         TppUI.ShowCallSupportBuddyAnnounceLog()
       end}
@@ -1021,8 +1024,8 @@ function this.Messages()
       {msg="NoticeSneakMotherBase",func=this.OnNoticeFobSneaked},
       {msg="NoticeSneakSupportedMotherBase",func=this.OnNoticeSupporterFobSneaked}
     }
-  }
-end
+  }--return messages StrCode32Table
+end--Messages
 function this.OnMessage(sender,messageId,arg0,arg1,arg2,arg3,strLogText)
   Tpp.DoMessage(this.messageExecTable,TppMission.CheckMessageOption,sender,messageId,arg0,arg1,arg2,arg3,strLogText)
 end
@@ -1172,6 +1175,8 @@ function this.SetUpBuddyMBDVCMenu()
     end
   end
 end
+--NMC a mess because the same message "Fulton" is sent for different game objects (and with different params)
+--CALLERS: msg Fulton (calls OnFulton*), msg CalcFultonPercent (calls specific FultonSucceedRatio func)
 function this.DoFuncByFultonTypeSwitch(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex,reduceThisContainer,OnFultonSoldier,OnFultonVolgin,OnFultonHostage,OnFultonVehicle,OnFultonContainer,OnFultonGimmickCommon,OnFultonBuddy,OnFultonEnemyWalkerGear,OnFultonAnimal,OnFultonBossQuiet,OnFultonParasiteSquad)
   if Tpp.IsSoldier(gameId)then
     return OnFultonSoldier(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,recoveredByHeli,playerIndex)
@@ -1199,7 +1204,7 @@ function this.DoFuncByFultonTypeSwitch(gameId,gimmickInstanceOrAnimalId,gimmickD
       return OnFultonBuddy(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,buddyType,playerIndex)
     end
   end
-end
+end--DoFuncByFultonTypeSwitch
 function this.OnFulton(gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId,RENsomeBool,RENpossiblyNotHelicopter,playerIndex,reduceThisContainer)
   if RENpossiblyNotHelicopter then
     mvars.trm_needHeliSoundOnAddStaffsFromTempBuffer=true
@@ -1537,6 +1542,7 @@ function this.CheckAddTempBuffer(playerIndex)
   end
 end
 function this.AddTempStaffFulton(staffInfo)
+  InfCore.LogFlow("TppTerminal.AddTempStaffFulton")--tex
   if mvars.trm_isAlwaysDirectAddStaff~=true then
     local fultonedPlayer=staffInfo.fultonedPlayer or 0
     if this.CheckAddTempBuffer(fultonedPlayer)then

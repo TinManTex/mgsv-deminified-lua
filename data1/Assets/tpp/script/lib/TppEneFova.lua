@@ -1992,8 +1992,8 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
   local uavLevel=TppMotherBaseManagement.GetMbsUavLevel{}
   local uavSmokeLevel=TppMotherBaseManagement.GetMbsUavSmokeGrenadeLevel{}
   local uavSleepingLevel=TppMotherBaseManagement.GetMbsUavSleepingGusGrenadeLevel{}
-  local soldierEquipGrade=InfMainTpp.GetMbsClusterSecuritySoldierEquipGrade()--tex was TppMotherBaseManagement.GetMbsClusterSecuritySoldierEquipGrade{}
-  local isNoKillMode=InfMainTpp.GetMbsClusterSecurityIsNoKillMode()--tex was TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
+  local soldierEquipGrade=TppMotherBaseManagement.GetMbsClusterSecuritySoldierEquipGrade{}--tex OFF InfMainTpp.GetMbsClusterSecuritySoldierEquipGrade()--tex TODO: make sure that all these calls are after vars.missionCode change over   
+  local isNoKillMode=TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode() --tex OFF InfMainTpp.GetMbsClusterSecurityIsNoKillMode()--tex was TppMotherBaseManagement.GetMbsClusterSecurityIsNoKillMode()
   local uavType=TppUav.DEVELOP_LEVEL_LMG_0
   local setUav=false
   local isNLUav=false
@@ -2025,11 +2025,11 @@ function this.GetUavSetting()--RETAILPATCH: 1060 reworked
     elseif uavLevel>=3 then--RETAILPATCH 1090 was ==3 , tex did not notice I hadn't applied this during the merge until Feb2020, patch 1090 was released in April 2016 oops
       if soldierEquipGrade>=lmgLv2EquipGrade then
         lethalUavType=TppUav.DEVELOP_LEVEL_LMG_2
-      elseif soldierEquipGrade>=lmgLv1EquipGrade then
-        lethalUavType=TppUav.DEVELOP_LEVEL_LMG_1
-      else
-        lethalUavType=TppUav.DEVELOP_LEVEL_LMG_0
-      end
+    elseif soldierEquipGrade>=lmgLv1EquipGrade then
+      lethalUavType=TppUav.DEVELOP_LEVEL_LMG_1
+    else
+      lethalUavType=TppUav.DEVELOP_LEVEL_LMG_0
+    end
     end
   end
   local minNLEquipGrade=4

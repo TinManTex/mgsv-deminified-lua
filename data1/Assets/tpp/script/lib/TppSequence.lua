@@ -62,6 +62,7 @@ function this.RegisterSequenceTable(sequences)
     end
   end
 end
+--HOOKED: see InfHooks
 function this.SetNextSequence(sequenceName,params)
   local sequenceId=nil
   if mvars.seq_sequenceNames then

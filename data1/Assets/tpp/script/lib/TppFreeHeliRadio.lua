@@ -32,7 +32,7 @@ end
 function this.Messages()
   return StrCode32Table{
     Player={
-      {msg="CalcFultonPercent",func=function(unk1,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId)
+      {msg="CalcFultonPercent",func=function(playerIndex,gameId,gimmickInstanceOrAnimalId,gimmickDataSet,staffOrResourceId)
         if Tpp.IsSoldier(gameId)then
           local radioName="f2000_rtrg0040"
           if(not TppRadio.IsPlayed(radioName)and TppRadio.IsPlayed"f2000_oprg0210")and(not TppStory.IsMissionCleard(10040))then

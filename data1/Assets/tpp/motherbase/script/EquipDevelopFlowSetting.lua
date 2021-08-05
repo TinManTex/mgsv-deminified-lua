@@ -22,7 +22,7 @@ local this={}
 --  p53=0,--developGmpCost--development gmp
 --  p54=100,--usageGmpCost--deployment cost gmp
 --nasanhak first unit type requirement is not set in this file, or in any file as far as I can tell
---  p55=0,--sectionLvForDevelop--MB development cluster level requirement 1 --cannot be zero if a unit type is set
+--  p55=0,--sectionLvForDevelop--MB development cluster level requirement 1 --cannot be zero if a unit type is set --BobDoleOwnedU: The hanging was caused by two things in EquipDevelopFlowSetting. The R&D level requirement cannot be 0 for items that don't have a 0 requirement by default. The game is perfectly fine with the level requirement being 1 though. 
 --  p56={0-7},--sectionID2ForDevelop--MB development cluster 2 id--VERIFY 0=none, 1=command>7=medical, see REF below VERIFY
 --  p57=0,--sectionLv2ForDevelop--MB development cluster level requirement 2 --cannot be zero if a unit type is set
 --  p58="<resourceId>",--resourceType1--Development resource 1 id, see resource ids below
@@ -45,7 +45,7 @@ local this={}
 --   5 - All unused - Fulton cargo, fulton normal, fulton wormhole; Hides equip from equip menu as well
 --  p70=0,--Mystery Column - seems to be 0 for everything
 --  p71=0,--developTimeMinute--Development time
---  p72={0-7},--isValidMbCoin  --Offline (0) Online (1)
+--  p72={0-7},--isValidMbCoin  --online item: 0,1 TODO: then why do I have range as 0-7?
 --  p73=0,--intimacyPoint -- buddy points reuired for dev
 --  p74=1--isFobAvailable
 --nasanhak
@@ -82,7 +82,7 @@ local this={}
 --"Medical"
 --}
 
-local descriptiveParamToParamName={
+this.descriptiveParamToParamName={
   index="p50",
   sideGrade="p51",
   grade="p52",
@@ -108,7 +108,7 @@ local descriptiveParamToParamName={
   isValidMbCoin="p72",
   intimacyPoint="p73",
   isFobAvailable="p74",
-}
+}--descriptiveParamToParamName
 
 this.equipDevTable={
   {p50=0,p51=0,p52=1,p53=0,p54=100,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=1,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=0,p73=0,p74=1},
@@ -1037,9 +1037,12 @@ this.equipDevTable={
   {p50=918,p51=0,p52=9,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
   {p50=919,p51=0,p52=11,p53=100,p54=1e3,p55=0,p56=0,p57=0,p58="",p59=0,p60="",p61=0,p62=0,p63=0,p64=0,p65="",p66=0,p67="",p68=0,p69=0,p70=0,p71=0,p72=1,p73=0,p74=1},
 --<
-}
+}--equipDevTable
 
 for i,entry in ipairs(this.equipDevTable)do
   TppMotherBaseManagement.RegFlwDev(entry)
 end
+
+--this={}--tex clear if not doing any run-time analysis and if you want to free up some memory
+
 return this

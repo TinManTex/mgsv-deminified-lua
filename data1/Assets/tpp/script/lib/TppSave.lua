@@ -113,11 +113,12 @@ function this.SetUpCompositSlot()
     TppScriptVars.SetUpSlotAsCompositSlot(TppDefine.SAVE_SLOT.SAVING,this.COMPOSIT_SLOT_SIZE)
   end
 end
-function this.SaveGameData(missionCode,needIcon,doSaveFunc,reserveNextMissionStartSave,isCheckPoiunt)
+--HOOKED: see InfHooks
+function this.SaveGameData(missionCode,needIcon,doSaveFunc,reserveNextMissionStartSave,isCheckPoint)
   if reserveNextMissionStartSave then
-    this.ReserveNextMissionStartSave(this.GetGameSaveFileName(),isCheckPoiunt)
+    this.ReserveNextMissionStartSave(this.GetGameSaveFileName(),isCheckPoint)
   else
-    local saveInfo=this.GetSaveGameDataQueue(missionCode,needIcon,doSaveFunc,isCheckPoiunt)
+    local saveInfo=this.GetSaveGameDataQueue(missionCode,needIcon,doSaveFunc,isCheckPoint)
     this.EnqueueSave(saveInfo)
   end
   this.CheckAndSavePersonalData(reserveNextMissionStartSave)
@@ -224,8 +225,8 @@ function this.DoReservedSaveOnMissionStart()
       return
     end
   end
-  for n,a in pairs(this.missionStartSaveFilePool)do
-    local ReserveSaveFunc=this.DO_RESERVE_SAVE_FUNCTION[n]
+  for saveFileName,a in pairs(this.missionStartSaveFilePool)do
+    local ReserveSaveFunc=this.DO_RESERVE_SAVE_FUNCTION[saveFileName]
     ReserveSaveFunc(nil,nil,nil,nil,a.isCheckPoint)
   end
   this.missionStartSaveFilePool=nil
@@ -381,6 +382,7 @@ function this.ProcessSaveQueue()
     end
   end
 end
+--HOOKED: see InfHooks
 function this.DoSave(saveParams,force)
   local checkResult=true
   if force then
@@ -677,6 +679,7 @@ function this.VarRestoreOnMissionStart()
   end
   gvars.sav_varRestoreForContinue=false
 end
+--HOOKED: see InfHooks
 function this.VarRestoreOnContinueFromCheckPoint()
   TppScriptVars.LoadVarsFromSlot(TppDefine.SAVE_SLOT.GLOBAL,TppScriptVars.GROUP_BIT_ALL,TppScriptVars.CATEGORY_GAME_GLOBAL)
   if gvars.usingNormalMissionSlot then

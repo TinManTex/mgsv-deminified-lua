@@ -940,6 +940,11 @@ end
 function this.ReserveGameOver(gameOverType,gameOverRadio,isAborting)
   InfCore.LogFlow("TppMission.ReserveGameOver")--tex
   --tex>
+  if gameOverType==TppDefine.GAME_OVER_TYPE.PLAYER_KILL_CHILD_SOLDIER then
+    if Ivars.disableKillChildSoldierGameOver:Is(1) then
+      return false
+    end
+  end 
   if gameOverType==TppDefine.GAME_OVER_TYPE.OUTSIDE_OF_MISSION_AREA then
     if Ivars.disableOutOfBoundsChecks:Is(1) then
       return false
@@ -2639,6 +2644,7 @@ function this.ExecuteVehicleSaveCarryOnClear()
   Vehicle.SaveCarry{options=options,initialPosition=initialPos,initialRotY=rotY}
 end
 function this.EstablishedMissionAbort()
+  InfMain.EstablishedMissionAbortTop()--tex
   this.SeizeReliefVehicleOnAbort()
   TppQuest.OnMissionGameEnd()
   if mvars.mis_abortWithPlayRadio then
@@ -2675,6 +2681,7 @@ function this.OnEndFadeOutMissionAbort()
   this.ShowAnnounceLogOnFadeOut(this.LoadForMissionAbort)
 end
 function this.EstablishedGameOver()
+  InfMain.EstablishedGameOverTop()--tex
   TppMusicManager.StopJingleEvent()
   local tipNames={}
   local currentStorySequence=TppStory.GetCurrentStorySequence()
@@ -3072,6 +3079,7 @@ function this.SetMissionStartPositionMtbsClusterPosition()
   TppPlayer.SetInitialPosition(position,0)
 end
 function this.EstablishedMissionClear()
+  InfMain.EstablishedMissionClearTop()--tex
   DemoDaemon.StopAll()
   GkEventTimerManager.StopAll()
   if Tpp.IsHorse(vars.playerVehicleGameObjectId)then

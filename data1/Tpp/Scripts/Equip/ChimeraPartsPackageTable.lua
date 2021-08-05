@@ -1,8 +1,28 @@
 --ChimeraPartsPackageTable.lua
 --see https://metalgearmodding.fandom.com/wiki/Chimera_Package_Table for more info
 local this={}--tex made local
-TppEquip.ReloadChimeraPartsInfoTable{
+-- was TppEquip.ReloadChimeraPartsInfoTable{--<table>
+this.chimeraPartsInfoTable={    
+  --indexed as packageId in following tables, ie {TppEquip.BA_10407,10},--{[barrelId],[packageId]},
   packageInfos={
+    --type A
+    --{
+      --model
+      --"/Assets/tpp/parts/weapon/bar/ba03_main1_def_v00.parts",
+      --"/Assets/tpp/pack/collectible/chimera/barrel/ba03_main1_def_v00.fpk",
+      --camo
+      --"/Assets/tpp/fova/weapon/bar/ba03_main1_def_cam.fv2",
+      --"/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def_cam.fpk",
+      --(solid)color
+      --"/Assets/tpp/fova/weapon/bar/ba03_main1_def_clv.fv2",
+      --"/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def_clv.fpk",
+      --texture
+      --"/Assets/tpp/fova/weapon/bar/default/ba03_main1_def.fv2",
+      --"/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def.fpk"
+    --},
+    --type B
+     --{"/Assets/tpp/weapon/amo/Scenes/am04_main2_def.fmdl","/Assets/tpp/pack/collectible/chimera/magazine/am04_main2_def.fpk","","","","","",""},
+    
     {"/Assets/tpp/parts/weapon/bar/ba03_main1_def_v00.parts","/Assets/tpp/pack/collectible/chimera/barrel/ba03_main1_def_v00.fpk","/Assets/tpp/fova/weapon/bar/ba03_main1_def_cam.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def_cam.fpk","/Assets/tpp/fova/weapon/bar/ba03_main1_def_clv.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def_clv.fpk","/Assets/tpp/fova/weapon/bar/default/ba03_main1_def.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba03_main1_def.fpk"},
     {"/Assets/tpp/parts/weapon/bar/ba08_main0_def_v00.parts","/Assets/tpp/pack/collectible/chimera/barrel/ba08_main0_def_v00.fpk","/Assets/tpp/fova/weapon/bar/ba08_main0_def_cam.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba08_main0_def_cam.fpk","/Assets/tpp/fova/weapon/bar/ba08_main0_def_clv.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba08_main0_def_clv.fpk","/Assets/tpp/fova/weapon/bar/default/ba08_main0_def.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba08_main0_def.fpk"},
     {"/Assets/tpp/parts/weapon/bar/ba08_main2_def_v00.parts","/Assets/tpp/pack/collectible/chimera/barrel/ba08_main2_def_v00.fpk","/Assets/tpp/fova/weapon/bar/ba08_main2_def_cam.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba08_main2_def_cam.fpk","/Assets/tpp/fova/weapon/bar/ba08_main2_def_clv.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba08_main2_def_clv.fpk","/Assets/tpp/fova/weapon/bar/default/ba08_main2_def.fv2","/Assets/tpp/pack/collectible/fova/barrel/ba08_main2_def.fpk"},
@@ -993,6 +1013,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {TppEquip.UB_50133,335},
     {TppEquip.UB_50136,335}
   },--underBarrel
+  --TODO: build enum of fv2 name to color index
   color={
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c00.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c00.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c01.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c01.fpk"},
@@ -1039,6 +1060,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c42.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c42.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c43.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c43.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c44.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c44.fpk"},
+    
     {"/Assets/tpp/fova/weapon/all/wfv_scol_c00.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_scol_c00.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_scol_c01.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_scol_c01.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_scol_c02.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_scol_c02.fpk"},
@@ -1064,6 +1086,7 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {"/Assets/tpp/fova/weapon/all/wfv_scol_c22.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_scol_c22.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_scol_c23.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_scol_c23.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_scol_c24.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_scol_c24.fpk"},
+    
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c45.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c45.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c46.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c46.fpk"},
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c47.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c47.fpk"},
@@ -1116,6 +1139,5 @@ TppEquip.ReloadChimeraPartsInfoTable{
     {"/Assets/tpp/fova/weapon/all/wfv_camo_c94.fv2","/Assets/tpp/pack/collectible/fova/color/wfv_camo_c94.fpk"}
   }--color
 }--chimeraPartsInfoTable
+TppEquip.ReloadChimeraPartsInfoTable(this.chimeraPartsInfoTable)--tex
 return this
-
-

@@ -1,4 +1,5 @@
 --player2_camouf_param.lua
+--GOTCHA: even though this is LoadLibraried is isn't addded as a global module(?)
 local this={}
 --tex from CantStoptheBipBop:
 --https://forums.nexusmods.com/index.php?/topic/4691080-mgsvtpp-plethora-of-new-camos-found/page-2
@@ -387,9 +388,6 @@ this.camoTable={
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, --RETAILPATCH 1.0.13
 }
 
-Player.InitCamoufTable(this.camoTable)
---this.camoTable=nil--tex clear if not runtime analysis
-
 --tex example usage of the cammoTypes and materialTypes tables I added
 --local camoType=this.camoTypes.SWIMWEAR_C00
 --local materialType=this.materialTypes.MTR_WOOD_A
@@ -403,5 +401,8 @@ Player.InitCamoufTable(this.camoTable)
 --    InfCore.Log(this.materialTypeNames[materialType]..":"..cammoStrength)
 --  end
 --end
+
+Player.InitCamoufTable(this.camoTable)
+--this.camoTable=nil--tex clear if not runtime analysis
 
 return this

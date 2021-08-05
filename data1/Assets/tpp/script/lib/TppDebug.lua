@@ -453,7 +453,8 @@ function this.DEBUG_SetFobPlayerDefence()
     },
     {
       equipId=TppEquip.EQP_WP_20215,
-      partsInfo={ammo=TppEquip.AM_20106,
+      partsInfo={
+        ammo=TppEquip.AM_20106,
         stock=TppEquip.SK_20216,
         muzzleOption=TppEquip.MO_20205,
         rearSight=TppEquip.ST_60102,
@@ -910,10 +911,10 @@ function this.DebugUpdate()
   end
   if mvars.debug.ply_intelTrap then
     Print(newContext,{.5,.5,1},"LuaSystem PLY.intelTrap")
-    for e,a in pairs(mvars.ply_intelTrapInfo)do
-      if Tpp.IsTypeString(e)then
-        Print(newContext,{.5,1,.5},"intelName = "..tostring(e))
-        for e,a in pairs(a)do
+    for intelName,trapInfo in pairs(mvars.ply_intelTrapInfo)do
+      if Tpp.IsTypeString(intelName)then
+        Print(newContext,{.5,1,.5},"intelName = "..tostring(intelName))
+        for e,a in pairs(trapInfo)do
           Print(newContext,tostring(e)..(" = "..tostring(a)))
         end
       end

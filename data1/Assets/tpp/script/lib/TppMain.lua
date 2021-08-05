@@ -240,7 +240,7 @@ function this.OnAllocate(missionTable)
     end
     --tex>
     --tex not fob check pretty critical here since svars mismatch actoss clients cause corruption and hangs across clients
-    if not TppMission.IsFOBMission(vars.missionCode)then
+    if not InfMain.IsOnlineMission(vars.missionCode)then
       for i,module in ipairs(InfModules)do
         if module.DeclareSVars then
           InfCore.LogFlow(module.name..".DeclareSVars:")
@@ -402,7 +402,6 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
   end
   TppAnimalBlock.InitializeBlockStatus()
   if TppQuestList then
-    InfCore.PCallDebug(InfQuest.RegisterQuests)--tex
     TppQuest.RegisterQuestList(TppQuestList.questList)
     TppQuest.RegisterQuestPackList(TppQuestList.questPackList)
   end
@@ -494,7 +493,20 @@ function this.OnInitialize(missionTable)--NMC: see onallocate for notes
       end
     end
     if missionTable.enemy.soldierSubTypes then
+      if missionTable.enemy.soldierDefine and type(missionTable.enemy.soldierSubTypes)=="boolean" and missionTable.enemy.cpSubTypes~=nil then--tex> use missionTable.enemy.cpSubTypes
+        local soldierSubTypes={}
+        for cpName,cpSoldiers in pairs(missionTable.enemy.soldierDefine)do
+          local soldierSubType=type(missionTable.enemy.cpSubTypes)~="table" and missionTable.enemy.cpSubTypes or missionTable.enemy.cpSubTypes[cpName]
+          if soldierSubType==nil then
+          else
+            soldierSubTypes[soldierSubType]=soldierSubTypes[soldierSubType] or {}
+            table.insert(soldierSubTypes[soldierSubType],cpSoldiers)
+          end 
+        end--for soldierDefine
+        TppEnemy.SetUpSoldierSubTypes(soldierSubTypes)
+      else--<
       TppEnemy.SetUpSoldierSubTypes(missionTable.enemy.soldierSubTypes)
+      end
     end
     TppRevenge.SetUpEnemy()
     TppEnemy.ApplyPowerSettingsOnInitialize()
@@ -613,6 +625,7 @@ function this.OnMissionStartSaving()
 end
 --CALLER: TppSequence Seq_Mission_Prepare.OnUpdate END_SAVING_FILE
 function this.OnMissionCanStart()
+  InfCore.LogFlow"TppMain.OnMissionCanStart"--tex
   if TppMission.IsMissionStart()then
     TppWeather.SetDefaultWeatherProbabilities()
     TppWeather.SetDefaultWeatherDurations()
@@ -653,7 +666,8 @@ function this.OnMissionCanStart()
   end
   InfMain.OnMissionCanStartBottom()--tex
 end
-function this.OnMissionGameStart(n)
+--CALLER: TppSequence. Seq_Mission_Prepare OnLeave
+function this.OnMissionGameStart(sequenceName)
   TppClock.Start()
   if not gvars.ini_isTitleMode then
     PlayRecord.RegistPlayRecord"MISSION_START"
@@ -703,7 +717,7 @@ local function LoadingPositionFromHeliSpace(nextIsFreeMission,isFreeMission)
     end
     --tex start on foot >
     local groundStartPosition=InfLZ.GetGroundStartPosition(gvars.heli_missionStartRoute)
-    local isAssaultLz=mvars.ldz_assaultDropLandingZoneTable[gvars.heli_missionStartRoute]
+    local isAssaultLz=TppLandingZone.IsAssaultDropLandingZone(gvars.heli_missionStartRoute)
     local startOnFoot=groundStartPosition and InfMain.IsStartOnFoot(vars.missionCode,isAssaultLz)
     local isMbFree=TppMission.IsMbFreeMissions(vars.missionCode) and (nextIsFreeMission or isFreeMission)
     if startOnFoot then
@@ -758,7 +772,7 @@ local function LoadingPositionToFree()
   end--^
   if HasHeliRoute() then--tex startOnFoot zoo/ward transfer>
     local groundStartPosition=InfLZ.GetGroundStartPosition(gvars.heli_missionStartRoute)
-    local isAssaultLz=mvars.ldz_assaultDropLandingZoneTable[gvars.heli_missionStartRoute]
+    local isAssaultLz=TppLandingZone.IsAssaultDropLandingZone(gvars.heli_missionStartRoute)
     local startOnFoot=groundStartPosition and InfMain.IsStartOnFoot(vars.missionCode,isAssaultLz) and TppMission.GetMissionClearType()~=TppDefine.MISSION_CLEAR_TYPE.FORCE_GO_TO_MB_ON_SIDE_OPS_CLEAR
     if startOnFoot then
       TppPlayer.SetStartStatus(TppDefine.INITIAL_PLAYER_STATE.ON_FOOT)
@@ -875,7 +889,7 @@ end
 --
 loadPositionFuncs[TppDefine.MISSION_LOAD_TYPE.MISSION_RESTART]=function(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)end
 loadPositionFuncs[TppDefine.MISSION_LOAD_TYPE.CONTINUE_FROM_CHECK_POINT]=function(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)end
---NMC most commonly only called with just missionLoadType, so the params are really just specific to the call with the missionLoadType that actually passes them in.
+--NMC: tex most commonly only called with just missionLoadType, so the params are really just specific to the call with the missionLoadType that actually passes them in.
 function this.ReservePlayerLoadingPosition(missionLoadType,isHeliSpace,isFreeMission,nextIsHeliSpace,nextIsFreeMission,abortWithSave,isLocationChange)
   igvars.mis_isGroundStart=false--tex WORKAROUND
   this.DisableGameStatus()
@@ -904,6 +918,7 @@ function this.StageBlockCurrentPosition(yieldTillEmpty)
   end
 end
 function this.OnReload(missionTable)
+  InfCore.LogFlow("OnReload Top "..vars.missionCode)--tex
   for name,module in pairs(missionTable)do
     if IsTypeFunc(module.OnLoad)then
       module.OnLoad()
@@ -985,12 +1000,12 @@ function this.SetMessageFunction(missionTable)--RENAME:
     end
   end
   --tex>
-  if not TppMission.IsFOBMission(vars.missionCode)then
+  if not InfMain.IsOnlineMission(vars.missionCode)then
     for i,module in ipairs(InfModules)do
       if module.OnMessage then
         InfCore.LogFlow("SetMessageFunction:"..module.name)
         onMessageTableSize=onMessageTableSize+1
-        onMessageTable[onMessageTableSize]=module.OnMessage
+        onMessageTable[onMessageTableSize]=module.OnMessage--tex InfModules
       end
     end
   end
@@ -1002,17 +1017,16 @@ function this.SetMessageFunction(missionTable)--RENAME:
     end
   end
 end
---tex called via mission_main.OnMessage TODO: caller of that? probably engine
+--tex called by the exe (via mission_main.OnMessage) TODO: describe when OnMessage is called 
+--messages are exclusively fired by code in the engine as a mechanism for lua to respond to events
 --sender and messageClass are actually str32 of the original messageexec creation definitions
 --GOTCHA: sender is actuall the message class (Player,MotherBaseManagement,UI etc), not to be confused with the sender defined in the messageexec definitions.
 --args are lua type number, but may represent enum,int,float, StrCode32, whatever.
 --arg0 may match sender (not messageClass) in messageexec definition (see Tpp.DoMessage)
+--messages are re-sent until they hit a resend count, and only then is the message actually sent to those subscribed to the messages
+--pretty much always defaults to 1/the second time the message is resent (except for Fulton and VehicleBroken which is on the first send)
+--can only assume this is to give a frame leeway of the code that fires the message/avoid race conditions
 function this.OnMessage(missionTable,sender,messageId,arg0,arg1,arg2,arg3)
-  if InfCore.debugMode and Ivars.debugMessages:Is(1)then--tex>
-    if InfLookup then
-      InfCore.PCall(InfLookup.PrintOnMessage,sender,messageId,arg0,arg1,arg2,arg3)
-  end
-  end--<
   local mvars=mvars--LOCALOPT
   local strLogTextEmpty=""
   --ORPHAN local T
@@ -1021,14 +1035,22 @@ function this.OnMessage(missionTable,sender,messageId,arg0,arg1,arg2,arg3)
   --ORPHAN local T=TppDebug
   --ORPHAN local T=unk3
   --ORPHAN local T=unk4
-  local resendCount=TppDefine.MESSAGE_GENERATION[sender]and TppDefine.MESSAGE_GENERATION[sender][messageId]
+  local resendCount=TppDefine.MESSAGE_GENERATION[sender]and TppDefine.MESSAGE_GENERATION[sender][messageId]--0 for Fulton,VehicleBroken
   if not resendCount then
-    resendCount=TppDefine.DEFAULT_MESSAGE_GENERATION
+    resendCount=TppDefine.DEFAULT_MESSAGE_GENERATION--1
   end
-  local currentResendCount=GetCurrentMessageResendCount()
+  local currentResendCount=GetCurrentMessageResendCount()--NMC: tex counts up from 0
+  if this.debugModule and InfCore.debugMode and Ivars.debugMessages:Is(1)then--tex>
+    InfCore.Log("OnMessage "..messageId.." "..sender.." resendCount:"..resendCount.." currentResendCount:"..currentResendCount.." ON_MESSAGE_RESULT_RESEND:"..Mission.ON_MESSAGE_RESULT_RESEND)
+  end--<
   if currentResendCount<resendCount then
-    return Mission.ON_MESSAGE_RESULT_RESEND
+    return Mission.ON_MESSAGE_RESULT_RESEND--NMC: tex was 1 when dumped, don't think it changes, but who knows
   end
+  if InfCore.debugMode and Ivars.debugMessages:Is(1)then--tex>
+    if InfLookup then
+      InfCore.PCall(InfLookup.PrintOnMessage,sender,messageId,arg0,arg1,arg2,arg3)
+  end
+  end--<
   for i=1,onMessageTableSize do
     local strLogText=strLogTextEmpty
     InfCore.PCallDebug(onMessageTable[i],sender,messageId,arg0,arg1,arg2,arg3,strLogText)--tex wrapped in pcall
@@ -1050,6 +1072,9 @@ function this.OnMessage(missionTable,sender,messageId,arg0,arg1,arg2,arg3)
   if mvars.animalBlockScript and mvars.animalBlockScript.OnMessage then
     InfCore.PCallDebug(mvars.animalBlockScript.OnMessage,sender,messageId,arg0,arg1,arg2,arg3,strLogTextEmpty)--tex wrapped in pcall
   end
+  if this.debugModule and InfCore.debugMode and Ivars.debugMessages:Is(1)then--tex>
+    InfCore.LogFlow("OnMessage Bottom")--tex DEBUGNOW
+  end--<
 end
 function this.OnTerminate(missionTable)
   if missionTable.sequence then

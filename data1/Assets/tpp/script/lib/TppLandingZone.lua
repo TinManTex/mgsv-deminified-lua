@@ -1,6 +1,8 @@
 -- DOBUILD: 1
+--tex REWORKED
 local this={}
 local StrCode32=InfCore.StrCode32--tex was Fox.StrCode32
+--tex the state of the antiairradar gimmicks controls whether the assaultLz is available
 this.aacrGimmickInfo={--tex was local
   cliffTown_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/afgh/block_large/cliffTown/afgh_cliffTown_gimmick.fox2"},
   commFacility_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/afgh/block_large/commFacility/afgh_commFacility_asset.fox2"},
@@ -21,15 +23,21 @@ this.aacrGimmickInfo={--tex was local
   swamp_aacr001={type=TppGameObject.GAME_OBJECT_TYPE_IMPORTANT_BREAKABLE,locatorName="afgh_antn006_gim_n0000|srt_afgh_antn006",dataSetName="/Assets/tpp/level/location/mafr/block_large/swamp/mafr_swamp_gimmick.fox2"}
 }
 --tex as nasanhak points out some of these var names are misleading
---aprLandingZoneName is the lz name (which uses approach route by default), drpLandingZoneName is the drop route (fancy route from mission start)
+--aprLandingZoneName is the lz name (TppLandingZoneData entity name), which uses approach route by default,
+--drpLandingZoneName is the drop route (fancy route from mission start) for the same lz
+--mbdvs_map_mission_parameter also referenced the drpLandingZoneName
+
 --routes seem to be named consistently enough so you can derive them from lz name
 --ex: lz_cliffTown_I0000|lz_cliffTown_I_0000
 --drop tag is drp - route name is lz_drp_cliffTown_I0000|rt_drp_cliffTown_I0000
 --approach tag is arp - route name is lz_commFacility_S0000|rt_apr_commFacility_S_0000 (note first section isn't tagged, only last, where drop has both tagged)
 --return tag is rtn - route name is lz_commFacility_S0000|rt_rtn_commFacility_S_0000 (as above)
 --reference to approach and return can be seen in TppLandingZoneData entity in <mission id>_heli.fox2s
-local afghanistanLZTable={}
-afghanistanLZTable.ConnectLandingZoneTable={
+
+--ConnectLandingZoneTable keys via aa radar gimmick name to its lz, aka 'assaultLz'
+--MissionLandingZoneTable are the rest of the non assault lzs, along with missionList for allowing lz for mission
+local afghLZTable={}
+afghLZTable.ConnectLandingZoneTable={
   cliffTown_aacr001={aprLandingZoneName={"lz_cliffTown_I0000|lz_cliffTown_I_0000"},drpLandingZoneName={"lz_drp_cliffTown_I0000|rt_drp_cliffTown_I0000"}},
   commFacility_aacr001={aprLandingZoneName={"lz_commFacility_I0000|lz_commFacility_I_0000"},drpLandingZoneName={"lz_drp_commFacility_I0000|rt_drp_commFacility_I_0000"}},
   enemyBase_aacr001={aprLandingZoneName={"lz_enemyBase_I0000|lz_enemyBase_I_0000"},drpLandingZoneName={"lz_drp_enemyBase_I0000|rt_drp_enemyBase_I_0000"}},
@@ -41,7 +49,7 @@ afghanistanLZTable.ConnectLandingZoneTable={
   sovietBase_aacr001={aprLandingZoneName={"lz_sovietBase_E0000|lz_sovietBase_E_0000"},drpLandingZoneName={"lz_drp_sovietBase_E0000|rt_drp_sovietBase_E_0000"}},
   tent_aacr001={aprLandingZoneName={"lz_tent_I0000|lz_tent_I_0000"},drpLandingZoneName={"lz_drp_tent_I0000|rt_drp_tent_I_0000"}}
 }
-afghanistanLZTable.MissionLandingZoneTable={
+afghLZTable.MissionLandingZoneTable={
   {aprLandingZoneName="lz_bridge_S0000|lz_bridge_S_0000",drpLandingZoneName="lz_drp_bridge_S0000|rt_drp_bridge_S_0000",missionList={10040}},
   {aprLandingZoneName="lz_citadelSouth_S0000|lz_citadelSouth_S_0000",drpLandingZoneName="lz_drp_citadelSouth_S0000|rt_drp_citadelSouth_S_0000",missionList={10045}},
   {aprLandingZoneName="lz_cliffTown_N0000|lz_cliffTown_N_0000",drpLandingZoneName="lz_drp_cliffTown_N0000|rt_drp_clifftown_N_0000",missionList={10044}},
@@ -76,8 +84,8 @@ afghanistanLZTable.MissionLandingZoneTable={
   {aprLandingZoneName="lz_waterway_I0000|lz_waterway_I_0000",drpLandingZoneName="lz_drp_waterway_I0000|rt_drp_waterway_I_0000",missionList={10050}},
 }
 
-local middleAfricaLZTable={}
-middleAfricaLZTable.ConnectLandingZoneTable={
+local mafrLZTable={}
+mafrLZTable.ConnectLandingZoneTable={
   banana_aacr001={aprLandingZoneName={"lz_banana_I0000|lz_banana_I_0000"},drpLandingZoneName={"lz_drp_banana_I0000|rt_drp_banana_I_0000"}},
   diamond_aacr001={aprLandingZoneName={"lz_diamond_I0000|lz_diamond_I_0000"},drpLandingZoneName={"lz_drp_diamond_I0000|rt_drp_diamond_I_0000"}},
   flowStation_aacr001={aprLandingZoneName={"lz_flowStation_I0000|lz_flowStation_I_0000"},drpLandingZoneName={"lz_drp_flowStation_I0000|rt_drp_flowStation_I_0000"}},
@@ -86,7 +94,7 @@ middleAfricaLZTable.ConnectLandingZoneTable={
   savannah_aacr001={aprLandingZoneName={"lz_savannah_I0000|lz_savannah_I_0000"},drpLandingZoneName={"lz_drp_savannah_I0000|rt_drp_savannah_I_0000"}},
   swamp_aacr001={aprLandingZoneName={"lz_swamp_I0000|lz_swamp_I_0000"},drpLandingZoneName={"lz_drp_swamp_I0000|rt_drp_swamp_I_0000"}}
 }
-middleAfricaLZTable.MissionLandingZoneTable={
+mafrLZTable.MissionLandingZoneTable={
   {aprLandingZoneName="lz_bananaSouth_N0000|lz_bananaSouth_N",drpLandingZoneName="lz_drp_bananaSouth_N0000|rt_drp_bananaSouth_N_0000",missionList={10211}},
   {aprLandingZoneName="lz_diamond_N0000|lz_diamond_N_0000",drpLandingZoneName="lz_drp_diamond_N0000|rt_drp_diamond_N_0000",missionList={10100}},
   {aprLandingZoneName="lz_diamondSouth_S0000|lz_diamondSouth_S_0000",drpLandingZoneName="lz_drp_diamondSouth_S0000|lz_drp_diamondSouth_S_0000",missionList={10195}},
@@ -119,7 +127,8 @@ middleAfricaLZTable.MissionLandingZoneTable={
 }
 
 --TABLESETUP
---tex> drp/route to apr/lz
+--tex> drp/route to apr/lz used for IH features
+--keyed by locationName={aprLzName=drpLzName,...},
 this.assaultLzs={
   afgh={},
   mafr={},
@@ -128,43 +137,62 @@ this.missionLzs={
   afgh={},
   mafr={},
 }
-
-local locInfo={
+--tex replaces use of the seperate afghanistanLZTable/middleAfricaLZTable in vanilla functions
+--ADDON: InfMission DEBUGNOW
+this.locInfo={
   afgh={
-    connectTable=afghanistanLZTable.ConnectLandingZoneTable,
-    missionTable=afghanistanLZTable.MissionLandingZoneTable
+    ConnectLandingZoneTable=afghLZTable.ConnectLandingZoneTable,
+    MissionLandingZoneTable=afghLZTable.MissionLandingZoneTable
   },
   mafr={
-    connectTable=middleAfricaLZTable.ConnectLandingZoneTable,
-    missionTable=middleAfricaLZTable.MissionLandingZoneTable
-   },
+    ConnectLandingZoneTable=mafrLZTable.ConnectLandingZoneTable,
+    MissionLandingZoneTable=mafrLZTable.MissionLandingZoneTable
+  },
 }
-
-for location,locationInfo in pairs(locInfo)do
-  local lzTable=this.assaultLzs[location]
-  for aaName,lzInfo in pairs(locationInfo.connectTable) do
-    lzTable[lzInfo.drpLandingZoneName[1]]=lzInfo.aprLandingZoneName[1]
+function this.BuildConnectLzTable()
+  InfCore.LogFlow("TppLandingZone.BuildConnectLzTable")
+  for location,locationInfo in pairs(this.locInfo)do
+    local assaultLocLzs=this.assaultLzs[location] or {}
+    for aaName,lzInfo in pairs(locationInfo.ConnectLandingZoneTable) do
+      assaultLocLzs[lzInfo.drpLandingZoneName[1]]=lzInfo.aprLandingZoneName[1]
+    end
+    this.assaultLzs[location]=assaultLocLzs
   end
-
-  local lzTable=this.missionLzs[location]
-  for j=1,#locationInfo.missionTable do
-    local lzInfo=locationInfo.missionTable[j]
-    lzTable[lzInfo.drpLandingZoneName]=lzInfo.aprLandingZoneName
+  if this.debugModule then
+    InfCore.PrintInspect(this.assaultLzs,"assaultLzs")
   end
-end
+end--BuildConnectLzTable
+function this.BuildMissionLzTable()
+  InfCore.LogFlow("TppLandingZone.BuildMissionLzTable")
+  for location,locationInfo in pairs(this.locInfo)do
+    local missionLocLzs=this.missionLzs[location] or {}
+    for j=1,#locationInfo.MissionLandingZoneTable do
+      local lzInfo=locationInfo.MissionLandingZoneTable[j]
+      missionLocLzs[lzInfo.drpLandingZoneName]=lzInfo.aprLandingZoneName
+    end
+    this.missionLzs[location]=missionLocLzs
+  end
+  if this.debugModule then
+    InfCore.PrintInspect(this.missionLzs,"missionLzs")
+  end
+end--BuildMissionLzTable
+--EXEC
+this.BuildConnectLzTable()
+this.BuildMissionLzTable()
 --<
 
 function this.OnInitialize()
   local connectLZTable={}
-  Tpp.MergeTable(connectLZTable,afghanistanLZTable.ConnectLandingZoneTable)
-  Tpp.MergeTable(connectLZTable,middleAfricaLZTable.ConnectLandingZoneTable)
+  for location,lzTables in pairs(this.locInfo)do
+    Tpp.MergeTable(connectLZTable,lzTables.ConnectLandingZoneTable)
+  end--for locInfo
   TppGimmick.SetUpConnectLandingZoneTable(connectLZTable)
   mvars.ldz_assaultDropLandingZoneTable={}
   local drpLandingZones={}
   local aprLandingZones={}
-  for n,areaLZs in pairs(connectLZTable)do
-    local drpLandingZone=areaLZs.drpLandingZoneName
-    local aprLandingZone=areaLZs.aprLandingZoneName
+  for aacrName,assaultLz in pairs(connectLZTable)do
+    local drpLandingZone=assaultLz.drpLandingZoneName
+    local aprLandingZone=assaultLz.aprLandingZoneName
     table.insert(drpLandingZones,drpLandingZone[1])
     table.insert(aprLandingZones,aprLandingZone[1])
   end
@@ -176,22 +204,33 @@ function this.OnInitialize()
   end
 end
 function this.OnMissionCanStart()
-  if(TppLocation.IsAfghan()or TppLocation.IsMiddleAfrica())or TppLocation.IsMotherBase()then
+  --tex REWORKED
+  local locationName=TppLocation.GetLocationName()
+  if this.locInfo[locationName] or TppLocation.IsMotherBase()then
     local missionNumber,missionTypeCodeName=TppMission.ParseMissionName(TppMission.GetMissionName())
     if missionTypeCodeName=="heli"or missionTypeCodeName=="free"then
       TppUiCommand.ClearAllDisabledLandPoints()
-      this.DisableLandingZoneForMission(afghanistanLZTable.MissionLandingZoneTable,missionTypeCodeName)
-      this.DisableLandingZoneForMission(middleAfricaLZTable.MissionLandingZoneTable,missionTypeCodeName)
+      for locationName,lzTable in pairs(this.locInfo)do
+        this.DisableLandingZoneForMission(lzTable.MissionLandingZoneTable,missionTypeCodeName)
+      end
     end
-    this._OnMissionCanStart(afghanistanLZTable,missionNumber,missionTypeCodeName)
-    this._OnMissionCanStart(middleAfricaLZTable,missionNumber,missionTypeCodeName)
+    for locationName,lzTable in pairs(this.locInfo)do
+      --tex broken out from seperate (but identical) afgh/mafrLzTable function
+      for aacrName,connectLZTableForAacr in pairs(lzTable.ConnectLandingZoneTable)do
+        if not this.IsBrokenGimmick(aacrName) then
+          this.DisableAssaultLandingZones(connectLZTableForAacr,missionTypeCodeName)
+        end
+        this.RegisterAssaultDropLandingZone(connectLZTableForAacr.drpLandingZoneName)
+      end  
+    end
     if TppQuest.IsActive"waterway_q99010"then--PATCHUP:
-      this.DisableLandingZone(afghanistanLZTable.ConnectLandingZoneTable.sovietBase_aacr001,"heli")
-      this.DisableLandingZone(afghanistanLZTable.ConnectLandingZoneTable.powerPlant_aacr001,"heli")
+      this.DisableAssaultLandingZones(this.locInfo.afgh.ConnectLandingZoneTable.sovietBase_aacr001,"heli")
+      this.DisableAssaultLandingZones(this.locInfo.afgh.ConnectLandingZoneTable.powerPlant_aacr001,"heli")
     end
     InfQuest.DisableLandingZones()--tex
   end
-end
+end--OnMissionCanStart
+--tex called in helispace or free mission to disable lzs if havent reached that mission yet
 function this.DisableLandingZoneForMission(missionLZTable,missionTypeCodeName)
   local lzType
   local DisableFunc
@@ -202,12 +241,12 @@ function this.DisableLandingZoneForMission(missionLZTable,missionTypeCodeName)
     lzType="aprLandingZoneName"
     DisableFunc=this.GroundDisableLandingZone
   end
-  for n,lzInfo in ipairs(missionLZTable)do
+  for i,lzInfo in ipairs(missionLZTable)do
     local doDisable=true
     if not lzInfo.missionList then
       doDisable=true
     else
-      for n,missionCode in ipairs(lzInfo.missionList)do
+      for j,missionCode in ipairs(lzInfo.missionList)do
         if TppStory.IsMissionOpen(missionCode)then
           doDisable=false
         end
@@ -217,16 +256,9 @@ function this.DisableLandingZoneForMission(missionLZTable,missionTypeCodeName)
       DisableFunc(lzInfo[lzType])
     end
   end
-end
-function this._OnMissionCanStart(lzTable,missionNumber,missionTypeCodeName)
-  for aacr,lzs in pairs(lzTable.ConnectLandingZoneTable)do
-    if not this.IsBrokenGimmick(aacr) then
-      this.DisableLandingZone(lzTable.ConnectLandingZoneTable[aacr],missionTypeCodeName)
-    end
-    this.RegisterAssaultDropLandingZone(lzs.drpLandingZoneName)
-  end
-end
-function this.DisableLandingZone(connectLZTableForAacr,missionTypeCodeName)
+end--DisableLandingZoneForMission
+--tex broken out from seperate (but identical) afgh/mafrLzTable function
+function this.DisableAssaultLandingZones(connectLZTableForAacr,missionTypeCodeName)
   local lzType
   local DisableFunc
   if missionTypeCodeName=="heli"then
@@ -236,16 +268,17 @@ function this.DisableLandingZone(connectLZTableForAacr,missionTypeCodeName)
     lzType="aprLandingZoneName"
     DisableFunc=this.GroundDisableLandingZone
   end
-  local lzs=connectLZTableForAacr[lzType]
+  local lzs=connectLZTableForAacr[lzType]--tex NMC DEBUGNOW don't know why this is list (since the just have one entry), or why its being iterated via pairs instead of ipairs
   if lzs then
-    for n,lz in pairs(lzs)do
-      DisableFunc(lz)
+    for n,lzName in pairs(lzs)do
+      DisableFunc(lzName)
     end
   end
-end
-function this.GroundDisableLandingZone(lz)
-  if TppHelicopter.GetLandingZoneExists{landingZoneName=lz}then
-    TppHelicopter.SetDisableLandingZone{landingZoneName=lz}
+end--DisableAssaultLandingZones
+--tex broken out from seperate (but identical) afgh/mafrLzTable function
+function this.GroundDisableLandingZone(lzName)
+  if TppHelicopter.GetLandingZoneExists{landingZoneName=lzName}then
+    TppHelicopter.SetDisableLandingZone{landingZoneName=lzName}
   end
 end
 function this.DisableUnlockLandingZoneOnMission(bool)
@@ -254,26 +287,26 @@ end
 function this.IsDisableUnlockLandingZoneOnMission()
   return mvars.ldz_isDisableUnlockLandingZone
 end
-function this.RegisterAssaultDropLandingZone(drpLandingZoneName)
-  for n,lzn in ipairs(drpLandingZoneName)do
-    local lz=StrCode32(lzn)
-    mvars.ldz_assaultDropLandingZoneTable[lz]=true
+function this.RegisterAssaultDropLandingZone(drpLandingZoneNames)
+  for i,lzn in ipairs(drpLandingZoneNames)do
+    local lzS32=StrCode32(lzn)
+    mvars.ldz_assaultDropLandingZoneTable[lzS32]=true
   end
 end
-function this.IsAssaultDropLandingZone(heliRoute)
+function this.IsAssaultDropLandingZone(heliRouteS32)
   if not mvars.ldz_assaultDropLandingZoneTable then
     return
   end
-  local drpLz=mvars.ldz_assaultDropLandingZoneTable[heliRoute]
+  local drpLz=mvars.ldz_assaultDropLandingZoneTable[heliRouteS32]
   return drpLz
 end
 --IsAACRGimmickBroken
 function this.IsBrokenGimmick(gimmickId)
-  local gimmick=this.aacrGimmickInfo[gimmickId]
-  if gimmick==nil then
+  local gimmickInfo=this.aacrGimmickInfo[gimmickId]
+  if gimmickInfo==nil then
     return
   end
-  return Gimmick.IsBrokenGimmick(gimmick.type,gimmick.locatorName,gimmick.dataSetName)
+  return Gimmick.IsBrokenGimmick(gimmickInfo.type,gimmickInfo.locatorName,gimmickInfo.dataSetName)
 end
 function this.OverwriteBuddyVehiclePosForALZ()
   local posTable={

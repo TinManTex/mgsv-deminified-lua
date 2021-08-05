@@ -1,3 +1,4 @@
+--gmpEarnMissions.lua
 local motherbaseManager=TppMotherBaseManager:GetInstance()
 if motherbaseManager==NULL then
   return
@@ -6,7 +7,8 @@ local GmpEarn=motherbaseManager:GetGmpEarn()
 if GmpEarn==NULL then
   return
 end
-GmpEarn:CreateMissions{
+--tex was GmpEarn:CreateMissions{--table
+local missions={
   {missionId=0,gmp=250,missionSpan=8,sleepTime=2,needUnitLevel=1,difficulty=4,safetyPower=50,staffRankRatio=100,staffScoutRatio=10},
   {missionId=1,priority=1,gmp=500,missionSpan=8,sleepTime=2,needUnitLevel=1,difficulty=6,safetyPower=50,woundRatio=5,sickRatio=5,traumaRatio=5,staffRankRatio=100,staffScoutRatio=10},
   {missionId=2,priority=2,gmp=750,missionSpan=8,sleepTime=2,needUnitLevel=2,difficulty=7,safetyPower=50,woundRatio=5,sickRatio=5,traumaRatio=5,staffRankRatio=100,staffScoutRatio=10},
@@ -157,4 +159,5 @@ GmpEarn:CreateMissions{
   {missionId=147,priority=147,gmp=1,missionSpan=8,sleepTime=2,needUnitLevel=255,safetyPower=150,deadRatio=5,woundRatio=10,sickRatio=10,traumaRatio=10,staffRankRatio=100,staffScoutRatio=10},
   {missionId=148,priority=148,gmp=1,missionSpan=8,sleepTime=2,needUnitLevel=255,safetyPower=150,deadRatio=5,woundRatio=10,sickRatio=10,traumaRatio=10,staffRankRatio=100,staffScoutRatio=10},
   {missionId=149,priority=149,gmp=1,missionSpan=8,sleepTime=2,needUnitLevel=255,safetyPower=150,deadRatio=5,woundRatio=10,sickRatio=10,traumaRatio=10,staffRankRatio=100,staffScoutRatio=10}
-}
+}--missions
+GmpEarn:CreateMissions(missions)

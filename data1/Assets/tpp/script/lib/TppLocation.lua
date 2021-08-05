@@ -112,7 +112,9 @@ function this.SetBuddyBlock(locationId)
 end
 MotherBaseStage.RegisterModifyLayoutCodes{0,10,20,30,40,70,80,90,980}
 function this.ModifyMbsLayoutCode(layoutCode)
-  return MotherBaseStage.ModifyLayoutCode(layoutCode)
+  local modifiedLayoutCode=MotherBaseStage.ModifyLayoutCode(layoutCode)--tex DEBUG was just return ModifyLayoutCode
+  InfCore.Log("ModifyMbsLayoutCode "..tostring(layoutCode).." > "..tostring(modifiedLayoutCode))--tex DEBUG
+  return modifiedLayoutCode
 end
 this.debug_useDebugMbParam=nil
 function this.DEBUG_UseDebugMbParam()
@@ -203,7 +205,9 @@ end
 function this.Init(missionTable)
   this.messageExecTable=Tpp.MakeMessageExecTable(this.Messages())
 end
+--CALLER: TppMain.OnMissionCanStart
 function this.ActivateBlock()
+  InfCore.LogFlow"TppLocation.ActivateBlock"--tex
   local noLoadTable={[1]=true,[30]=true,[50]=true,[55]=true}--init,cypr,mtbs,mbqf
   if noLoadTable[vars.locationCode]then
     return

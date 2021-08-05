@@ -859,7 +859,8 @@ this.missionPackTable[65050]={"/Assets/tpp/pack/show/e3_2014/s65050/s65050_area.
 this.missionPackTable[65414]={"/Assets/tpp/pack/show/gc_2014/s65414/s65414_area.fpk"}
 this.missionPackTable[65060]=function(missionCode)
   TppPackList.AddMissionPack"/Assets/tpp/pack/show/tgs_2014/s65060/s65060_area.fpk"
-  TppPackList.AddLocationCommonScriptPack(missionCode)do
+  TppPackList.AddLocationCommonScriptPack(missionCode)
+  do
     local settings={{type="hostage",name="hos_s65060_0000",faceId=621,bodyId=111}}
     TppEneFova.AddUniqueSettingPackage(settings)
   end
